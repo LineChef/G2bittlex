@@ -619,7 +619,7 @@ def build_lid():
     cuts.append(box(xa, xb, yb - 0.5, yt, z1, z1 + 0.5))
     cuts.append(box(xa, xb, yb - 0.5, yb, z0 - 0.5, z1 + 0.5))
     # pusher from the flap to the button: round, with a 45 deg point to +Y (down in the upside-down print)
-    xp0, xp1 = PORT_FACE_X + 0.3, W_MAIN - T_WALL + 0.3
+    xp0, xp1 = PORT_FACE_X - 0.4, W_MAIN - T_WALL + 0.3      # tip 0.3 from the button top (X 13.7 in the model)
     adds.append(cyl_x(BTN_Y, BTN_Z, xp0, xp1, 1.5)
                 + (Pos((xp0 + xp1) / 2, BTN_Y, BTN_Z) * Rot(45, 0, 0) * Box(xp1 - xp0, 3.0, 3.0)
                    & box(xp0, xp1, BTN_Y + 1.5 * math.sqrt(0.5), BTN_Y + 3, BTN_Z - 3, BTN_Z + 3)))
