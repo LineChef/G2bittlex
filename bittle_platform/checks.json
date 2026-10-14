@@ -104,11 +104,17 @@
    "starter_plate",
    "loose_pieces",
    0
+  ],
+  [
+   "cover_pegs_foot (print)",
+   "loose_pieces",
+   6.938893903907228e-18
   ]
  ],
  "overhang_mm2": {
   "cover_pegs": 245.81015014648438,
   "starter_plate": 0.0,
+  "cover_pegs_foot": 265.697998046875,
   "cover_stock": 198.61520385742188
  },
  "mass_g_pla_solid": {

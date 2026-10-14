@@ -236,6 +236,45 @@ def overhang_regions(M, limit_deg=45.5, bed=0.3, min_area=0.5):
     return sorted(out, key=lambda r: -r["area"])
 
 
+# Break-off foot for the standing cover print. The cover stands on a thin curved strip
+# (about 56 x 1.6 mm) and its center of mass is 2 mm past that strip, over the leaning
+# top face. The foot is a 3-layer plate with fins under that face. The fins stand
+# FOOT["gap"] off the cover and touch it only at small teeth, so they snap off.
+FOOT = dict(t=0.75, y=(-14.0, 4.0), x=30.0, fins_x=(-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0),
+            fin_t=0.8, fin_h=14.0, gap=0.3, teeth_z=(0.0, 2.5, 5.5, 8.5, 11.5), tooth=0.6)
+
+
+def dilate(M, d):
+    """Approximate offset of a mesh: union of copies moved by d along the six axis directions."""
+    out = M
+    for v in ((d, 0, 0), (-d, 0, 0), (0, d, 0), (0, -d, 0), (0, 0, d), (0, 0, -d)):
+        out = out + M.translate(list(v))
+    return out
+
+
+def cover_foot(P):
+    """Foot for the print-oriented cover P (bed at Z = 0, top face of the cover toward -Y)."""
+    F = FOOT
+    y0, y1 = F["y"]
+    near = dilate(P, F["gap"])
+    foot = to_m(box(-F["x"], F["x"], y0, y1, 0.0, F["t"]))
+    for xf in F["fins_x"]:
+        # right triangle: 45 deg top edge from the plate edge up toward the cover
+        fin = m3.Manifold.extrude(m3.CrossSection([[(y0, 0.0), (y1, 0.0), (y1, F["fin_h"]), (y0 + F["fin_h"], F["fin_h"])]]),
+                                  F["fin_t"])
+        fin = fin.transform(np.array([[0.0, 0, 1, xf - F["fin_t"] / 2], [1, 0, 0, 0], [0, 1, 0, 0]]))
+        foot += fin
+    foot -= near
+    reach = dilate(P, F["gap"] + 0.15)
+    teeth = None
+    for xf in F["fins_x"]:
+        for zt in F["teeth_z"]:
+            tb = to_m(box(xf - F["tooth"] / 2, xf + F["tooth"] / 2, y0, y1, zt, zt + F["tooth"]))
+            tb = tb ^ reach
+            teeth = tb if teeth is None else teeth + tb
+    return (foot + teeth) - P
+
+
 def loose(M):
     v = sorted(c.volume() for c in M.decompose())
     return sum(v[:-1])
@@ -279,6 +318,9 @@ def main():
         MU.save_stl(M, os.path.join(STL, "installed", f"{k}.stl"))
     for k, M in parts.items():
         MU.save_stl(print_orient(k, M), os.path.join(STL, "print", f"{k}.stl"))
+    Pc = print_orient("cover_pegs", cover_pegs)
+    footed = Pc + cover_foot(Pc)
+    MU.save_stl(footed, os.path.join(STL, "print", "cover_pegs_foot.stl"))
 
     # ---- faceted STEP files (mesh-based parts)
 
@@ -296,7 +338,9 @@ def main():
     rows.append(("starter_plate (body)", "keepout", vol(plate_m - to_m(cutter), keepout)))
     for k, M in parts.items():
         rows.append((k, "loose_pieces", loose(M)))
+    rows.append(("cover_pegs_foot (print)", "loose_pieces", loose(footed)))
     ovh = {k: overhang_area(print_orient(k, M)) for k, M in parts.items()}
+    ovh["cover_pegs_foot"] = overhang_area(footed)
     ovh["cover_stock"] = overhang_area(print_orient("cover_stock", cover))
     mass = {k: round(M.volume() * 1.24e-3, 1) for k, M in parts.items()}    # PLA, solid
     clear = dict(
