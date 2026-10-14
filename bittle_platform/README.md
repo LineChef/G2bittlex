@@ -71,7 +71,15 @@ Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover wit
 Open items: the BiBoard header height is an estimate from photos. The legs, the head and the robot balance are not modeled. The Petoi cover is a mesh, so cover_pegs is STL only.
 
 
-## 5. License
+## 5. Bittle X V2 back touch sensor
+
+1. On a Bittle X V2, the back touch sensor is a flexible circuit that is glued to the inside of the cover top. It has touch areas on the left, the right, the center and near the tail (docs.petoi.com/extensible-modules/back-touch-sensor).
+2. The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change. Move the circuit from the stock cover to cover_pegs in the same way as on the stock cover.
+3. An add-on on the platform covers most of the touch areas. Disable the back touch mode (serial command Xb) when an add-on is on the robot.
+4. For this reason, the platform has no parts under the cover top. A cover that prints flat without supports needs pegs held from inside the cover, where the circuit is. A possible interface v2 with sockets in a thicker top avoids this.
+
+
+## 6. License
 
 The designs and this document are CC BY 4.0, and the code is MIT (Jeremy Collins). The cover, the side shoulder and the front plate are Petoi files from github.com/PetoiCamp/NonCodeFiles. Petoi publishes them without a stated license, and cover_pegs.stl is made from the Petoi cover. LICENSE.md and ATTRIBUTION.md in the repository give the details.
 
