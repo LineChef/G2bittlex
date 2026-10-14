@@ -37,16 +37,19 @@ Print quality. Every surface of the add-on parts is at 45 deg or less from verti
 
 ## 3. Assembly
 
-1. Print the platform cover and fit it on the robot in place of the stock cover.
+The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bittlex/viewer/#step=1](https://beetlebugorg.github.io/bittlex/viewer/#step=1). Each step below has a link to its view.
+
+1. Print the platform cover and fit it on the robot in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
 2. Solder the wires to the Pi, the amp and the mic (section 4).
-3. Push the mic board down into the slot at the front left of the tray, port to the front, wire pads at the top.
-4. Push the amp onto its two pins, components to the left.
-5. Hang the speaker on the two pins of the rear wall, ear plate to the front.
-6. Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right.
-7. Put the tray on the cover 7 mm forward of its place, over the pegs. Push it 7 mm rearward until it clicks.
-8. Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi.
-9. Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward.
-10. To remove: pull the lid up, slide the tray 7 mm forward and lift it.
+3. Push the mic board down into the slot at the front left of the tray, port to the front, wire pads at the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
+4. Push the amp onto its two pins, components to the left. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
+5. Hang the speaker on the two pins of the rear wall, ear plate to the front. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
+6. Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
+7. Put the tray on the cover 7 mm forward of its place, over the pegs. Push it 7 mm rearward until it clicks. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
+8. Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9))
+9. Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward. ([viewer step 10](https://beetlebugorg.github.io/bittlex/viewer/#step=10))
+10. Optional: push the TPU plug into the charge window. ([viewer step 11](https://beetlebugorg.github.io/bittlex/viewer/#step=11))
+11. To remove: pull the lid up, slide the tray 7 mm forward and lift it.
 
 ![The tray without the lid: the stack, the amp (left), the mic (front left) and the speaker (rear).](doc/06_tray_loaded.png)
 

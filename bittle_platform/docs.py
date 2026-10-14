@@ -5,6 +5,7 @@ README.md and bittle_platform_spec.pdf come from the same content list (CONTENT)
 """
 import datetime
 import json
+import re
 import os
 import subprocess
 import sys
@@ -355,21 +356,24 @@ def write_pdf(X, path):
     CODE = ParagraphStyle("code", parent=P, fontName="Courier", fontSize=6.8, leading=8.0)
     W = A4[0] - 30 * mm
     esc = lambda t: str(t).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    # Markdown links [text](url) become PDF links.
+    link = lambda t: re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)",
+                            r'<link href="\2" color="#1a5fb4"><u>\1</u></link>', esc(t))
     story = [Paragraph(esc(TITLE), H1)]
     for b in X:
         k = b[0]
         if k == "h":
             story.append(Paragraph(esc(b[1]), H2))
         elif k == "p":
-            story.append(Paragraph(esc(b[1]), P))
+            story.append(Paragraph(link(b[1]), P))
             story.append(Spacer(1, 2))
         elif k == "list":
-            story.append(ListFlowable([ListItem(Paragraph(esc(t), P), leftIndent=12) for t in b[1]],
+            story.append(ListFlowable([ListItem(Paragraph(link(t), P), leftIndent=12) for t in b[1]],
                                       bulletType="1", bulletFontSize=8.5, leftIndent=12))
         elif k == "table":
             rows, w = b[1], b[2]
             sc = W / (sum(w) * mm)
-            data = [[Paragraph(esc(c), TH if i == 0 else T8) for c in r] for i, r in enumerate(rows)]
+            data = [[Paragraph(link(c), TH if i == 0 else T8) for c in r] for i, r in enumerate(rows)]
             t = Table(data, colWidths=[x * mm * sc for x in w], repeatRows=1)
             t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
                                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#bbbbbb")),

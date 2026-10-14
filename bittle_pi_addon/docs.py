@@ -17,6 +17,7 @@ from bittle_platform import interface as PI  # noqa: E402
 VERSION = "0.7"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
+VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
 CHECKS = json.load(open(os.path.join(pod.OUT, "checks.json")))
 
 
@@ -59,15 +60,19 @@ def content():
          ], [50, 120])
 
     h("3. Assembly")
-    lst(["Print the platform cover and fit it on the robot in place of the stock cover.",
+    st = lambda n: f" ([viewer step {n}]({VIEWER}#step={n}))"
+    p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1). "
+      "Each step below has a link to its view.")
+    lst(["Print the platform cover and fit it on the robot in place of the stock cover." + st(2),
          "Solder the wires to the Pi, the amp and the mic (section 4).",
-         "Push the mic board down into the slot at the front left of the tray, port to the front, wire pads at the top.",
-         "Push the amp onto its two pins, components to the left.",
-         "Hang the speaker on the two pins of the rear wall, ear plate to the front.",
-         "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right.",
-         f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks.",
-         "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi.",
-         "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward.",
+         "Push the mic board down into the slot at the front left of the tray, port to the front, wire pads at the top." + st(5),
+         "Push the amp onto its two pins, components to the left." + st(6),
+         "Hang the speaker on the two pins of the rear wall, ear plate to the front." + st(7),
+         "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
+         f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
+         "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi." + st(9),
+         "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
+         "Optional: push the TPU plug into the charge window." + st(11),
          f"To remove: pull the lid up, slide the tray {PI.SLIDE:g} mm forward and lift it."])
     img("06_tray_loaded.png", 0.62, "The tray without the lid: the stack, the amp (left), the mic (front left) and the speaker (rear).")
     img("08_section_x_mic.png", 0.62, "Section through the mic (right: front). The mic stands in its slot, the lid stub holds its top edge. The speaker hangs on the rear pins (left).")
