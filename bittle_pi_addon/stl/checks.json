@@ -11,8 +11,23 @@
    0.0
   ],
   [
+   "cover_pegs",
+   "top_insert",
+   0.0
+  ],
+  [
    "pod_tray",
    "pod_lid",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "top_insert",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "top_insert",
    0.0
   ],
   [
@@ -166,12 +181,67 @@
    0.0
   ],
   [
+   "top_insert",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "top_insert",
+   "pizero",
+   0.0
+  ],
+  [
+   "top_insert",
+   "battery",
+   0.0
+  ],
+  [
+   "top_insert",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "top_insert",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "top_insert",
+   "camera_cable",
+   0.0
+  ],
+  [
+   "top_insert",
+   "speaker",
+   0.0
+  ],
+  [
+   "top_insert",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "top_insert",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "top_insert",
+   "cover_slot",
+   0.0
+  ],
+  [
    "pod_tray",
    "under_cover",
    0.0
   ],
   [
    "pod_lid",
+   "under_cover",
+   0.0
+  ],
+  [
+   "top_insert",
    "under_cover",
    0.0
   ],
@@ -212,6 +282,26 @@
   ],
   [
    "pod_lid",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "top_insert",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "top_insert",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "top_insert",
+   "front_plate",
+   0.0
+  ],
+  [
+   "top_insert",
    "rear_plate_mirror",
    0.0
   ],
@@ -227,6 +317,11 @@
   ],
   [
    "pod_lid",
+   "loose_pieces",
+   0
+  ],
+  [
+   "top_insert",
    "loose_pieces",
    0
   ],
@@ -694,13 +789,82 @@
      ]
     }
    ]
+  },
+  "top_insert": {
+   "overhang_mm2": 12.0,
+   "regions": [
+    {
+     "area": 3.0,
+     "flat": 3.0,
+     "x": [
+      -11.1,
+      -10.6
+     ],
+     "y": [
+      -11.5,
+      -6.5
+     ],
+     "z": [
+      6.4,
+      6.4
+     ]
+    },
+    {
+     "area": 3.0,
+     "flat": 3.0,
+     "x": [
+      -11.1,
+      -10.6
+     ],
+     "y": [
+      6.5,
+      11.5
+     ],
+     "z": [
+      6.4,
+      6.4
+     ]
+    },
+    {
+     "area": 3.0,
+     "flat": 3.0,
+     "x": [
+      10.6,
+      11.1
+     ],
+     "y": [
+      -11.5,
+      -6.5
+     ],
+     "z": [
+      6.4,
+      6.4
+     ]
+    },
+    {
+     "area": 3.0,
+     "flat": 3.0,
+     "x": [
+      10.6,
+      11.1
+     ],
+     "y": [
+      6.5,
+      11.5
+     ],
+     "z": [
+      6.4,
+      6.4
+     ]
+    }
+   ]
   }
  },
  "balance": {
-  "mass_g": 117.7,
+  "mass_g": 118.6,
   "com": [
    -0.4,
-   39.8,
+   39.9,
    9.5
   ],
   "parts": [
@@ -715,11 +879,20 @@
    },
    {
     "name": "pod_lid",
-    "g": 35.8,
+    "g": 35.6,
     "com": [
      -0.4,
-     43.2,
+     43.1,
      13.6
+    ]
+   },
+   {
+    "name": "top_insert",
+    "g": 1.1,
+    "com": [
+     -0.0,
+     58.1,
+     17.0
     ]
    },
    {

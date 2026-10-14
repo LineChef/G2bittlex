@@ -103,6 +103,9 @@
     <div class="row"><input id="lidop" type="range" min="0.05" max="1" step="0.01" value="1"><span class="val" id="lidopV">100%</span></div>
 
     <div id="poseBox" style="display:none">
+    <h2>Colors</h2>
+    <div class="row"><span class="lbl">Lid</span><span class="btns" id="colLid"></span></div>
+    <div class="row"><span class="lbl">Insert</span><span class="btns" id="colIns"></span></div>
     <h2>Robot pose (deg)</h2>
     <div class="row"><span class="lbl">Head turn</span><input id="p_head" type="range" min="-90" max="90" step="1" value="0"><span class="val" id="v_head">0</span></div>
     <div class="row"><span class="lbl">Front hips</span><input id="p_hip_f" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="v_hip_f">0</span></div>
@@ -287,7 +290,7 @@ let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false;
 function styleAll() {
   for (const m of Object.values(parts)) {
     const id = m.userData.part.id, mat = m.material;
-    let op = (id === "lid" || id === "plug") ? lidOpacity : 1;
+    let op = (id === "lid" || id === "top_insert") ? lidOpacity : 1;
     const ghost = ghostOthers && selected && m !== selected;
     if (ghost) op = Math.min(op, 0.12);
     m.userData.ghost = ghost;
@@ -386,6 +389,19 @@ ex.addEventListener("input", () => {
 $("lidop").addEventListener("input", e => {
   lidOpacity = +e.target.value; $("lidopV").textContent = Math.round(lidOpacity * 100) + "%"; styleAll();
 });
+
+// ---- colors: try filament colors on the lid and the top insert
+const FIL = { gray: "#9ea0a4", orange: "#e8641b", navy: "#24345c", white: "#f2f2ef", black: "#1d1d1f" };
+for (const [box, id, def] of [["colLid", "lid", "gray"], ["colIns", "top_insert", "orange"]]) {
+  if (!parts[id]) continue;
+  for (const [n, c] of Object.entries(FIL)) {
+    const b = document.createElement("button");
+    b.title = n; b.style.cssText = `width:22px;height:22px;padding:0;background:${c}`;
+    b.classList.toggle("on", n === def);
+    b.onclick = () => { parts[id].material.color.set(c); for (const x of $(box).children) x.classList.toggle("on", x === b); };
+    $(box).appendChild(b);
+  }
+}
 
 // ---- robot pose panel
 function poseNote() {

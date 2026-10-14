@@ -39,6 +39,7 @@ def content():
     tbl([["File (stl/print/)", "Material", "Orientation", "Supports", "Cura profile", "Mass"],
          ["pod_tray.stl", "PLA or PETG", "floor on the bed", "none", "Bittle Pi Pod - PLA 0.25", f"{pod_mass('pod_tray')} g"],
          ["pod_lid.stl", "PLA", "upside down: flat top on the bed", "none", "Bittle Pi Pod 0.25, or Bittle Fine 0.10 for the best surface", f"{pod_mass('pod_lid')} g"],
+         ["top_insert.stl", "PLA, second color", "upside down: top on the bed", "none", "Bittle Fine 0.10", f"{pod_mass('top_insert')} g"],
          ["cover_pegs.stl (../bittle_platform)", "PLA", "stand on the rear end", "tree, from the bed", "Bittle Cover - PLA 0.25", "11 g"],
          ], [38, 20, 34, 16, 44, 14])
     p("Print quality. Every surface of the add-on parts is at 45 deg or less from vertical, or is a short bridge:")
@@ -78,6 +79,7 @@ def content():
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
          "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi." + st(9),
          "Optional camera: put the Grove cable through the slot in the left lid wall, behind the speaker. Solder its wires to the Pi (section 4). Leave slack for the head to turn.",
+         "Push the vent insert into the window in the lid top until its 4 clips click. To remove it, push it out from inside.",
          "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
          f"To remove: pull the lid up, lift the speaker off its pins, slide the tray {PI.SLIDE:g} mm forward and lift it."])
     img("06_tray_loaded.png", 0.56, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
@@ -98,7 +100,7 @@ def content():
     h("5. Files")
     tbl([["File", "Content"],
          ["stl/print/", "the parts in print orientation"],
-         ["cad/pod_tray.step", "exact CAD (the lid is a mesh: its lower edge follows the robot)"],
+         ["cad/pod_tray.step, cad/top_insert.step", "exact CAD (the lid is a mesh: its lower edge follows the robot)"],
          ["cad/assembly_step.zip", "one STEP file with the robot, the platform and the add-on in place, with named and colored parts. Unzip it and open it in FreeCAD or other CAD software"],
          ["stl/installed/, stl/models/", "the parts and the electronics in the robot frame"],
          ["pod.py", "all dimensions, the build and the checks (fit, slide path, loose pieces, overhang)"],

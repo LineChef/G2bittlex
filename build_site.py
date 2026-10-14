@@ -19,7 +19,8 @@ MD = os.path.join(SITE, "models")
 
 # id, label, group, source file, colour, explode offset (dx, dy, dz), extra transform
 PARTS = [
-    ("lid", "Pod lid", "Printed", "stl/installed/pod_lid.stl", "#f7b81a", (0, 60, 0), None),
+    ("lid", "Pod lid", "Printed", "stl/installed/pod_lid.stl", "#9ea0a4", (0, 60, 0), None),
+    ("top_insert", "Top vent insert (second color)", "Printed", "stl/installed/top_insert.stl", "#e8641b", (0, 75, 0), None),
     ("tray", "Pod tray", "Printed", "stl/installed/pod_tray.stl", "#cfd2d6", (0, 12, 0), None),
     ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
     ("pizero", "Raspberry Pi Zero 2 W", "Components", "stl/models/pizero.stl", "#2e9b4f", (0, 44, 0), None),
@@ -59,9 +60,13 @@ INFO = {
                  files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
     "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
                      "Two open port bays in the right side bring the wall in to the ports of the Pi and the PiSugar. "
-                     "It has openings for the mic, the speaker and the camera cable.",
+                     "It has openings for the mic, the speaker and the camera cable, and a window for the top insert.",
                 attach="Push it down onto the tray rim until the 4 snaps engage. Its lower edge then stops the tray from sliding forward.",
                 files=[("Print STL", AF + "pod_lid.stl"), ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
+    "top_insert": dict(text="The vent panel in the top of the lid, printed in a second color. It sits flush on a 45 deg seat. "
+                            "Four clips catch under a frame below the window.",
+                       attach="Push it into the window in the lid top from outside until the 4 clips click. Push it out from inside to remove it.",
+                       files=[("Print STL", AF + "top_insert.stl"), ("STEP", AF + "top_insert.step")]),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on top of the PiSugar 2. Model: PiSugar (GPL-3.0).",
                    attach="It lies in the tray on the PiSugar 2, ports to the right side."),
     "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch face the right side. Model: PiSugar (GPL-3.0).",
@@ -116,7 +121,9 @@ STEPS = [
          text="Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right."),
     dict(title="Wires", view="iso", show=["plugs", "slot", "camera_cable"], start={"plugs": [0, 20, 0], "camera_cable": [-25, 0, 0]},
          text="Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi. Optional: put the camera cable in from the left side."),
-    dict(title="Lid", view="right", show=["lid"], start={"lid": [0, 45, 0]},
+    dict(title="Top insert", view="iso", show=["top_insert"], start={"top_insert": [0, 40, 0]},
+         text="Push the vent insert into the window in the lid top until the 4 clips click."),
+    dict(title="Lid", view="right", show=["lid"], start={"lid": [0, 45, 0], "top_insert": [0, 45, 0]},
          text="Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward. "
               "The ports of the Pi and the PiSugar are in the two bays in the right side."),
 ]

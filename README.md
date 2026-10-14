@@ -43,7 +43,7 @@ clicks onto the platform.
 - Serial link to the BiBoard through the Pi slot in the cover
 - Two open port bays in the right side of the lid: the charge port, the button, the switch, and the Pi USB and mini-HDMI ports are at the bay faces
 - A cable slot for the Petoi AI Vision Module camera in the head
-- 3 printed parts, all without supports
+- 4 printed parts, all without supports. The vent insert in the lid top is in a second color
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)
 

@@ -29,7 +29,7 @@ import numpy as np
 import manifold3d as m3
 from build123d import (
     Axis, Box, Cylinder, Face, Pos, Rot, Wire, Sphere, Cone, extrude, fillet, loft,
-    export_stl, Plane, Spline, offset, Kind,
+    export_stl, Plane, Spline, offset, Kind, RectangleRounded,
 )
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -149,6 +149,13 @@ BAY_Y = 37.0          # top of the floor slope at the bay face (charge plug body
 BAY_TOP = 52.0        # the wall comes down to here over the ports (mini-HDMI top 49.2)
 BAYS = [(-11.5, 13.9), (28.8, 44.0)]   # z0, z1: the plug bodies (PORT_PLUGS) + 0.6 for the 1 mm corner radius
 # The data USB plug body passes 0.25 mm over the BiBoard Dupont plugs: the bay wall is open over them.
+# Top insert: a vent panel in a second color. It goes into a window in the flat top from outside
+# and sits flush on a 45 deg seat. Four clips catch under a frame below the window.
+# The frame bottom is 3.8 mm over the Pi (wires go over the Pi).
+TOP_INS = dict(hx=11.5, z0=0.0, z1=34.0, r=3.0,   # window at the outer face of the top
+               seat=0.8,                           # 45 deg seat: the window is 0.8 smaller below it
+               frame_t=1.2, frame_y0=53.0,         # frame around the window under the top wall
+               clr=0.15, leg_t=0.8, leg_w=5.0, hook=0.6, legs_z=(-9.0, 9.0))   # hook: 0.45 under the frame; leg strain 2.3 %
 # Plug bodies for the access check: (Y, Z, width along Z, height), port centers from the models
 PORT_PLUGS = dict(charge=(41.2, CHG_Z, 12.0, 8.0), pi_power=(47.1, -5.1, 11.0, 7.5),
                   pi_usb=(47.1, 7.8, 11.0, 7.5), pi_hdmi=(47.5, 36.4, 14.0, 8.5))
@@ -495,6 +502,54 @@ def bay_solid(off=0.0):
     return S & extrude(prof, amount=100, both=True)
 
 
+def rrect(y, hx, z0, z1, r):
+    """Rounded rectangle in the plane at height y: |x| <= hx, z0..z1."""
+    return Pos(0, y, (z0 + z1) / 2) * Rot(90, 0, 0) * RectangleRounded(2 * hx, z1 - z0, r)
+
+
+def rrect_prism(hx, z0, z1, r, y0, y1):
+    return extrude(rrect(y0, hx, z0, z1, r), amount=y1 - y0, dir=(0, 1, 0))
+
+
+def top_window():
+    """The cut in the lid top for the insert: 45 deg seat, then straight through the frame."""
+    T, s = TOP_INS, TOP_INS["seat"]
+    seat = loft([rrect(H_MAIN, T["hx"], T["z0"], T["z1"], T["r"]),
+                 rrect(H_MAIN - s, T["hx"] - s, T["z0"] + s, T["z1"] - s, T["r"] - s)])
+    return (seat + rrect_prism(T["hx"], T["z0"], T["z1"], T["r"], H_MAIN - 0.01, H_MAIN + 2)
+            + rrect_prism(T["hx"] - s, T["z0"] + s, T["z1"] - s, T["r"] - s, T["frame_y0"] - 1, H_MAIN - s + 0.01))
+
+
+def top_frame():
+    T, s = TOP_INS, TOP_INS["seat"]
+    t = T["frame_t"]
+    return rrect_prism(T["hx"] - s + t, T["z0"] + s - t, T["z1"] - s + t, T["r"] - s + t, T["frame_y0"], H_MAIN - T_WALL + 0.1)
+
+
+def build_top_insert():
+    """Vent panel: flush top on the 45 deg seat, vent slots, 4 clips under the frame."""
+    T, s, c = TOP_INS, TOP_INS["seat"], TOP_INS["clr"]
+    hx, z0, z1, r = T["hx"] - c, T["z0"] + c, T["z1"] - c, T["r"] - c
+    y_top = H_MAIN - c * (math.sqrt(2) - 1)        # it sits on the seat: 0.06 under the lid top
+    ins = loft([rrect(y_top, hx, z0, z1, r), rrect(y_top - s, hx - s, z0 + s, z1 - s, r - s)])
+    ins += rrect_prism(hx - s, z0 + s, z1 - s, r - s, H_MAIN - T_WALL, y_top - s + 0.01)
+    zc = (T["z0"] + T["z1"]) / 2
+    n = int((T["z1"] - T["z0"] - 6.0) // 3.4) + 1
+    for i in range(n):          # vent slots, as in the lid before
+        zs = zc + (i - (n - 1) / 2) * 3.4
+        ins -= box(-8.0, 8.0, H_MAIN - T_WALL - 1, H_MAIN + 1, zs - 0.7, zs + 0.7)
+    xo = hx - s                                     # leg outer face: 0.15 from the frame wall
+    yb = T["frame_y0"] - 0.1                        # hook catch face: 0.1 under the frame
+    for sx in (-1, 1):
+        for dz in T["legs_z"]:
+            za, zb = zc + dz - T["leg_w"] / 2, zc + dz + T["leg_w"] / 2
+            ins += box(*sorted((sx * xo, sx * (xo - T["leg_t"]))), yb - 1.2, H_MAIN - T_WALL + 0.01, za, zb)
+            hook = box(*sorted((sx * xo - sx * 0.01, sx * (xo + T["hook"]))), yb - 1.2, yb, za, zb)
+            hook -= Pos(sx * (xo + T["hook"]), yb - 1.2, (za + zb) / 2) * Rot(0, 0, 45) * Box(1.7, 1.7, zb - za + 1)   # lead-in
+            ins += hook
+    return ins
+
+
 def build_tray():
     t = plan_prism(FLOOR_Y0, FLOOR_Y1)
     rim = plan_prism(FLOOR_Y1, RIM_TOP) - plan_prism(FLOOR_Y1 - 1, RIM_TOP + 1, RIM_T)
@@ -638,12 +693,7 @@ def build_lid():
     xa, xb = W_MAIN - T_WALL - 1, W_MAIN + 1
     C = CAM_SLOT     # camera cable slot in the left wall (a 6 mm bridge in the print)
     cuts.append(box(-xb, -xa, C["y0"], C["y0"] + C["h"], C["zc"] - C["w"] / 2, C["zc"] + C["w"] / 2))
-    # vent: lateral slots in the top over the Pi (Pi SoC near the stack center)
-    bz0, bz1 = Z_CSI + 18.0, Z_CSI + 48.0
-    n = int((bz1 - bz0 - 6.0) // 3.4) + 1
-    for i in range(n):
-        zc = bz0 + 3.0 + i * 3.4
-        cuts.append(box(-11.0, 11.0, 38.0, H_MAIN + 5, zc - 0.7, zc + 0.7))
+    adds.append(top_frame())      # the vents are in the top insert
     # speaker: vertical grille slots in the front end, two ribs in front of the body (0.4 gap)
     zf_ = SPK_ZE - SPK["ear_t"] - SPK["h"]
     for xs in np.arange(-8.5, 8.6, 3.4):
@@ -674,7 +724,7 @@ def build_lid():
         wall = wall - b3d_to_manifold(box(BAY_X - 3, BAY_X + 0.01, BAY_Y - 4, BAY_TOP, z0, z1))
     wall = wall - b3d_to_manifold(box(SLOT["x0"] - 0.45, SLOT["x1"] + 0.45, 0, PI.PLUG_TOP + 0.4, SLOT["z0"] - 0.4, HDR["z1"] + 0.4))
     lid = (lid - P) + (wall ^ O)
-    return lid
+    return lid - b3d_to_manifold(top_window())
 
 
 # --------------------------------------------------------------------------
@@ -755,7 +805,7 @@ def build_all():
     clearance += box_(-27.6, 27.6, 0.0, LID_MIN_Y, COVER_END_Z - 0.5, ZR + 5)
     lid = build_lid() - clearance
     tray = b3d_to_manifold(build_tray())
-    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid)
+    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid, top_insert=b3d_to_manifold(build_top_insert()))
 
 
 def robot_parts():
@@ -780,7 +830,7 @@ def check(parts, models, robot):
         for b, M in models.items():
             rows.append((a, b, vol(printed[a], M)))
     U = under_cover()
-    ADD = ("pod_tray", "pod_lid")
+    ADD = ("pod_tray", "pod_lid", "top_insert")
     for a in ADD:
         rows.append((a, "under_cover", vol(printed[a], U)))
     for a in ADD:
@@ -829,7 +879,7 @@ def balance(parts, models):
     """Mass and center of mass of the add-on (printed parts + electronics), robot frame.
     The robot center is X 0, Z 0: the cover and the shoulder plates are symmetric about it."""
     rows = []
-    for n in ("pod_tray", "pod_lid"):
+    for n in ("pod_tray", "pod_lid", "top_insert"):
         rows.append((n, parts[n].volume() * PLA_G_MM3, centroid(parts[n])))
     for n, g in MASS_G.items():
         rows.append((n, g, centroid(models[n])))
@@ -843,7 +893,7 @@ def print_orient(name, M):
     """Rotate to the print orientation and put the part on the bed (Z=0)."""
     if name == "pod_tray":
         R = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)        # Y up -> Z up
-    elif name == "pod_lid":
+    elif name in ("pod_lid", "top_insert"):
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down, top on bed
     elif name == "cover_pegs":
         # stand on the rear end, as Petoi prints the stock cover
@@ -912,7 +962,7 @@ def export_assembly(path):
         S = mesh_solid(M, 0.15 if n in coarse else 0.05)
         S.label, S.color = n, Color(col)
         kids.append(S)
-    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf")):
+    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf"), ("top_insert", build_top_insert(), "#e8641b")):
         shape.label, shape.color = n, Color(col)
         kids.append(shape)
     A = Compound(label="bittle_pi_addon_assembly", children=kids)
@@ -964,6 +1014,7 @@ def main():
     from build123d import export_step
     os.makedirs(os.path.join(ROOT, "cad"), exist_ok=True)
     export_step(build_tray(), os.path.join(ROOT, "cad", "pod_tray.step"))
+    export_step(build_top_insert(), os.path.join(ROOT, "cad", "top_insert.step"))
     export_assembly(os.path.join(ROOT, "cad", "assembly.step"))
 
 
