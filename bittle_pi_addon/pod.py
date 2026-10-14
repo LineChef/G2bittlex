@@ -10,9 +10,9 @@ Parts
   pod_tray   : tray. Keyholes drop over the pegs 7 mm forward of the locked place, slide rearward, click
                (cantilever detents). A notch over the cover slot lets the BiBoard wires in.
                Holds the Pi Zero 2 W + PiSugar 2 stack (over the BiBoard header, between the
-               PiSugar button and switch), the NS4168 amp, the 3 W speaker (on two pins on a
-               wall at the front end) and the SPH0645 mic (rear, port rearward).
-               The speaker at the front balances the stack: see balance().
+               PiSugar button and switch, near the center line), the 3 W speaker (on two pins
+               on a wall at the front end), the NS4168 amp (crosswise at the rear) and the
+               SPH0645 mic (left side, port to the left). See balance().
   pod_lid    : lofted shell: flat top, haunches over the hips, chamfered nose and rump,
                low side skirt over the cover slot. It snaps onto the tray rim. Its lower edge
                follows the cover and the hip plates (0.4 mm gap).
@@ -48,7 +48,7 @@ COVER_INNER_TOP = 23.69    # inner surface under the flat top
 COVER_END_Z = 36.95
 
 # Lid shape (outer surface)
-ZF, ZR = -40.0, 59.0        # front (speaker) and rear (mic)
+ZF, ZR = -40.0, 66.0        # front (speaker) and rear (amp)
 T_WALL = 1.6
 W_FRONT, W_MAIN = 26.4, 26.4    # upper half widths: front, spine
 W_HAUNCH = 33.6                 # half width at the bottom over the hip plates
@@ -101,7 +101,7 @@ SPK_PIN_L = SPK["ear_t"] + SPK["h"] / 2 + 1.0
 # hangs on two pins on a wall at the front end of the tray. Lid ribs in front of the body hold it on.
 # The speaker is the heaviest part after the stack: at the front it balances the add-on (balance()).
 TRAY_Z0 = -19.3                             # front end of the tray floor = front face of the wall
-TRAY_Z1 = 56.2                              # rear end of the tray floor (behind the mic base)
+TRAY_Z1 = 57.2                              # rear end of the tray floor (under the amp post)
 SPK_ZE = TRAY_Z0                            # rear face of the ear plate
 SPK_Y0 = FLOOR_Y0                           # bottom of the ear plate: 0.7 over the cover top
 SPK_WALL = dict(x=21.0, y1=46.0, t=2.0)     # wall: |X| <= 21, Y from the tray bottom to 46 (2 mm over the pin tops)
@@ -119,7 +119,9 @@ U_PI_TOP = 23.53 - 18.83 - 0.5
 DY = RAIL_TOP - U_BAT_BOT                 # body y = u + DY
 # The ports face +X (the side with the cover slot). The stack is 30 wide: GPIO edge at
 # STACK_GPIO_X, port edge at STACK_GPIO_X + 30. CSI end at the front, SD end at the rear.
-STACK_GPIO_X = (W_MAIN - T_WALL) - 0.4 - 1.25 - 30.0
+# The stack is the heaviest part (about 42 g): it stands near the center line (balance()).
+# The ports are 11 mm inside the right wall. The lid openings stay in the wall.
+STACK_GPIO_X = -16.5
 # The BiBoard header (z 12.4-25.1) with its Dupont plugs is between the PiSugar
 # button (Z_CSI + 21.98) and switch (Z_CSI + 52.25).
 Z_CSI = -16.0                             # CSI end, at the front
@@ -141,21 +143,36 @@ PORT_FACE_X = STACK_GPIO_X + 30.9
 USB_W, USB_H = 11.5, 7.5
 SW_W, SW_H = 7.5, 3.0
 
-# NS4168 amp board on edge, left of the stack (plane normal = X). PCB x0..x1,
-# components on the -X face (x0 side). 5-pin connector edge at the rear.
-AMP = dict(t=1.6, l=38.4, h=22.4, comp=10.0, z0=-1.7)   # post behind the rear keyholes
-AMP_Y0 = 29.3                             # amp bottom edge: over the peg heads (top 28.9)
-AMP["x1"] = STACK_GPIO_X - 0.95
-AMP["x0"] = AMP["x1"] - AMP["t"]
-AMP["z1"] = AMP["z0"] + AMP["l"]
+# NS4168 amp board on edge, crosswise behind the stack, components to the rear.
+# Local frame (amp_place() puts it in the body): PCB x0..x1 with the back face at x 0,
+# components on the -X face, length along Z, centered.
+AMP = dict(t=1.6, l=38.4, h=22.4, comp=10.0)
+AMP_Y0 = FLOOR_Y1 + 0.3                   # amp bottom edge, just over the floor
+AMP["x1"], AMP["x0"] = 0.0, -AMP["t"]
+AMP["z0"], AMP["z1"] = -AMP["l"] / 2, AMP["l"] / 2
 AMP_HOLE_Z = AMP["z1"] - 15.2
-# SPH0645 mic board (Adafruit 3421 size) at the rear, behind the stack, on edge, port face
-# rearward (+Z), away from the speaker. It stands in a slot in a base on the tray floor;
-# a stub on the lid holds its top edge.
-MIC = dict(l=16.7, w=12.7, t=1.8, xc=0.0, z0=52.7, y0=31.3, slot=3.0, clr=0.15)
-MIC["x0"], MIC["x1"] = MIC["xc"] - MIC["w"] / 2, MIC["xc"] + MIC["w"] / 2
-MIC["z1"] = MIC["z0"] + MIC["t"]
+AMP_ZB = Z_SD + 0.3 + 1.6 + 0.6          # back face of the PCB: 0.6 behind the rear locators
+
+
+def amp_place(shape):
+    """Local amp frame -> body: turn 90 deg about Y (local -X -> +Z), back face at Z AMP_ZB."""
+    return Pos(0, 0, AMP_ZB) * Rot(0, 90, 0) * shape
+
+
+# SPH0645 mic board (Adafruit 3421 size) on the left side, beside the GPIO edge of the stack,
+# on edge, port face to the left (-X), away from the speaker. It stands in a slot in a base on
+# the tray floor; a stub on the lid holds its top edge. Local frame (mic_place()): board in the
+# XY plane, centered at X 0, Z 0, port face +Z.
+MIC = dict(l=16.7, w=12.7, t=1.8, xc=0.0, y0=31.3, slot=3.0, clr=0.15)
+MIC["x0"], MIC["x1"] = -MIC["w"] / 2, MIC["w"] / 2
+MIC["z0"], MIC["z1"] = -MIC["t"] / 2, MIC["t"] / 2
 MIC["y1"] = MIC["y0"] + MIC["l"]
+MIC_X, MIC_Z = -20.5, 18.0                # board center in the body
+
+
+def mic_place(shape):
+    """Local mic frame -> body: turn -90 deg about Y (local +Z -> -X), center at (MIC_X, MIC_Z)."""
+    return Pos(MIC_X, 0, MIC_Z) * Rot(0, -90, 0) * shape
 
 # Camera cable: the Grove cable of the Petoi AI Vision Module (in the head) comes along the left
 # side of the robot and goes through a slot in the left lid wall, behind the speaker and over the
@@ -454,26 +471,28 @@ def build_pegs():
 def build_tray():
     t = plan_prism(FLOOR_Y0, FLOOR_Y1)
     rim = plan_prism(FLOOR_Y1, RIM_TOP) - plan_prism(FLOOR_Y1 - 1, RIM_TOP + 1, RIM_T)
+    rim -= box(-40, 40, FLOOR_Y1, RIM_TOP + 1, AMP_ZB + AMP["t"], TRAY_Z1 + 1)   # no rim behind the amp: its parts are there
     t += rim
     # cell rails (clear of the peg heads and slide paths)
     zb0, zb1 = Z_SD - 4.5 - BAT_L, Z_SD - 4.5
-    for xc in (STACK_GPIO_X + 27.35, STACK_GPIO_X + 10.35):
+    for xc in (-6.0, 6.0):     # |X| <= 7.2: clear of the peg heads (X 8.2 to 15.8) and their slide paths
         t += box(xc - 1.0, xc + 1.0, FLOOR_Y1, RAIL_TOP, zb0 + 1, zb1 - 1)
     # corner locators (L shapes) around the PiSugar 2 PCB outline
     c = 0.3
     loc_top = U_PS2_PCB[1] + DY + 0.8
     x0, x1 = STACK_GPIO_X - c, STACK_GPIO_X + 30.0 + c
     z0, z1 = Z_CSI - c, Z_SD + c
+    loc = None
     for xe, sx in ((x0, -1), (x1, 1)):
         for ze, sz in ((z0, -1), (z1, 1)):
-            if sx > 0 and sz < 0:   # front port corner: over the cover slot notch
-                continue
-            t += box(*sorted((xe, xe - sx * 6.0)), FLOOR_Y1, loc_top, *sorted((ze, ze + sz * 1.6)))
-            if sx < 0 and sz < 0:   # front GPIO corner: the amp is next to it
-                continue
-            t += box(*sorted((xe, xe + sx * 1.6)), FLOOR_Y1, loc_top, *sorted((ze, ze - sz * 6.0)))
-    t += amp_post()
-    t += mic_base()
+            for b_ in (box(*sorted((xe, xe - sx * 6.0)), FLOOR_Y1, loc_top, *sorted((ze, ze + sz * 1.6))),
+                       box(*sorted((xe, xe + sx * 1.6)), FLOOR_Y1, loc_top, *sorted((ze, ze - sz * 6.0)))):
+                loc = b_ if loc is None else loc + b_
+    for (px, pz) in PEGS:      # full height cut: no locator part over a peg head or its slide path
+        loc -= box(px - 4.3, px + 4.3, FLOOR_Y1 - 1, loc_top + 1, pz - 4.3, pz + SLIDE + 4.3)
+    t += loc
+    t += amp_place(amp_post())
+    t += mic_place(mic_base())
     # keyholes with a cantilever click detent
     for (px, pz) in PEGS:
         t -= keyhole_cut(px, pz)
@@ -599,7 +618,11 @@ def build_lid():
     cuts.append(box(xa, xb, yb - 0.5, yt, z0 - 0.5, z0))
     cuts.append(box(xa, xb, yb - 0.5, yt, z1, z1 + 0.5))
     cuts.append(box(xa, xb, yb - 0.5, yb, z0 - 0.5, z1 + 0.5))
-    adds.append(box(PORT_FACE_X + 0.3, W_MAIN - T_WALL + 0.3, BTN_Y - 1.5, BTN_Y + 1.5, BTN_Z - 1.5, BTN_Z + 1.5))
+    # pusher from the flap to the button: round, with a 45 deg point to +Y (down in the upside-down print)
+    xp0, xp1 = PORT_FACE_X + 0.3, W_MAIN - T_WALL + 0.3
+    adds.append(cyl_x(BTN_Y, BTN_Z, xp0, xp1, 1.5)
+                + (Pos((xp0 + xp1) / 2, BTN_Y, BTN_Z) * Rot(45, 0, 0) * Box(xp1 - xp0, 3.0, 3.0)
+                   & box(xp0, xp1, BTN_Y + 1.5 * math.sqrt(0.5), BTN_Y + 3, BTN_Z - 3, BTN_Z + 3)))
     # vent: lateral slots in the top over the Pi (Pi SoC near the stack center)
     bz0, bz1 = Z_CSI + 18.0, Z_CSI + 48.0
     n = int((bz1 - bz0 - 6.0) // 3.4) + 1
@@ -612,11 +635,12 @@ def build_lid():
         cuts.append(box(xs - 0.6, xs + 0.6, SPK_Y0 + 6.0, SPK_Y0 + SPK["d"] - 5.0, ZF - 1, zf_ - 0.4))
     for xr in (-11.0, 11.0):     # up to the lid top: no free end that hangs in the print
         adds.append(box(xr - 0.8, xr + 0.8, SPK_Y0 + 4.0, H_MAIN, ZF - 1, zf_ - 0.4))
-    # mic: stub over the board, diamond sound holes in the rear wall (no overhang in the print)
-    adds.append(mic_stub())
+    # mic: stub over the board, diamond sound holes in the left wall (no overhang in the print)
+    adds.append(mic_place(mic_stub()))
     yc = (MIC["y0"] + MIC["y1"]) / 2
+    zw = MIC_X + (W_MAIN - T_WALL / 2)       # the left wall in the local mic frame
     for du, dv in [(0, 0)] + [(2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a))) for a in range(0, 360, 60)]:
-        cuts.append(Pos(MIC["xc"] + du, yc + dv, ZR - T_WALL / 2) * Rot(0, 0, 45) * Box(0.9, 0.9, T_WALL + 2))
+        cuts.append(mic_place(Pos(MIC["xc"] + du, yc + dv, zw) * Rot(0, 0, 45) * Box(0.9, 0.9, T_WALL + 2)))
     # hold-down stubs over the Pi mounting screws
     for (x, z) in PI_HOLES:
         adds.append(cyl_y(x, z, PI_PCB_TOP + SCREW_HEAD + HOLD_GAP, H_MAIN, 1.6))
@@ -651,8 +675,7 @@ def real_models():
     zb0 = Z_SD - 4.5 - BAT_L
     bat = b3d_to_manifold(box(STACK_GPIO_X + 0.5, STACK_GPIO_X + 0.5 + BAT_W,
                               U_BAT_BOT + DY, U_BAT_TOP + DY, zb0, zb0 + BAT_L))
-    # NS4168 board: PCB + connectors on the +X face (NULLLAB drawing and photo)
-    # turned 180 deg about the vertical axis: components on -X, 5-pin connector at the rear
+    # NS4168 board: PCB + connectors (NULLLAB drawing and photo), in the local amp frame
     yb, xf = AMP_Y0, AMP["x0"]
     za, zb = AMP["z0"], AMP["z1"]
     amp = box(AMP["x0"], AMP["x1"], yb, yb + AMP["h"], za, zb)
@@ -662,8 +685,10 @@ def real_models():
     amp += box(xf - AMP["comp"], xf, yb + 12.5, yb + AMP["h"], za, za + 7.5)        # screw terminal
     amp += box(xf - 6.0, xf, yb + 3.0, yb + 11.5, za, za + 6.0)                     # 2-pin PH2.0
     amp += box(xf - 1.8, xf, yb + 7.0, yb + 13.0, za + 13.0, za + 19.0)             # IC
+    amp = amp_place(amp)
     mic = box(MIC["x0"], MIC["x1"], MIC["y0"], MIC["y1"], MIC["z0"], MIC["z1"])
-    mic += box(MIC["xc"] - 2.0, MIC["xc"] + 2.0, MIC["y0"] + 6.0, MIC["y0"] + 10.0, MIC["z0"] - 1.2, MIC["z0"])   # parts on the front face
+    mic += box(MIC["xc"] - 2.0, MIC["xc"] + 2.0, MIC["y0"] + 6.0, MIC["y0"] + 10.0, MIC["z0"] - 1.2, MIC["z0"])   # parts on the back face
+    mic = mic_place(mic)
     # speaker on edge: ear plate in the XY plane at the rear, body in front of it
     z0 = SPK_ZE - SPK["ear_t"]
     yc = SPK_Y0 + SPK["d"] / 2

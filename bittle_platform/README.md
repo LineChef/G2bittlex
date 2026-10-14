@@ -17,7 +17,7 @@ Version 1.1, 2026-10-14. The platform is the stock Petoi Bittle X back cover wit
 | Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
 | Click (detent) | a 1.2 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 0.7 into the slot, 2.7 behind the peg |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
-| Size | the pod fits in Z -40..59, \|X\| <= 33.6; outside that, check the legs and the head |
+| Size | the pod fits in Z -40..66, \|X\| <= 33.6; outside that, check the legs and the head |
 
 ![Left: keyhole and click beam in the add-on plate (top view). Right: the peg and the plate (side section).](doc/keyhole.png)
 

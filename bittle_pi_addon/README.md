@@ -10,15 +10,15 @@ Version 0.9, 2026-10-14. A sample add-on for the Bittle X platform v1.1 (../bitt
 | File (stl/print/) | Material | Orientation | Supports | Cura profile | Mass |
 |---|---|---|---|---|---|
 | pod_tray.stl | PLA or PETG | floor on the bed | none | Bittle Pi Pod - PLA 0.25 | 12 g |
-| pod_lid.stl | PLA | upside down: flat top on the bed | none | Bittle Pi Pod 0.25, or Bittle Fine 0.10 for the best surface | 33 g |
+| pod_lid.stl | PLA | upside down: flat top on the bed | none | Bittle Pi Pod 0.25, or Bittle Fine 0.10 for the best surface | 35 g |
 | usb_plug.stl (optional) | TPU | flange on the bed | none | TPU, 20 mm/s | 0.3 g |
 | cover_pegs.stl (../bittle_platform) | PLA | stand on the rear end | tree, from the bed | Bittle Cover - PLA 0.25 | 11 g |
 
 Print quality. Every surface of the add-on parts is at 45 deg or less from vertical, or is a short bridge:
 
-1. Tray: 6 mm² of overhang in total. These are the flat bottoms (1.2 to 1.5 wide) of the teardrop pins for the speaker and the amp.
-2. Lid: 72 mm² in total. These are the tops (in the print) of the charge window, the switch slot and the button slit: bridges of 7 to 9 mm. The profiles have the bridge settings on.
-3. The mic holes in the lid rear are diamonds, so they print clean without a bridge.
+1. Tray: 6 mm² of overhang in total. These are the flat bottoms (1.0 wide) of the amp pins. The speaker pins have a 45 deg point at the bottom.
+2. Lid: 71 mm² in total. These are the tops (in the print) of the charge window, the switch slot and the button slit: bridges of 7 to 9 mm. The profiles have the bridge settings on.
+3. The mic holes in the left lid wall are diamonds, so they print clean without a bridge.
 4. The slots for the mic board and the speaker ear plate are vertical in the print. They have no ceilings.
 5. Keep the seam at the back (the profiles do this).
 
@@ -29,13 +29,13 @@ Print quality. Every surface of the add-on parts is at 45 deg or less from verti
 |---|---|
 | Raspberry Pi Zero 2 W | No header. Solder the wires to the pads, flat along the GPIO edge. |
 | PiSugar 2, 1200 mAh | Under the Pi (pogo pins and its screws). The charge port, button and switch face the right side. |
-| NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge, on two pins left of the stack. |
+| NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge, crosswise behind the stack, on two pins. Components to the rear. |
 | NULLLAB 3 W 4 ohm speaker | Ear plate 45 x 31 x 1.5, body 27 x 30 x 14.3 (ruler). On two pins at the front, sound to the front grille. |
-| HiLetgo SPH0645 I2S mic | 16.7 x 12.7 x 1.8 board, on edge at the rear, port to the rear. Solder the wires at the top edge. |
+| HiLetgo SPH0645 I2S mic | 16.7 x 12.7 x 1.8 board, on edge on the left side, beside the GPIO edge of the Pi, port to the left. Solder the wires at the top edge. |
 | 5 Dupont jumpers | Straight plugs on the BiBoard header (GND, +5V, TX2, RX2) in the cover slot. |
 | Petoi AI Vision Module (optional) | Stays in the head. Its Grove cable goes along the left side of the robot and through the slot in the left lid wall to the Pi. |
 
-Balance. The add-on weighs about 116 g: the printed parts in PLA and typical masses of the electronics. Its center of mass is 7.4 mm behind the robot center, 3.4 mm right of the center line and 15 mm above the cover top. The speaker at the front balances the Pi stack. The masses are not weighed: put your own values in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs about 118 g: the printed parts in PLA and typical masses of the electronics. Its center of mass is 9.3 mm behind the robot center, -0.2 mm right of the center line and 15 mm above the cover top. The speaker at the front balances the Pi stack. The masses are not weighed: put your own values in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -44,8 +44,8 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 
 1. Print the platform cover and fit it on the robot in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
 2. Solder the wires to the Pi, the amp and the mic (section 4).
-3. Push the mic board down into the slot at the rear of the tray, port to the rear, wire pads at the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
-4. Push the amp onto its two pins, components to the left. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
+3. Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
+4. Push the amp onto its two pins behind the stack, components to the rear. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
 5. Hang the speaker on the two pins of the front wall, ear plate to the rear. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
 6. Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Put the tray on the cover 7 mm forward of its place, over the pegs. Push it 7 mm rearward until it clicks. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
@@ -55,9 +55,9 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 11. Optional: push the TPU plug into the charge window. ([viewer step 11](https://beetlebugorg.github.io/bittlex/viewer/#step=11))
 12. To remove: pull the lid up, slide the tray 7 mm forward and lift it.
 
-![The tray without the lid: the speaker (front), the stack, the amp (left) and the mic (rear).](doc/06_tray_loaded.png)
+![The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).](doc/06_tray_loaded.png)
 
-![Section on the center line (right: front). The speaker hangs on the front pins. The mic stands in its slot at the rear, and the lid stub holds its top edge.](doc/08_section_center.png)
+![Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.](doc/08_section_center.png)
 
 
 ## 4. Wiring
@@ -84,6 +84,8 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 | stl/installed/, stl/models/ | the parts and the electronics in the robot frame |
 | pod.py | all dimensions, the build and the checks (fit, slide path, loose pieces, overhang) |
 | render.py, docs.py | the pictures and this guide |
+
+The PiSugar 2 ports are about 12 mm inside the right lid wall: the stack is on the center line for balance. Use a micro-USB cable with a plug body of 11 x 7 mm or less. Move the switch with a pen tip through its slot.
 
 Open items: the speaker sound face is assumed opposite the ears. The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The camera supply voltage is not checked: if the module needs 5 V, use pin 4. The BiBoard header height is an estimate (a photo of the robot shows it lower, so there is more room).
 

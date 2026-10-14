@@ -43,9 +43,9 @@ def content():
          ["cover_pegs.stl (../bittle_platform)", "PLA", "stand on the rear end", "tree, from the bed", "Bittle Cover - PLA 0.25", "11 g"],
          ], [38, 20, 34, 16, 44, 14])
     p("Print quality. Every surface of the add-on parts is at 45 deg or less from vertical, or is a short bridge:")
-    lst([f"Tray: {pr['pod_tray']['overhang_mm2']:.0f} mm² of overhang in total. These are the flat bottoms (1.2 to 1.5 wide) of the teardrop pins for the speaker and the amp.",
+    lst([f"Tray: {pr['pod_tray']['overhang_mm2']:.0f} mm² of overhang in total. These are the flat bottoms (1.0 wide) of the amp pins. The speaker pins have a 45 deg point at the bottom.",
          f"Lid: {pr['pod_lid']['overhang_mm2']:.0f} mm² in total. These are the tops (in the print) of the charge window, the switch slot and the button slit: bridges of 7 to 9 mm. The profiles have the bridge settings on.",
-         "The mic holes in the lid rear are diamonds, so they print clean without a bridge.",
+         "The mic holes in the left lid wall are diamonds, so they print clean without a bridge.",
          "The slots for the mic board and the speaker ear plate are vertical in the print. They have no ceilings.",
          "Keep the seam at the back (the profiles do this)."])
 
@@ -53,9 +53,9 @@ def content():
     tbl([["Part", "Notes"],
          ["Raspberry Pi Zero 2 W", "No header. Solder the wires to the pads, flat along the GPIO edge."],
          ["PiSugar 2, 1200 mAh", "Under the Pi (pogo pins and its screws). The charge port, button and switch face the right side."],
-         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge, on two pins left of the stack."],
+         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge, crosswise behind the stack, on two pins. Components to the rear."],
          ["NULLLAB 3 W 4 ohm speaker", "Ear plate 45 x 31 x 1.5, body 27 x 30 x 14.3 (ruler). On two pins at the front, sound to the front grille."],
-         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board, on edge at the rear, port to the rear. Solder the wires at the top edge."],
+         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board, on edge on the left side, beside the GPIO edge of the Pi, port to the left. Solder the wires at the top edge."],
          ["5 Dupont jumpers", "Straight plugs on the BiBoard header (GND, +5V, TX2, RX2) in the cover slot."],
          ["Petoi AI Vision Module (optional)", "Stays in the head. Its Grove cable goes along the left side of the robot and through the slot in the left lid wall to the Pi."],
          ], [50, 120])
@@ -72,8 +72,8 @@ def content():
       "Each step below has a link to its view.")
     lst(["Print the platform cover and fit it on the robot in place of the stock cover." + st(2),
          "Solder the wires to the Pi, the amp and the mic (section 4).",
-         "Push the mic board down into the slot at the rear of the tray, port to the rear, wire pads at the top." + st(5),
-         "Push the amp onto its two pins, components to the left." + st(6),
+         "Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top." + st(5),
+         "Push the amp onto its two pins behind the stack, components to the rear." + st(6),
          "Hang the speaker on the two pins of the front wall, ear plate to the rear." + st(7),
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
          f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
@@ -82,8 +82,8 @@ def content():
          "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
          "Optional: push the TPU plug into the charge window." + st(11),
          f"To remove: pull the lid up, slide the tray {PI.SLIDE:g} mm forward and lift it."])
-    img("06_tray_loaded.png", 0.62, "The tray without the lid: the speaker (front), the stack, the amp (left) and the mic (rear).")
-    img("08_section_center.png", 0.62, "Section on the center line (right: front). The speaker hangs on the front pins. The mic stands in its slot at the rear, and the lid stub holds its top edge.")
+    img("06_tray_loaded.png", 0.62, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
+    img("08_section_center.png", 0.62, "Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.")
 
     h("4. Wiring")
     tbl([["Signal", "Pi Zero 2 W", "To"],
@@ -106,6 +106,8 @@ def content():
          ["pod.py", "all dimensions, the build and the checks (fit, slide path, loose pieces, overhang)"],
          ["render.py, docs.py", "the pictures and this guide"],
          ], [62, 108])
+    p("The PiSugar 2 ports are about 12 mm inside the right lid wall: the stack is on the center line for balance. "
+      "Use a micro-USB cable with a plug body of 11 x 7 mm or less. Move the switch with a pen tip through its slot.")
     p("Open items: the speaker sound face is assumed opposite the ears. The mic port is assumed at the board center; "
       "the 7 holes cover ±2.2 mm. The camera supply voltage is not checked: if the module needs 5 V, use pin 4. The BiBoard header height is an estimate (a photo of the robot shows it lower, so there is more room).")
 

@@ -38,8 +38,8 @@ clicks onto the platform.
 
 - Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh)
 - NS4168 I2S amp and a 3 W speaker, sound out of the front grille
-- SPH0645 I2S microphone at the rear, away from the speaker
-- Balanced: the speaker at the front balances the Pi stack
+- SPH0645 I2S microphone on the left side, away from the speaker
+- Balanced: the Pi stack is on the center line, and the speaker at the front balances it
 - Serial link to the BiBoard through the Pi slot in the cover
 - Charge port, power button and power switch open through the lid
 - A cable slot for the Petoi AI Vision Module camera in the head
