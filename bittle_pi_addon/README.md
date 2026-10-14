@@ -1,6 +1,6 @@
-# Bittle X Pi Add-on v0.11 - Build Guide
+# Bittle X Pi Add-on v0.12 - Build Guide
 
-Version 0.11, 2026-10-14. A sample add-on for the Bittle X platform v1.1 (../bittle_platform). It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. It clicks onto the platform pegs. No tools, glue, tape or supports are necessary.
+Version 0.12, 2026-10-14. A sample add-on for the Bittle X platform v1.2 (../bittle_platform). It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. It clicks onto the platform pegs. No tools, glue, tape or supports are necessary.
 
 ![The add-on on the platform, right side: the two port bays.](doc/02_ports_right.png)
 

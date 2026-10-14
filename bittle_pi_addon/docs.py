@@ -14,7 +14,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.11"
+VERSION = "0.12"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"

@@ -11,7 +11,7 @@
   "beam_w": 1.2,
   "slit_w": 0.8,
   "bump_r": 1.0,
-  "bump_in": 0.7,
+  "bump_in": 0.825,
   "bump_dz": 2.7,
   "arm": 7.6
  },
@@ -31,8 +31,8 @@
   "top": 29.1
  },
  "HEAD_CLEAR_Y": 29.4,
- "KEY_BIG_D": 7.6,
- "KEY_SLOT_W": 4.4,
+ "KEY_BIG_D": 7.85,
+ "KEY_SLOT_W": 4.65,
  "LOGO": {
   "x": [-9.14, 9.14],
   "z": [-7.85, 7.8],
@@ -59,7 +59,7 @@
   "z0": 11.75,
   "z1": 25.75
  },
- "VERSION": "1.1",
+ "VERSION": "1.2",
  "frame": "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover",
  "fit_sequence": "place 7 mm forward (-Z) of the locked place, lower onto the pegs, slide 7 mm rearward (+Z) until the detents click",
  "keyholes": [
@@ -92,8 +92,8 @@
   "plate_to_collar": 0.31,
   "plate_to_logo": 0.41,
   "plate_top_to_head": 0.2,
-  "slot_to_shaft_each_side": 0.2,
-  "big_hole_to_head_each_side": 0.3,
+  "slot_to_shaft_each_side": 0.33,
+  "big_hole_to_head_each_side": 0.42,
   "collar_to_logo": 0.1,
   "collar_to_flat_edge": 0.57
  },
@@ -132,7 +132,7 @@
    [
     "starter_plate at detent bump",
     "cover_pegs",
-    3.128
+    3.129
    ],
    [
     "starter_plate at detent bump",
@@ -192,7 +192,7 @@
    [
     "starter_plate (body)",
     "keepout",
-    0.0
+    -0.0
    ],
    [
     "cover_pegs",
@@ -224,8 +224,8 @@
    "plate_to_collar": 0.31,
    "plate_to_logo": 0.41,
    "plate_top_to_head": 0.2,
-   "slot_to_shaft_each_side": 0.2,
-   "big_hole_to_head_each_side": 0.3,
+   "slot_to_shaft_each_side": 0.33,
+   "big_hole_to_head_each_side": 0.42,
    "collar_to_logo": 0.1,
    "collar_to_flat_edge": 0.57
   }

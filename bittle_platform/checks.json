@@ -33,7 +33,7 @@
   [
    "starter_plate at detent bump",
    "cover_pegs",
-   3.128440969429774
+   3.1285877066532892
   ],
   [
    "starter_plate at detent bump",
@@ -93,7 +93,7 @@
   [
    "starter_plate (body)",
    "keepout",
-   2.6387549974049683e-15
+   -1.1876795713219998e-14
   ],
   [
    "cover_pegs",
@@ -125,8 +125,8 @@
   "plate_to_collar": 0.31,
   "plate_to_logo": 0.41,
   "plate_top_to_head": 0.2,
-  "slot_to_shaft_each_side": 0.2,
-  "big_hole_to_head_each_side": 0.3,
+  "slot_to_shaft_each_side": 0.33,
+  "big_hole_to_head_each_side": 0.42,
   "collar_to_logo": 0.1,
   "collar_to_flat_edge": 0.57
  }

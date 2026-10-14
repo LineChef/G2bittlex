@@ -151,7 +151,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.11 on Platform v1.1",
+        title="Bittle X Pi Add-on v0.12 on Platform v1.2",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -169,13 +169,13 @@ def main():
 HOME = os.path.join(PROJ, "site")
 LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
-    dict(key="platform", name="Bittle X Platform v1.1", dir="bittle_platform", zip="bittle_platform_v1.1.zip",
+    dict(key="platform", name="Bittle X Platform v1.2", dir="bittle_platform", zip="bittle_platform_v1.2.zip",
          pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
          text="The stock Petoi Bittle X back cover with 4 pegs on its top. Add-ons drop onto the pegs, "
               "slide 7 mm rearward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.11", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.11.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.12", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.12.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_ports_right.png", img2="doc/06_tray_loaded.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic. Three printed parts, all without supports.",
