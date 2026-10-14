@@ -2,21 +2,19 @@
 
 The viewer page is web/viewer.html. It goes to site/viewer/ with the
 installed-frame STLs (site/viewer/models) and site/viewer/manifest.json.
-Run the package builds first. Serve with:
+It uses only the Python standard library and the committed package files,
+so GitHub Actions runs it without the CAD tools. Preview with:
   python3 -m http.server 8800 --bind 0.0.0.0 --directory site
 """
+import datetime
 import json
 import os
-import sys
 import shutil
+import zipfile
 
-import numpy as np
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "bittle_pi_addon"))
-import pod  # noqa: E402
-
-ROOT = pod.ROOT                                   # bittle_pi_addon/
-SITE = os.path.join(os.path.dirname(ROOT), "site", "viewer")
+PROJ = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.join(PROJ, "bittle_pi_addon")
+SITE = os.path.join(PROJ, "site", "viewer")
 MD = os.path.join(SITE, "models")
 
 # id, label, group, source file, colour, explode offset (dx, dy, dz), extra transform
@@ -42,7 +40,7 @@ PARTS = [
 
 
 def main():
-    import shutil
+    shutil.rmtree(SITE, ignore_errors=True)
     os.makedirs(MD, exist_ok=True)
     shutil.copy2(os.path.join(os.path.dirname(ROOT), "web", "viewer.html"), os.path.join(SITE, "index.html"))
     out = []
@@ -55,17 +53,17 @@ def main():
         name = copied.get(src)
         if name is None:
             name = os.path.basename(os.path.dirname(src)) + "_" + os.path.basename(src)
-            # ASCII STLs load slower; re-save every file as binary
-            M = pod.mesh_to_manifold(pod.load_stl(path))
-            pod.save_stl(M, os.path.join(MD, name))
+            shutil.copy2(path, os.path.join(MD, name))
             copied[src] = name
         out.append(dict(id=pid, label=label, group=group, file="models/" + name,
                         color=color, explode=ex, transform=tf))
-    checks = json.load(open(os.path.join(pod.OUT, "checks.json")))["rows"]
+    checks = json.load(open(os.path.join(ROOT, "stl", "checks.json")))["rows"]
+    pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
+    E = pi["ENVELOPE"]
     meta = dict(
         title="Bittle X Pi Add-on v0.7 on Platform v1.0",
-        envelope=dict(width=2 * pod.W_HAUNCH, length=pod.ZR - pod.ZF, top=pod.H_MAIN,
-                      above_cover=round(pod.H_MAIN - pod.COVER_TOP, 1)),
+        envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
+                      above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
         checks=[dict(a=a, b=b, v=round(v, 2)) for a, b, v in checks],
     )
@@ -76,8 +74,8 @@ def main():
 # --------------------------------------------------------------------------
 # Home page: the two packages with their downloads, and a link to the viewer
 # --------------------------------------------------------------------------
-HOME = os.path.join(os.path.dirname(ROOT), "site")
-PROJ = os.path.dirname(ROOT)
+HOME = os.path.join(PROJ, "site")
+LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
     dict(key="platform", name="Bittle X Platform v1.0", dir="bittle_platform", zip="bittle_platform_v1.0.zip",
          pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
@@ -102,11 +100,34 @@ def size(path):
     return f"{n / 1e6:.1f} MB" if n > 1e6 else f"{n / 1e3:.0f} kB"
 
 
+def make_zip(P, path):
+    """Zip of the package folder with the license files of the repository."""
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        base = os.path.join(PROJ, P["dir"])
+        for d, dirs, files in os.walk(base):
+            dirs[:] = sorted(x for x in dirs if x not in ("__pycache__", "tmp"))
+            for f in sorted(files):
+                full = os.path.join(d, f)
+                z.write(full, os.path.join(P["dir"], os.path.relpath(full, base)))
+        for item in LEGAL:
+            full = os.path.join(PROJ, item)
+            if os.path.isdir(full):
+                for f in sorted(os.listdir(full)):
+                    z.write(os.path.join(full, f), os.path.join(P["dir"], item, f))
+            else:
+                z.write(full, os.path.join(P["dir"], item))
+
+
 def build_home():
-    import shutil
-    import datetime
     files = os.path.join(HOME, "files")
     shutil.rmtree(files, ignore_errors=True)
+    for item in LEGAL:
+        src, dst = os.path.join(PROJ, item), os.path.join(HOME, item)
+        if os.path.isdir(src):
+            shutil.rmtree(dst, ignore_errors=True)
+            shutil.copytree(src, dst)
+        else:
+            shutil.copy2(src, dst)
     cards = []
     for P in PACKAGES:
         src = os.path.join(PROJ, P["dir"])
@@ -115,9 +136,13 @@ def build_home():
         links = []
 
         def put(rel, label, cls=""):
-            s_ = os.path.join(src, rel) if not rel.endswith(".zip") else os.path.join(PROJ, rel)
             name = os.path.basename(rel)
-            shutil.copy2(s_, os.path.join(dst, name))
+            if rel.endswith(".zip"):
+                s_ = os.path.join(dst, name)
+                make_zip(P, s_)
+            else:
+                s_ = os.path.join(src, rel)
+                shutil.copy2(s_, os.path.join(dst, name))
             links.append(f'<a class="dl {cls}" href="files/{P["key"]}/{name}" download><span>{esc(label)}</span>'
                          f'<small>{esc(name)} &middot; {size(s_)}</small></a>')
         put(P["pdf"], "Specification (PDF)" if P["key"] == "platform" else "Build guide (PDF)", "primary")
@@ -176,6 +201,7 @@ header p { margin:0 0 20px; color:var(--muted); max-width:62ch; }
 .dl small { color:var(--muted); font-size:0.78rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dl.primary { border-color:var(--accent); }
 footer { color:var(--muted); font-size:0.85rem; margin-top:12px; }
+footer a { color:inherit; }
 @media (max-width:760px) { .card { grid-template-columns:1fr; } .figs img { max-height:260px; } }
 </style>
 </head>
@@ -187,7 +213,10 @@ footer { color:var(--muted); font-size:0.85rem; margin-top:12px; }
 </header>
 <a class="viewer" href="viewer/">Open the 3D viewer &rarr;</a>
 {{CARDS}}
-<footer>Updated {{DATE}}. The stock cover is a Petoi design; check the Petoi terms before you share it outside your group.</footer>
+<footer>Updated {{DATE}}. Code: MIT. Designs and documents: CC BY 4.0, Jeremy Collins.
+The cover, side shoulder and front plate models are by <a href="https://github.com/PetoiCamp/NonCodeFiles">Petoi</a>, published without a stated license.
+The Pi Zero and PiSugar 2 fit models are by <a href="https://github.com/PiSugar/PiSugar">PiSugar</a> (GPL-3.0).
+See <a href="LICENSE.md">LICENSE.md</a> and <a href="ATTRIBUTION.md">ATTRIBUTION.md</a>.</footer>
 </main>
 </body>
 </html>
