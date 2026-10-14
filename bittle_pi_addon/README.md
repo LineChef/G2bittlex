@@ -43,15 +43,15 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 
 1. Print the platform cover and fit it on the robot in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
 2. Solder the wires to the Pi, the amp and the mic (section 4).
-3. Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
-4. Push the amp onto its two pins behind the stack, components to the rear. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
-5. Hang the speaker on the two pins of the front wall, ear plate to the rear. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
-6. Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
-7. Put the tray on the cover 7 mm forward of its place, over the pegs. Push it 7 mm rearward until it clicks. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
+3. Put the tray on the cover 7 mm forward of its place, over the pegs. Push it 7 mm rearward until it clicks. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
+4. Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
+5. Push the amp onto its two pins behind the stack, components to the rear. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
+6. Hang the speaker on the two pins of the front wall, ear plate to the rear. Do this after the tray is locked: 7 mm forward, the speaker hits the head. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
+7. Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 8. Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9))
 9. Optional camera: put the Grove cable through the slot in the left lid wall, behind the speaker. Solder its wires to the Pi (section 4). Leave slack for the head to turn.
 10. Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward. ([viewer step 10](https://beetlebugorg.github.io/bittlex/viewer/#step=10))
-11. To remove: pull the lid up, slide the tray 7 mm forward and lift it.
+11. To remove: pull the lid up, lift the speaker off its pins, slide the tray 7 mm forward and lift it.
 
 ![The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).](doc/06_tray_loaded.png)
 
@@ -84,6 +84,8 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 | render.py, docs.py | the pictures and this guide |
 
 Ports. The stack is on the center line for balance, so its port edge is 11 mm inside the body side. The lid has two open port bays in its right side: the wall steps in to 0.45 mm from the port faces. The front bay has the PiSugar charge port and button and the Pi power and data USB ports. The rear bay has the Pi mini-HDMI port and the PiSugar switch. The bays take plug bodies of 11 x 7.5 mm (micro-USB) and 14 x 8.5 mm (mini-HDMI). To remove the SD card, remove the lid and lift the stack out (the wires stay on): the amp is 0.2 mm behind the card.
+
+Robot motion. The 3D viewer has the full robot (Petoi ROS model) with sliders for the head, the hips and the knees. The head turns from -45 to 45 deg without contact. Past that, the bottom of the head touches the lid front. The legs touch the add-on only when a thigh swings up over the back. The Petoi tail, if your robot has it, touches the rear of the lid.
 
 Open items: the speaker sound face is assumed opposite the ears. The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The camera supply voltage is not checked: if the module needs 5 V, use pin 4. The PiSugar 2 LEDs are between the two boards and are not visible with the lid on. The BiBoard header height is an estimate.
 

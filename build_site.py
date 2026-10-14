@@ -32,7 +32,14 @@ PARTS = [
     ("shoulder_r", "Side shoulder R", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), None),
     ("shoulder_l", "Side shoulder L", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), "mirror_x"),
     ("front_plate", "Front plate", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), None),
-    ("rear_plate", "Rear plate (mirror of front)", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), "mirror_z"),
+    ("rear_plate", "Rear plate", "Robot", "../bittle_platform/stl/robot/rear_plate.stl", "#26272b", (0, 0, 0), None),
+    ("head", "Head (turns)", "Robot", "../bittle_platform/stl/robot/head.stl", "#3a3b40", (0, 0, 0), None),
+    ("neck_mount", "Neck servo horn", "Robot", "../bittle_platform/stl/robot/neck_mount.stl", "#26272b", (0, 0, 0), None),
+    ("hip_servos", "Hip servos", "Robot", "../bittle_platform/stl/robot/hip_servos.stl", "#26272b", (0, 0, 0), None),
+    ("robot_battery", "Robot battery", "Robot", "../bittle_platform/stl/robot/battery.stl", "#4a4c52", (0, 0, 0), None),
+    ("tail", "Tail (Petoi model)", "Robot", "../bittle_platform/stl/robot/tail.stl", "#3a3b40", (0, 0, 0), None),
+] + [(f"{p}_{k}", f"{n} {k.upper()}", "Robot", f"../bittle_platform/stl/robot/{p}_{k}.stl", c, (0, 0, 0), None)
+     for k in ("lf", "rf", "lr", "rr") for p, n, c in (("thigh", "Thigh", "#f2a71c"), ("shank", "Shank", "#2c2d31"))] + [
     ("speaker", "NULLLAB 3 W speaker (front)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 18, -34), None),
     ("mic", "SPH0645 mic (left)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (-24, 30, 0), None),
     ("camera_cable", "Camera cable (Grove) path", "Components", "stl/models/camera_cable.stl", "#3a9a3a", (-16, 8, 0), None),
@@ -79,13 +86,19 @@ INFO = {
     "shoulder_r": dict(text="Petoi side shoulder, right. Model: Petoi.", attach="Part of the robot."),
     "shoulder_l": dict(text="Petoi side shoulder, left (mirror). Model: Petoi.", attach="Part of the robot."),
     "front_plate": dict(text="Petoi front plate. Model: Petoi.", attach="Part of the robot."),
-    "rear_plate": dict(text="Rear plate. Petoi publishes no rear plate, so this is the front plate, mirrored.", attach="Part of the robot."),
+    "rear_plate": dict(text="Petoi rear plate, from the Petoi ROS model.", attach="Part of the robot."),
+    "head": dict(text="The Petoi head on the neck servo. It turns about an axis 30 deg from vertical. "
+                      "Use the Head turn slider or the Turn the head button to see it against the lid.", attach="Part of the robot."),
+    "tail": dict(text="The Petoi tail (Bittle_tail.stl), at the rear of the cover. It is in the Petoi ROS model. "
+                      "If your robot has the tail, it touches the rear of the lid.", attach="Part of the robot."),
+    "robot_battery": dict(text="The robot battery under the body.", attach="Part of the robot."),
 }
 
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
 STEPS = [
-    dict(title="The robot", show=["shoulder_r", "shoulder_l", "front_plate", "rear_plate", "header"], view="iso",
-         text="The Bittle X body without its back cover. The BiBoard header stands up at the right side."),
+    dict(title="The robot", show=["shoulder_r", "shoulder_l", "front_plate", "rear_plate", "header", "head", "neck_mount", "hip_servos",
+                                  "robot_battery", "tail"] + [f"{p}_{k}" for k in ("lf", "rf", "lr", "rr") for p in ("thigh", "shank")], view="iso",
+         text="The Bittle X without its back cover: the head is at the front, the tail at the rear. The BiBoard header stands up at the right side."),
     dict(title="Fit the platform", view="iso", show=["cover"], start={"cover": [0, 40, 0]},
          text="Fit the platform cover in place of the stock cover. It has 4 pegs on its top."),
     dict(title="Put the tray on", view="iso", show=["tray"], start={"tray": [0, 35, -7]}, end={"tray": [0, 0, -7]},
@@ -137,7 +150,9 @@ def main():
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
         checks=[dict(a=a, b=b, v=round(v, 2)) for a, b, v in checks],
     )
-    json.dump(dict(parts=out, meta=meta, steps=STEPS), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
+    robot = json.load(open(os.path.join(PROJ, "bittle_platform", "stl", "robot", "robot.json")))
+    robot["motion"] = json.load(open(os.path.join(ROOT, "stl", "motion.json")))
+    json.dump(dict(parts=out, meta=meta, steps=STEPS, robot=robot), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
     print("site ready:", len(out), "parts")
 
 

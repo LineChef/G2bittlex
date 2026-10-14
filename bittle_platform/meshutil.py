@@ -46,16 +46,19 @@ def b3d_to_manifold(shape, tol=0.02):
 def save_stl(M, path):
     mesh = M.to_mesh()
     v = np.asarray(mesh.vert_properties)[:, :3]
-    t = np.asarray(mesh.tri_verts)
-    tri = v[t]
+    save_tris(v[np.asarray(mesh.tri_verts)], path)
+
+
+def save_tris(tri, path):
+    """Binary STL from an (n, 3, 3) triangle array."""
     nrm = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
     nrm /= np.linalg.norm(nrm, axis=1, keepdims=True) + 1e-12
-    rec = np.zeros(len(t), dtype=np.dtype([("n", "<3f4"), ("v", "<9f4"), ("a", "<u2")]))
+    rec = np.zeros(len(tri), dtype=np.dtype([("n", "<3f4"), ("v", "<9f4"), ("a", "<u2")]))
     rec["n"] = nrm
     rec["v"] = tri.reshape(-1, 9)
     with open(path, "wb") as f:
         f.write(b"bittle-platform".ljust(80, b" "))
-        f.write(np.uint32(len(t)).tobytes())
+        f.write(np.uint32(len(tri)).tobytes())
         f.write(rec.tobytes())
 
 

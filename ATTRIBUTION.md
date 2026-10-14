@@ -15,6 +15,7 @@ by the licenses of this repository. All rights stay with Petoi.
 | `bittle_platform/reference/Bittle_Cover.stl` | `BittleCover/Bittle_Cover.stl` |
 | `bittle_platform/reference/Bittle_SideShoulder.stl` | `Bittle_SideShoulder.stl` |
 | `bittle_platform/reference/Bittle_FrontPlate.stl` | `Bittle_FrontPlate.stl` |
+| `bittle_platform/reference/Bittle_tail.stl` | `Bittle_tail.stl` |
 
 Files made from the Petoi parts:
 
@@ -33,6 +34,23 @@ Image from the Petoi documentation, also without a stated license:
 - `bittle_platform/doc/petoi_touch_areas.png`: the touch area layout from
   https://docs.petoi.com/extensible-modules/back-touch-sensor/bittle-x-v2-bittle-x+arm,
   unchanged.
+
+`bittle_platform/stl/robot/tail.stl` is Bittle_tail.stl mirrored in Z into
+the robot frame by `bittle_platform/robot.py`.
+
+## Petoi ROS model of Bittle
+
+Source: Petoi, https://github.com/PetoiCamp/ros_opencat, folder
+`petoi_ROS_model_docs/bittle_ros/bittle_description`, branch `ros1`, commit
+85962928970 (2025-03-13). License: MIT, in that folder and copied to
+`bittle_platform/reference/petoi_ros/LICENSE`. The files in
+`bittle_platform/reference/petoi_ros/` are byte-identical copies of 38 of its
+meshes and of `urdf/bittle.xacro`.
+
+Files made from them, also under MIT: `bittle_platform/stl/robot/*.stl`
+(except `tail.stl`) and `robot.json`. `bittle_platform/robot.py` moves the
+meshes into the robot frame, turns the legs to a standing pose, and
+simplifies the meshes to 0.08 mm. The 3D viewer on the site loads them.
 
 ## PiSugar and Raspberry Pi Zero models
 

@@ -42,6 +42,7 @@
   button:hover { border-color: var(--accent); }
   button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   button:disabled { opacity: .45; cursor: default; }
+  .lbl { font-size: 12px; min-width: 78px; }
   .val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; min-width: 52px; text-align: right; }
   .grp { font-size: 12px; color: var(--muted); margin-top: 8px; }
   #view { position: relative; overflow: hidden; }
@@ -100,6 +101,17 @@
 
     <h2>Lid opacity</h2>
     <div class="row"><input id="lidop" type="range" min="0.05" max="1" step="0.01" value="1"><span class="val" id="lidopV">100%</span></div>
+
+    <div id="poseBox" style="display:none">
+    <h2>Robot pose (deg)</h2>
+    <div class="row"><span class="lbl">Head turn</span><input id="p_head" type="range" min="-90" max="90" step="1" value="0"><span class="val" id="v_head">0</span></div>
+    <div class="row"><span class="lbl">Front hips</span><input id="p_hip_f" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="v_hip_f">0</span></div>
+    <div class="row"><span class="lbl">Front knees</span><input id="p_knee_f" type="range" min="-150" max="150" step="1" value="0"><span class="val" id="v_knee_f">0</span></div>
+    <div class="row"><span class="lbl">Rear hips</span><input id="p_hip_r" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="v_hip_r">0</span></div>
+    <div class="row"><span class="lbl">Rear knees</span><input id="p_knee_r" type="range" min="-150" max="150" step="1" value="0"><span class="val" id="v_knee_r">0</span></div>
+    <div class="btns"><button id="pStand">Stand</button><button id="pHead">Turn the head</button><button id="pLegs">Swing the legs</button></div>
+    <div class="grp2" id="pNote"></div>
+    </div>
 
     <h2>Section cut</h2>
     <div class="btns" id="cutaxis">
@@ -175,12 +187,12 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.target.set(0, 25, 5);
+controls.target.set(0, 10, 0);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.6));
 const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-120, 220, -160); scene.add(key);
 const fill = new THREE.DirectionalLight(0xffffff, 0.7); fill.position.set(160, 80, 200); scene.add(fill);
-const grid = new THREE.GridHelper(300, 30, 0x999999, 0xcccccc); grid.position.y = -14; grid.material.opacity = .35; grid.material.transparent = true; scene.add(grid);
+const grid = new THREE.GridHelper(400, 40, 0x999999, 0xcccccc); grid.position.y = -14; grid.material.opacity = .35; grid.material.transparent = true; scene.add(grid);
 
 const clip = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
 let cutAxis = "none";
@@ -198,15 +210,15 @@ function resize() {
 addEventListener("resize", resize);
 
 const VIEWS = {
-  iso: [-160, 140, -160], front: [0, 30, -230], rear: [0, 30, 260],
-  left: [-250, 30, 15], right: [250, 30, 15], top: [0, 280, 15.01],
+  iso: [-230, 170, -230], front: [0, 20, -330], rear: [0, 20, 340],
+  left: [-350, 20, 5], right: [350, 20, 5], top: [0, 400, 5.01],
 };
 // smooth camera moves
 let camAnim = null;
 function flyTo(pos, target, ms = 600) {
   camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), ms };
 }
-function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(0, 25, 5)); }
+function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(0, 10, 0)); }
 
 const manifest = await (await fetch("manifest.json")).json();
 $("title").textContent = manifest.meta.title;
@@ -240,10 +252,34 @@ $("loading").remove();
 resize();
 camera.position.set(...VIEWS.iso); controls.update();
 
+// ---- robot pose: joints from robot.json; a part turns about each joint of its chain
+const robot = manifest.robot || null;
+const pose = { head: 0, hip_f: 0, knee_f: 0, hip_r: 0, knee_r: 0 };
+if (robot) grid.position.y = robot.ground - 0.5;
+function jointAngle(j) { if (j === "head") return pose.head; const [t, k] = j.split("_"); return pose[`${t}_${k[1]}`]; }
+const _T = new THREE.Matrix4(), _R = new THREE.Matrix4(), _B = new THREE.Matrix4();
+function poseMatrix(chain) {
+  const M = new THREE.Matrix4();
+  for (const j of chain) {
+    const J = robot.joints[j], p = J.p;
+    _T.makeTranslation(p[0], p[1], p[2]);
+    _R.makeRotationAxis(new THREE.Vector3(...J.axis).normalize(), THREE.MathUtils.degToRad(jointAngle(j)));
+    _B.makeTranslation(-p[0], -p[1], -p[2]);
+    M.multiply(_T).multiply(_R).multiply(_B);
+  }
+  return M;
+}
+
 let explodeF = 0;
 function place(m) {
   const e = m.userData.part.explode;
   m.position.set(e[0] * explodeF, e[1] * explodeF, e[2] * explodeF).add(m.userData.manual).add(m.userData.anim);
+  const chain = robot && robot.chain[m.userData.part.id];
+  if (chain) {
+    const M = poseMatrix(chain);
+    m.quaternion.setFromRotationMatrix(M);
+    m.position.add(new THREE.Vector3().setFromMatrixPosition(M));
+  }
 }
 
 // ---- materials: ghost, highlight
@@ -351,6 +387,46 @@ $("lidop").addEventListener("input", e => {
   lidOpacity = +e.target.value; $("lidopV").textContent = Math.round(lidOpacity * 100) + "%"; styleAll();
 });
 
+// ---- robot pose panel
+function poseNote() {
+  if (!robot) return;
+  const M = robot.motion, out = [];
+  if (M) {
+    const [h0, h1] = M.head.free;
+    if (pose.head < h0 || pose.head > h1) out.push(`<span class="bad">The head touches the lid front</span> (no contact from ${h0} to ${h1} deg).`);
+    const G = M.legs, snap = (v, [a, b, s]) => Math.max(a, Math.min(b, Math.round((v - a) / s) * s + a));
+    for (const [end, k] of [["front", "f"], ["rear", "r"]]) {
+      const key = JSON.stringify([snap(pose[`hip_${k}`], [G.hips[0], G.hips[1] - G.hips[2], G.hips[2]]), snap(pose[`knee_${k}`], [G.knees[0], G.knees[1] - G.knees[2], G.knees[2]])]);
+      if (G[end].addon.some(p => JSON.stringify(p) === key)) out.push(`<span class="bad">The ${end} legs touch the add-on.</span>`);
+      else if (G[end].body.some(p => JSON.stringify(p) === key)) out.push(`The ${end} legs touch the robot body: the robot cannot reach this pose.`);
+    }
+  }
+  $("pNote").innerHTML = out.join("<br>") || "No contact with the add-on.";
+}
+function setPose(k, v) { pose[k] = v; $(`p_${k}`).value = v; $(`v_${k}`).textContent = Math.round(v); }
+function applyPose() { for (const m of Object.values(parts)) if (robot.chain[m.userData.part.id]) place(m); poseNote(); }
+let poseAnim = null;
+if (robot) {
+  $("poseBox").style.display = "";
+  for (const k of Object.keys(pose)) $(`p_${k}`).addEventListener("input", e => { poseAnim = null; setPose(k, +e.target.value); applyPose(); });
+  $("pStand").onclick = () => { poseAnim = null; for (const k of Object.keys(pose)) setPose(k, 0); applyPose(); };
+  // keyframes: [time 0..1, {joint: deg}]
+  $("pHead").onclick = () => { poseAnim = { s: performance.now(), ms: 4000, keys: [[0, { head: 0 }], [.25, { head: -90 }], [.75, { head: 90 }], [1, { head: 0 }]] }; };
+  const L0 = { hip_f: 0, knee_f: 0, hip_r: 0, knee_r: 0 };
+  $("pLegs").onclick = () => { poseAnim = { s: performance.now(), ms: 5000, keys: [[0, L0],
+    [.3, { hip_f: 50, knee_f: -50, hip_r: -50, knee_r: 50 }], [.65, { hip_f: -50, knee_f: 50, hip_r: 50, knee_r: -50 }], [1, L0]] }; };
+  poseNote();
+}
+function poseStep(now) {
+  if (!poseAnim) return;
+  const t = Math.min(1, (now - poseAnim.s) / poseAnim.ms), K = poseAnim.keys;
+  let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++;
+  const [t0, a] = K[i], [t1, b] = K[i + 1], u = ease(Math.min(1, (t - t0) / (t1 - t0)));
+  for (const k of Object.keys(b)) setPose(k, a[k] + (b[k] - a[k]) * u);
+  applyPose();
+  if (t >= 1) poseAnim = null;
+}
+
 // ---- section cut
 const cut = $("cut"), flip = $("cutflip");
 function applyCut() {
@@ -367,7 +443,7 @@ $("cutaxis").addEventListener("click", e => {
   const a = e.target.dataset.a; if (!a) return;
   cutAxis = a;
   for (const b of e.currentTarget.children) b.classList.toggle("on", b === e.target);
-  const rng = { x: [-40, 40, -8], y: [-12, 60, 40], z: [-40, 80, 20], none: [-40, 60, 0] }[a];
+  const rng = { x: [-60, 60, -8], y: [-90, 70, 40], z: [-110, 110, 20], none: [-40, 60, 0] }[a];
   cut.min = rng[0]; cut.max = rng[1]; cut.value = rng[2];
   applyCut();
 });
@@ -537,6 +613,11 @@ function fromHash() {
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get("step")) { startBuild(); showStep(Math.max(0, Math.min(steps.length - 1, +h.get("step") - 1)), false); }
   if (h.get("part") && parts[h.get("part")]) { select(parts[h.get("part")]); if (h.has("focus")) focus(); }
+  if (h.get("pose") && robot) {     // #pose=head:60,hip_f:-30
+    for (const kv of h.get("pose").split(",")) { const [k, v] = kv.split(":"); if (k in pose) setPose(k, +v); }
+    applyPose();
+  }
+  if (h.get("view") && VIEWS[h.get("view")]) setView(h.get("view"));
 }
 fromHash();
 addEventListener("hashchange", fromHash);
@@ -562,6 +643,7 @@ renderer.setAnimationLoop(now => {
     m.userData.anim.lerpVectors(tw.from, tw.to, ease(t)); place(m);
     if (t >= 1) m.userData.tween = null;
   }
+  poseStep(now);
   hoverUpdate();
   controls.update();
   renderer.render(scene, camera);
