@@ -20,9 +20,6 @@ MD = os.path.join(SITE, "models")
 # id, label, group, source file, colour, explode offset (dx, dy, dz), extra transform
 PARTS = [
     ("lid", "Pod lid", "Printed", "stl/installed/pod_lid.stl", "#f7b81a", (0, 60, 0), None),
-    ("plug", "Charge-port plug (TPU)", "Printed", "stl/installed/usb_plug.stl", "#222222", (25, 40, 0), None),
-    ("sw_knob", "Switch knob", "Printed", "stl/installed/sw_knob.stl", "#e8641b", (14, 0, 0), None),
-    ("sw_slider", "Switch slider", "Printed", "stl/installed/sw_slider.stl", "#e8641b", (0, 40, 0), None),
     ("tray", "Pod tray", "Printed", "stl/installed/pod_tray.stl", "#cfd2d6", (0, 12, 0), None),
     ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
     ("pizero", "Raspberry Pi Zero 2 W", "Components", "stl/models/pizero.stl", "#2e9b4f", (0, 44, 0), None),
@@ -54,19 +51,10 @@ INFO = {
                  attach="Put it on the pegs 7 mm forward of its place, then slide it 7 mm rearward until the beams click.",
                  files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
     "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
-                     "It has openings for the charge port, the button, the switch, the mic, the speaker and the camera cable.",
+                     "Two open port bays in the right side bring the wall in to the ports of the Pi and the PiSugar. "
+                     "It has openings for the mic, the speaker and the camera cable.",
                 attach="Push it down onto the tray rim until the 4 snaps engage. Its lower edge then stops the tray from sliding forward.",
                 files=[("Print STL", AF + "pod_lid.stl"), ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
-    "plug": dict(text="An optional TPU plug for the micro-USB charge window.",
-                 attach="Push it into the window from outside. Pull the tab to open the port.",
-                 files=[("Print STL", AF + "usb_plug.stl"), ("STEP", AF + "usb_plug.step")]),
-    "sw_knob": dict(text="A large knob for the PiSugar slide switch. Its stem goes through the switch slot of the lid.",
-                    attach="Push the stem through the slot from outside into the socket of the switch slider (press fit).",
-                    files=[("Print STL", AF + "sw_knob.stl"), ("STEP", AF + "sw_knob.step")]),
-    "sw_slider": dict(text="The inner part of the switch knob. Its plate slides on the inside of the lid wall. "
-                           "The fork at its tip holds the switch lever. The fork is open at the bottom, so it drops over the lever with the lid.",
-                      attach="Push it onto the knob stem inside the lid, fork down.",
-                      files=[("Print STL", AF + "sw_slider.stl"), ("STEP", AF + "sw_slider.step")]),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on top of the PiSugar 2. Model: PiSugar (GPL-3.0).",
                    attach="It lies in the tray on the PiSugar 2, ports to the right side."),
     "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch face the right side. Model: PiSugar (GPL-3.0).",
@@ -115,12 +103,9 @@ STEPS = [
          text="Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right."),
     dict(title="Wires", view="iso", show=["plugs", "slot", "camera_cable"], start={"plugs": [0, 20, 0], "camera_cable": [-25, 0, 0]},
          text="Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi. Optional: put the camera cable in from the left side."),
-    dict(title="Lid", view="iso", show=["lid", "sw_knob", "sw_slider"],
-         start={"lid": [0, 45, 0], "sw_knob": [0, 45, 0], "sw_slider": [0, 45, 0]},
-         text="Put the switch knob and slider on the lid first. Set the knob to the switch position. "
-              "Push the lid down until the 4 snaps engage. The fork goes over the switch lever."),
-    dict(title="Charge plug", view="right", show=["plug"], start={"plug": [20, 0, 0]},
-         text="Optional: push the TPU plug into the charge window."),
+    dict(title="Lid", view="right", show=["lid"], start={"lid": [0, 45, 0]},
+         text="Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward. "
+              "The ports of the Pi and the PiSugar are in the two bays in the right side."),
 ]
 
 
@@ -146,7 +131,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.10 on Platform v1.1",
+        title="Bittle X Pi Add-on v0.11 on Platform v1.1",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -168,8 +153,8 @@ PACKAGES = [
               "slide 7 mm rearward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.10", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.10.zip",
-         pdf="bittle_pi_addon_guide.pdf", img="doc/01_assembly_iso.png", img2="doc/06_tray_loaded.png",
+    dict(key="addon", name="Bittle X Pi Add-on v0.11", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.11.zip",
+         pdf="bittle_pi_addon_guide.pdf", img="doc/02_ports_right.png", img2="doc/06_tray_loaded.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic. Three printed parts, all without supports.",
          extra=[]),

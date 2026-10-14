@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.10 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
+"""Bittle X Pi add-on rev 0.11 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -15,9 +15,9 @@ Parts
                SPH0645 mic (left side, port to the left). See balance().
   pod_lid    : lofted shell: flat top, haunches over the hips, chamfered nose and rump,
                low side skirt over the cover slot. It snaps onto the tray rim. Its lower edge
-               follows the cover and the hip plates (0.4 mm gap).
+               follows the cover and the hip plates (0.4 mm gap). Two port bays in the right
+               side: the wall steps in to the port edge of the stack.
 Print: every part prints without supports (see check(): overhang rows).
-  usb_plug   : optional TPU plug for the micro-USB charge window.
 
 The camera (Petoi AI Vision Module) stays in the head, as Petoi designs it.
 """
@@ -29,7 +29,7 @@ import numpy as np
 import manifold3d as m3
 from build123d import (
     Axis, Box, Cylinder, Face, Pos, Rot, Wire, Sphere, Cone, extrude, fillet, loft,
-    export_stl, Plane, Spline, offset,
+    export_stl, Plane, Spline, offset, Kind,
 )
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -73,7 +73,8 @@ FLOOR_Y0, FLOOR_Y1 = PI.MOUNT_Y0, PI.MOUNT_Y1   # tray floor = platform mount pl
 TRAY_GAP = 0.4              # tray outline = lid inner wall - 0.4
 RIM_T, RIM_TOP = 1.2, 31.0
 RAIL_TOP = 29.1             # the cell rests on rails above the peg heads
-SNAPS = [(-1, -6.0), (-1, 30.0), (1, -6.0), (1, 40.0)]   # (side, z) rim bumps; right rim is cut over the cover slot
+# (side, z, half length) rim snaps. The right snaps are short: the port bays and the cover slot are on that side.
+SNAPS = [(-1, -6.0, 5.0), (-1, 30.0, 5.0), (1, -16.6, 2.7), (1, 49.0, 2.8)]
 # The lid wall is straight only above Y_FLARE[1] (31), so each bump stands on a rim tab, over that height.
 SNAP_Y, SNAP_TAB_TOP = 33.0, 34.6
 # Pegs (on the cover) and keyholes (in the tray): platform interface v1.1
@@ -140,14 +141,17 @@ CHG_Z, CHG_Y = Z_CSI + CHG_FROM_CSI, CHG_U + DY
 BTN_Z, BTN_Y = Z_CSI + BTN_FROM_CSI, BTN_U + DY
 SW_Z, SW_Y = Z_CSI + SW_FROM_CSI, SW_U + DY
 PORT_FACE_X = STACK_GPIO_X + 30.9
-USB_W, USB_H = 12.4, 8.5    # 1.0 mm web to the button slit
-SW_W, SW_H = 9.4, 3.0      # switch slot: the knob stem (3.0 along Z) moves +-2.6 in it
-# Switch slider: a large knob on the outside of the right wall moves the PiSugar slide switch.
-# Two parts: sw_slider (inside: a plate on the wall, an arm, a fork over the lever) and
-# sw_knob (outside, with the stem). The plate and the knob hold the wall between them.
-# The fork is open at the bottom: it drops over the lever when the lid goes on.
-SW_LEVER = dict(x0=12.9, x1=14.4, y0=40.64, y1=41.64, w=1.3)   # lever in the model, centered on SW_Z
-SW_TRAVEL = 2.6            # knob travel each side; the switch end stops are inside this
+# Port bays: the right lid wall steps in to the port edge of the stack.
+# Bay A: PiSugar charge port and button, Pi power and data USB. Bay B: Pi mini-HDMI, PiSugar switch.
+# The bay floor is a 45 deg slope (no overhang in the print). The BiBoard header is between the bays.
+BAY_X = 15.2          # bay face: 0.45 outside the port faces (X 14.75)
+BAY_Y = 37.0          # top of the floor slope at the bay face (charge plug body from Y 37.2)
+BAY_TOP = 52.0        # the wall comes down to here over the ports (mini-HDMI top 49.2)
+BAYS = [(-11.5, 13.9), (28.8, 44.0)]   # z0, z1: the plug bodies (PORT_PLUGS) + 0.6 for the 1 mm corner radius
+# The data USB plug body passes 0.25 mm over the BiBoard Dupont plugs: the bay wall is open over them.
+# Plug bodies for the access check: (Y, Z, width along Z, height), port centers from the models
+PORT_PLUGS = dict(charge=(41.2, CHG_Z, 12.0, 8.0), pi_power=(47.1, -5.1, 11.0, 7.5),
+                  pi_usb=(47.1, 7.8, 11.0, 7.5), pi_hdmi=(47.5, 36.4, 14.0, 8.5))
 
 # NS4168 amp board on edge, crosswise behind the stack, components to the rear.
 # Local frame (amp_place() puts it in the body): PCB x0..x1 with the back face at x 0,
@@ -474,6 +478,23 @@ def build_pegs():
     return BP.pegs()
 
 
+def bay_solid(off=0.0):
+    """The open space of the port bays, grown by off. The lid wall is the shell from 0 to T_WALL."""
+    prof = Face(Wire.make_polygon([(BAY_X, 100, 0), (BAY_X, BAY_Y, 0), (60, BAY_Y - (60 - BAY_X), 0), (60, 100, 0)], close=True))
+    if off:
+        prof = offset(prof, off, kind=Kind.ARC)
+    S = None
+    for z0, z1 in BAYS:
+        pts = [(BAY_X, z0), (BAY_X, z1), (60, z1), (60, z0)]      # plan (x, z), made in XY and turned onto XZ
+        f = Face(Wire.make_polygon([(x, z, 0) for x, z in pts], close=True))
+        f = f.fillet_2d(1.0, [v for v in f.vertices() if v.X < 30])
+        if off:
+            f = offset(f, off, kind=Kind.ARC)
+        b = Rot(90, 0, 0) * extrude(f, amount=100, dir=(0, 0, -1))
+        S = b if S is None else S + b
+    return S & extrude(prof, amount=100, both=True)
+
+
 def build_tray():
     t = plan_prism(FLOOR_Y0, FLOOR_Y1)
     rim = plan_prism(FLOOR_Y1, RIM_TOP) - plan_prism(FLOOR_Y1 - 1, RIM_TOP + 1, RIM_T)
@@ -507,10 +528,11 @@ def build_tray():
     t -= box(SLOT["x0"] - 0.3, 40.0, FLOOR_Y0 - 1, RIM_TOP + 1, SLOT["z0"] - 0.6, SLOT["z1"] + SLIDE + 0.6)
     t &= plan_prism(FLOOR_Y0 - 1, H_MAIN)   # nothing outside the lid's inner wall
     t += speaker_wall() & plan_prism(FLOOR_Y0 - 1, H_MAIN, zmin=ZF)   # the pins stand in front of the tray
-    for (sx, zc) in SNAPS:   # rim tab and bump: the bump stands 0.8 out of the rim, 0.4 into the lid wall
+    t -= bay_solid(T_WALL + TRAY_GAP)   # clear of the bay walls of the lid
+    for (sx, zc, hl) in SNAPS:   # rim tab and bump: the bump stands 0.8 out of the rim, 0.4 into the lid wall
         w_i = inner_at(zc)[0] - TRAY_GAP
-        t += box(*sorted((sx * (w_i - RIM_T), sx * w_i)), RIM_TOP - 0.01, SNAP_TAB_TOP, zc - 5, zc + 5)
-        t += teardrop_z(sx * w_i, SNAP_Y, zc - 4, zc + 4, 0.8, 0.8 * math.sqrt(2))   # 45 deg underside
+        t += box(*sorted((sx * (w_i - RIM_T), sx * w_i)), RIM_TOP - 0.01, SNAP_TAB_TOP, zc - hl, zc + hl)
+        t += teardrop_z(sx * w_i, SNAP_Y, zc - hl + 1, zc + hl - 1, 0.8, 0.8 * math.sqrt(2))   # 45 deg underside
     return t
 
 
@@ -610,25 +632,12 @@ def build_lid():
     outer, inner = lid_solids()
     O, In = b3d_to_manifold(outer), b3d_to_manifold(inner)
     cuts, adds = [], []
-    for (sx, zc) in SNAPS:
+    for (sx, zc, hl) in SNAPS:
         w_i = inner_at(zc)[0] - TRAY_GAP
-        cuts.append(cyl_z(sx * w_i, SNAP_Y, zc - 4.6, zc + 4.6, 0.95))
+        cuts.append(cyl_z(sx * w_i, SNAP_Y, zc - hl + 0.4, zc + hl - 0.4, 0.95))
     xa, xb = W_MAIN - T_WALL - 1, W_MAIN + 1
-    cuts.append(stadium_x(CHG_Y, CHG_Z, xa, xb, USB_W, USB_H))
     C = CAM_SLOT     # camera cable slot in the left wall (a 6 mm bridge in the print)
     cuts.append(box(-xb, -xa, C["y0"], C["y0"] + C["h"], C["zc"] - C["w"] / 2, C["zc"] + C["w"] / 2))
-    cuts.append(stadium_x(SW_Y, SW_Z, xa, xb, SW_W, SW_H))
-    # PiSugar 2 tap button flexure, hinge at the top
-    z0, z1 = BTN_Z - 3.0, BTN_Z + 3.0
-    yb, yt = BTN_Y - 3.0, BTN_Y + 4.0
-    cuts.append(box(xa, xb, yb - 0.5, yt, z0 - 0.5, z0))
-    cuts.append(box(xa, xb, yb - 0.5, yt, z1, z1 + 0.5))
-    cuts.append(box(xa, xb, yb - 0.5, yb, z0 - 0.5, z1 + 0.5))
-    # pusher from the flap to the button: round, with a 45 deg point to +Y (down in the upside-down print)
-    xp0, xp1 = PORT_FACE_X - 0.4, W_MAIN - T_WALL + 0.3      # tip 0.3 from the button top (X 13.7 in the model)
-    adds.append(cyl_x(BTN_Y, BTN_Z, xp0, xp1, 1.5)
-                + (Pos((xp0 + xp1) / 2, BTN_Y, BTN_Z) * Rot(45, 0, 0) * Box(xp1 - xp0, 3.0, 3.0)
-                   & box(xp0, xp1, BTN_Y + 1.5 * math.sqrt(0.5), BTN_Y + 3, BTN_Z - 3, BTN_Z + 3)))
     # vent: lateral slots in the top over the Pi (Pi SoC near the stack center)
     bz0, bz1 = Z_CSI + 18.0, Z_CSI + 48.0
     n = int((bz1 - bz0 - 6.0) // 3.4) + 1
@@ -658,39 +667,14 @@ def build_lid():
         m = b3d_to_manifold(a_)
         add = m if add is None else add + m
     lid = lid + (add ^ O)
+    # port bays: cut the bay space, add a wall around it, open the wall at the port edge (below BAY_TOP)
+    P, Pg = b3d_to_manifold(bay_solid()), b3d_to_manifold(bay_solid(T_WALL))
+    wall = Pg - P
+    for z0, z1 in BAYS:
+        wall = wall - b3d_to_manifold(box(BAY_X - 3, BAY_X + 0.01, BAY_Y - 4, BAY_TOP, z0, z1))
+    wall = wall - b3d_to_manifold(box(SLOT["x0"] - 0.45, SLOT["x1"] + 0.45, 0, PI.PLUG_TOP + 0.4, SLOT["z0"] - 0.4, HDR["z1"] + 0.4))
+    lid = (lid - P) + (wall ^ O)
     return lid
-
-
-def build_switch():
-    """sw_slider and sw_knob in the installed place (lever at the middle of the slot)."""
-    xi, xo, yc, zc = W_MAIN - T_WALL, W_MAIN, SW_Y, SW_Z
-    plate = box(xi - 2.4, xi - 0.1, yc - 4.0, yc + 4.0, zc - 4.0, zc + 4.0)
-    L = SW_LEVER
-    arm = box(PORT_FACE_X + 0.2, xi - 2.39, yc - 1.6, yc + 2.6, zc - 2.0, zc + 2.0)
-    tines = box(L["x0"] + 0.3, PORT_FACE_X + 0.21, yc - 1.6, L["y1"] + 0.2, zc - 2.0, zc + 2.0)  # under the PCB, 0.3 from the switch body
-    slider = plate + arm + tines
-    n = L["w"] / 2 + 0.25
-    slider -= box(L["x0"], L["x1"] + 1.2, yc - 2.0, L["y1"] + 0.1, zc - n, zc + n)   # fork, open at the bottom
-    s = 2 * (n + 0.7) / math.sqrt(2)          # 45 deg lead-in at the fork mouth
-    slider -= Pos((L["x0"] + L["x1"] + 1.2) / 2, yc - 1.6, zc) * Rot(45, 0, 0) * Box(L["x1"] + 1.2 - L["x0"], s, s)
-    slider -= box(xi - 2.1, xi, yc - 1.2, yc + 1.2, zc - 1.5, zc + 1.5)     # stem socket: press fit (zero gap)
-    slider -= Pos(xi - 2.1, yc, zc) * Rot(0, 45, 0) * Box(3.0 / math.sqrt(2), 2.4, 3.0 / math.sqrt(2))   # 45 deg roof in the print
-    knob = box(xo + 0.1, xo + 3.0, yc - 4.5, yc + 4.5, zc - 6.0, zc + 6.0)
-    for zg in (-3.6, -1.2, 1.2, 3.6):         # 45 deg V grooves for the thumb
-        knob -= Pos(xo + 3.0, yc, zc + zg) * Rot(0, 45, 0) * Box(1.0, 10.0, 1.0)
-    knob += box(xi - 2.0, xo + 0.11, yc - 1.2, yc + 1.2, zc - 1.5, zc + 1.5)     # stem
-    return slider, knob
-
-
-def build_plug():
-    clr = 0.1
-    w, h = USB_W - 2 * clr, USB_H - 2 * clr
-    xw = W_MAIN
-    body = stadium_x(CHG_Y, CHG_Z, xw - T_WALL - 0.4, xw + 0.45, w, h)
-    flange = stadium_x(CHG_Y, CHG_Z, xw + 0.25, xw + 1.85, w + 2.4, h + 2.4)     # same thickness as the tab: both on the bed
-    tab = box(xw + 0.25, xw + 1.85, CHG_Y - 1.2, CHG_Y + 1.2, CHG_Z - w / 2 - 6.0, CHG_Z - w / 2 - 1.0)
-    lip = stadium_x(CHG_Y, CHG_Z, xw - T_WALL - 0.4, xw - T_WALL - 0.05, w + 0.6, h + 0.6)   # holds behind the wall
-    return body + flange + tab + lip
 
 
 # --------------------------------------------------------------------------
@@ -771,9 +755,7 @@ def build_all():
     clearance += box_(-27.6, 27.6, 0.0, LID_MIN_Y, COVER_END_Z - 0.5, ZR + 5)
     lid = build_lid() - clearance
     tray = b3d_to_manifold(build_tray())
-    plug = b3d_to_manifold(build_plug())
-    slider, knob = (b3d_to_manifold(x) for x in build_switch())
-    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid, usb_plug=plug, sw_slider=slider, sw_knob=knob)
+    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid)
 
 
 def robot_parts():
@@ -798,7 +780,7 @@ def check(parts, models, robot):
         for b, M in models.items():
             rows.append((a, b, vol(printed[a], M)))
     U = under_cover()
-    ADD = ("pod_tray", "pod_lid", "usb_plug", "sw_slider", "sw_knob")
+    ADD = ("pod_tray", "pod_lid")
     for a in ADD:
         rows.append((a, "under_cover", vol(printed[a], U)))
     for a in ADD:
@@ -817,17 +799,11 @@ def check(parts, models, robot):
         rows.append((f"tray fwd {s_:g}mm", "under_cover", vol(T, U)))
         for rn in ("shoulder_r", "shoulder_l"):
             rows.append((f"tray fwd {s_:g}mm", rn, vol(T, robot[rn])))
-    # switch: slider and knob at the two ends of the travel
-    for d in (-SW_TRAVEL, SW_TRAVEL):
-        S = printed["sw_slider"].translate([0, 0, d]) + printed["sw_knob"].translate([0, 0, d])
-        for b in ["pod_lid", "pod_tray"]:
-            rows.append((f"switch {d:+g}mm", b, vol(S, printed[b])))
-        lever = b3d_to_manifold(box(SW_LEVER["x0"] - 0.05, SW_LEVER["x1"] + 0.05, SW_LEVER["y0"] - 0.05, SW_LEVER["y1"] + 0.05,
-                                    SW_Z - SW_TRAVEL - 1.0, SW_Z + SW_TRAVEL + 1.0))
-        for b, M in models.items():     # the lever moves with the fork: take it out of the board
-            rows.append((f"switch {d:+g}mm", b, vol(S, M - lever if b == "pisugar2" else M)))
-        for b, M in robot.items():
-            rows.append((f"switch {d:+g}mm", b, vol(S, M)))
+    # port access: a plug body from each port face straight out to the side
+    for n, (yc, zc, w, h) in PORT_PLUGS.items():
+        B = b3d_to_manifold(box(15.3, 45.0, yc - h / 2, yc + h / 2, zc - w / 2, zc + w / 2))
+        for b in ("pod_lid", "pod_tray"):
+            rows.append((f"plug {n}", b, vol(B, printed[b])))
     mn = list(models)
     for i, a in enumerate(mn):
         for b in mn[i + 1:]:
@@ -853,7 +829,7 @@ def balance(parts, models):
     """Mass and center of mass of the add-on (printed parts + electronics), robot frame.
     The robot center is X 0, Z 0: the cover and the shoulder plates are symmetric about it."""
     rows = []
-    for n in ("pod_tray", "pod_lid", "usb_plug", "sw_slider", "sw_knob"):
+    for n in ("pod_tray", "pod_lid"):
         rows.append((n, parts[n].volume() * PLA_G_MM3, centroid(parts[n])))
     for n, g in MASS_G.items():
         rows.append((n, g, centroid(models[n])))
@@ -872,10 +848,8 @@ def print_orient(name, M):
     elif name == "cover_pegs":
         # stand on the rear end, as Petoi prints the stock cover
         R = np.array([[1, 0, 0], [0, -1, 0], [0, 0, -1]], float)
-    elif name in ("sw_slider", "sw_knob"):
-        R = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]], float)        # +X face on the bed (plate, knob face)
-    else:   # usb_plug: flange (+X side) on the bed
-        R = np.array([[0, 1, 0], [0, 0, -1], [-1, 0, 0]], float)
+    else:
+        raise ValueError(name)
     if abs(np.linalg.det(R) - 1) > 1e-6:
         raise ValueError(f"{name}: not a rotation")
     M = M.transform(np.hstack([R, np.zeros((3, 1))]))
@@ -938,9 +912,7 @@ def export_assembly(path):
         S = mesh_solid(M, 0.15 if n in coarse else 0.05)
         S.label, S.color = n, Color(col)
         kids.append(S)
-    slider, knob = build_switch()
-    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf"), ("usb_plug", build_plug(), "#1a1a1a"),
-                          ("sw_slider", slider, "#e8641b"), ("sw_knob", knob, "#e8641b")):
+    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf")):
         shape.label, shape.color = n, Color(col)
         kids.append(shape)
     A = Compound(label="bittle_pi_addon_assembly", children=kids)
@@ -992,9 +964,6 @@ def main():
     from build123d import export_step
     os.makedirs(os.path.join(ROOT, "cad"), exist_ok=True)
     export_step(build_tray(), os.path.join(ROOT, "cad", "pod_tray.step"))
-    export_step(build_plug(), os.path.join(ROOT, "cad", "usb_plug.step"))
-    for n, shape in zip(("sw_slider", "sw_knob"), build_switch()):
-        export_step(shape, os.path.join(ROOT, "cad", f"{n}.step"))
     export_assembly(os.path.join(ROOT, "cad", "assembly.step"))
 
 

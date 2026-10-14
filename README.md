@@ -31,7 +31,7 @@ not change, so the BiBoard and the touch sensor fit as before.
 
 ## Example: the Pi add-on
 
-![The Pi add-on on the platform](bittle_pi_addon/doc/01_assembly_iso.png)
+![The Pi add-on on the platform](bittle_pi_addon/doc/02_ports_right.png)
 
 A Raspberry Pi with a battery, a speaker and a microphone, in one pod that
 clicks onto the platform.
@@ -41,9 +41,9 @@ clicks onto the platform.
 - SPH0645 I2S microphone on the left side, away from the speaker
 - Balanced: the Pi stack is on the center line, and the speaker at the front balances it
 - Serial link to the BiBoard through the Pi slot in the cover
-- Charge port and power button open through the lid. A large knob on the right side moves the power switch
+- Two open port bays in the right side of the lid: the charge port, the button, the switch, and the Pi USB and mini-HDMI ports are at the bay faces
 - A cable slot for the Petoi AI Vision Module camera in the head
-- 5 printed parts, all without supports
+- 3 printed parts, all without supports
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)
 
