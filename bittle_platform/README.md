@@ -1,0 +1,75 @@
+# Bittle X Platform v1.0 - Interface Specification
+
+Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover with 4 pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+
+![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
+
+
+## 1. Key numbers
+
+| Item | Value (mm) |
+|---|---|
+| Frame | X lateral (+X = robot right), Y up, Z along the body (-Z = head end). Origin: center line, middle of the cover. |
+| Pegs (X, Z) | (12, -8), (12, 8), (-12, -8), (-12, 8): a centered 24 x 16 rectangle |
+| Peg | shaft Ø4; head Ø7, Y 27.7 to 28.9 |
+| Add-on plate | bottom at Y 26, 1.5 thick at the keyholes |
+| Keyhole | slot 4.4 wide from the peg to 7 mm behind it (+Z); Ø7.6 drop-in hole at the rear end |
+| Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
+| Click (detent) | a 1.6 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 0.8 into the slot, 2.7 behind the peg |
+| Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
+| Size | the pod fits in Z -21.2..76.5, \|X\| <= 33.6; outside that, check the legs and the head |
+
+![Left: keyhole and click beam in the add-on plate (top view). Right: the peg and the plate (side section).](doc/keyhole.png)
+
+![Plan view: pegs (blue), drop-in holes (green), BiBoard header (red), pod size (gold).](doc/plan.png)
+
+
+## 2. Design an add-on
+
+1. Start from cad/starter_plate.step. It has the keyholes and the click beams.
+2. Add your part on top of the plate, in the same print. You can also screw parts to the M3 holes.
+3. Keep your part out of stl/installed/keepout.stl. This keeps it clear of the robot, the peg heads and the header.
+4. Keep the weight low and near the center line. The pegs carry the whole add-on.
+5. For a plate of a different shape: subtract cad/keyhole_cutter.step, then add cad/detent_bumps.step. Both are in position.
+
+
+## 3. Printing
+
+| Part | Orientation | Supports | Cura profile |
+|---|---|---|---|
+| cover_pegs | stand on the rear end | tree, from the bed | Bittle Cover - PLA 0.25 (14-line brim) |
+| starter_plate and add-ons | plate bottom on the bed | none | Bittle Pi Pod - PLA 0.25 |
+| small, detailed parts | - | - | Bittle Fine - PLA 0.10 |
+
+| Setting | 0.25 profiles | Fine 0.10 |
+|---|---|---|
+| Layer | 0.25 | 0.10 (first layer 0.25) |
+| Walls / infill | 3 / 20 % gyroid | 3 / 20 % gyroid |
+| Outer wall / inner wall / infill speed | 30 / 40 / 60 mm/s | 25 / 35 / 50 mm/s |
+| Outer wall acceleration | 600 mm/s² | 500 mm/s² |
+| Nozzle | 220 C (PLA) | 220 C (PLA) |
+
+1. Material: PLA works. Use PETG for add-ons that you remove often or that get warm.
+2. Standing on its end, the cover prints the pegs with layers along their length. This makes them strong.
+3. In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.
+4. The fits use 0.2 to 0.3 clearance. Calibrate your printer if the plate does not slide on.
+
+
+## 4. Files
+
+| File | Content |
+|---|---|
+| stl/print/ | the parts to print, in print orientation |
+| cad/starter_plate.step | the start point for an add-on |
+| cad/pegs.step, keyhole_cutter.step, detent_bumps.step | the interface parts, in position (robot frame) |
+| stl/installed/ | all parts and keepout.stl in the robot frame |
+| interface.json / interface.py | all numbers |
+| build.py, docs.py | rebuild the parts and this document (build123d, manifold3d) |
+
+Open items: the BiBoard header height is an estimate from photos. The legs, the head and the robot balance are not modeled. The Petoi cover is a mesh, so cover_pegs is STL only.
+
+
+## 5. License
+
+The designs and this document are CC BY 4.0, and the code is MIT (Jeremy Collins). The cover, the side shoulder and the front plate are Petoi files from github.com/PetoiCamp/NonCodeFiles. Petoi publishes them without a stated license, and cover_pegs.stl is made from the Petoi cover. LICENSE.md and ATTRIBUTION.md in the repository give the details.
+

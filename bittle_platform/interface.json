@@ -1,0 +1,226 @@
+{
+ "COVER_END_Z": [-36.95, 36.95],
+ "COVER_FLAT": {
+  "x": [-15.37, 15.37],
+  "z": [-21.37, 21.37]
+ },
+ "COVER_INNER_AT_PEGS": 23.89,
+ "COVER_STL": "Bittle_Cover_with_hole_for_Pi.stl",
+ "COVER_TOP": 25.29,
+ "DET": {
+  "beam_w": 1.6,
+  "slit_w": 0.8,
+  "bump_r": 1.0,
+  "bump_in": 0.8,
+  "bump_dz": 2.7,
+  "arm": 10.0
+ },
+ "ENVELOPE": {
+  "z": [-21.2, 76.5],
+  "half_w_low": 33.6,
+  "half_w_high": 26.4,
+  "top": 54.6,
+  "hug_gap": 0.4
+ },
+ "HDR": {
+  "x0": 24.73,
+  "x1": 27.27,
+  "z0": 12.4,
+  "z1": 25.1,
+  "top": 29.1
+ },
+ "HEAD_CLEAR_Y": 29.4,
+ "KEY_BIG_D": 7.6,
+ "KEY_SLOT_W": 4.4,
+ "LOGO": {
+  "x": [-9.14, 9.14],
+  "z": [-7.85, 7.8],
+  "top": 25.59
+ },
+ "MOUNT_T": 1.5,
+ "MOUNT_Y0": 26.0,
+ "MOUNT_Y1": 27.5,
+ "PEGS": [[12.0, -8.0], [12.0, 8.0], [-12.0, -8.0], [-12.0, 8.0]],
+ "PEG_COLLAR_D": 5.6,
+ "PEG_COLLAR_Y1": 25.69,
+ "PEG_HEAD_CHAMFER": 0.5,
+ "PEG_HEAD_D": 7.0,
+ "PEG_HEAD_Y0": 27.7,
+ "PEG_HEAD_Y1": 28.9,
+ "PEG_ROOT_Y": 24.3,
+ "PEG_SHAFT_D": 4.0,
+ "PLUG_TOP": 48.0,
+ "SLIDE": 7.0,
+ "SLOT": {
+  "x0": 24.25,
+  "x1": 27.75,
+  "y0": 19.5,
+  "z0": 11.75,
+  "z1": 25.75
+ },
+ "VERSION": "1.0",
+ "frame": "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover",
+ "fit_sequence": "place 7 mm forward (-Z) of the locked place, lower onto the pegs, slide 7 mm rearward (+Z) until the detents click",
+ "keyholes": [
+  {
+   "peg": [12.0, -8.0],
+   "slot": [[12.0, -8.0], [12.0, -1.0]],
+   "drop_in_center": [12.0, -1.0],
+   "bump_center": [14.4, -5.3]
+  },
+  {
+   "peg": [12.0, 8.0],
+   "slot": [[12.0, 8.0], [12.0, 15.0]],
+   "drop_in_center": [12.0, 15.0],
+   "bump_center": [14.4, 10.7]
+  },
+  {
+   "peg": [-12.0, -8.0],
+   "slot": [[-12.0, -8.0], [-12.0, -1.0]],
+   "drop_in_center": [-12.0, -1.0],
+   "bump_center": [-9.6, -5.3]
+  },
+  {
+   "peg": [-12.0, 8.0],
+   "slot": [[-12.0, 8.0], [-12.0, 15.0]],
+   "drop_in_center": [-12.0, 15.0],
+   "bump_center": [-9.6, 10.7]
+  }
+ ],
+ "clearances": {
+  "plate_to_collar": 0.31,
+  "plate_to_logo": 0.41,
+  "plate_top_to_head": 0.2,
+  "slot_to_shaft_each_side": 0.2,
+  "big_hole_to_head_each_side": 0.3,
+  "collar_to_logo": 0.1,
+  "collar_to_flat_edge": 0.57
+ },
+ "checks": {
+  "rows": [
+   [
+    "starter_plate locked",
+    "cover_pegs",
+    0.0
+   ],
+   [
+    "starter_plate locked",
+    "biboard_header",
+    0.0
+   ],
+   [
+    "starter_plate locked",
+    "shoulder_r",
+    0.0
+   ],
+   [
+    "starter_plate locked",
+    "shoulder_l",
+    0.0
+   ],
+   [
+    "starter_plate locked",
+    "front_plate",
+    0.0
+   ],
+   [
+    "starter_plate locked",
+    "rear_plate_mirror",
+    0.0
+   ],
+   [
+    "starter_plate at detent bump",
+    "cover_pegs",
+    4.076
+   ],
+   [
+    "starter_plate at detent bump",
+    "biboard_header",
+    0.0
+   ],
+   [
+    "starter_plate at detent bump",
+    "shoulder_r",
+    0.0
+   ],
+   [
+    "starter_plate at detent bump",
+    "shoulder_l",
+    0.0
+   ],
+   [
+    "starter_plate at detent bump",
+    "front_plate",
+    0.0
+   ],
+   [
+    "starter_plate at detent bump",
+    "rear_plate_mirror",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "cover_pegs",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "biboard_header",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "shoulder_r",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "shoulder_l",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "front_plate",
+    0.0
+   ],
+   [
+    "starter_plate drop-on",
+    "rear_plate_mirror",
+    0.0
+   ],
+   [
+    "starter_plate (body)",
+    "keepout",
+    0.0
+   ],
+   [
+    "cover_pegs",
+    "loose_pieces",
+    0
+   ],
+   [
+    "starter_plate",
+    "loose_pieces",
+    0
+   ]
+  ],
+  "overhang_mm2": {
+   "cover_pegs": 245.81,
+   "starter_plate": 0.0,
+   "cover_stock": 198.615
+  },
+  "mass_g_pla_solid": {
+   "cover_pegs": 11.3,
+   "starter_plate": 3.1
+  },
+  "clearances": {
+   "plate_to_collar": 0.31,
+   "plate_to_logo": 0.41,
+   "plate_top_to_head": 0.2,
+   "slot_to_shaft_each_side": 0.2,
+   "big_hole_to_head_each_side": 0.3,
+   "collar_to_logo": 0.1,
+   "collar_to_flat_edge": 0.57
+  }
+ }
+}

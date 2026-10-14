@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local only: vendor downloads, photos and old revisions
+/reference/
+/old_concept/
+
+# Local preview server
+.site_server.*
+
+# Built by build_site.py (GitHub Actions builds them for Pages)
+/site/
+*.zip
+bittle_pi_addon/stl/tmp/

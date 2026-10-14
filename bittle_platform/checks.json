@@ -1,0 +1,127 @@
+{
+ "rows": [
+  [
+   "starter_plate locked",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "starter_plate locked",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "starter_plate locked",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "starter_plate locked",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "starter_plate locked",
+   "front_plate",
+   0.0
+  ],
+  [
+   "starter_plate locked",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "starter_plate at detent bump",
+   "cover_pegs",
+   4.075906772573534
+  ],
+  [
+   "starter_plate at detent bump",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "starter_plate at detent bump",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "starter_plate at detent bump",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "starter_plate at detent bump",
+   "front_plate",
+   0.0
+  ],
+  [
+   "starter_plate at detent bump",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "front_plate",
+   0.0
+  ],
+  [
+   "starter_plate drop-on",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "starter_plate (body)",
+   "keepout",
+   3.6421645204033974e-15
+  ],
+  [
+   "cover_pegs",
+   "loose_pieces",
+   0
+  ],
+  [
+   "starter_plate",
+   "loose_pieces",
+   0
+  ]
+ ],
+ "overhang_mm2": {
+  "cover_pegs": 245.81015014648438,
+  "starter_plate": 0.0,
+  "cover_stock": 198.61520385742188
+ },
+ "mass_g_pla_solid": {
+  "cover_pegs": 11.3,
+  "starter_plate": 3.1
+ },
+ "clearances": {
+  "plate_to_collar": 0.31,
+  "plate_to_logo": 0.41,
+  "plate_top_to_head": 0.2,
+  "slot_to_shaft_each_side": 0.2,
+  "big_hole_to_head_each_side": 0.3,
+  "collar_to_logo": 0.1,
+  "collar_to_flat_edge": 0.57
+ }
+}

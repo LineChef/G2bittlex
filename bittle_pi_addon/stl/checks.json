@@ -1,0 +1,757 @@
+{
+ "rows": [
+  [
+   "cover_pegs",
+   "pod_tray",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "pod_lid",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "usb_plug",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "pod_lid",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "usb_plug",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "usb_plug",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "pizero",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "battery",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "speaker",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "cover_slot",
+   4.153468819421448e-10
+  ],
+  [
+   "pod_tray",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "pizero",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "battery",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "speaker",
+   -1.4245722657069138e-13
+  ],
+  [
+   "pod_tray",
+   "mic_sph0645",
+   1.2462253451417382e-14
+  ],
+  [
+   "pod_tray",
+   "amp_ns4168",
+   0.4017145779155148
+  ],
+  [
+   "pod_tray",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "pizero",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "battery",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "speaker",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "cover_slot",
+   5.204170427930421e-18
+  ],
+  [
+   "usb_plug",
+   "pisugar2",
+   3.7022409129713885e-08
+  ],
+  [
+   "usb_plug",
+   "pizero",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "battery",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "speaker",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "under_cover",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "under_cover",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "under_cover",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "front_plate",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "front_plate",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "front_plate",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pod_tray",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pod_lid",
+   "loose_pieces",
+   0
+  ],
+  [
+   "usb_plug",
+   "loose_pieces",
+   0
+  ],
+  [
+   "tray fwd 7mm",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "tray fwd 7mm",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "tray fwd 7mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "tray fwd 7mm",
+   "under_cover",
+   0.0
+  ],
+  [
+   "tray fwd 7mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "tray fwd 7mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "tray fwd 2.7mm",
+   "cover_pegs",
+   4.075906772573535
+  ],
+  [
+   "tray fwd 2.7mm",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "tray fwd 2.7mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "tray fwd 2.7mm",
+   "under_cover",
+   0.0
+  ],
+  [
+   "tray fwd 2.7mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "tray fwd 2.7mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "pizero",
+   0.013321135947388051
+  ],
+  [
+   "pisugar2",
+   "battery",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "speaker",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "pizero",
+   "battery",
+   0.0
+  ],
+  [
+   "pizero",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pizero",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "pizero",
+   "speaker",
+   0.0
+  ],
+  [
+   "pizero",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pizero",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pizero",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "battery",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "battery",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "battery",
+   "speaker",
+   0.0
+  ],
+  [
+   "battery",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "battery",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "battery",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "speaker",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "dupont_plugs",
+   "speaker",
+   0.0
+  ],
+  [
+   "dupont_plugs",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "dupont_plugs",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "dupont_plugs",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "speaker",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "speaker",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "speaker",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "amp_ns4168",
+   "cover_slot",
+   0.0
+  ]
+ ],
+ "printing": {
+  "pod_tray": {
+   "overhang_mm2": 14.0,
+   "regions": [
+    {
+     "area": 3.2,
+     "flat": 1.5,
+     "x": [
+      -7.6,
+      -6.3
+     ],
+     "y": [
+      -2.9,
+      -0.5
+     ],
+     "z": [
+      4.2,
+      4.5
+     ]
+    },
+    {
+     "area": 3.2,
+     "flat": 1.5,
+     "x": [
+      -7.6,
+      -6.3
+     ],
+     "y": [
+      -2.9,
+      -0.5
+     ],
+     "z": [
+      20.2,
+      20.5
+     ]
+    },
+    {
+     "area": 2.4,
+     "flat": 2.4,
+     "x": [
+      -16.8,
+      -15.6
+     ],
+     "y": [
+      -38.3,
+      -36.2
+     ],
+     "z": [
+      8.1,
+      8.1
+     ]
+    },
+    {
+     "area": 2.4,
+     "flat": 2.4,
+     "x": [
+      19.2,
+      20.4
+     ],
+     "y": [
+      -38.3,
+      -36.2
+     ],
+     "z": [
+      8.1,
+      8.1
+     ]
+    },
+    {
+     "area": 1.4,
+     "flat": 0.0,
+     "x": [
+      -17.2,
+      -15.2
+     ],
+     "y": [
+      -38.9,
+      -38.3
+     ],
+     "z": [
+      8.2,
+      8.9
+     ]
+    },
+    {
+     "area": 1.4,
+     "flat": 0.0,
+     "x": [
+      18.8,
+      20.8
+     ],
+     "y": [
+      -38.9,
+      -38.3
+     ],
+     "z": [
+      8.2,
+      8.9
+     ]
+    }
+   ]
+  },
+  "pod_lid": {
+   "overhang_mm2": 57.1,
+   "regions": [
+    {
+     "area": 16.0,
+     "flat": 8.8,
+     "x": [
+      24.8,
+      26.4
+     ],
+     "y": [
+      -37.1,
+      -27.7
+     ],
+     "z": [
+      16.5,
+      17.6
+     ]
+    },
+    {
+     "area": 11.2,
+     "flat": 11.2,
+     "x": [
+      24.8,
+      26.4
+     ],
+     "y": [
+      -25.2,
+      -18.2
+     ],
+     "z": [
+      17.1,
+      17.1
+     ]
+    },
+    {
+     "area": 11.0,
+     "flat": 8.2,
+     "x": [
+      24.8,
+      26.4
+     ],
+     "y": [
+      5.3,
+      11.9
+     ],
+     "z": [
+      14.5,
+      15.0
+     ]
+    },
+    {
+     "area": 2.8,
+     "flat": 0.0,
+     "x": [
+      -25.1,
+      -24.8
+     ],
+     "y": [
+      -38.2,
+      -29.0
+     ],
+     "z": [
+      25.8,
+      26.0
+     ]
+    },
+    {
+     "area": 2.8,
+     "flat": 0.0,
+     "x": [
+      24.8,
+      25.1
+     ],
+     "y": [
+      -38.2,
+      -29.0
+     ],
+     "z": [
+      25.8,
+      26.0
+     ]
+    },
+    {
+     "area": 2.0,
+     "flat": 2.0,
+     "x": [
+      -9.1,
+      -7.9
+     ],
+     "y": [
+      47.2,
+      48.8
+     ],
+     "z": [
+      28.1,
+      28.1
+     ]
+    }
+   ]
+  },
+  "usb_plug": {
+   "overhang_mm2": 0,
+   "regions": []
+  }
+ }
+}

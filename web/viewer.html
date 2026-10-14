@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bittle Pi Pod</title>
+<style>
+  :root {
+    --bg: #f4f4f2; --panel: #ffffff; --ink: #1d1f22; --muted: #6b6f76;
+    --line: #e2e3e5; --accent: #e8a514; --accent-ink: #1d1f22; --chip: #f1f2f3;
+    --bad: #c2362f; --good: #2f8a4c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181b; --panel: #202226; --ink: #e9eaec; --muted: #9a9ea6;
+      --line: #33363b; --chip: #2a2d32;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181b; --panel: #202226; --ink: #e9eaec; --muted: #9a9ea6;
+    --line: #33363b; --chip: #2a2d32;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  #app { display: grid; grid-template-columns: 300px 1fr; height: 100%; }
+  aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 14px 16px 24px; }
+  h1 { font-size: 16px; margin: 0 0 2px; }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  h2 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
+  .row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .row label { flex: 1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); flex: none; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  button { background: var(--chip); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
+    padding: 5px 9px; font: inherit; font-size: 12px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; min-width: 52px; text-align: right; }
+  .grp { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  #view { position: relative; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: absolute; left: 12px; bottom: 12px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; max-width: 360px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  #hud b { font-variant-numeric: tabular-nums; }
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
+  .checks { font-size: 12px; max-height: 190px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .checks div { display: flex; justify-content: space-between; padding: 2px 6px; border-bottom: 1px solid var(--line); }
+  .ok { color: var(--good); } .warn { color: var(--accent); } .bad { color: var(--bad); }
+  .menu { display: none; }
+  @media (max-width: 760px) {
+    #app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    aside { order: 2; max-height: 45vh; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px; }
+    #hud { right: 12px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside>
+    <h1 id="title">Bittle Pi Pod</h1>
+    <div class="sub" id="env"></div>
+
+    <h2>View</h2>
+    <div class="btns" id="views">
+      <button data-v="iso">Iso</button><button data-v="front">Front</button><button data-v="left">Left</button>
+      <button data-v="right">Right</button><button data-v="rear">Rear</button><button data-v="top">Top</button>
+    </div>
+
+    <h2>Explode</h2>
+    <div class="row"><input id="explode" type="range" min="0" max="1" step="0.01" value="0"><span class="val" id="explodeV">0%</span></div>
+
+    <h2>Lid opacity</h2>
+    <div class="row"><input id="lidop" type="range" min="0.05" max="1" step="0.01" value="1"><span class="val" id="lidopV">100%</span></div>
+
+    <h2>Section cut</h2>
+    <div class="btns" id="cutaxis">
+      <button data-a="none" class="on">Off</button><button data-a="x">X (side)</button><button data-a="z">Z (length)</button><button data-a="y">Y (height)</button>
+    </div>
+    <div class="row"><input id="cut" type="range" min="-40" max="60" step="0.1" value="0"><span class="val" id="cutV">0.0</span></div>
+    <div class="row"><label><input type="checkbox" id="cutflip"> Flip side</label></div>
+
+    <h2>Tools</h2>
+    <div class="btns">
+      <button id="measure">Measure</button><button id="wire">Edges</button><button id="theme">Theme</button>
+    </div>
+
+    <h2>Parts</h2>
+    <div id="parts"></div>
+
+    <h2>Interference checks (mm³)</h2>
+    <div class="checks" id="checks"></div>
+  </aside>
+  <div id="view">
+    <div id="loading">Loading models…</div>
+    <div id="hud">Drag to orbit · right-drag to pan · scroll to zoom. <span id="msr"></span></div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { STLLoader } from "three/addons/loaders/STLLoader.js";
+
+const view = document.getElementById("view");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.localClippingEnabled = true;
+view.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 25, 5);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.6));
+const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-120, 220, -160); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.7); fill.position.set(160, 80, 200); scene.add(fill);
+const grid = new THREE.GridHelper(300, 30, 0x999999, 0xcccccc); grid.position.y = -14; grid.material.opacity = .35; grid.material.transparent = true; scene.add(grid);
+
+const clip = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
+let cutAxis = "none";
+
+function themeColors() {
+  const dark = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#17181b";
+  scene.background = new THREE.Color(dark ? 0x17181b : 0xf4f4f2);
+}
+themeColors();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeColors);
+
+function resize() {
+  const r = view.getBoundingClientRect();
+  renderer.setSize(r.width, r.height);
+  camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+
+const VIEWS = {
+  iso: [-160, 140, -160], front: [0, 30, -230], rear: [0, 30, 260],
+  left: [-250, 30, 15], right: [250, 30, 15], top: [0, 280, 15.01],
+};
+function setView(v) {
+  const p = VIEWS[v]; camera.position.set(p[0], p[1], p[2]);
+  controls.target.set(0, 25, 5); controls.update();
+}
+
+const manifest = await (await fetch("manifest.json")).json();
+document.getElementById("title").textContent = manifest.meta.title;
+const env = manifest.meta.envelope;
+document.getElementById("env").textContent =
+  `Pod ${env.length.toFixed(1)} mm long, ${(2*26.4).toFixed(1)} mm wide (${env.width.toFixed(0)} at the haunches), top ${env.above_cover} mm above the cover. Frame: X right, Y up, −Z head end.`;
+
+const loader = new STLLoader();
+const parts = {};
+const edgesOn = { v: false };
+
+async function loadPart(p) {
+  const geo = await loader.loadAsync(p.file);
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({
+    color: p.color, roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide,
+    clippingPlanes: [], clipShadows: true,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  if (p.transform === "mirror_x") mesh.scale.x = -1;
+  if (p.transform === "mirror_z") mesh.scale.z = -1;
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30),
+    new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, clippingPlanes: [] }));
+  edges.visible = false;
+  mesh.add(edges);
+  mesh.userData = { part: p, edges };
+  scene.add(mesh);
+  parts[p.id] = mesh;
+}
+await Promise.all(manifest.parts.map(loadPart));
+document.getElementById("loading").remove();
+resize(); setView("iso");
+
+// ---- parts panel
+const groups = {};
+for (const p of manifest.parts) (groups[p.group] ||= []).push(p);
+const pl = document.getElementById("parts");
+for (const [g, list] of Object.entries(groups)) {
+  const head = document.createElement("div"); head.className = "grp row";
+  head.innerHTML = `<label><input type="checkbox" checked data-group="${g}"> <b>${g}</b></label>`;
+  pl.appendChild(head);
+  for (const p of list) {
+    const r = document.createElement("div"); r.className = "row";
+    r.innerHTML = `<label><input type="checkbox" checked data-id="${p.id}"><span class="sw" style="background:${p.color}"></span>${p.label}</label>`;
+    pl.appendChild(r);
+  }
+}
+pl.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.id) parts[t.dataset.id].visible = t.checked;
+  if (t.dataset.group) {
+    for (const p of groups[t.dataset.group]) {
+      parts[p.id].visible = t.checked;
+      pl.querySelector(`[data-id="${p.id}"]`).checked = t.checked;
+    }
+  }
+});
+
+// ---- explode
+const ex = document.getElementById("explode");
+ex.addEventListener("input", () => {
+  const f = +ex.value;
+  document.getElementById("explodeV").textContent = Math.round(f * 100) + "%";
+  for (const m of Object.values(parts)) {
+    const e = m.userData.part.explode;
+    m.position.set(e[0] * f, e[1] * f, e[2] * f);
+  }
+});
+
+// ---- lid opacity
+const lo = document.getElementById("lidop");
+lo.addEventListener("input", () => {
+  const v = +lo.value;
+  document.getElementById("lidopV").textContent = Math.round(v * 100) + "%";
+  for (const id of ["lid", "plug"]) {
+    const m = parts[id]; if (!m) continue;
+    m.material.transparent = v < 1; m.material.opacity = v; m.material.depthWrite = v >= 1;
+  }
+});
+
+// ---- section cut
+const cut = document.getElementById("cut"), cutV = document.getElementById("cutV"), flip = document.getElementById("cutflip");
+function applyCut() {
+  const v = +cut.value; cutV.textContent = v.toFixed(1);
+  const s = flip.checked ? 1 : -1;
+  const n = { x: [s, 0, 0], y: [0, s, 0], z: [0, 0, s] }[cutAxis] || [1, 0, 0];
+  clip.normal.set(...n); clip.constant = -s * v;
+  for (const m of Object.values(parts)) {
+    const planes = cutAxis === "none" ? [] : [clip];
+    m.material.clippingPlanes = planes; m.userData.edges.material.clippingPlanes = planes;
+  }
+}
+document.getElementById("cutaxis").addEventListener("click", e => {
+  const a = e.target.dataset.a; if (!a) return;
+  cutAxis = a;
+  for (const b of e.currentTarget.children) b.classList.toggle("on", b === e.target);
+  const rng = { x: [-40, 40, -8], y: [-12, 60, 40], z: [-40, 50, 20], none: [-40, 60, 0] }[a];
+  cut.min = rng[0]; cut.max = rng[1]; cut.value = rng[2];
+  applyCut();
+});
+cut.addEventListener("input", applyCut); flip.addEventListener("change", applyCut);
+
+// ---- views, edges, theme
+document.getElementById("views").addEventListener("click", e => { if (e.target.dataset.v) setView(e.target.dataset.v); });
+document.getElementById("wire").addEventListener("click", e => {
+  edgesOn.v = !edgesOn.v; e.target.classList.toggle("on", edgesOn.v);
+  for (const m of Object.values(parts)) m.userData.edges.visible = edgesOn.v;
+});
+document.getElementById("theme").addEventListener("click", () => {
+  const r = document.documentElement;
+  const dark = getComputedStyle(r).getPropertyValue("--bg").trim() === "#17181b";
+  r.dataset.theme = dark ? "light" : "dark"; themeColors();
+});
+
+// ---- measure: click two points on visible geometry
+const msrBtn = document.getElementById("measure"), msr = document.getElementById("msr");
+let measuring = false, pts = [];
+const mGroup = new THREE.Group(); scene.add(mGroup);
+msrBtn.addEventListener("click", () => {
+  measuring = !measuring; msrBtn.classList.toggle("on", measuring);
+  pts = []; mGroup.clear(); msr.textContent = measuring ? " Click two points." : "";
+});
+const ray = new THREE.Raycaster();
+let down = null;
+renderer.domElement.addEventListener("pointerdown", e => { down = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener("pointerup", e => {
+  if (!measuring || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
+  const vis = Object.values(parts).filter(m => m.visible);
+  const hit = ray.intersectObjects(vis, false).find(h => cutAxis === "none" || clip.distanceToPoint(h.point) >= 0);
+  if (!hit) return;
+  if (pts.length === 2) { pts = []; mGroup.clear(); }
+  pts.push(hit.point.clone());
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.8), new THREE.MeshBasicMaterial({ color: 0xe8a514, depthTest: false }));
+  dot.position.copy(hit.point); dot.renderOrder = 10; mGroup.add(dot);
+  const p = hit.point, name = hit.object.userData.part.label;
+  if (pts.length === 1) msr.innerHTML = ` ${name}: (<b>${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}</b>). Click a second point.`;
+  else {
+    const d = pts[0].distanceTo(pts[1]), dv = pts[1].clone().sub(pts[0]);
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xe8a514, depthTest: false }));
+    line.renderOrder = 10; mGroup.add(line);
+    msr.innerHTML = ` Distance <b>${d.toFixed(2)} mm</b> (dx ${dv.x.toFixed(2)}, dy ${dv.y.toFixed(2)}, dz ${dv.z.toFixed(2)})`;
+  }
+});
+
+// ---- checks table
+const ck = document.getElementById("checks");
+for (const c of manifest.meta.checks) {
+  const cls = c.v < 0.05 ? "ok" : (c.a.startsWith("tray fwd 2.7") || c.b === "amp_ns4168") ? "warn" : "bad";
+  const note = cls === "warn" ? " (intended)" : "";
+  const d = document.createElement("div");
+  d.innerHTML = `<span>${c.a} × ${c.b}</span><span class="${cls}">${Math.abs(c.v).toFixed(2)}${note}</span>`;
+  ck.appendChild(d);
+}
+
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>
