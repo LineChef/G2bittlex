@@ -272,6 +272,7 @@ def content():
          "when an add-on is on the robot.",
          "For this reason, the platform has no parts under the cover top. A cover that prints flat without supports "
          "needs pegs held from inside the cover, where the circuit is. A possible interface v2 with sockets in a thicker top avoids this."])
+    img("petoi_touch_areas.png", 0.6, "Bittle X V2 touch areas (red boxes). Image: Petoi, docs.petoi.com/extensible-modules/back-touch-sensor.")
 
     h("6. License")
     p("The designs and this document are CC BY 4.0, and the code is MIT (Jeremy Collins). "

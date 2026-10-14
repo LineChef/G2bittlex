@@ -28,6 +28,12 @@ Files made from the Petoi parts:
 - The 3D viewer on the site loads the side shoulder and the front plate
   (also mirrored as the rear plate).
 
+Image from the Petoi documentation, also without a stated license:
+
+- `bittle_platform/doc/petoi_touch_areas.png`: the touch area layout from
+  https://docs.petoi.com/extensible-modules/back-touch-sensor/bittle-x-v2-bittle-x+arm,
+  unchanged.
+
 ## PiSugar and Raspberry Pi Zero models
 
 Source: PiSugar, https://github.com/PiSugar/PiSugar, commit 61a5e2083f

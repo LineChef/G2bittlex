@@ -78,6 +78,8 @@ Open items: the BiBoard header height is an estimate from photos. The legs, the 
 3. An add-on on the platform covers most of the touch areas. Disable the back touch mode (serial command Xb) when an add-on is on the robot.
 4. For this reason, the platform has no parts under the cover top. A cover that prints flat without supports needs pegs held from inside the cover, where the circuit is. A possible interface v2 with sockets in a thicker top avoids this.
 
+![Bittle X V2 touch areas (red boxes). Image: Petoi, docs.petoi.com/extensible-modules/back-touch-sensor.](doc/petoi_touch_areas.png)
+
 
 ## 6. License
 
