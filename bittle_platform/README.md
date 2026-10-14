@@ -17,7 +17,7 @@ Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover wit
 | Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
 | Click (detent) | a 1.6 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 0.8 into the slot, 2.7 behind the peg |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
-| Size | the pod fits in Z -21.2..76.5, \|X\| <= 33.6; outside that, check the legs and the head |
+| Size | the pod fits in Z -40..59, \|X\| <= 33.6; outside that, check the legs and the head |
 
 ![Left: keyhole and click beam in the add-on plate (top view). Right: the peg and the plate (side section).](doc/keyhole.png)
 
@@ -29,8 +29,9 @@ Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover wit
 1. Start from cad/starter_plate.step. It has the keyholes and the click beams.
 2. Add your part on top of the plate, in the same print. You can also screw parts to the M3 holes.
 3. Keep your part out of stl/installed/keepout.stl. This keeps it clear of the robot, the peg heads and the header.
-4. Keep the weight low and near the center line. The pegs carry the whole add-on.
-5. For a plate of a different shape: subtract cad/keyhole_cutter.step, then add cad/detent_bumps.step. Both are in position.
+4. Keep heavy parts low and near the pegs. Keep the center of mass of the add-on within 10 mm of Z 0, near X 0.
+5. Keep the weight low and near the center line. The pegs carry the whole add-on.
+6. For a plate of a different shape: subtract cad/keyhole_cutter.step, then add cad/detent_bumps.step. Both are in position.
 
 
 ## 3. Printing

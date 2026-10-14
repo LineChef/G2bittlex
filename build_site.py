@@ -34,8 +34,8 @@ PARTS = [
     ("shoulder_l", "Side shoulder L", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), "mirror_x"),
     ("front_plate", "Front plate", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), None),
     ("rear_plate", "Rear plate (mirror of front)", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), "mirror_z"),
-    ("speaker", "NULLLAB 3 W speaker (rump)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 18, 34), None),
-    ("mic", "SPH0645 mic (front left)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, -24), None),
+    ("speaker", "NULLLAB 3 W speaker (front)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 18, -34), None),
+    ("mic", "SPH0645 mic (rear)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, 24), None),
 ]
 
 # Text for the part card in the viewer: what the part is, how it attaches, downloads (relative to site/viewer/).
@@ -47,7 +47,7 @@ INFO = {
                   files=[("Print STL, with foot", PF + "cover_pegs_foot.stl"), ("Pegs STEP", PF + "pegs.step"),
                          ("Platform spec PDF", PF + "bittle_platform_spec.pdf")]),
     "tray": dict(text="The tray of the Pi add-on. It has 4 keyholes with spring beams, a slot base for the mic, two pins for the amp, "
-                      "and a rear wall with two pins for the speaker. It prints floor down without supports.",
+                      "and a front wall with two pins for the speaker. It prints floor down without supports.",
                  attach="Put it on the pegs 7 mm forward of its place, then slide it 7 mm rearward until the beams click.",
                  files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
     "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
@@ -65,9 +65,10 @@ INFO = {
                     attach="It rests on two rails in the tray, above the peg heads."),
     "amp": dict(text="NULLLAB NS4168 I2S amp, on edge left of the stack. Components face left.",
                 attach="Push it onto the two teardrop pins of the post in the tray."),
-    "speaker": dict(text="NULLLAB 3 W 4 ohm speaker. The sound goes out of the rear grille of the lid.",
-                    attach="Hang the ear plate on the two pins of the rear wall of the tray. Ribs in the lid hold it on."),
-    "mic": dict(text="SPH0645 I2S mic board, on edge at the front left. The port faces forward to 7 holes in the lid.",
+    "speaker": dict(text="NULLLAB 3 W 4 ohm speaker. The sound goes out of the front grille of the lid. "
+                         "It is the heaviest part after the Pi stack, so it is at the front to balance the add-on.",
+                    attach="Hang the ear plate on the two pins of the front wall of the tray. Ribs in the lid hold it on."),
+    "mic": dict(text="SPH0645 I2S mic board, on edge at the rear, away from the speaker. The port faces rearward to 7 holes in the lid.",
                 attach="Push it down into the slot of the base. A stub in the lid holds its top edge."),
     "header": dict(text="The 5-pin BiBoard header (GND, +5V, TX2, RX2) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
@@ -90,12 +91,12 @@ STEPS = [
          text="Put the tray on the pegs 7 mm forward of its place. The peg heads go through the large holes."),
     dict(title="Slide to lock", view="right", start={"tray": [0, 0, -7]},
          text="Push the tray 7 mm rearward. The spring beams in the floor click past bumps, and the peg heads hold the floor down."),
-    dict(title="Mic", view="front", show=["mic"], start={"mic": [0, 30, 0]},
-         text="Push the mic board down into the slot at the front left, port forward."),
+    dict(title="Mic", view="rear", show=["mic"], start={"mic": [0, 30, 0]},
+         text="Push the mic board down into the slot at the rear of the tray, port to the rear."),
     dict(title="Amp", view="left", show=["amp"], start={"amp": [-22, 0, 0]},
          text="Push the amp onto its two pins, components to the left."),
-    dict(title="Speaker", view="rear", show=["speaker"], start={"speaker": [0, 0, 30]},
-         text="Hang the speaker on the two pins of the rear wall, ear plate forward."),
+    dict(title="Speaker", view="front", show=["speaker"], start={"speaker": [0, 0, -30]},
+         text="Hang the speaker on the two pins of the front wall, ear plate to the rear."),
     dict(title="Pi stack", view="iso", show=["battery", "pisugar", "pizero"],
          start={"battery": [0, 40, 0], "pisugar": [0, 40, 0], "pizero": [0, 40, 0]},
          text="Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right."),
@@ -130,7 +131,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.7 on Platform v1.0",
+        title="Bittle X Pi Add-on v0.8 on Platform v1.0",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -152,7 +153,7 @@ PACKAGES = [
               "slide 7 mm rearward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.7", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.7.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.8", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.8.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/01_assembly_iso.png", img2="doc/06_tray_loaded.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic. Three printed parts, all without supports.",
@@ -176,6 +177,8 @@ def make_zip(P, path):
         for d, dirs, files in os.walk(base):
             dirs[:] = sorted(x for x in dirs if x not in ("__pycache__", "tmp"))
             for f in sorted(files):
+                if f == "assembly.step":      # local build output; the package has assembly_step.zip
+                    continue
                 full = os.path.join(d, f)
                 z.write(full, os.path.join(P["dir"], os.path.relpath(full, base)))
         for item in LEGAL:
@@ -206,7 +209,7 @@ def build_home():
 
         def put(rel, label, cls=""):
             name = os.path.basename(rel)
-            if rel.endswith(".zip"):
+            if rel == P["zip"]:
                 s_ = os.path.join(dst, name)
                 make_zip(P, s_)
             else:
@@ -219,7 +222,10 @@ def build_home():
         for f in sorted(os.listdir(os.path.join(src, "stl", "print"))):
             put(os.path.join("stl", "print", f), f"Print: {f[:-4]}")
         for f in sorted(os.listdir(os.path.join(src, "cad"))):
-            put(os.path.join("cad", f), f"CAD: {f[:-5]}")
+            if f == "assembly_step.zip":
+                put(os.path.join("cad", f), "CAD: full assembly (STEP, zipped)", "primary")
+            elif f.endswith(".step") and f != "assembly.step":
+                put(os.path.join("cad", f), f"CAD: {f[:-5]}")
         for f in P["extra"]:
             put(f, f"Data: {f}")
         imgs = [P["img"]] + ([P["img2"]] if P.get("img2") else [])

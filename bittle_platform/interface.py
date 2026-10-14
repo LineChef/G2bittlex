@@ -62,9 +62,10 @@ DET = dict(beam_w=1.6, slit_w=0.8, bump_r=1.0, bump_in=0.8, bump_dz=2.7, arm=10.
 # Envelope (checked with the pod; outside this, check the robot yourself)
 # --------------------------------------------------------------------------
 ENVELOPE = dict(
-    z=(-21.2, 76.5),            # front and rear limits used by the pod
+    z=(-40.0, 59.0),            # front and rear limits used by the pod
     half_w_low=33.6,            # max |X| at the bottom edge over the hip plates (lid hugs the shoulders, 0.4 gap)
     half_w_high=26.4,           # max |X| above Y 31 (pod spine)
-    top=54.6,                   # pod top; no robot limit, but a high mass makes the robot less stable
+    top=59.4,                   # pod top; no robot limit, but a high mass makes the robot less stable
+    com_z_max=10.0,             # keep the add-on center of mass within this distance of Z 0 (robot center)
     hug_gap=0.4,                # gap to the cover and the shoulder plates
 )

@@ -228,6 +228,7 @@ def content():
     lst(["Start from cad/starter_plate.step. It has the keyholes and the click beams.",
          "Add your part on top of the plate, in the same print. You can also screw parts to the M3 holes.",
          "Keep your part out of stl/installed/keepout.stl. This keeps it clear of the robot, the peg heads and the header.",
+         f"Keep heavy parts low and near the pegs. Keep the center of mass of the add-on within {I.ENVELOPE['com_z_max']:g} mm of Z 0, near X 0.",
          "Keep the weight low and near the center line. The pegs carry the whole add-on.",
          "For a plate of a different shape: subtract cad/keyhole_cutter.step, then add cad/detent_bumps.step. Both are in position."])
 

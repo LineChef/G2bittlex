@@ -117,7 +117,7 @@ JOBS = {
     # name: (show, cut, explode, camera, ortho)
     "01_assembly_iso": (ALL, None, 0, "0,-17.0,8,58,0,220,330", False),
     "06_tray_loaded": (NOLID, None, 0, "0,-17.0,8,52,0,220,280", False),
-    "08_section_x_mic": (ALL, ((-1.0, 0, 0), 17.9), 0, "0,-17.0,6,90,0,90,260", True),
+    "08_section_center": (ALL, ((-1.0, 0, 0), 0.0), 0, "0,-9.0,6,90,0,90,280", True),
 }
 
 

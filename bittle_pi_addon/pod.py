@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.7 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
+"""Bittle X Pi add-on rev 0.8 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -10,9 +10,10 @@ Parts
   pod_tray   : tray. Keyholes drop over the pegs 7 mm forward of the locked place, slide rearward, click
                (cantilever detents). A notch over the cover slot lets the BiBoard wires in.
                Holds the Pi Zero 2 W + PiSugar 2 stack (over the BiBoard header, between the
-               PiSugar button and switch), the NS4168 amp, the SPH0645 mic (front left, port
-               forward) and the 3 W speaker (on two pins on a wall at the rear end).
-  pod_lid    : lofted shell: low front, rising spine, haunches over the hips, chamfered rump,
+               PiSugar button and switch), the NS4168 amp, the 3 W speaker (on two pins on a
+               wall at the front end) and the SPH0645 mic (rear, port rearward).
+               The speaker at the front balances the stack: see balance().
+  pod_lid    : lofted shell: flat top, haunches over the hips, chamfered nose and rump,
                low side skirt over the cover slot. It snaps onto the tray rim. Its lower edge
                follows the cover and the hip plates (0.4 mm gap).
 Print: every part prints without supports (see check(): overhang rows).
@@ -47,7 +48,7 @@ COVER_INNER_TOP = 23.69    # inner surface under the flat top
 COVER_END_Z = 36.95
 
 # Lid shape (outer surface)
-ZF, ZR = -21.2, 76.5        # front and rear (the speaker is behind the stack)
+ZF, ZR = -40.0, 59.0        # front (speaker) and rear (mic)
 T_WALL = 1.6
 W_FRONT, W_MAIN = 26.4, 26.4    # upper half widths: front, spine
 W_HAUNCH = 33.6                 # half width at the bottom over the hip plates
@@ -57,7 +58,7 @@ SKIRT_Z = (-4.0, 8.0)           # ramp in; the skirt joins the haunch
 # The lid prints upside down on its flat top. Every overhang is 45 deg or less:
 # flat top over the full length, 45 deg chamfers on the top edges, nose and rump,
 # straight bottom flare (about 39 deg at the haunches).
-H_MAIN = 54.6               # 2 mm over rev 0.3: the plug wires cross over the Pi
+H_MAIN = 59.4               # the speaker stands on edge at the front (31 mm tall)
 W_BULGE = 30.0              # upper half width over the BiBoard header (Dupont plugs)
 BULGE_Z = (9.9, 11.4, 26.1, 27.6)   # blister over the header: steep ends between the button and the switch
 R_PLAN_F, R_PLAN_R = 4.0, 8.0
@@ -87,12 +88,17 @@ DET = PI.DET
 SPK = dict(l=45.0, body_l=27.0, d=31.0, h=14.3, ear_t=1.5, hole_d=4.0, hole_in=4.5, xc=0.0)
 SPK["holes_x"] = (SPK["xc"] - SPK["l"] / 2 + SPK["hole_in"], SPK["xc"] + SPK["l"] / 2 - SPK["hole_in"])
 SPK_PIN_D = SPK["hole_d"] - 0.5
-# Speaker in the rump: on edge, ear plate to the front, sound face to the rear. The ear plate
-# hangs on two pins on a wall at the rear end of the tray. Lid ribs behind the body hold it on.
-TRAY_Z1 = 54.0                              # rear end of the tray floor
-SPK_ZE = 56.0                               # front face of the ear plate = rear face of the wall
-SPK_Y0 = 20.5                               # bottom of the ear plate (below the tray floor, behind the tray)
-SPK_WALL = dict(x=21.0, y1=40.0)            # wall: |X| <= 21, Y from the tray bottom to 40
+# The ear tabs can be at the rear face of the body or up to half way up its side (not measured).
+# The pins reach both: the body can then stand against the wall with the tabs further out on the pins.
+SPK_PIN_L = SPK["ear_t"] + SPK["h"] / 2 + 1.0
+# Speaker at the front: on edge, ear plate to the rear, sound face to the front. The ear plate
+# hangs on two pins on a wall at the front end of the tray. Lid ribs in front of the body hold it on.
+# The speaker is the heaviest part after the stack: at the front it balances the add-on (balance()).
+TRAY_Z0 = -19.3                             # front end of the tray floor = front face of the wall
+TRAY_Z1 = 56.2                              # rear end of the tray floor (behind the mic base)
+SPK_ZE = TRAY_Z0                            # rear face of the ear plate
+SPK_Y0 = FLOOR_Y0                           # bottom of the ear plate: 0.7 over the cover top
+SPK_WALL = dict(x=21.0, y1=40.0, t=2.0)     # wall: |X| <= 21, Y from the tray bottom to 40
 
 # Pi Zero 2 W + PiSugar 2 (1200 mAh) stack.
 # "u" = height in the stack frame (Pi PCB bottom at u = -0.5).
@@ -137,10 +143,10 @@ AMP["x1"] = STACK_GPIO_X - 0.95
 AMP["x0"] = AMP["x1"] - AMP["t"]
 AMP["z1"] = AMP["z0"] + AMP["l"]
 AMP_HOLE_Z = AMP["z1"] - 15.2
-# SPH0645 mic board (Adafruit 3421 size) at the front left, on edge, port face forward (-Z).
-# It stands in a slot in a base on the tray floor; a stub on the lid holds its top edge.
-# The base stays 0.6 clear of the left-front detent beam (X >= -9.8).
-MIC = dict(l=16.7, w=12.7, t=1.8, xc=-17.9, z0=-16.6, y0=31.3, slot=3.0, clr=0.15)
+# SPH0645 mic board (Adafruit 3421 size) at the rear, behind the stack, on edge, port face
+# rearward (+Z), away from the speaker. It stands in a slot in a base on the tray floor;
+# a stub on the lid holds its top edge.
+MIC = dict(l=16.7, w=12.7, t=1.8, xc=0.0, z0=52.7, y0=31.3, slot=3.0, clr=0.15)
 MIC["x0"], MIC["x1"] = MIC["xc"] - MIC["w"] / 2, MIC["xc"] + MIC["w"] / 2
 MIC["z1"] = MIC["z0"] + MIC["t"]
 MIC["y1"] = MIC["y0"] + MIC["l"]
@@ -396,12 +402,13 @@ def cyl_x(y, z, x0, x1, r):
     return Pos((x0 + x1) / 2, y, z) * Rot(0, 90, 0) * Cylinder(r, x1 - x0)
 
 
-def tray_outline(y, extra=0.0, zmax=None):
+def tray_outline(y, extra=0.0, zmax=None, zmin=None):
     """Plan face at height y: lid inner wall at the rim height, minus TRAY_GAP + extra."""
     zs = np.linspace(ZF, ZR, 400)
     valid = [z for z in zs if inner_at(z)[0] > 3.0 + TRAY_GAP and inner_at(z)[2] > RIM_TOP + 3]
     zmax = TRAY_Z1 if zmax is None else zmax
-    za, zb = valid[0] + TRAY_GAP + extra, min(valid[-1] - TRAY_GAP, zmax) - extra
+    zmin = TRAY_Z0 if zmin is None else zmin
+    za, zb = max(valid[0] + TRAY_GAP, zmin) + extra, min(valid[-1] - TRAY_GAP, zmax) - extra
     pts = []
     for z in np.linspace(za, zb, 400):
         w = min(inner_at(min(max(z + dz, valid[0]), valid[-1]))[0] for dz in np.linspace(-1.6, 1.6, 9))   # steep blister ends
@@ -411,8 +418,8 @@ def tray_outline(y, extra=0.0, zmax=None):
     return Face(Wire.make_polygon(right + left, close=True))
 
 
-def plan_prism(y0, y1, extra=0.0, zmax=None):
-    return extrude(tray_outline(y0, extra, zmax), amount=y1 - y0, dir=(0, 1, 0))
+def plan_prism(y0, y1, extra=0.0, zmax=None, zmin=None):
+    return extrude(tray_outline(y0, extra, zmax, zmin), amount=y1 - y0, dir=(0, 1, 0))
 
 
 def stadium_x(y, z, x0, x1, w, h):
@@ -467,7 +474,7 @@ def build_tray():
     # notch over the cover slot (floor and rim, open to the side), includes the slide travel
     t -= box(SLOT["x0"] - 0.3, 40.0, FLOOR_Y0 - 1, RIM_TOP + 1, SLOT["z0"] - 0.6, SLOT["z1"] + SLIDE + 0.6)
     t &= plan_prism(FLOOR_Y0 - 1, H_MAIN)   # nothing outside the lid's inner wall
-    t += speaker_wall() & plan_prism(FLOOR_Y0 - 1, H_MAIN, zmax=ZR)
+    t += speaker_wall() & plan_prism(FLOOR_Y0 - 1, H_MAIN, zmin=ZF)   # the pins stand in front of the tray
     return t
 
 
@@ -500,14 +507,15 @@ def teardrop_z(x, y, z0, z1, r, flat):
 
 
 def speaker_wall():
-    """Wall at the rear end of the tray with two pins through the speaker ear holes."""
+    """Wall at the front end of the tray with two pins (forward) through the speaker ear holes."""
     W = SPK_WALL
-    w = box(-W["x"], W["x"], FLOOR_Y0, W["y1"], TRAY_Z1 - 0.01, SPK_ZE)
+    w = box(-W["x"], W["x"], FLOOR_Y0, W["y1"], SPK_ZE, SPK_ZE + W["t"])
     yc = SPK_Y0 + SPK["d"] / 2
     r = SPK_PIN_D / 2
+    zp = SPK_ZE - SPK_PIN_L                                                 # front end of the pin
     for xh in SPK["holes_x"]:
-        w += teardrop_z(xh, yc, SPK_ZE - 0.01, SPK_ZE + SPK["ear_t"] + 0.6, r, SPK["hole_d"] / 2 - 0.1)
-        w += Pos(xh, yc, SPK_ZE + SPK["ear_t"] + 0.9) * Cone(r, r - 0.3, 0.6)    # lead-in
+        w += teardrop_z(xh, yc, zp, SPK_ZE + 0.01, r, SPK["hole_d"] / 2 - 0.1)
+        w += Pos(xh, yc, zp - 0.3) * Cone(r - 0.3, r, 0.6)                   # lead-in
     return w
 
 
@@ -525,11 +533,10 @@ def amp_post():
 
 
 def mic_base():
-    """Base on the tray floor with a slot for the bottom edge of the mic board. The slot is open
-    at the left end (over the rim) and closed at the right end (0.6 clear of the detent beam)."""
+    """Base on the tray floor with a slot for the bottom edge of the mic board."""
     M, c = MIC, MIC["clr"]
-    b = box(-(W_MAIN - T_WALL - TRAY_GAP), -10.4, FLOOR_Y1 - 0.01, M["y0"] + M["slot"], M["z0"] - 1.2, M["z1"] + 1.2)
-    b -= box(M["x0"] - 2.0, M["x1"] + c, M["y0"], M["y0"] + M["slot"] + 1, M["z0"] - c, M["z1"] + c)
+    b = box(M["x0"] - 2.0, M["x1"] + 2.0, FLOOR_Y1 - 0.01, M["y0"] + M["slot"], M["z0"] - 1.2, M["z1"] + 1.2)
+    b -= box(M["x0"] - c, M["x1"] + c, M["y0"], M["y0"] + M["slot"] + 1, M["z0"] - c, M["z1"] + c)
     return b
 
 
@@ -588,18 +595,18 @@ def build_lid():
     n = int((bz1 - bz0 - 6.0) // 3.4) + 1
     for i in range(n):
         zc = bz0 + 3.0 + i * 3.4
-        cuts.append(box(-11.0, 11.0, 38.0, 60.0, zc - 0.7, zc + 0.7))
-    # speaker: vertical grille slots in the rear end, two ribs behind the body (0.4 gap)
-    zb_ = SPK_ZE + SPK["ear_t"] + SPK["h"]
+        cuts.append(box(-11.0, 11.0, 38.0, H_MAIN + 5, zc - 0.7, zc + 0.7))
+    # speaker: vertical grille slots in the front end, two ribs in front of the body (0.4 gap)
+    zf_ = SPK_ZE - SPK["ear_t"] - SPK["h"]
     for xs in np.arange(-8.5, 8.6, 3.4):
-        cuts.append(box(xs - 0.6, xs + 0.6, SPK_Y0 + 6.0, SPK_Y0 + SPK["d"] - 5.0, zb_ + 0.4, ZR + 1))
+        cuts.append(box(xs - 0.6, xs + 0.6, SPK_Y0 + 6.0, SPK_Y0 + SPK["d"] - 5.0, ZF - 1, zf_ - 0.4))
     for xr in (-11.0, 11.0):     # up to the lid top: no free end that hangs in the print
-        adds.append(box(xr - 0.8, xr + 0.8, SPK_Y0 + 4.0, H_MAIN, zb_ + 0.4, ZR + 1))
-    # mic: stub over the board, diamond sound holes in the front wall (no overhang in the print)
+        adds.append(box(xr - 0.8, xr + 0.8, SPK_Y0 + 4.0, H_MAIN, ZF - 1, zf_ - 0.4))
+    # mic: stub over the board, diamond sound holes in the rear wall (no overhang in the print)
     adds.append(mic_stub())
     yc = (MIC["y0"] + MIC["y1"]) / 2
     for du, dv in [(0, 0)] + [(2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a))) for a in range(0, 360, 60)]:
-        cuts.append(Pos(MIC["xc"] + du, yc + dv, ZF + T_WALL / 2) * Rot(0, 0, 45) * Box(0.9, 0.9, T_WALL + 3))
+        cuts.append(Pos(MIC["xc"] + du, yc + dv, ZR - T_WALL / 2) * Rot(0, 0, 45) * Box(0.9, 0.9, T_WALL + 2))
     # hold-down stubs over the Pi mounting screws
     for (x, z) in PI_HOLES:
         adds.append(cyl_y(x, z, PI_PCB_TOP + SCREW_HEAD + HOLD_GAP, H_MAIN, 1.6))
@@ -645,14 +652,14 @@ def real_models():
     amp += box(xf - 6.0, xf, yb + 3.0, yb + 11.5, za, za + 6.0)                     # 2-pin PH2.0
     amp += box(xf - 1.8, xf, yb + 7.0, yb + 13.0, za + 13.0, za + 19.0)             # IC
     mic = box(MIC["x0"], MIC["x1"], MIC["y0"], MIC["y1"], MIC["z0"], MIC["z1"])
-    mic += box(MIC["xc"] - 2.0, MIC["xc"] + 2.0, MIC["y0"] + 6.0, MIC["y0"] + 10.0, MIC["z1"], MIC["z1"] + 1.2)   # parts on the back
-    # speaker on edge: ear plate in the XY plane at the front, body behind it
-    z1 = SPK_ZE + SPK["ear_t"]
+    mic += box(MIC["xc"] - 2.0, MIC["xc"] + 2.0, MIC["y0"] + 6.0, MIC["y0"] + 10.0, MIC["z0"] - 1.2, MIC["z0"])   # parts on the front face
+    # speaker on edge: ear plate in the XY plane at the rear, body in front of it
+    z0 = SPK_ZE - SPK["ear_t"]
     yc = SPK_Y0 + SPK["d"] / 2
-    spk = box(-SPK["l"] / 2, SPK["l"] / 2, SPK_Y0, SPK_Y0 + SPK["d"], SPK_ZE, z1)
+    spk = box(-SPK["l"] / 2, SPK["l"] / 2, SPK_Y0, SPK_Y0 + SPK["d"], z0, SPK_ZE)
     for xh in SPK["holes_x"]:
-        spk -= cyl_z(xh, yc, SPK_ZE - 1, z1 + 1, SPK["hole_d"] / 2)
-    spk += box(-SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, z1, z1 + SPK["h"])
+        spk -= cyl_z(xh, yc, z0 - 1, SPK_ZE + 1, SPK["hole_d"] / 2)
+    spk += box(-SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, z0 - SPK["h"], z0)
     cov = load_stl(os.path.join(PREF, "Bittle_Cover.stl")).reshape(-1, 3)
     m = (cov[:, 0] > HDR["x0"]) & (cov[:, 0] < HDR["x1"]) & (cov[:, 2] > HDR["z0"]) & (cov[:, 2] < HDR["z1"])
     hdr = b3d_to_manifold(box(HDR["x0"], HDR["x1"], float(cov[m, 1].min()) - 3.0, HDR["top"], HDR["z0"], HDR["z1"]))
@@ -691,7 +698,8 @@ def build_all():
     cover_tris = load_stl(os.path.join(PREF, COVER_STL))
     cover = mesh_to_manifold(cover_tris)
     cover_pegs = cover + b3d_to_manifold(build_pegs())
-    support = np.concatenate([solid_cover_tris(), shoulder_tris()])
+    support = np.concatenate([solid_cover_tris(), shoulder_tris(),
+                              load_stl(os.path.join(PREF, "Bittle_FrontPlate.stl"))])
     box_ = lambda *a: b3d_to_manifold(box(*a))
     clearance = heightfield_solid(support, -W_HAUNCH - 3, W_HAUNCH + 3, ZF - 2, ZR + 2, lift=HUG_GAP)
     clearance += box_(-27.6, 27.6, 0.0, LID_MIN_Y, COVER_END_Z - 0.5, ZR + 5)
@@ -748,6 +756,34 @@ def check(parts, models, robot):
     return rows
 
 
+# Typical masses (g) of the electronics. They are not weighed: put your own values here.
+MASS_G = dict(pizero=11.0, pisugar2=8.0, battery=23.0, speaker=20.0, amp_ns4168=4.0,
+              mic_sph0645=1.0, dupont_plugs=3.0)
+PLA_G_MM3 = 1.24e-3
+
+
+def centroid(M):
+    """Volume centroid of a manifold."""
+    m = M.to_mesh()
+    v = np.asarray(m.vert_properties)[:, :3][np.asarray(m.tri_verts)]
+    w = np.einsum("ij,ij->i", v[:, 0], np.cross(v[:, 1], v[:, 2]))
+    return (v.sum(1) / 4 * w[:, None]).sum(0) / w.sum()
+
+
+def balance(parts, models):
+    """Mass and center of mass of the add-on (printed parts + electronics), robot frame.
+    The robot center is X 0, Z 0: the cover and the shoulder plates are symmetric about it."""
+    rows = []
+    for n in ("pod_tray", "pod_lid", "usb_plug"):
+        rows.append((n, parts[n].volume() * PLA_G_MM3, centroid(parts[n])))
+    for n, g in MASS_G.items():
+        rows.append((n, g, centroid(models[n])))
+    m = sum(r[1] for r in rows)
+    c = sum(r[1] * r[2] for r in rows) / m
+    return dict(mass_g=round(m, 1), com=[round(float(v), 1) for v in c],
+                parts=[dict(name=n, g=round(g, 1), com=[round(float(v), 1) for v in p]) for n, g, p in rows])
+
+
 def print_orient(name, M):
     """Rotate to the print orientation and put the part on the bed (Z=0)."""
     if name == "pod_tray":
@@ -765,6 +801,71 @@ def print_orient(name, M):
     lo, hi = M.bounding_box()[:3], M.bounding_box()[3:]
     M = M.translate([-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2]])
     return M
+
+
+def mesh_solid(M, tol=0.05):
+    """Faceted B-rep solid from a manifold mesh, simplified to `tol` mm. Coplanar facets are merged."""
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakePolygon, BRepBuilderAPI_MakeFace, BRepBuilderAPI_Sewing, BRepBuilderAPI_MakeSolid
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.TopoDS import TopoDS
+    from OCP.gp import gp_Pnt
+    from build123d import Solid
+    m = M.simplify(tol).to_mesh()
+    v = np.asarray(m.vert_properties)[:, :3].astype(float)
+    sw = BRepBuilderAPI_Sewing(1e-4)
+    for a, b, c in np.asarray(m.tri_verts):
+        poly = BRepBuilderAPI_MakePolygon(gp_Pnt(*v[a]), gp_Pnt(*v[b]), gp_Pnt(*v[c]), True)
+        f = BRepBuilderAPI_MakeFace(poly.Wire(), True)
+        if f.IsDone():
+            sw.Add(f.Face())
+    sw.Perform()
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_SHELL
+    mk = BRepBuilderAPI_MakeSolid()
+    ex = TopExp_Explorer(sw.SewedShape(), TopAbs_SHELL)
+    while ex.More():                       # a mesh can have more than one closed shell
+        mk.Add(TopoDS.Shell(ex.Current()))
+        ex.Next()
+    S = mk.Solid()
+    u = ShapeUpgrade_UnifySameDomain(S, True, True, False)
+    u.Build()
+    return Solid(u.Shape())
+
+
+def export_assembly(path):
+    """One STEP file with the robot, the platform and the add-on in place: named, colored parts.
+    Exact B-rep for the pegs, the tray and the plug; simplified meshes for the rest
+    (0.05 mm for the add-on, 0.15 mm for the robot, the cover and the boards)."""
+    from build123d import Compound, Color, export_step
+    from bittle_platform import build as BP
+    mirror_x, mirror_z = np.diag([-1.0, 1, 1, 1])[:3, :], np.diag([1.0, 1, -1, 1])[:3, :]
+    meshes = dict(
+        shoulder_right=(stl_manifold("Bittle_SideShoulder.stl", ref=PREF), "#f2a71c"),
+        shoulder_left=(stl_manifold("Bittle_SideShoulder.stl", ref=PREF).transform(mirror_x), "#f2a71c"),
+        front_plate=(stl_manifold("Bittle_FrontPlate.stl", ref=PREF), "#26272b"),
+        rear_plate_mirror=(stl_manifold("Bittle_FrontPlate.stl", ref=PREF).transform(mirror_z), "#26272b"),
+        cover=(stl_manifold(COVER_STL, ref=PREF), "#26272b"),
+        pod_lid=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_lid.stl"))), "#f9bd1a"),
+    )
+    for n, col in (("pizero", "#2a8c47"), ("pisugar2", "#c4588c"), ("battery", "#3a5fa8"), ("amp_ns4168", "#1a5a8c"),
+                   ("speaker", "#7a52b8"), ("mic_sph0645", "#d83a34"), ("biboard_header", "#0d0d0d"), ("dupont_plugs", "#d83a34")):
+        meshes[n] = (mesh_to_manifold(load_stl(os.path.join(OUT, "models", f"{n}.stl"))), col)
+    kids = []
+    coarse = ("shoulder_right", "shoulder_left", "front_plate", "rear_plate_mirror", "cover", "pizero", "pisugar2")
+    for n, (M, col) in meshes.items():
+        S = mesh_solid(M, 0.15 if n in coarse else 0.05)
+        S.label, S.color = n, Color(col)
+        kids.append(S)
+    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf"), ("usb_plug", build_plug(), "#1a1a1a")):
+        shape.label, shape.color = n, Color(col)
+        kids.append(shape)
+    A = Compound(label="bittle_pi_addon_assembly", children=kids)
+    export_step(A, path)
+    import zipfile
+    zp = os.path.join(os.path.dirname(path), "assembly_step.zip")
+    with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        z.write(path, os.path.basename(path))
+    print(f"assembly: {path} ({os.path.getsize(path) / 1e6:.1f} MB, {len(kids)} parts), zip {os.path.getsize(zp) / 1e6:.1f} MB")
 
 
 def main():
@@ -791,6 +892,8 @@ def main():
     for n, M in models.items():
         save_stl(M, os.path.join(OUT, "models", f"{n}.stl"))
     rows = check(parts, models, robot)
+    bal = balance(parts, models)
+    print(f"balance: {bal['mass_g']} g, center of mass x {bal['com'][0]} y {bal['com'][1]} z {bal['com'][2]}")
     i = parts["pod_tray"] ^ parts["pod_lid"]
     for c in i.decompose():
         if c.volume() > 0.05:
@@ -800,12 +903,13 @@ def main():
         if v > 0.05:
             print(f"  {a:12s} x {b:16s} {v:9.2f}")
     import json
-    json.dump(dict(rows=rows, printing=printing), open(os.path.join(OUT, "checks.json"), "w"), indent=1)
+    json.dump(dict(rows=rows, printing=printing, balance=bal), open(os.path.join(OUT, "checks.json"), "w"), indent=1)
     # exact CAD of the parts that are pure B-rep (the lid is cut by the robot mesh: STL only)
     from build123d import export_step
     os.makedirs(os.path.join(ROOT, "cad"), exist_ok=True)
     export_step(build_tray(), os.path.join(ROOT, "cad", "pod_tray.step"))
     export_step(build_plug(), os.path.join(ROOT, "cad", "usb_plug.step"))
+    export_assembly(os.path.join(ROOT, "cad", "assembly.step"))
 
 
 if __name__ == "__main__":

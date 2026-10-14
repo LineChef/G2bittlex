@@ -37,8 +37,9 @@ A Raspberry Pi with a battery, a speaker and a microphone, in one pod that
 clicks onto the platform.
 
 - Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh)
-- NS4168 I2S amp and a 3 W speaker, sound out of the rear grille
-- SPH0645 I2S microphone behind the front of the lid
+- NS4168 I2S amp and a 3 W speaker, sound out of the front grille
+- SPH0645 I2S microphone at the rear, away from the speaker
+- Balanced: the speaker at the front balances the Pi stack
 - Serial link to the BiBoard through the Pi slot in the cover
 - Charge port, power button and power switch open through the lid
 - 3 printed parts, all without supports

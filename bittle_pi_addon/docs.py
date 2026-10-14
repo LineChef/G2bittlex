@@ -14,7 +14,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.7"
+VERSION = "0.8"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -45,7 +45,7 @@ def content():
     p("Print quality. Every surface of the add-on parts is at 45 deg or less from vertical, or is a short bridge:")
     lst([f"Tray: {pr['pod_tray']['overhang_mm2']:.0f} mm² of overhang in total. These are the flat bottoms (1.2 to 1.5 wide) of the teardrop pins for the speaker and the amp.",
          f"Lid: {pr['pod_lid']['overhang_mm2']:.0f} mm² in total. These are the tops (in the print) of the charge window, the switch slot and the button slit: bridges of 7 to 9 mm. The profiles have the bridge settings on.",
-         "The mic holes in the lid front are diamonds, so they print clean without a bridge.",
+         "The mic holes in the lid rear are diamonds, so they print clean without a bridge.",
          "The slots for the mic board and the speaker ear plate are vertical in the print. They have no ceilings.",
          "Keep the seam at the back (the profiles do this)."])
 
@@ -54,10 +54,16 @@ def content():
          ["Raspberry Pi Zero 2 W", "No header. Solder the wires to the pads, flat along the GPIO edge."],
          ["PiSugar 2, 1200 mAh", "Under the Pi (pogo pins and its screws). The charge port, button and switch face the right side."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge, on two pins left of the stack."],
-         ["NULLLAB 3 W 4 ohm speaker", "Ear plate 45 x 31 x 1.5, body 27 x 30 x 14.3 (ruler). On two pins at the rear, sound to the rear grille."],
-         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board, on edge at the front left, port forward. Solder the wires at the top edge."],
+         ["NULLLAB 3 W 4 ohm speaker", "Ear plate 45 x 31 x 1.5, body 27 x 30 x 14.3 (ruler). On two pins at the front, sound to the front grille."],
+         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board, on edge at the rear, port to the rear. Solder the wires at the top edge."],
          ["5 Dupont jumpers", "Straight plugs on the BiBoard header (GND, +5V, TX2, RX2) in the cover slot."],
          ], [50, 120])
+
+    B = CHECKS["balance"]
+    x, y, z = B["com"]
+    p(f"Balance. The add-on weighs about {B['mass_g']:.0f} g: the printed parts in PLA and typical masses of the electronics. "
+      f"Its center of mass is {z:.1f} mm behind the robot center, {x:.1f} mm right of the center line and {y - PI.COVER_TOP:.0f} mm above the cover top. "
+      "The speaker at the front balances the Pi stack. The masses are not weighed: put your own values in MASS_G in pod.py and run pod.py again.")
 
     h("3. Assembly")
     st = lambda n: f" ([viewer step {n}]({VIEWER}#step={n}))"
@@ -65,17 +71,17 @@ def content():
       "Each step below has a link to its view.")
     lst(["Print the platform cover and fit it on the robot in place of the stock cover." + st(2),
          "Solder the wires to the Pi, the amp and the mic (section 4).",
-         "Push the mic board down into the slot at the front left of the tray, port to the front, wire pads at the top." + st(5),
+         "Push the mic board down into the slot at the rear of the tray, port to the rear, wire pads at the top." + st(5),
          "Push the amp onto its two pins, components to the left." + st(6),
-         "Hang the speaker on the two pins of the rear wall, ear plate to the front." + st(7),
+         "Hang the speaker on the two pins of the front wall, ear plate to the rear." + st(7),
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
          f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
          "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi." + st(9),
          "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
          "Optional: push the TPU plug into the charge window." + st(11),
          f"To remove: pull the lid up, slide the tray {PI.SLIDE:g} mm forward and lift it."])
-    img("06_tray_loaded.png", 0.62, "The tray without the lid: the stack, the amp (left), the mic (front left) and the speaker (rear).")
-    img("08_section_x_mic.png", 0.62, "Section through the mic (right: front). The mic stands in its slot, the lid stub holds its top edge. The speaker hangs on the rear pins (left).")
+    img("06_tray_loaded.png", 0.62, "The tray without the lid: the speaker (front), the stack, the amp (left) and the mic (rear).")
+    img("08_section_center.png", 0.62, "Section on the center line (right: front). The speaker hangs on the front pins. The mic stands in its slot at the rear, and the lid stub holds its top edge.")
 
     h("4. Wiring")
     tbl([["Signal", "Pi Zero 2 W", "To"],
@@ -92,6 +98,7 @@ def content():
     tbl([["File", "Content"],
          ["stl/print/", "the parts in print orientation"],
          ["cad/pod_tray.step, cad/usb_plug.step", "exact CAD (the lid is a mesh: its lower edge follows the robot)"],
+         ["cad/assembly_step.zip", "one STEP file with the robot, the platform and the add-on in place, with named and colored parts. Unzip it and open it in FreeCAD or other CAD software"],
          ["stl/installed/, stl/models/", "the parts and the electronics in the robot frame"],
          ["pod.py", "all dimensions, the build and the checks (fit, slide path, loose pieces, overhang)"],
          ["render.py, docs.py", "the pictures and this guide"],

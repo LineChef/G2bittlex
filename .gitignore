@@ -13,4 +13,7 @@ __pycache__/
 # Built by build_site.py (GitHub Actions builds them for Pages)
 /site/
 *.zip
+# The assembly STEP is 50 MB: the repository has only its zip
+bittle_pi_addon/cad/assembly.step
+!bittle_pi_addon/cad/assembly_step.zip
 bittle_pi_addon/stl/tmp/
