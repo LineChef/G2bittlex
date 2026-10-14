@@ -20,22 +20,91 @@ MD = os.path.join(SITE, "models")
 # id, label, group, source file, colour, explode offset (dx, dy, dz), extra transform
 PARTS = [
     ("lid", "Pod lid", "Printed", "stl/installed/pod_lid.stl", "#f7b81a", (0, 60, 0), None),
-    ("plug", "Charge-port plug (TPU)", "Printed", "stl/installed/usb_plug.stl", "#222222", (-12, 60, 0), None),
+    ("plug", "Charge-port plug (TPU)", "Printed", "stl/installed/usb_plug.stl", "#222222", (25, 40, 0), None),
     ("tray", "Pod tray", "Printed", "stl/installed/pod_tray.stl", "#cfd2d6", (0, 12, 0), None),
-    ("cover", "Stock cover + pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
-    ("pizero", "Raspberry Pi Zero 2 W", "Components", "stl/models/pizero.stl", "#2e9b4f", (0, 36, 0), None),
-    ("pisugar", "PiSugar 2 board", "Components", "stl/models/pisugar2.stl", "#e06aa3", (0, 30, 0), None),
-    ("battery", "1200 mAh cell", "Components", "stl/models/battery.stl", "#4a78d8", (0, 24, 0), None),
-    ("amp", "NS4168 amp", "Components", "stl/models/amp_ns4168.stl", "#1f5f8f", (0, 30, 0), None),
-    ("header", "BiBoard 5-pin header (est. height)", "Components", "stl/models/biboard_header.stl", "#0d0d0d", (0, 0, 0), None),
-    ("plugs", "Dupont plugs + wire space", "Components", "stl/models/dupont_plugs.stl", "#d83a34", (0, 0, 0), None),
+    ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
+    ("pizero", "Raspberry Pi Zero 2 W", "Components", "stl/models/pizero.stl", "#2e9b4f", (0, 44, 0), None),
+    ("pisugar", "PiSugar 2 board", "Components", "stl/models/pisugar2.stl", "#e06aa3", (0, 36, 0), None),
+    ("battery", "1200 mAh cell", "Components", "stl/models/battery.stl", "#4a78d8", (0, 28, 0), None),
+    ("amp", "NS4168 amp", "Components", "stl/models/amp_ns4168.stl", "#1f5f8f", (-22, 26, 0), None),
+    ("header", "BiBoard 5-pin header (est. height)", "Robot", "stl/models/biboard_header.stl", "#0d0d0d", (0, 0, 0), None),
+    ("plugs", "Dupont plugs + wire space", "Components", "stl/models/dupont_plugs.stl", "#d83a34", (14, 16, 0), None),
     ("slot", "Cover slot passage (wires)", "Components", "stl/models/cover_slot.stl", "#0d0d0d", (0, 0, 0), None),
     ("shoulder_r", "Side shoulder R", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), None),
     ("shoulder_l", "Side shoulder L", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), "mirror_x"),
     ("front_plate", "Front plate", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), None),
     ("rear_plate", "Rear plate (mirror of front)", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), "mirror_z"),
-    ("speaker", "NULLLAB 3 W speaker (rump)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 30, 0), None),
-    ("mic", "SPH0645 mic (front left)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, 0), None),
+    ("speaker", "NULLLAB 3 W speaker (rump)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 18, 34), None),
+    ("mic", "SPH0645 mic (front left)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, -24), None),
+]
+
+# Text for the part card in the viewer: what the part is, how it attaches, downloads (relative to site/viewer/).
+PF, AF = "../files/platform/", "../files/addon/"
+INFO = {
+    "cover": dict(text="The platform. It is the stock Petoi back cover with 4 pegs on its flat top, 24 x 16 mm on the center line. "
+                       "The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change.",
+                  attach="It goes on the robot in place of the stock cover.",
+                  files=[("Print STL, with foot", PF + "cover_pegs_foot.stl"), ("Pegs STEP", PF + "pegs.step"),
+                         ("Platform spec PDF", PF + "bittle_platform_spec.pdf")]),
+    "tray": dict(text="The tray of the Pi add-on. It has 4 keyholes with spring beams, a slot base for the mic, two pins for the amp, "
+                      "and a rear wall with two pins for the speaker. It prints floor down without supports.",
+                 attach="Put it on the pegs 7 mm forward of its place, then slide it 7 mm rearward until the beams click.",
+                 files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
+    "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
+                     "It has openings for the charge port, the button, the switch, the mic and the speaker.",
+                attach="Push it down onto the tray rim until the 4 snaps engage. Its lower edge then stops the tray from sliding forward.",
+                files=[("Print STL", AF + "pod_lid.stl"), ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
+    "plug": dict(text="An optional TPU plug for the micro-USB charge window.",
+                 attach="Push it into the window from outside. Pull the tab to open the port.",
+                 files=[("Print STL", AF + "usb_plug.stl"), ("STEP", AF + "usb_plug.step")]),
+    "pizero": dict(text="Raspberry Pi Zero 2 W, on top of the PiSugar 2. Model: PiSugar (GPL-3.0).",
+                   attach="It lies in the tray on the PiSugar 2, ports to the right side."),
+    "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch face the right side. Model: PiSugar (GPL-3.0).",
+                    attach="It is screwed under the Pi. Corner stops in the tray hold the stack."),
+    "battery": dict(text="The 1200 mAh cell of the PiSugar 2.",
+                    attach="It rests on two rails in the tray, above the peg heads."),
+    "amp": dict(text="NULLLAB NS4168 I2S amp, on edge left of the stack. Components face left.",
+                attach="Push it onto the two teardrop pins of the post in the tray."),
+    "speaker": dict(text="NULLLAB 3 W 4 ohm speaker. The sound goes out of the rear grille of the lid.",
+                    attach="Hang the ear plate on the two pins of the rear wall of the tray. Ribs in the lid hold it on."),
+    "mic": dict(text="SPH0645 I2S mic board, on edge at the front left. The port faces forward to 7 holes in the lid.",
+                attach="Push it down into the slot of the base. A stub in the lid holds its top edge."),
+    "header": dict(text="The 5-pin BiBoard header (GND, +5V, TX2, RX2) in the Pi slot of the cover. The height is an estimate.",
+                   attach="It is part of the robot."),
+    "plugs": dict(text="Straight Dupont plugs on the header and the space for their wires.",
+                  attach="Push them onto the header before the lid goes on."),
+    "slot": dict(text="The free space in the Pi slot of the cover. The wires use it.", attach=""),
+    "shoulder_r": dict(text="Petoi side shoulder, right. Model: Petoi.", attach="Part of the robot."),
+    "shoulder_l": dict(text="Petoi side shoulder, left (mirror). Model: Petoi.", attach="Part of the robot."),
+    "front_plate": dict(text="Petoi front plate. Model: Petoi.", attach="Part of the robot."),
+    "rear_plate": dict(text="Rear plate. Petoi publishes no rear plate, so this is the front plate, mirrored.", attach="Part of the robot."),
+}
+
+# Build steps: parts that appear, where they start (offset in mm) and where they stop.
+STEPS = [
+    dict(title="The robot", show=["shoulder_r", "shoulder_l", "front_plate", "rear_plate", "header"], view="iso",
+         text="The Bittle X body without its back cover. The BiBoard header stands up at the right side."),
+    dict(title="Fit the platform", view="iso", show=["cover"], start={"cover": [0, 40, 0]},
+         text="Fit the platform cover in place of the stock cover. It has 4 pegs on its top."),
+    dict(title="Put the tray on", view="iso", show=["tray"], start={"tray": [0, 35, -7]}, end={"tray": [0, 0, -7]},
+         text="Put the tray on the pegs 7 mm forward of its place. The peg heads go through the large holes."),
+    dict(title="Slide to lock", view="right", start={"tray": [0, 0, -7]},
+         text="Push the tray 7 mm rearward. The spring beams in the floor click past bumps, and the peg heads hold the floor down."),
+    dict(title="Mic", view="front", show=["mic"], start={"mic": [0, 30, 0]},
+         text="Push the mic board down into the slot at the front left, port forward."),
+    dict(title="Amp", view="left", show=["amp"], start={"amp": [-22, 0, 0]},
+         text="Push the amp onto its two pins, components to the left."),
+    dict(title="Speaker", view="rear", show=["speaker"], start={"speaker": [0, 0, 30]},
+         text="Hang the speaker on the two pins of the rear wall, ear plate forward."),
+    dict(title="Pi stack", view="iso", show=["battery", "pisugar", "pizero"],
+         start={"battery": [0, 40, 0], "pisugar": [0, 40, 0], "pizero": [0, 40, 0]},
+         text="Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right."),
+    dict(title="Wires", view="right", show=["plugs", "slot"], start={"plugs": [0, 20, 0]},
+         text="Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi."),
+    dict(title="Lid", view="iso", show=["lid"], start={"lid": [0, 45, 0]},
+         text="Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward."),
+    dict(title="Charge plug", view="right", show=["plug"], start={"plug": [20, 0, 0]},
+         text="Optional: push the TPU plug into the charge window."),
 ]
 
 
@@ -56,7 +125,7 @@ def main():
             shutil.copy2(path, os.path.join(MD, name))
             copied[src] = name
         out.append(dict(id=pid, label=label, group=group, file="models/" + name,
-                        color=color, explode=ex, transform=tf))
+                        color=color, explode=ex, transform=tf, **INFO.get(pid, {})))
     checks = json.load(open(os.path.join(ROOT, "stl", "checks.json")))["rows"]
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
@@ -67,7 +136,7 @@ def main():
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
         checks=[dict(a=a, b=b, v=round(v, 2)) for a, b, v in checks],
     )
-    json.dump(dict(parts=out, meta=meta), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
+    json.dump(dict(parts=out, meta=meta, steps=STEPS), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
     print("site ready:", len(out), "parts")
 
 

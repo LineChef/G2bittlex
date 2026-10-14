@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bittle Pi Pod</title>
+<title>Bittle X Viewer</title>
 <style>
   :root {
     --bg: #f4f4f2; --panel: #ffffff; --ink: #1d1f22; --muted: #6b6f76;
@@ -26,10 +26,14 @@
   #app { display: grid; grid-template-columns: 300px 1fr; height: 100%; }
   aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 14px 16px 24px; }
   h1 { font-size: 16px; margin: 0 0 2px; }
-  .sub { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+  .sub a { color: inherit; }
   h2 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
   .row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
-  .row label { flex: 1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .row label { cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .row .name { flex: 1; cursor: pointer; border-radius: 4px; padding: 1px 4px; margin-left: -4px; }
+  .row .name:hover { background: var(--chip); }
+  .row .name.sel { background: var(--accent); color: var(--accent-ink); }
   .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); flex: none; }
   input[type=range] { width: 100%; accent-color: var(--accent); }
   .btns { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -37,30 +41,53 @@
     padding: 5px 9px; font: inherit; font-size: 12px; cursor: pointer; }
   button:hover { border-color: var(--accent); }
   button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
   .val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; min-width: 52px; text-align: right; }
   .grp { font-size: 12px; color: var(--muted); margin-top: 8px; }
   #view { position: relative; overflow: hidden; }
-  canvas { display: block; }
-  #hud { position: absolute; left: 12px; bottom: 12px; background: var(--panel); border: 1px solid var(--line);
-    border-radius: 8px; padding: 8px 10px; font-size: 12px; max-width: 360px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  canvas { display: block; touch-action: none; }
+  .float { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.12); font-size: 12.5px; }
+  #hud { left: 12px; bottom: 12px; padding: 8px 10px; max-width: 420px; }
   #hud b { font-variant-numeric: tabular-nums; }
+  #hud kbd { font: 11px ui-monospace, monospace; background: var(--chip); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+  #tip { pointer-events: none; padding: 3px 8px; border-radius: 6px; display: none; white-space: nowrap; }
+  #card { right: 12px; top: 12px; width: 310px; padding: 12px 14px; display: none; max-height: calc(100% - 24px); overflow-y: auto; }
+  #card h3 { margin: 0 0 2px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  #card .close { margin-left: auto; padding: 2px 8px; }
+  #card .grp2 { color: var(--muted); font-size: 11.5px; margin-bottom: 8px; }
+  #card p { margin: 0 0 8px; }
+  #card .att { border-left: 3px solid var(--accent); padding-left: 8px; }
+  #card .dims { color: var(--muted); font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+  #card .files a { display: block; color: var(--ink); margin: 2px 0; }
+  #card .btns { margin: 8px 0; }
+  #build { left: 50%; transform: translateX(-50%); top: 12px; width: min(520px, calc(100% - 24px)); padding: 10px 14px; display: none; }
+  #build .head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  #build .head b { flex: 1; }
+  #build .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+  #build .bar { height: 3px; background: var(--line); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  #build .bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
   #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
   .checks { font-size: 12px; max-height: 190px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; }
   .checks div { display: flex; justify-content: space-between; padding: 2px 6px; border-bottom: 1px solid var(--line); }
   .ok { color: var(--good); } .warn { color: var(--accent); } .bad { color: var(--bad); }
-  .menu { display: none; }
   @media (max-width: 760px) {
     #app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
     aside { order: 2; max-height: 45vh; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px; }
     #hud { right: 12px; max-width: none; }
+    #card { left: 12px; right: 12px; width: auto; top: auto; bottom: 12px; max-height: 55%; }
   }
 </style>
 </head>
 <body>
 <div id="app">
   <aside>
-    <h1 id="title">Bittle Pi Pod</h1>
+    <h1 id="title">Bittle X Viewer</h1>
     <div class="sub" id="env"></div>
+    <div class="sub"><a href="../">Downloads and documents</a></div>
+
+    <h2>Build it step by step</h2>
+    <div class="btns"><button id="buildBtn">Start the build</button></div>
 
     <h2>View</h2>
     <div class="btns" id="views">
@@ -84,9 +111,10 @@
     <h2>Tools</h2>
     <div class="btns">
       <button id="measure">Measure</button><button id="wire">Edges</button><button id="theme">Theme</button>
+      <button id="resetAll">Reset parts</button>
     </div>
 
-    <h2>Parts</h2>
+    <h2>Parts <span style="text-transform:none;letter-spacing:0">(click a name)</span></h2>
     <div id="parts"></div>
 
     <h2>Interference checks (mm³)</h2>
@@ -94,7 +122,34 @@
   </aside>
   <div id="view">
     <div id="loading">Loading models…</div>
-    <div id="hud">Drag to orbit · right-drag to pan · scroll to zoom. <span id="msr"></span></div>
+    <div id="build" class="float">
+      <div class="head"><b id="bTitle"></b><span class="n" id="bN"></span></div>
+      <div id="bText"></div>
+      <div class="btns" style="margin-top:8px">
+        <button id="bPrev">&larr; Back</button><button id="bNext">Next &rarr;</button>
+        <button id="bReplay">Replay step</button><button id="bExit">Exit</button>
+      </div>
+      <div class="bar"><i id="bBar"></i></div>
+    </div>
+    <div id="card" class="float">
+      <h3><span class="sw" id="cSw"></span><span id="cName"></span><button class="close" id="cClose" title="Close (Esc)">&times;</button></h3>
+      <div class="grp2" id="cGrp"></div>
+      <p id="cText"></p>
+      <p class="att" id="cAtt"></p>
+      <div class="dims" id="cDims"></div>
+      <div class="btns">
+        <button id="cIso" title="Show only this part (I)">Isolate</button>
+        <button id="cGhost" title="Make the other parts see-through (G)">Ghost others</button>
+        <button id="cHide" title="Hide this part (H)">Hide</button>
+        <button id="cFocus" title="Zoom to this part (F)">Focus</button>
+        <button id="cMove" title="Drag the part to pull it out (M)">Move</button>
+        <button id="cReset" title="Put this part back">Put back</button>
+      </div>
+      <div class="files" id="cFiles"></div>
+      <div class="grp2" style="margin:8px 0 0">Keys: <b>I</b> isolate · <b>G</b> ghost · <b>H</b> hide · <b>F</b> focus · <b>M</b> move · <b>Esc</b> close</div>
+    </div>
+    <div id="tip" class="float"></div>
+    <div id="hud" class="float">Drag to orbit · right-drag to pan · scroll to zoom · click a part. <span id="msr"></span></div>
   </div>
 </div>
 
@@ -109,7 +164,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 
-const view = document.getElementById("view");
+const $ = id => document.getElementById(id);
+const view = $("view");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.localClippingEnabled = true;
@@ -129,10 +185,8 @@ const grid = new THREE.GridHelper(300, 30, 0x999999, 0xcccccc); grid.position.y 
 const clip = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
 let cutAxis = "none";
 
-function themeColors() {
-  const dark = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#17181b";
-  scene.background = new THREE.Color(dark ? 0x17181b : 0xf4f4f2);
-}
+function isDark() { return getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#17181b"; }
+function themeColors() { scene.background = new THREE.Color(isDark() ? 0x17181b : 0xf4f4f2); }
 themeColors();
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeColors);
 
@@ -147,27 +201,27 @@ const VIEWS = {
   iso: [-160, 140, -160], front: [0, 30, -230], rear: [0, 30, 260],
   left: [-250, 30, 15], right: [250, 30, 15], top: [0, 280, 15.01],
 };
-function setView(v) {
-  const p = VIEWS[v]; camera.position.set(p[0], p[1], p[2]);
-  controls.target.set(0, 25, 5); controls.update();
+// smooth camera moves
+let camAnim = null;
+function flyTo(pos, target, ms = 600) {
+  camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), ms };
 }
+function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(0, 25, 5)); }
 
 const manifest = await (await fetch("manifest.json")).json();
-document.getElementById("title").textContent = manifest.meta.title;
+$("title").textContent = manifest.meta.title;
 const env = manifest.meta.envelope;
-document.getElementById("env").textContent =
-  `Pod ${env.length.toFixed(1)} mm long, ${(2*26.4).toFixed(1)} mm wide (${env.width.toFixed(0)} at the haunches), top ${env.above_cover} mm above the cover. Frame: X right, Y up, −Z head end.`;
+$("env").textContent = `Pod ${env.length.toFixed(1)} mm long, top ${env.above_cover} mm above the cover. Frame: X right, Y up, −Z head end.`;
 
+// ---- load parts
 const loader = new STLLoader();
 const parts = {};
-const edgesOn = { v: false };
-
 async function loadPart(p) {
   const geo = await loader.loadAsync(p.file);
   geo.computeVertexNormals();
+  geo.computeBoundingBox();
   const mat = new THREE.MeshStandardMaterial({
-    color: p.color, roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide,
-    clippingPlanes: [], clipShadows: true,
+    color: p.color, roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide, clippingPlanes: [],
   });
   const mesh = new THREE.Mesh(geo, mat);
   if (p.transform === "mirror_x") mesh.scale.x = -1;
@@ -176,65 +230,131 @@ async function loadPart(p) {
     new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, clippingPlanes: [] }));
   edges.visible = false;
   mesh.add(edges);
-  mesh.userData = { part: p, edges };
+  // position = explode + manual (Move tool) + anim (build steps)
+  mesh.userData = { part: p, edges, manual: new THREE.Vector3(), anim: new THREE.Vector3(), tween: null, ghost: false };
   scene.add(mesh);
   parts[p.id] = mesh;
 }
 await Promise.all(manifest.parts.map(loadPart));
-document.getElementById("loading").remove();
-resize(); setView("iso");
+$("loading").remove();
+resize();
+camera.position.set(...VIEWS.iso); controls.update();
+
+let explodeF = 0;
+function place(m) {
+  const e = m.userData.part.explode;
+  m.position.set(e[0] * explodeF, e[1] * explodeF, e[2] * explodeF).add(m.userData.manual).add(m.userData.anim);
+}
+
+// ---- materials: ghost, highlight
+let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false;
+function styleAll() {
+  for (const m of Object.values(parts)) {
+    const id = m.userData.part.id, mat = m.material;
+    let op = (id === "lid" || id === "plug") ? lidOpacity : 1;
+    const ghost = ghostOthers && selected && m !== selected;
+    if (ghost) op = Math.min(op, 0.12);
+    m.userData.ghost = ghost;
+    mat.transparent = op < 1; mat.opacity = op; mat.depthWrite = op >= 1;
+    mat.emissive.setHex(m === selected ? 0x553a00 : m === hovered ? 0x2a2a2a : 0x000000);
+  }
+}
 
 // ---- parts panel
 const groups = {};
 for (const p of manifest.parts) (groups[p.group] ||= []).push(p);
-const pl = document.getElementById("parts");
+const pl = $("parts");
 for (const [g, list] of Object.entries(groups)) {
   const head = document.createElement("div"); head.className = "grp row";
   head.innerHTML = `<label><input type="checkbox" checked data-group="${g}"> <b>${g}</b></label>`;
   pl.appendChild(head);
   for (const p of list) {
     const r = document.createElement("div"); r.className = "row";
-    r.innerHTML = `<label><input type="checkbox" checked data-id="${p.id}"><span class="sw" style="background:${p.color}"></span>${p.label}</label>`;
+    r.innerHTML = `<input type="checkbox" checked data-id="${p.id}"><span class="sw" style="background:${p.color}"></span><span class="name" data-sel="${p.id}">${p.label}</span>`;
     pl.appendChild(r);
   }
 }
+function setVisible(id, v) { parts[id].visible = v; const cb = pl.querySelector(`[data-id="${id}"]`); if (cb) cb.checked = v; }
 pl.addEventListener("change", e => {
   const t = e.target;
   if (t.dataset.id) parts[t.dataset.id].visible = t.checked;
-  if (t.dataset.group) {
-    for (const p of groups[t.dataset.group]) {
-      parts[p.id].visible = t.checked;
-      pl.querySelector(`[data-id="${p.id}"]`).checked = t.checked;
-    }
-  }
+  if (t.dataset.group) for (const p of groups[t.dataset.group]) setVisible(p.id, t.checked);
 });
+pl.addEventListener("click", e => { const id = e.target.dataset.sel; if (id) { setVisible(id, true); select(parts[id]); } });
+
+// ---- part card
+function fmtDims(m) {
+  const b = new THREE.Box3().setFromObject(m), s = b.getSize(new THREE.Vector3());
+  return `Size ${s.x.toFixed(1)} × ${s.y.toFixed(1)} × ${s.z.toFixed(1)} mm (X × Y × Z)`;
+}
+function select(m) {
+  selected = m;
+  for (const n of pl.querySelectorAll(".name")) n.classList.toggle("sel", m && n.dataset.sel === m.userData.part.id);
+  const card = $("card");
+  if (!m) { card.style.display = "none"; ghostOthers = false; moveMode = false; $("cMove").classList.remove("on"); $("cGhost").classList.remove("on"); styleAll(); return; }
+  const p = m.userData.part;
+  $("cSw").style.background = p.color; $("cName").textContent = p.label; $("cGrp").textContent = p.group;
+  $("cText").textContent = p.text || ""; $("cText").style.display = p.text ? "" : "none";
+  $("cAtt").textContent = p.attach || ""; $("cAtt").style.display = p.attach ? "" : "none";
+  $("cDims").textContent = fmtDims(m);
+  $("cFiles").innerHTML = (p.files || []).map(([t, u]) => `<a href="${u}" download>⤓ ${t}</a>`).join("");
+  $("cIso").classList.toggle("on", isolated);
+  card.style.display = "block";
+  styleAll();
+}
+$("cClose").onclick = () => select(null);
+
+let isolated = false, savedVis = null;
+function isolate() {
+  if (!selected) return;
+  if (!isolated) {
+    savedVis = Object.fromEntries(Object.entries(parts).map(([k, m]) => [k, m.visible]));
+    for (const [k, m] of Object.entries(parts)) setVisible(k, m === selected);
+    isolated = true; focus();
+  } else {
+    for (const [k, v] of Object.entries(savedVis)) setVisible(k, v);
+    isolated = false;
+  }
+  $("cIso").classList.toggle("on", isolated);
+}
+function focus() {
+  if (!selected) return;
+  const b = new THREE.Box3().setFromObject(selected), c = b.getCenter(new THREE.Vector3());
+  const r = b.getSize(new THREE.Vector3()).length() * 0.5;
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  const dist = Math.max(40, r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.1);
+  flyTo(c.clone().add(dir.multiplyScalar(dist)), c);
+}
+$("cIso").onclick = isolate;
+$("cGhost").onclick = () => { ghostOthers = !ghostOthers; $("cGhost").classList.toggle("on", ghostOthers); styleAll(); };
+$("cHide").onclick = () => { if (selected) { setVisible(selected.userData.part.id, false); select(null); } };
+$("cFocus").onclick = focus;
+let moveMode = false;
+$("cMove").onclick = () => { moveMode = !moveMode; $("cMove").classList.toggle("on", moveMode);
+  $("msr").textContent = moveMode ? " Drag the part to move it." : ""; };
+$("cReset").onclick = () => { if (selected) { selected.userData.manual.set(0, 0, 0); place(selected); $("cDims").textContent = fmtDims(selected); } };
+$("resetAll").onclick = () => {
+  for (const m of Object.values(parts)) { m.userData.manual.set(0, 0, 0); place(m); }
+  if (isolated) isolate();
+  for (const k of Object.keys(parts)) setVisible(k, true);
+};
 
 // ---- explode
-const ex = document.getElementById("explode");
+const ex = $("explode");
 ex.addEventListener("input", () => {
-  const f = +ex.value;
-  document.getElementById("explodeV").textContent = Math.round(f * 100) + "%";
-  for (const m of Object.values(parts)) {
-    const e = m.userData.part.explode;
-    m.position.set(e[0] * f, e[1] * f, e[2] * f);
-  }
+  explodeF = +ex.value; $("explodeV").textContent = Math.round(explodeF * 100) + "%";
+  for (const m of Object.values(parts)) place(m);
 });
 
 // ---- lid opacity
-const lo = document.getElementById("lidop");
-lo.addEventListener("input", () => {
-  const v = +lo.value;
-  document.getElementById("lidopV").textContent = Math.round(v * 100) + "%";
-  for (const id of ["lid", "plug"]) {
-    const m = parts[id]; if (!m) continue;
-    m.material.transparent = v < 1; m.material.opacity = v; m.material.depthWrite = v >= 1;
-  }
+$("lidop").addEventListener("input", e => {
+  lidOpacity = +e.target.value; $("lidopV").textContent = Math.round(lidOpacity * 100) + "%"; styleAll();
 });
 
 // ---- section cut
-const cut = document.getElementById("cut"), cutV = document.getElementById("cutV"), flip = document.getElementById("cutflip");
+const cut = $("cut"), flip = $("cutflip");
 function applyCut() {
-  const v = +cut.value; cutV.textContent = v.toFixed(1);
+  const v = +cut.value; $("cutV").textContent = v.toFixed(1);
   const s = flip.checked ? 1 : -1;
   const n = { x: [s, 0, 0], y: [0, s, 0], z: [0, 0, s] }[cutAxis] || [1, 0, 0];
   clip.normal.set(...n); clip.constant = -s * v;
@@ -243,71 +363,209 @@ function applyCut() {
     m.material.clippingPlanes = planes; m.userData.edges.material.clippingPlanes = planes;
   }
 }
-document.getElementById("cutaxis").addEventListener("click", e => {
+$("cutaxis").addEventListener("click", e => {
   const a = e.target.dataset.a; if (!a) return;
   cutAxis = a;
   for (const b of e.currentTarget.children) b.classList.toggle("on", b === e.target);
-  const rng = { x: [-40, 40, -8], y: [-12, 60, 40], z: [-40, 50, 20], none: [-40, 60, 0] }[a];
+  const rng = { x: [-40, 40, -8], y: [-12, 60, 40], z: [-40, 80, 20], none: [-40, 60, 0] }[a];
   cut.min = rng[0]; cut.max = rng[1]; cut.value = rng[2];
   applyCut();
 });
 cut.addEventListener("input", applyCut); flip.addEventListener("change", applyCut);
 
 // ---- views, edges, theme
-document.getElementById("views").addEventListener("click", e => { if (e.target.dataset.v) setView(e.target.dataset.v); });
-document.getElementById("wire").addEventListener("click", e => {
-  edgesOn.v = !edgesOn.v; e.target.classList.toggle("on", edgesOn.v);
-  for (const m of Object.values(parts)) m.userData.edges.visible = edgesOn.v;
+$("views").addEventListener("click", e => { if (e.target.dataset.v) setView(e.target.dataset.v); });
+let edgesOn = false;
+$("wire").addEventListener("click", e => {
+  edgesOn = !edgesOn; e.target.classList.toggle("on", edgesOn);
+  for (const m of Object.values(parts)) m.userData.edges.visible = edgesOn;
 });
-document.getElementById("theme").addEventListener("click", () => {
-  const r = document.documentElement;
-  const dark = getComputedStyle(r).getPropertyValue("--bg").trim() === "#17181b";
-  r.dataset.theme = dark ? "light" : "dark"; themeColors();
+$("theme").addEventListener("click", () => {
+  document.documentElement.dataset.theme = isDark() ? "light" : "dark"; themeColors();
 });
 
-// ---- measure: click two points on visible geometry
-const msrBtn = document.getElementById("measure"), msr = document.getElementById("msr");
+// ---- picking
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+function pick(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const vis = Object.values(parts).filter(m => m.visible && !m.userData.ghost);
+  return ray.intersectObjects(vis, false).find(h => cutAxis === "none" || clip.distanceToPoint(h.point) >= 0) || null;
+}
+
+// ---- measure
 let measuring = false, pts = [];
 const mGroup = new THREE.Group(); scene.add(mGroup);
-msrBtn.addEventListener("click", () => {
-  measuring = !measuring; msrBtn.classList.toggle("on", measuring);
-  pts = []; mGroup.clear(); msr.textContent = measuring ? " Click two points." : "";
+$("measure").addEventListener("click", () => {
+  measuring = !measuring; $("measure").classList.toggle("on", measuring);
+  pts = []; mGroup.clear(); $("msr").textContent = measuring ? " Click two points." : "";
 });
-const ray = new THREE.Raycaster();
-let down = null;
-renderer.domElement.addEventListener("pointerdown", e => { down = [e.clientX, e.clientY]; });
-renderer.domElement.addEventListener("pointerup", e => {
-  if (!measuring || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return;
-  const r = renderer.domElement.getBoundingClientRect();
-  ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
-  const vis = Object.values(parts).filter(m => m.visible);
-  const hit = ray.intersectObjects(vis, false).find(h => cutAxis === "none" || clip.distanceToPoint(h.point) >= 0);
-  if (!hit) return;
+function measureAt(hit) {
   if (pts.length === 2) { pts = []; mGroup.clear(); }
   pts.push(hit.point.clone());
   const dot = new THREE.Mesh(new THREE.SphereGeometry(0.8), new THREE.MeshBasicMaterial({ color: 0xe8a514, depthTest: false }));
   dot.position.copy(hit.point); dot.renderOrder = 10; mGroup.add(dot);
   const p = hit.point, name = hit.object.userData.part.label;
-  if (pts.length === 1) msr.innerHTML = ` ${name}: (<b>${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}</b>). Click a second point.`;
+  if (pts.length === 1) $("msr").innerHTML = ` ${name}: (<b>${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}</b>). Click a second point.`;
   else {
     const d = pts[0].distanceTo(pts[1]), dv = pts[1].clone().sub(pts[0]);
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xe8a514, depthTest: false }));
     line.renderOrder = 10; mGroup.add(line);
-    msr.innerHTML = ` Distance <b>${d.toFixed(2)} mm</b> (dx ${dv.x.toFixed(2)}, dy ${dv.y.toFixed(2)}, dz ${dv.z.toFixed(2)})`;
+    $("msr").innerHTML = ` Distance <b>${d.toFixed(2)} mm</b> (dx ${dv.x.toFixed(2)}, dy ${dv.y.toFixed(2)}, dz ${dv.z.toFixed(2)})`;
   }
-});
-
-// ---- checks table
-const ck = document.getElementById("checks");
-for (const c of manifest.meta.checks) {
-  const cls = c.v < 0.05 ? "ok" : (c.a.startsWith("tray fwd 2.7") || c.b === "amp_ns4168") ? "warn" : "bad";
-  const note = cls === "warn" ? " (intended)" : "";
-  const d = document.createElement("div");
-  d.innerHTML = `<span>${c.a} × ${c.b}</span><span class="${cls}">${Math.abs(c.v).toFixed(2)}${note}</span>`;
-  ck.appendChild(d);
 }
 
-renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+// ---- pointer: hover tip, click select, drag move
+const tip = $("tip");
+let down = null, drag = null, hoverQueued = null;
+const dragPlane = new THREE.Plane();
+renderer.domElement.addEventListener("pointerdown", e => {
+  down = [e.clientX, e.clientY];
+  if (moveMode && selected && e.button === 0) {
+    const h = pick(e);
+    if (h && h.object === selected) {
+      dragPlane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()), h.point);
+      drag = { last: h.point.clone() };
+      controls.enabled = false;
+      renderer.domElement.setPointerCapture(e.pointerId);
+    }
+  }
+});
+renderer.domElement.addEventListener("pointermove", e => {
+  if (drag) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const p = ray.ray.intersectPlane(dragPlane, new THREE.Vector3());
+    if (p) { selected.userData.manual.add(p.clone().sub(drag.last)); drag.last.copy(p); place(selected); }
+    return;
+  }
+  if (e.buttons) { tip.style.display = "none"; return; }
+  hoverQueued = e;
+});
+function hoverUpdate() {
+  if (!hoverQueued) return;
+  const e = hoverQueued; hoverQueued = null;
+  const h = pick(e), m = h ? h.object : null;
+  if (m !== hovered) { hovered = m; styleAll(); }
+  if (m) {
+    const r = view.getBoundingClientRect();
+    tip.textContent = m.userData.part.label;
+    tip.style.left = (e.clientX - r.left + 14) + "px"; tip.style.top = (e.clientY - r.top + 12) + "px";
+    tip.style.display = "block";
+    renderer.domElement.style.cursor = moveMode && m === selected ? "move" : "pointer";
+  } else { tip.style.display = "none"; renderer.domElement.style.cursor = ""; }
+}
+renderer.domElement.addEventListener("pointerleave", () => { tip.style.display = "none"; if (hovered) { hovered = null; styleAll(); } });
+renderer.domElement.addEventListener("pointerup", e => {
+  if (drag) { drag = null; controls.enabled = true; $("cDims").textContent = fmtDims(selected); return; }
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4 || e.button !== 0) return;
+  const h = pick(e);
+  if (measuring) { if (h) measureAt(h); return; }
+  select(h ? h.object : null);
+});
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  const k = e.key.toLowerCase();
+  if (k === "escape") { if (isolated) isolate(); select(null); }
+  if (!selected) return;
+  if (k === "i") isolate();
+  if (k === "g") $("cGhost").click();
+  if (k === "h") $("cHide").click();
+  if (k === "f") focus();
+  if (k === "m") $("cMove").click();
+});
+
+// ---- build steps
+const steps = manifest.steps || [];
+let stepI = -1;
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function tweenTo(m, from, to, ms = 900) {
+  m.userData.tween = { from: new THREE.Vector3(...from), to: new THREE.Vector3(...to), s: performance.now(), ms };
+}
+function shownBy(i) { const s = new Set(); for (let k = 0; k <= i; k++) for (const id of steps[k].show || []) s.add(id); return s; }
+function restOffset(id, i) {
+  // the offset a part has after step i (the last 'end' entry, else 0)
+  let o = [0, 0, 0];
+  for (let k = 0; k <= i; k++) {
+    if (steps[k].end && id in steps[k].end) o = steps[k].end[id];
+    else if (steps[k].start && id in steps[k].start) o = [0, 0, 0];
+  }
+  return o;
+}
+function showStep(i, animate = true) {
+  stepI = i;
+  const st = steps[i], vis = shownBy(i);
+  for (const [id, m] of Object.entries(parts)) {
+    setVisible(id, vis.has(id));
+    m.userData.manual.set(0, 0, 0);
+    m.userData.tween = null;
+    m.userData.anim.set(...restOffset(id, i));
+    place(m);
+  }
+  if (animate && st.start) for (const [id, from] of Object.entries(st.start)) {
+    const m = parts[id]; if (!m) continue;
+    m.userData.anim.set(...from); place(m);
+    tweenTo(m, from, restOffset(id, i));
+  }
+  $("bTitle").textContent = st.title; $("bText").textContent = st.text;
+  $("bN").textContent = `${i + 1} / ${steps.length}`;
+  $("bBar").style.width = ((i + 1) / steps.length * 100) + "%";
+  $("bPrev").disabled = i === 0; $("bNext").textContent = i === steps.length - 1 ? "Finish" : "Next →";
+  if (st.view) setView(st.view);
+}
+function startBuild() {
+  select(null);
+  explodeF = 0; ex.value = 0; $("explodeV").textContent = "0%";
+  $("build").style.display = "block"; $("buildBtn").classList.add("on");
+  showStep(0);
+}
+function endBuild() {
+  $("build").style.display = "none"; $("buildBtn").classList.remove("on"); stepI = -1;
+  for (const [id, m] of Object.entries(parts)) { m.userData.tween = null; m.userData.anim.set(0, 0, 0); setVisible(id, true); place(m); }
+}
+$("buildBtn").onclick = () => stepI < 0 ? startBuild() : endBuild();
+$("bPrev").onclick = () => { if (stepI > 0) showStep(stepI - 1, false); };
+$("bNext").onclick = () => { if (stepI < steps.length - 1) showStep(stepI + 1); else endBuild(); };
+$("bReplay").onclick = () => showStep(stepI);
+$("bExit").onclick = endBuild;
+
+// ---- links: #part=<id> opens the part card, #step=<n> opens build step n
+function fromHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get("step")) { startBuild(); showStep(Math.max(0, Math.min(steps.length - 1, +h.get("step") - 1)), false); }
+  if (h.get("part") && parts[h.get("part")]) { select(parts[h.get("part")]); if (h.has("focus")) focus(); }
+}
+fromHash();
+addEventListener("hashchange", fromHash);
+
+// ---- checks table
+for (const c of manifest.meta.checks) {
+  const cls = c.v < 0.05 ? "ok" : (c.a.startsWith("tray fwd 2.7") || c.b === "amp_ns4168") ? "warn" : "bad";
+  const d = document.createElement("div");
+  d.innerHTML = `<span>${c.a} × ${c.b}</span><span class="${cls}">${Math.abs(c.v).toFixed(2)}${cls === "warn" ? " (intended)" : ""}</span>`;
+  $("checks").appendChild(d);
+}
+
+// ---- loop
+renderer.setAnimationLoop(now => {
+  if (camAnim) {
+    const t = Math.min(1, (now - camAnim.s) / camAnim.ms), k = ease(t);
+    camera.position.lerpVectors(camAnim.p0, camAnim.p1, k); controls.target.lerpVectors(camAnim.t0, camAnim.t1, k);
+    if (t >= 1) camAnim = null;
+  }
+  for (const m of Object.values(parts)) {
+    const tw = m.userData.tween; if (!tw) continue;
+    const t = Math.min(1, (now - tw.s) / tw.ms);
+    m.userData.anim.lerpVectors(tw.from, tw.to, ease(t)); place(m);
+    if (t >= 1) m.userData.tween = null;
+  }
+  hoverUpdate();
+  controls.update();
+  renderer.render(scene, camera);
+});
 </script>
 </body>
 </html>
