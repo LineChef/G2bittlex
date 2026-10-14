@@ -41,9 +41,9 @@ clicks onto the platform.
 - SPH0645 I2S microphone on the left side, away from the speaker
 - Balanced: the Pi stack is on the center line, and the speaker at the front balances it
 - Serial link to the BiBoard through the Pi slot in the cover
-- Charge port, power button and power switch open through the lid
+- Charge port and power button open through the lid. A large knob on the right side moves the power switch
 - A cable slot for the Petoi AI Vision Module camera in the head
-- 3 printed parts, all without supports
+- 5 printed parts, all without supports
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)
 

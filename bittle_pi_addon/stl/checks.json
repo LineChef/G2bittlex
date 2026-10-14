@@ -16,6 +16,16 @@
    0.0
   ],
   [
+   "cover_pegs",
+   "sw_slider",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "sw_knob",
+   0.0
+  ],
+  [
    "pod_tray",
    "pod_lid",
    0.0
@@ -26,8 +36,43 @@
    0.0
   ],
   [
+   "pod_tray",
+   "sw_slider",
+   0.0
+  ],
+  [
+   "pod_tray",
+   "sw_knob",
+   0.0
+  ],
+  [
    "pod_lid",
    "usb_plug",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "sw_slider",
+   0.0
+  ],
+  [
+   "pod_lid",
+   "sw_knob",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "sw_slider",
+   0.0
+  ],
+  [
+   "usb_plug",
+   "sw_knob",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "sw_knob",
    0.0
   ],
   [
@@ -231,6 +276,106 @@
    0.0
   ],
   [
+   "sw_slider",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "pizero",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "battery",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "camera_cable",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "speaker",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "pizero",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "battery",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "camera_cable",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "speaker",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "cover_slot",
+   0.0
+  ],
+  [
    "pod_tray",
    "under_cover",
    0.0
@@ -242,6 +387,16 @@
   ],
   [
    "usb_plug",
+   "under_cover",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "under_cover",
+   0.0
+  ],
+  [
+   "sw_knob",
    "under_cover",
    0.0
   ],
@@ -302,6 +457,46 @@
   ],
   [
    "usb_plug",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "front_plate",
+   0.0
+  ],
+  [
+   "sw_slider",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "sw_knob",
+   "front_plate",
+   0.0
+  ],
+  [
+   "sw_knob",
    "rear_plate_mirror",
    0.0
   ],
@@ -322,6 +517,16 @@
   ],
   [
    "usb_plug",
+   "loose_pieces",
+   0
+  ],
+  [
+   "sw_slider",
+   "loose_pieces",
+   0
+  ],
+  [
+   "sw_knob",
    "loose_pieces",
    0
   ],
@@ -383,6 +588,166 @@
   [
    "tray fwd 2.7mm",
    "shoulder_l",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "pod_lid",
+   8.599688117612075e-08
+  ],
+  [
+   "switch -2.6mm",
+   "pod_tray",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "pizero",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "battery",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "camera_cable",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "speaker",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "switch -2.6mm",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "pod_lid",
+   8.599688117725143e-08
+  ],
+  [
+   "switch +2.6mm",
+   "pod_tray",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "pizero",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "battery",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "dupont_plugs",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "camera_cable",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "speaker",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "switch +2.6mm",
+   "rear_plate_mirror",
    0.0
   ],
   [
@@ -650,22 +1015,38 @@
    ]
   },
   "pod_lid": {
-   "overhang_mm2": 70.6,
+   "overhang_mm2": 74.8,
    "regions": [
     {
-     "area": 16.0,
-     "flat": 8.8,
+     "area": 17.1,
+     "flat": 9.0,
      "x": [
       24.8,
       26.4
      ],
      "y": [
-      -22.4,
-      -13.0
+      -22.7,
+      -12.7
      ],
      "z": [
-      21.3,
-      22.5
+      21.7,
+      23.0
+     ]
+    },
+    {
+     "area": 14.1,
+     "flat": 11.2,
+     "x": [
+      24.8,
+      26.4
+     ],
+     "y": [
+      19.0,
+      27.5
+     ],
+     "z": [
+      19.3,
+      19.8
      ]
     },
     {
@@ -682,22 +1063,6 @@
      "z": [
       21.9,
       21.9
-     ]
-    },
-    {
-     "area": 11.0,
-     "flat": 8.2,
-     "x": [
-      24.8,
-      26.4
-     ],
-     "y": [
-      19.9,
-      26.6
-     ],
-     "z": [
-      19.3,
-      19.8
      ]
     },
     {
@@ -751,18 +1116,18 @@
    ]
   },
   "usb_plug": {
-   "overhang_mm2": 9.6,
+   "overhang_mm2": 10.4,
    "regions": [
     {
-     "area": 9.6,
-     "flat": 9.6,
+     "area": 10.4,
+     "flat": 10.4,
      "x": [
-      -3.9,
-      4.0
+      -4.4,
+      4.5
      ],
      "y": [
-      -8.3,
-      3.5
+      -8.8,
+      4.0
      ],
      "z": [
       3.5,
@@ -770,14 +1135,22 @@
      ]
     }
    ]
+  },
+  "sw_slider": {
+   "overhang_mm2": 0,
+   "regions": []
+  },
+  "sw_knob": {
+   "overhang_mm2": 0,
+   "regions": []
   }
  },
  "balance": {
-  "mass_g": 117.9,
+  "mass_g": 118.6,
   "com": [
-   -0.2,
+   -0.0,
    39.9,
-   9.3
+   9.4
   ],
   "parts": [
    {
@@ -800,11 +1173,29 @@
    },
    {
     "name": "usb_plug",
+    "g": 0.5,
+    "com": [
+     26.5,
+     40.7,
+     -5.1
+    ]
+   },
+   {
+    "name": "sw_slider",
+    "g": 0.3,
+    "com": [
+     20.9,
+     41.4,
+     36.2
+    ]
+   },
+   {
+    "name": "sw_knob",
     "g": 0.4,
     "com": [
-     26.6,
-     40.7,
-     -5.2
+     27.6,
+     41.1,
+     36.2
     ]
    },
    {

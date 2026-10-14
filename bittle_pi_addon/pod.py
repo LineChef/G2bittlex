@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.9 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
+"""Bittle X Pi add-on rev 0.10 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -140,8 +140,14 @@ CHG_Z, CHG_Y = Z_CSI + CHG_FROM_CSI, CHG_U + DY
 BTN_Z, BTN_Y = Z_CSI + BTN_FROM_CSI, BTN_U + DY
 SW_Z, SW_Y = Z_CSI + SW_FROM_CSI, SW_U + DY
 PORT_FACE_X = STACK_GPIO_X + 30.9
-USB_W, USB_H = 11.5, 7.5
-SW_W, SW_H = 7.5, 3.0
+USB_W, USB_H = 12.4, 8.5    # 1.0 mm web to the button slit
+SW_W, SW_H = 9.4, 3.0      # switch slot: the knob stem (3.0 along Z) moves +-2.6 in it
+# Switch slider: a large knob on the outside of the right wall moves the PiSugar slide switch.
+# Two parts: sw_slider (inside: a plate on the wall, an arm, a fork over the lever) and
+# sw_knob (outside, with the stem). The plate and the knob hold the wall between them.
+# The fork is open at the bottom: it drops over the lever when the lid goes on.
+SW_LEVER = dict(x0=12.9, x1=14.4, y0=40.64, y1=41.64, w=1.3)   # lever in the model, centered on SW_Z
+SW_TRAVEL = 2.6            # knob travel each side; the switch end stops are inside this
 
 # NS4168 amp board on edge, crosswise behind the stack, components to the rear.
 # Local frame (amp_place() puts it in the body): PCB x0..x1 with the back face at x 0,
@@ -655,6 +661,27 @@ def build_lid():
     return lid
 
 
+def build_switch():
+    """sw_slider and sw_knob in the installed place (lever at the middle of the slot)."""
+    xi, xo, yc, zc = W_MAIN - T_WALL, W_MAIN, SW_Y, SW_Z
+    plate = box(xi - 2.4, xi - 0.1, yc - 4.0, yc + 4.0, zc - 4.0, zc + 4.0)
+    L = SW_LEVER
+    arm = box(PORT_FACE_X + 0.2, xi - 2.39, yc - 1.6, yc + 2.6, zc - 2.0, zc + 2.0)
+    tines = box(L["x0"] + 0.3, PORT_FACE_X + 0.21, yc - 1.6, L["y1"] + 0.2, zc - 2.0, zc + 2.0)  # under the PCB, 0.3 from the switch body
+    slider = plate + arm + tines
+    n = L["w"] / 2 + 0.25
+    slider -= box(L["x0"], L["x1"] + 1.2, yc - 2.0, L["y1"] + 0.1, zc - n, zc + n)   # fork, open at the bottom
+    s = 2 * (n + 0.7) / math.sqrt(2)          # 45 deg lead-in at the fork mouth
+    slider -= Pos((L["x0"] + L["x1"] + 1.2) / 2, yc - 1.6, zc) * Rot(45, 0, 0) * Box(L["x1"] + 1.2 - L["x0"], s, s)
+    slider -= box(xi - 2.1, xi, yc - 1.2, yc + 1.2, zc - 1.5, zc + 1.5)     # stem socket: press fit (zero gap)
+    slider -= Pos(xi - 2.1, yc, zc) * Rot(0, 45, 0) * Box(3.0 / math.sqrt(2), 2.4, 3.0 / math.sqrt(2))   # 45 deg roof in the print
+    knob = box(xo + 0.1, xo + 3.0, yc - 4.5, yc + 4.5, zc - 6.0, zc + 6.0)
+    for zg in (-3.6, -1.2, 1.2, 3.6):         # 45 deg V grooves for the thumb
+        knob -= Pos(xo + 3.0, yc, zc + zg) * Rot(0, 45, 0) * Box(1.0, 10.0, 1.0)
+    knob += box(xi - 2.0, xo + 0.11, yc - 1.2, yc + 1.2, zc - 1.5, zc + 1.5)     # stem
+    return slider, knob
+
+
 def build_plug():
     clr = 0.1
     w, h = USB_W - 2 * clr, USB_H - 2 * clr
@@ -745,7 +772,8 @@ def build_all():
     lid = build_lid() - clearance
     tray = b3d_to_manifold(build_tray())
     plug = b3d_to_manifold(build_plug())
-    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid, usb_plug=plug)
+    slider, knob = (b3d_to_manifold(x) for x in build_switch())
+    return dict(cover_pegs=cover_pegs, pod_tray=tray, pod_lid=lid, usb_plug=plug, sw_slider=slider, sw_knob=knob)
 
 
 def robot_parts():
@@ -770,9 +798,10 @@ def check(parts, models, robot):
         for b, M in models.items():
             rows.append((a, b, vol(printed[a], M)))
     U = under_cover()
-    for a in ("pod_tray", "pod_lid", "usb_plug"):
+    ADD = ("pod_tray", "pod_lid", "usb_plug", "sw_slider", "sw_knob")
+    for a in ADD:
         rows.append((a, "under_cover", vol(printed[a], U)))
-    for a in ("pod_tray", "pod_lid", "usb_plug"):
+    for a in ADD:
         for b, M in robot.items():
             rows.append((a, b, vol(printed[a], M)))
     # every printed part must be one piece
@@ -788,6 +817,17 @@ def check(parts, models, robot):
         rows.append((f"tray fwd {s_:g}mm", "under_cover", vol(T, U)))
         for rn in ("shoulder_r", "shoulder_l"):
             rows.append((f"tray fwd {s_:g}mm", rn, vol(T, robot[rn])))
+    # switch: slider and knob at the two ends of the travel
+    for d in (-SW_TRAVEL, SW_TRAVEL):
+        S = printed["sw_slider"].translate([0, 0, d]) + printed["sw_knob"].translate([0, 0, d])
+        for b in ["pod_lid", "pod_tray"]:
+            rows.append((f"switch {d:+g}mm", b, vol(S, printed[b])))
+        lever = b3d_to_manifold(box(SW_LEVER["x0"] - 0.05, SW_LEVER["x1"] + 0.05, SW_LEVER["y0"] - 0.05, SW_LEVER["y1"] + 0.05,
+                                    SW_Z - SW_TRAVEL - 1.0, SW_Z + SW_TRAVEL + 1.0))
+        for b, M in models.items():     # the lever moves with the fork: take it out of the board
+            rows.append((f"switch {d:+g}mm", b, vol(S, M - lever if b == "pisugar2" else M)))
+        for b, M in robot.items():
+            rows.append((f"switch {d:+g}mm", b, vol(S, M)))
     mn = list(models)
     for i, a in enumerate(mn):
         for b in mn[i + 1:]:
@@ -813,7 +853,7 @@ def balance(parts, models):
     """Mass and center of mass of the add-on (printed parts + electronics), robot frame.
     The robot center is X 0, Z 0: the cover and the shoulder plates are symmetric about it."""
     rows = []
-    for n in ("pod_tray", "pod_lid", "usb_plug"):
+    for n in ("pod_tray", "pod_lid", "usb_plug", "sw_slider", "sw_knob"):
         rows.append((n, parts[n].volume() * PLA_G_MM3, centroid(parts[n])))
     for n, g in MASS_G.items():
         rows.append((n, g, centroid(models[n])))
@@ -832,6 +872,8 @@ def print_orient(name, M):
     elif name == "cover_pegs":
         # stand on the rear end, as Petoi prints the stock cover
         R = np.array([[1, 0, 0], [0, -1, 0], [0, 0, -1]], float)
+    elif name in ("sw_slider", "sw_knob"):
+        R = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]], float)        # +X face on the bed (plate, knob face)
     else:   # usb_plug: flange (+X side) on the bed
         R = np.array([[0, 1, 0], [0, 0, -1], [-1, 0, 0]], float)
     if abs(np.linalg.det(R) - 1) > 1e-6:
@@ -896,7 +938,9 @@ def export_assembly(path):
         S = mesh_solid(M, 0.15 if n in coarse else 0.05)
         S.label, S.color = n, Color(col)
         kids.append(S)
-    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf"), ("usb_plug", build_plug(), "#1a1a1a")):
+    slider, knob = build_switch()
+    for n, shape, col in (("pegs", BP.pegs(), "#26272b"), ("pod_tray", build_tray(), "#cccccf"), ("usb_plug", build_plug(), "#1a1a1a"),
+                          ("sw_slider", slider, "#e8641b"), ("sw_knob", knob, "#e8641b")):
         shape.label, shape.color = n, Color(col)
         kids.append(shape)
     A = Compound(label="bittle_pi_addon_assembly", children=kids)
@@ -949,6 +993,8 @@ def main():
     os.makedirs(os.path.join(ROOT, "cad"), exist_ok=True)
     export_step(build_tray(), os.path.join(ROOT, "cad", "pod_tray.step"))
     export_step(build_plug(), os.path.join(ROOT, "cad", "usb_plug.step"))
+    for n, shape in zip(("sw_slider", "sw_knob"), build_switch()):
+        export_step(shape, os.path.join(ROOT, "cad", f"{n}.step"))
     export_assembly(os.path.join(ROOT, "cad", "assembly.step"))
 
 

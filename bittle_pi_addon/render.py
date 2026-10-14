@@ -22,7 +22,7 @@ C = dict(
     lid="[0.98,0.74,0.10]", tray="[0.80,0.80,0.82]", cover="[0.20,0.20,0.22]",
     shoulder="[0.95,0.66,0.12]", plate="[0.13,0.13,0.14]", pizero="[0.16,0.55,0.28]",
     pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]",
-    plug="[0.10,0.10,0.10]", mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
+    plug="[0.10,0.10,0.10]", knob="[0.91,0.39,0.11]", slider="[0.91,0.39,0.11]", mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
 )
 
 
@@ -38,6 +38,8 @@ def files(cut=None):
         "tray": f"{STL}/installed/pod_tray.stl",
         "lid": f"{STL}/installed/pod_lid.stl",
         "plug": f"{STL}/installed/usb_plug.stl",
+        "knob": f"{STL}/installed/sw_knob.stl",
+        "slider": f"{STL}/installed/sw_slider.stl",
         "mic": f"{STL}/models/mic_sph0645.stl",
         "pizero": f"{STL}/models/pizero.stl",
         "pisugar": f"{STL}/models/pisugar2.stl",
@@ -80,7 +82,7 @@ def scene(show, cut=None, explode=0.0, robot=True):
             continue
         dy = 0.0
         if explode:
-            dy = {"lid": 3.4, "plug": 3.4, "pizero": 1.6, "pisugar": 1.6, "battery": 1.6,
+            dy = {"lid": 3.4, "plug": 3.4, "knob": 3.4, "slider": 3.4, "pizero": 1.6, "pisugar": 1.6, "battery": 1.6,
                   "amp": 1.6, "plugs": 0.0, "spk": 1.6, "tray": 0.5, "mic": 1.6}.get(k, 0.0) * explode
         if cut:
             s += imp(path, C[k], dy=dy)
@@ -109,8 +111,8 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
     return png
 
 
-ALL = ["cover", "tray", "lid", "plug", "mic", "pizero", "pisugar", "battery", "hdr", "plugs", "amp", "spk", "shoulder", "plate"]
-NOLID = [k for k in ALL if k not in ("lid", "plug")]
+ALL = ["cover", "tray", "lid", "plug", "knob", "slider", "mic", "pizero", "pisugar", "battery", "hdr", "plugs", "amp", "spk", "shoulder", "plate"]
+NOLID = [k for k in ALL if k not in ("lid", "plug", "knob", "slider")]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {
