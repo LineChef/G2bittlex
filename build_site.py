@@ -36,6 +36,7 @@ PARTS = [
     ("rear_plate", "Rear plate (mirror of front)", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), "mirror_z"),
     ("speaker", "NULLLAB 3 W speaker (front)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 18, -34), None),
     ("mic", "SPH0645 mic (rear)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, 24), None),
+    ("camera_cable", "Camera cable (Grove) path", "Components", "stl/models/camera_cable.stl", "#3a9a3a", (-16, 8, 0), None),
 ]
 
 # Text for the part card in the viewer: what the part is, how it attaches, downloads (relative to site/viewer/).
@@ -51,7 +52,7 @@ INFO = {
                  attach="Put it on the pegs 7 mm forward of its place, then slide it 7 mm rearward until the beams click.",
                  files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
     "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
-                     "It has openings for the charge port, the button, the switch, the mic and the speaker.",
+                     "It has openings for the charge port, the button, the switch, the mic, the speaker and the camera cable.",
                 attach="Push it down onto the tray rim until the 4 snaps engage. Its lower edge then stops the tray from sliding forward.",
                 files=[("Print STL", AF + "pod_lid.stl"), ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
     "plug": dict(text="An optional TPU plug for the micro-USB charge window.",
@@ -70,6 +71,9 @@ INFO = {
                     attach="Hang the ear plate on the two pins of the front wall of the tray. Ribs in the lid hold it on."),
     "mic": dict(text="SPH0645 I2S mic board, on edge at the rear, away from the speaker. The port faces rearward to 7 holes in the lid.",
                 attach="Push it down into the slot of the base. A stub in the lid holds its top edge."),
+    "camera_cable": dict(text="The Grove cable of the Petoi AI Vision Module in the head. It goes through a slot in the left lid wall, "
+                               "behind the speaker and over the tray rim, to the I2C pins of the Pi.",
+                          attach="Put it through the slot before the lid goes on. Leave slack for the head to turn."),
     "header": dict(text="The 5-pin BiBoard header (GND, +5V, TX2, RX2) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
     "plugs": dict(text="Straight Dupont plugs on the header and the space for their wires.",
@@ -100,8 +104,8 @@ STEPS = [
     dict(title="Pi stack", view="iso", show=["battery", "pisugar", "pizero"],
          start={"battery": [0, 40, 0], "pisugar": [0, 40, 0], "pizero": [0, 40, 0]},
          text="Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right."),
-    dict(title="Wires", view="right", show=["plugs", "slot"], start={"plugs": [0, 20, 0]},
-         text="Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi."),
+    dict(title="Wires", view="iso", show=["plugs", "slot", "camera_cable"], start={"plugs": [0, 20, 0], "camera_cable": [-25, 0, 0]},
+         text="Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi. Optional: put the camera cable in from the left side."),
     dict(title="Lid", view="iso", show=["lid"], start={"lid": [0, 45, 0]},
          text="Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward."),
     dict(title="Charge plug", view="right", show=["plug"], start={"plug": [20, 0, 0]},
@@ -131,7 +135,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.8 on Platform v1.0",
+        title="Bittle X Pi Add-on v0.9 on Platform v1.1",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -147,13 +151,13 @@ def main():
 HOME = os.path.join(PROJ, "site")
 LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
-    dict(key="platform", name="Bittle X Platform v1.0", dir="bittle_platform", zip="bittle_platform_v1.0.zip",
+    dict(key="platform", name="Bittle X Platform v1.1", dir="bittle_platform", zip="bittle_platform_v1.1.zip",
          pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
          text="The stock Petoi Bittle X back cover with 4 pegs on its top. Add-ons drop onto the pegs, "
               "slide 7 mm rearward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.8", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.8.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.9", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.9.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/01_assembly_iso.png", img2="doc/06_tray_loaded.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic. Three printed parts, all without supports.",

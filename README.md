@@ -42,6 +42,7 @@ clicks onto the platform.
 - Balanced: the speaker at the front balances the Pi stack
 - Serial link to the BiBoard through the Pi slot in the cover
 - Charge port, power button and power switch open through the lid
+- A cable slot for the Petoi AI Vision Module camera in the head
 - 3 printed parts, all without supports
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)

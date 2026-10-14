@@ -14,7 +14,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.8"
+VERSION = "0.9"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -57,6 +57,7 @@ def content():
          ["NULLLAB 3 W 4 ohm speaker", "Ear plate 45 x 31 x 1.5, body 27 x 30 x 14.3 (ruler). On two pins at the front, sound to the front grille."],
          ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board, on edge at the rear, port to the rear. Solder the wires at the top edge."],
          ["5 Dupont jumpers", "Straight plugs on the BiBoard header (GND, +5V, TX2, RX2) in the cover slot."],
+         ["Petoi AI Vision Module (optional)", "Stays in the head. Its Grove cable goes along the left side of the robot and through the slot in the left lid wall to the Pi."],
          ], [50, 120])
 
     B = CHECKS["balance"]
@@ -77,6 +78,7 @@ def content():
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
          f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
          "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi." + st(9),
+         "Optional camera: put the Grove cable through the slot in the left lid wall, behind the speaker. Solder its wires to the Pi (section 4). Leave slack for the head to turn.",
          "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
          "Optional: push the TPU plug into the charge window." + st(11),
          f"To remove: pull the lid up, slide the tray {PI.SLIDE:g} mm forward and lift it."])
@@ -92,6 +94,7 @@ def content():
          ["I2S out / in", "GPIO21 pin 40 / GPIO20 pin 38", "amp DIN / mic DOUT (mic SEL to GND)"],
          ["Power", "5V pin 2, 3V3 pin 1, GND pin 9", "amp 5V, mic 3V. Do not connect BiBoard 5V to the Pi."],
          ["Speaker", "-", "amp + / - to the speaker"],
+         ["Camera I2C (Grove)", "SDA GPIO2 pin 3, SCL GPIO3 pin 5, 3V3 pin 17, GND pin 14", "AI Vision Module Grove: SDA, SCL, VCC, GND"],
          ], [30, 62, 78])
 
     h("5. Files")
@@ -104,7 +107,7 @@ def content():
          ["render.py, docs.py", "the pictures and this guide"],
          ], [62, 108])
     p("Open items: the speaker sound face is assumed opposite the ears. The mic port is assumed at the board center; "
-      "the 7 holes cover ±2.2 mm. The BiBoard header height is an estimate (a photo of the robot shows it lower, so there is more room).")
+      "the 7 holes cover ±2.2 mm. The camera supply voltage is not checked: if the module needs 5 V, use pin 4. The BiBoard header height is an estimate (a photo of the robot shows it lower, so there is more room).")
 
     h("6. License")
     p("The printed parts, the drawings and this guide are CC BY 4.0, and the code is MIT (Jeremy Collins). "

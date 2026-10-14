@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.8 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
+"""Bittle X Pi add-on rev 0.9 (was the Pi pod): stock cover + pegs, pod tray, pod lid, plug.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -34,7 +34,7 @@ from build123d import (
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
-from bittle_platform import interface as PI          # platform v1.0: cover, pegs, keyholes
+from bittle_platform import interface as PI          # platform v1.1: cover, pegs, keyholes
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
@@ -74,7 +74,9 @@ TRAY_GAP = 0.4              # tray outline = lid inner wall - 0.4
 RIM_T, RIM_TOP = 1.2, 31.0
 RAIL_TOP = 29.1             # the cell rests on rails above the peg heads
 SNAPS = [(-1, -6.0), (-1, 30.0), (1, -6.0), (1, 40.0)]   # (side, z) rim bumps; right rim is cut over the cover slot
-# Pegs (on the cover) and keyholes (in the tray): platform interface v1.0
+# The lid wall is straight only above Y_FLARE[1] (31), so each bump stands on a rim tab, over that height.
+SNAP_Y, SNAP_TAB_TOP = 33.0, 34.6
+# Pegs (on the cover) and keyholes (in the tray): platform interface v1.1
 PEGS = PI.PEGS
 PEG_SHAFT_D, PEG_HEAD_D = PI.PEG_SHAFT_D, PI.PEG_HEAD_D
 PEG_ROOT_Y = PI.PEG_ROOT_Y
@@ -87,7 +89,11 @@ DET = PI.DET
 # ears along X (45 overall, 4 mm holes), body 27 (X) x 30 (Z) x 14.3 tall.
 SPK = dict(l=45.0, body_l=27.0, d=31.0, h=14.3, ear_t=1.5, hole_d=4.0, hole_in=4.5, xc=0.0)
 SPK["holes_x"] = (SPK["xc"] - SPK["l"] / 2 + SPK["hole_in"], SPK["xc"] + SPK["l"] / 2 - SPK["hole_in"])
-SPK_PIN_D = SPK["hole_d"] - 0.5
+# Pins: point-down teardrop (no flat underside on a 9.7 mm horizontal pin). Round top r 1.55, 45 deg sides
+# to a point 2.19 below the center. The center is 0.35 over the hole center: the ear rests on the pin top,
+# and the point stays 0.16 inside the hole.
+SPK_PIN_D = 3.1
+SPK_PIN_DY = 0.35
 # The ear tabs can be at the rear face of the body or up to half way up its side (not measured).
 # The pins reach both: the body can then stand against the wall with the tabs further out on the pins.
 SPK_PIN_L = SPK["ear_t"] + SPK["h"] / 2 + 1.0
@@ -98,7 +104,7 @@ TRAY_Z0 = -19.3                             # front end of the tray floor = fron
 TRAY_Z1 = 56.2                              # rear end of the tray floor (behind the mic base)
 SPK_ZE = TRAY_Z0                            # rear face of the ear plate
 SPK_Y0 = FLOOR_Y0                           # bottom of the ear plate: 0.7 over the cover top
-SPK_WALL = dict(x=21.0, y1=40.0, t=2.0)     # wall: |X| <= 21, Y from the tray bottom to 40
+SPK_WALL = dict(x=21.0, y1=46.0, t=2.0)     # wall: |X| <= 21, Y from the tray bottom to 46 (2 mm over the pin tops)
 
 # Pi Zero 2 W + PiSugar 2 (1200 mAh) stack.
 # "u" = height in the stack frame (Pi PCB bottom at u = -0.5).
@@ -150,6 +156,11 @@ MIC = dict(l=16.7, w=12.7, t=1.8, xc=0.0, z0=52.7, y0=31.3, slot=3.0, clr=0.15)
 MIC["x0"], MIC["x1"] = MIC["xc"] - MIC["w"] / 2, MIC["xc"] + MIC["w"] / 2
 MIC["z1"] = MIC["z0"] + MIC["t"]
 MIC["y1"] = MIC["y0"] + MIC["l"]
+
+# Camera cable: the Grove cable of the Petoi AI Vision Module (in the head) comes along the left
+# side of the robot and goes through a slot in the left lid wall, behind the speaker and over the
+# tray rim, to the Pi I2C pins. Slot for a flat 4-wire cable (about 5 x 1.3), in the straight wall above the flare.
+CAM_SLOT = dict(zc=-14.5, w=6.0, y0=32.0, h=2.2)
 
 # Pi slot in Bittle_Cover_with_hole_for_Pi.stl (measured: Bittle_Cover.stl minus it, 0.5 grid)
 SLOT = PI.SLOT
@@ -444,9 +455,6 @@ def build_tray():
     t = plan_prism(FLOOR_Y0, FLOOR_Y1)
     rim = plan_prism(FLOOR_Y1, RIM_TOP) - plan_prism(FLOOR_Y1 - 1, RIM_TOP + 1, RIM_T)
     t += rim
-    for (sx, zc) in SNAPS:
-        w_i = inner_at(zc)[0] - TRAY_GAP
-        t += cyl_z(sx * w_i, 29.5, zc - 4, zc + 4, 0.8)
     # cell rails (clear of the peg heads and slide paths)
     zb0, zb1 = Z_SD - 4.5 - BAT_L, Z_SD - 4.5
     for xc in (STACK_GPIO_X + 27.35, STACK_GPIO_X + 10.35):
@@ -460,11 +468,10 @@ def build_tray():
         for ze, sz in ((z0, -1), (z1, 1)):
             if sx > 0 and sz < 0:   # front port corner: over the cover slot notch
                 continue
-            t += box(*sorted((xe, xe - sx * 6.0)), FLOOR_Y1, loc_top, *sorted((ze, ze + sz * 1.0)))
+            t += box(*sorted((xe, xe - sx * 6.0)), FLOOR_Y1, loc_top, *sorted((ze, ze + sz * 1.6)))
             if sx < 0 and sz < 0:   # front GPIO corner: the amp is next to it
                 continue
-            t += box(*sorted((xe, xe + sx * 1.2)), FLOOR_Y1, loc_top, *sorted((ze, ze - sz * 6.0)))
-            t += box(*sorted((xe, xe - sx * 0.25)), FLOOR_Y1 + 3, loc_top, *sorted((ze - sz * 3.0, ze - sz * 4.0)))
+            t += box(*sorted((xe, xe + sx * 1.6)), FLOOR_Y1, loc_top, *sorted((ze, ze - sz * 6.0)))
     t += amp_post()
     t += mic_base()
     # keyholes with a cantilever click detent
@@ -475,6 +482,10 @@ def build_tray():
     t -= box(SLOT["x0"] - 0.3, 40.0, FLOOR_Y0 - 1, RIM_TOP + 1, SLOT["z0"] - 0.6, SLOT["z1"] + SLIDE + 0.6)
     t &= plan_prism(FLOOR_Y0 - 1, H_MAIN)   # nothing outside the lid's inner wall
     t += speaker_wall() & plan_prism(FLOOR_Y0 - 1, H_MAIN, zmin=ZF)   # the pins stand in front of the tray
+    for (sx, zc) in SNAPS:   # rim tab and bump: the bump stands 0.8 out of the rim, 0.4 into the lid wall
+        w_i = inner_at(zc)[0] - TRAY_GAP
+        t += box(*sorted((sx * (w_i - RIM_T), sx * w_i)), RIM_TOP - 0.01, SNAP_TAB_TOP, zc - 5, zc + 5)
+        t += teardrop_z(sx * w_i, SNAP_Y, zc - 4, zc + 4, 0.8, 0.8 * math.sqrt(2))   # 45 deg underside
     return t
 
 
@@ -510,32 +521,29 @@ def speaker_wall():
     """Wall at the front end of the tray with two pins (forward) through the speaker ear holes."""
     W = SPK_WALL
     w = box(-W["x"], W["x"], FLOOR_Y0, W["y1"], SPK_ZE, SPK_ZE + W["t"])
-    yc = SPK_Y0 + SPK["d"] / 2
+    yc = SPK_Y0 + SPK["d"] / 2 + SPK_PIN_DY
     r = SPK_PIN_D / 2
     zp = SPK_ZE - SPK_PIN_L                                                 # front end of the pin
     for xh in SPK["holes_x"]:
-        w += teardrop_z(xh, yc, zp, SPK_ZE + 0.01, r, SPK["hole_d"] / 2 - 0.1)
-        w += Pos(xh, yc, zp - 0.3) * Cone(r - 0.3, r, 0.6)                   # lead-in
+        w += teardrop_z(xh, yc, zp, SPK_ZE + 0.01, r, r * math.sqrt(2))
     return w
 
 
 def amp_post():
-    """Post on the component side of the amp board; two pins in its 4.7 mm holes."""
+    """Post on the component side of the amp board; two 4.6 mm pins in its 4.7 mm holes."""
     xf = AMP["x0"]
     yb = AMP_Y0
     p = box(xf - 3.5, xf, FLOOR_Y1, yb + AMP["h"] - 1.0, AMP_HOLE_Z - 2.3, AMP_HOLE_Z + 2.3)
     for dy in (3.2, AMP["h"] - 3.2):
-        p += teardrop_x(yb + dy, AMP_HOLE_Z, xf - 0.1, AMP["x1"] - 0.3, 2.25, 2.0)   # flat inside the 4.7 hole
-        for k in range(3):   # crush ribs for a friction fit
-            a = math.radians(90 + 120 * k)
-            p += cyl_x(yb + dy + 2.25 * math.sin(a), AMP_HOLE_Z + 2.25 * math.cos(a), xf, AMP["x1"] - 0.3, 0.25)
+        p += teardrop_x(yb + dy, AMP_HOLE_Z, xf - 0.1, AMP["x1"] - 0.8, 2.3, 2.0)    # flat inside the 4.7 hole
+        p += Pos(AMP["x1"] - 0.55, yb + dy, AMP_HOLE_Z) * Rot(0, 90, 0) * Cone(2.3, 1.9, 0.5)   # lead-in
     return p
 
 
 def mic_base():
     """Base on the tray floor with a slot for the bottom edge of the mic board."""
     M, c = MIC, MIC["clr"]
-    b = box(M["x0"] - 2.0, M["x1"] + 2.0, FLOOR_Y1 - 0.01, M["y0"] + M["slot"], M["z0"] - 1.2, M["z1"] + 1.2)
+    b = box(M["x0"] - 2.0, M["x1"] + 2.0, FLOOR_Y1 - 0.01, M["y0"] + M["slot"], M["z0"] - 1.8, M["z1"] + 1.8)
     b -= box(M["x0"] - c, M["x1"] + c, M["y0"], M["y0"] + M["slot"] + 1, M["z0"] - c, M["z1"] + c)
     return b
 
@@ -543,7 +551,7 @@ def mic_base():
 def mic_stub():
     """Stub on the lid top with a slot for the top edge of the mic board (prints from the bed)."""
     M, c = MIC, MIC["clr"]
-    s = box(M["xc"] - 3.0, M["xc"] + 3.0, M["y1"] - 2.0, H_MAIN, M["z0"] - 1.2, M["z1"] + 1.2)
+    s = box(M["xc"] - 3.0, M["xc"] + 3.0, M["y1"] - 2.0, H_MAIN, M["z0"] - 1.8, M["z1"] + 1.8)
     s -= box(M["xc"] - 4.0, M["xc"] + 4.0, M["y1"] - 3.0, M["y1"] + c, M["z0"] - c, M["z1"] + c)
     return s
 
@@ -579,9 +587,11 @@ def build_lid():
     cuts, adds = [], []
     for (sx, zc) in SNAPS:
         w_i = inner_at(zc)[0] - TRAY_GAP
-        cuts.append(cyl_z(sx * w_i, 29.5, zc - 4.6, zc + 4.6, 0.95))
+        cuts.append(cyl_z(sx * w_i, SNAP_Y, zc - 4.6, zc + 4.6, 0.95))
     xa, xb = W_MAIN - T_WALL - 1, W_MAIN + 1
     cuts.append(stadium_x(CHG_Y, CHG_Z, xa, xb, USB_W, USB_H))
+    C = CAM_SLOT     # camera cable slot in the left wall (a 6 mm bridge in the print)
+    cuts.append(box(-xb, -xa, C["y0"], C["y0"] + C["h"], C["zc"] - C["w"] / 2, C["zc"] + C["w"] / 2))
     cuts.append(stadium_x(SW_Y, SW_Z, xa, xb, SW_W, SW_H))
     # PiSugar 2 tap button flexure, hinge at the top
     z0, z1 = BTN_Z - 3.0, BTN_Z + 3.0
@@ -626,9 +636,10 @@ def build_plug():
     w, h = USB_W - 2 * clr, USB_H - 2 * clr
     xw = W_MAIN
     body = stadium_x(CHG_Y, CHG_Z, xw - T_WALL - 0.4, xw + 0.45, w, h)
-    flange = stadium_x(CHG_Y, CHG_Z, xw + 0.25, xw + 1.05, w + 2.4, h + 2.4)
-    tab = box(xw + 0.25, xw + 1.05, CHG_Y - 1.2, CHG_Y + 1.2, CHG_Z - w / 2 - 6.0, CHG_Z - w / 2 - 1.0)
-    return body + flange + tab
+    flange = stadium_x(CHG_Y, CHG_Z, xw + 0.25, xw + 1.85, w + 2.4, h + 2.4)     # same thickness as the tab: both on the bed
+    tab = box(xw + 0.25, xw + 1.85, CHG_Y - 1.2, CHG_Y + 1.2, CHG_Z - w / 2 - 6.0, CHG_Z - w / 2 - 1.0)
+    lip = stadium_x(CHG_Y, CHG_Z, xw - T_WALL - 0.4, xw - T_WALL - 0.05, w + 0.6, h + 0.6)   # holds behind the wall
+    return body + flange + tab + lip
 
 
 # --------------------------------------------------------------------------
@@ -664,7 +675,10 @@ def real_models():
     m = (cov[:, 0] > HDR["x0"]) & (cov[:, 0] < HDR["x1"]) & (cov[:, 2] > HDR["z0"]) & (cov[:, 2] < HDR["z1"])
     hdr = b3d_to_manifold(box(HDR["x0"], HDR["x1"], float(cov[m, 1].min()) - 3.0, HDR["top"], HDR["z0"], HDR["z1"]))
     plugs = b3d_to_manifold(box(HDR["x0"], HDR["x1"], HDR["top"], PLUG_TOP, HDR["z0"], HDR["z1"]))
+    C = CAM_SLOT     # cable through the slot, over the tray rim
+    cam = box(-(W_MAIN + 3), -20.0, C["y0"] + 0.4, C["y0"] + 1.7, C["zc"] - 2.6, C["zc"] + 2.6)
     return dict(pisugar2=pisugar, pizero=pizero, battery=bat, biboard_header=hdr, dupont_plugs=plugs,
+                camera_cable=b3d_to_manifold(cam),
                 speaker=b3d_to_manifold(spk), mic_sph0645=b3d_to_manifold(mic),
                 amp_ns4168=b3d_to_manifold(amp))
 
@@ -848,7 +862,8 @@ def export_assembly(path):
         pod_lid=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_lid.stl"))), "#f9bd1a"),
     )
     for n, col in (("pizero", "#2a8c47"), ("pisugar2", "#c4588c"), ("battery", "#3a5fa8"), ("amp_ns4168", "#1a5a8c"),
-                   ("speaker", "#7a52b8"), ("mic_sph0645", "#d83a34"), ("biboard_header", "#0d0d0d"), ("dupont_plugs", "#d83a34")):
+                   ("speaker", "#7a52b8"), ("mic_sph0645", "#d83a34"), ("biboard_header", "#0d0d0d"), ("dupont_plugs", "#d83a34"),
+                   ("camera_cable", "#3a9a3a")):
         meshes[n] = (mesh_to_manifold(load_stl(os.path.join(OUT, "models", f"{n}.stl"))), col)
     kids = []
     coarse = ("shoulder_right", "shoulder_left", "front_plate", "rear_plate_mirror", "cover", "pizero", "pisugar2")

@@ -1,6 +1,6 @@
-# Bittle X Platform v1.0 - Interface Specification
+# Bittle X Platform v1.1 - Interface Specification
 
-Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover with 4 pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+Version 1.1, 2026-10-14. The platform is the stock Petoi Bittle X back cover with 4 pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
 
 ![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
 
@@ -15,7 +15,7 @@ Version 1.0, 2026-10-14. The platform is the stock Petoi Bittle X back cover wit
 | Add-on plate | bottom at Y 26, 1.5 thick at the keyholes |
 | Keyhole | slot 4.4 wide from the peg to 7 mm behind it (+Z); Ø7.6 drop-in hole at the rear end |
 | Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
-| Click (detent) | a 1.6 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 0.8 into the slot, 2.7 behind the peg |
+| Click (detent) | a 1.2 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 0.7 into the slot, 2.7 behind the peg |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
 | Size | the pod fits in Z -40..59, \|X\| <= 33.6; outside that, check the legs and the head |
 

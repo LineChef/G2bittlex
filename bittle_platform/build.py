@@ -1,4 +1,4 @@
-"""Bittle X platform v1.0: build the parts, the keep-out volumes, the checks and the CAD files.
+"""Bittle X platform v1.1: build the parts, the keep-out volumes, the checks and the CAD files.
 
 Run:  python build.py          (then: python docs.py for interface.json, SPEC.md and the PDF)
 Needs: build123d, manifold3d, numpy. Frame and numbers: interface.py.

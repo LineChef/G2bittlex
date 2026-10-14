@@ -13,7 +13,7 @@ Frame (the Petoi reference STL frame), units mm:
   Origin: on the robot center line, at the middle of the cover length.
 """
 
-VERSION = "1.0"
+VERSION = "1.1"
 
 # --------------------------------------------------------------------------
 # Stock cover (measured from the Petoi STL)
@@ -55,8 +55,10 @@ SLIDE = 7.0
 KEY_BIG_D = 7.6                 # drop-in hole, center at (px, pz + SLIDE) in add-on coordinates
 KEY_SLOT_W = 4.4                # slot from (px, pz) to (px, pz + SLIDE), round end at (px, pz)
 # Detent: cantilever beam on the +X side of each slot, made by a U slit (fixed only at the root).
-# The bump pushes BUMP_IN into the slot -> beam travel 0.4. Strain 1.5*d*t/a^2 = 1.0 %.
-DET = dict(beam_w=1.6, slit_w=0.8, bump_r=1.0, bump_in=0.8, bump_dz=2.7, arm=10.0)
+# The bump pushes BUMP_IN into the slot -> beam travel 0.3. Strain 1.5*d*t/a^2 = 0.9 %.
+# v1.1: arm 7.6 (was 10). The root now starts 1 mm clear of the drop-in hole of the
+# keyhole in front (the old root was cut to a 0.45 mm neck). Beam 1.2 = 3 extrusion widths.
+DET = dict(beam_w=1.2, slit_w=0.8, bump_r=1.0, bump_in=0.7, bump_dz=2.7, arm=7.6)
 
 # --------------------------------------------------------------------------
 # Envelope (checked with the pod; outside this, check the robot yourself)
