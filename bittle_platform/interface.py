@@ -1,8 +1,9 @@
 """Bittle X platform interface, version 1.0. All numbers for add-on design are here.
 
 The platform is the stock Petoi Bittle X back cover (Bittle_Cover_with_hole_for_Pi.stl)
-with 4 teardrop pegs on its flat top. Add-ons drop onto the pegs, slide, and click.
-v2.0 is not compatible with v1.x: reprint the cover and the add-on plate.
+with 4 teardrop pegs on its flat top. Add-ons drop onto the pegs, slide forward, and click.
+To remove an add-on, slide it rearward (away from the head) and lift it.
+v3.0 is not compatible with v1.x or v2.0: reprint the cover and the add-on plate.
 
 This file is the single source of numbers. build.py makes the parts, the checks,
 interface.json, SPEC.md and the PDF from it. ../pod.py reads it too.
@@ -14,7 +15,7 @@ Frame (the Petoi reference STL frame), units mm:
   Origin: on the robot center line, at the middle of the cover length.
 """
 
-VERSION = "2.0"
+VERSION = "3.0"
 
 # --------------------------------------------------------------------------
 # Stock cover (measured from the Petoi STL)
@@ -33,14 +34,16 @@ PLUG_TOP = 48.0                 # Y of free space for straight Dupont plugs and 
 # --------------------------------------------------------------------------
 # Pegs (part of the platform)
 # --------------------------------------------------------------------------
-# v2.0: teardrop pegs. The head is a teardrop with the point to the front (-Z, toward the robot head).
-# The drop-in holes have the same shape, so an add-on goes on in one direction only: turned 180 deg,
-# the round side of each hole is where the point of the head is.
-# The shaft and the collar are teardrops with the point to the rear (+Z). The cover prints standing
-# on its rear end, so these points are down and the shaft and the collar print without overhangs.
-PEGS = [(12.0, -10.0), (12.0, 10.0), (-12.0, -10.0), (-12.0, 10.0)]   # (X, Z) centers: 24 x 20, centered
+# v3.0: the add-on slides forward to lock and rearward to come off. A closed add-on cannot slide
+# toward the head (the head is 1.35 mm in front of the lid), but 7 mm to the rear is clear.
+# Teardrop pegs (v2.0): the head, the shaft and the collar are teardrops with the point to the rear (+Z).
+# The drop-in holes have the head shape with the point toward the slot, so an add-on goes on in one
+# direction only: turned 180 deg, the round side of each hole is where the point of the head is.
+# The cover prints standing on its rear end: all the points are down, so the pegs print without overhangs.
+PEGS = [(12.0, -5.5), (12.0, 14.5), (-12.0, -5.5), (-12.0, 14.5)]   # (X, Z) centers: 24 x 20, 4.5 mm behind the cover center
+# (the front drop-in holes stay 0.45 behind the speaker wall of the Pi add-on)
 TIP_DEG = 45.0                  # half angle of the teardrop point
-HEAD_TIP = -1.0                 # the head point is toward -Z; the shaft and collar points are toward +Z
+HEAD_TIP = 1.0                  # all the points are toward +Z
 HEAD_TIP_DEG = 30.0             # a long head point: turned 180 deg, about 3 mm of it is over the plate
 PEG_SHAFT_D = 4.0               # round part of the shaft teardrop
 PEG_HEAD_D = 7.0                # round part of the head teardrop
@@ -65,17 +68,18 @@ MOUNT_Y1 = 27.5                 # top face of the plate where the peg heads pass
 MOUNT_T = MOUNT_Y1 - MOUNT_Y0   # 1.5
 HEAD_CLEAR_Y = PEG_HEAD_Y1 + 0.5   # keep add-on material above this Y over the head sweep (29.5)
 
-# Keyhole, one for each peg, in the plate. The add-on drops on SLIDE forward (-Z)
-# of its locked place, then slides SLIDE rearward (+Z) to lock.
+# Keyhole, one for each peg, in the plate. The add-on drops on SLIDE rearward (+Z)
+# of its locked place, then slides SLIDE forward (-Z) to lock.
 SLIDE = 7.0
-KEY_HOLE_GAP = 0.45             # drop-in hole = the head teardrop + this gap, center at (px, pz + SLIDE)
-KEY_SLOT_GAP = 0.35             # slot = the shaft + this gap each side, from (px, pz) to (px, pz + SLIDE)
+KEY_HOLE_GAP = 0.45             # drop-in hole = the head teardrop + this gap, center at (px, pz - SLIDE)
+KEY_SLOT_GAP = 0.35             # slot = the shaft + this gap each side, from (px, pz - SLIDE) to (px, pz)
 KEY_SLOT_W = PEG_SHAFT_D + 2 * KEY_SLOT_GAP      # 4.7
-# The front end of the slot is round. Its center is KEY_SLOT_GAP behind the peg, so a peg
-# at (px, pz) touches it at the front: this is the stop of the locked place.
+KEY_LEAD = 0.4                  # 45 deg chamfer on the top and bottom edges of the slot and the hole
+# The rear end of the slot is a V: the shaft teardrop + KEY_SLOT_GAP, moved forward so that a peg
+# at (px, pz) touches both flanks. This is the stop of the locked place, and it centers the peg in X.
 # Click (detent): two cantilever beams, one on each side of the slot, made by U slits
-# (fixed only at the root, toward the front). Each beam has a round bump at its free end.
-# The bumps hold the shaft against the front stop and center it in X: the add-on does not rattle.
+# (fixed only at the root, behind the peg). Each beam has a round bump at its free end, in front of the peg.
+# The bumps push the shaft into the V stop: the add-on does not rattle.
 # Shaft between the bumps: beam travel = travel. With a 1.2 x 1.5 beam, arm 7.0, PLA (E 2400):
 # about 4 N peak to slide the add-on on or off (all 8 beams), strain 1.1 % (build.py: detent_force()).
 DET = dict(beam_w=1.2, slit_w=0.8, arm=7.5, bump_r=1.5, travel=0.35, preload=0.05, free_end=1.2)

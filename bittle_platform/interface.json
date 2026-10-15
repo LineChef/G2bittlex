@@ -33,9 +33,10 @@
   "top": 29.1
  },
  "HEAD_CLEAR_Y": 29.5,
- "HEAD_TIP": -1.0,
+ "HEAD_TIP": 1.0,
  "HEAD_TIP_DEG": 30.0,
  "KEY_HOLE_GAP": 0.45,
+ "KEY_LEAD": 0.4,
  "KEY_SLOT_GAP": 0.35,
  "KEY_SLOT_W": 4.7,
  "LOGO": {
@@ -47,7 +48,7 @@
  "MOUNT_Y0": 26.0,
  "MOUNT_Y1": 27.5,
  "MU_PLA": 0.3,
- "PEGS": [[12.0, -10.0], [12.0, 10.0], [-12.0, -10.0], [-12.0, 10.0]],
+ "PEGS": [[12.0, -5.5], [12.0, 14.5], [-12.0, -5.5], [-12.0, 14.5]],
  "PEG_COLLAR_D": 5.6,
  "PEG_COLLAR_Y1": 25.69,
  "PEG_HEAD_CHAMFER": 0.5,
@@ -66,33 +67,33 @@
   "z1": 25.75
  },
  "TIP_DEG": 45.0,
- "VERSION": "2.0",
+ "VERSION": "3.0",
  "frame": "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover",
- "fit_sequence": "place 7 mm forward (-Z) of the locked place, lower onto the pegs, slide 7 mm rearward (+Z) until the detents click",
+ "fit_sequence": "place 7 mm rearward (+Z) of the locked place, lower onto the pegs, slide 7 mm forward (-Z) until the detents click; remove: slide 7 mm rearward and lift",
  "keyholes": [
   {
-   "peg": [12.0, -10.0],
-   "slot": [[12.0, -10.0], [12.0, -3.0]],
-   "drop_in_center": [12.0, -3.0],
-   "bump_centers": [[15.15, -8.582], [8.85, -8.582]]
+   "peg": [12.0, -5.5],
+   "slot": [[12.0, -12.5], [12.0, -5.5]],
+   "drop_in_center": [12.0, -12.5],
+   "bump_centers": [[15.15, -6.918], [8.85, -6.918]]
   },
   {
-   "peg": [12.0, 10.0],
-   "slot": [[12.0, 10.0], [12.0, 17.0]],
-   "drop_in_center": [12.0, 17.0],
-   "bump_centers": [[15.15, 11.418], [8.85, 11.418]]
+   "peg": [12.0, 14.5],
+   "slot": [[12.0, 7.5], [12.0, 14.5]],
+   "drop_in_center": [12.0, 7.5],
+   "bump_centers": [[15.15, 13.082], [8.85, 13.082]]
   },
   {
-   "peg": [-12.0, -10.0],
-   "slot": [[-12.0, -10.0], [-12.0, -3.0]],
-   "drop_in_center": [-12.0, -3.0],
-   "bump_centers": [[-8.85, -8.582], [-15.15, -8.582]]
+   "peg": [-12.0, -5.5],
+   "slot": [[-12.0, -12.5], [-12.0, -5.5]],
+   "drop_in_center": [-12.0, -12.5],
+   "bump_centers": [[-8.85, -6.918], [-15.15, -6.918]]
   },
   {
-   "peg": [-12.0, 10.0],
-   "slot": [[-12.0, 10.0], [-12.0, 17.0]],
-   "drop_in_center": [-12.0, 17.0],
-   "bump_centers": [[-8.85, 11.418], [-15.15, 11.418]]
+   "peg": [-12.0, 14.5],
+   "slot": [[-12.0, 7.5], [-12.0, 14.5]],
+   "drop_in_center": [-12.0, 7.5],
+   "bump_centers": [[-8.85, 13.082], [-15.15, 13.082]]
   }
  ],
  "clearances": {
@@ -101,7 +102,7 @@
   "plate_top_to_head": 0.3,
   "slot_to_shaft_each_side": 0.35,
   "big_hole_to_head_each_side": 0.45,
-  "collar_to_logo": 0.93,
+  "collar_to_logo": 0.8,
   "collar_to_flat_edge": 0.57
  },
  "checks": {
@@ -202,9 +203,9 @@
     -0.0
    ],
    [
-    "starter_plate turned 180 (min over Z)",
+    "starter_plate turned 180 (min, Z +-12)",
     "peg heads",
-    13.077
+    10.071
    ],
    [
     "starter_plate drop-on (lowered)",
@@ -228,14 +229,14 @@
    ]
   ],
   "overhang_mm2": {
-   "cover_pegs": 214.546,
+   "cover_pegs": 198.615,
    "starter_plate": 0.0,
-   "cover_pegs_foot": 234.493,
+   "cover_pegs_foot": 218.562,
    "cover_stock": 198.615
   },
   "mass_g_pla_solid": {
    "cover_pegs": 11.4,
-   "starter_plate": 3.5
+   "starter_plate": 3.6
   },
   "clearances": {
    "plate_to_collar": 0.31,
@@ -243,7 +244,7 @@
    "plate_top_to_head": 0.3,
    "slot_to_shaft_each_side": 0.35,
    "big_hole_to_head_each_side": 0.45,
-   "collar_to_logo": 0.93,
+   "collar_to_logo": 0.8,
    "collar_to_flat_edge": 0.57
   },
   "detent": {

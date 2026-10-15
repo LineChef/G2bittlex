@@ -59,13 +59,14 @@ INFO = {
     "tray": dict(text="The tray of the Pi add-on. It has 4 teardrop keyholes, each with two spring beams that center the peg, "
                       "a slot base for the mic, two pins for the amp, a front wall with two pins for the speaker, "
                       "and two key tabs on the left rim for the lid. An arrow in the floor points to the front. It prints floor down without supports.",
-                 attach="Put it on the pegs 7 mm forward of its place, arrow to the front, then slide it 7 mm rearward until the beams click.",
+                 attach="Put it on the pegs 7 mm behind its place, arrow to the front, then slide it 7 mm forward until the beams click. "
+                        "To remove the closed add-on, slide it 7 mm rearward and lift it.",
                  files=[("Print STL", AF + "pod_tray.stl"), ("STEP", AF + "pod_tray.step")]),
     "lid": dict(text="The lid of the Pi add-on. It has a flat top and 45 deg chamfers, so it prints upside down without supports. "
                      "Two open port bays in the right side bring the wall in to the ports of the Pi and the PiSugar. "
                      "It has openings for the mic, the speaker and the camera cable, and a window for the top insert.",
                 attach="Put it on with the side arrows to the front. Two pairs of ribs on the left wall go down at each side of the tray key tabs. "
-                       "Push it down until the 4 snaps click. Its lower edge then stops the tray from sliding forward.",
+                       "Push it down until the 4 snaps click. Open it only on the bench: on the robot, slide the closed add-on off to the rear.",
                 files=[("Print STL", AF + "pod_lid.stl"), ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
     "top_insert": dict(text="The vent panel in the top of the lid, printed in a second color. It sits flush on a 45 deg seat. "
                             "Four clips catch under a frame below the window. The frame has no side rails over the wire band.",
@@ -113,12 +114,12 @@ STEPS = [
          text="The Bittle X without its back cover: the head is at the front, the tail at the rear. The BiBoard header stands up at the right side."),
     dict(title="Fit the platform", view="iso", show=["cover"], start={"cover": [0, 40, 0]},
          text="Fit the platform cover in place of the stock cover. It has 4 pegs on its top."),
-    dict(title="Put the tray on", view="iso", show=["tray"], start={"tray": [0, 35, -7]}, end={"tray": [0, 0, -7]},
-         text="Put the tray on the pegs 7 mm forward of its place, with the floor arrow to the front. "
+    dict(title="Put the tray on", view="iso", show=["tray"], start={"tray": [0, 35, 7]}, end={"tray": [0, 0, 7]},
+         text="Put the tray on the pegs 7 mm behind its place, with the floor arrow to the front. "
               "The teardrop peg heads go through the teardrop holes. Turned the wrong way, the tray does not go down."),
-    dict(title="Slide to lock", view="right", start={"tray": [0, 0, -7]},
-         text="Push the tray 7 mm rearward until it clicks. Two spring beams at each peg push it against the front stops and center it. "
-              "The peg heads hold the floor down."),
+    dict(title="Slide to lock", view="right", start={"tray": [0, 0, 7]},
+         text="Push the tray 7 mm forward until it clicks. Two spring beams at each peg push the peg into a V stop, which centers it. "
+              "The peg heads hold the floor down. To remove the closed add-on later, slide it 7 mm rearward and lift it."),
     dict(title="Mic", view="left", show=["mic"], start={"mic": [0, 30, 0]},
          text="Push the mic board down into the slot at the left side of the tray, port to the left."),
     dict(title="Amp", view="rear", show=["amp"], start={"amp": [0, 0, 22]},
@@ -136,7 +137,7 @@ STEPS = [
          text="Push the vent insert into the window in the lid top until the 4 clips click."),
     dict(title="Lid", view="right", show=["lid"], start={"lid": [0, 45, 0], "top_insert": [0, 45, 0]},
          text="Put the lid on with the side arrows to the front. The ribs on its left wall go down at each side of the tray key tabs. "
-              "Push it down until the 4 snaps click. The lid also stops the tray from sliding forward. "
+              "Push it down until the 4 snaps click. To remove the add-on, slide it closed 7 mm rearward and lift it. "
               "The ports of the Pi and the PiSugar are in the two bays in the right side."),
 ]
 
@@ -163,7 +164,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.14 on Platform v2.0",
+        title="Bittle X Pi Add-on v0.15 on Platform v3.0",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -181,13 +182,13 @@ def main():
 HOME = os.path.join(PROJ, "site")
 LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
-    dict(key="platform", name="Bittle X Platform v2.0", dir="bittle_platform", zip="bittle_platform_v2.0.zip",
+    dict(key="platform", name="Bittle X Platform v3.0", dir="bittle_platform", zip="bittle_platform_v3.0.zip",
          pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
          text="The stock Petoi Bittle X back cover with 4 pegs on its top. Add-ons drop onto the pegs, "
               "slide 7 mm rearward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.14", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.14.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.15", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.15.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_ports_right.png", img2="doc/06_tray_loaded.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic. Three printed parts, all without supports.",

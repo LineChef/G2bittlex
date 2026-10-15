@@ -3,7 +3,7 @@
   [
    "cover_pegs",
    "pod_tray",
-   0.19935563905887824
+   0.1989457001854131
   ],
   [
    "cover_pegs",
@@ -326,63 +326,138 @@
    0
   ],
   [
-   "tray fwd 7mm",
+   "tray back 1.42mm",
    "cover_pegs",
-   0.0
+   4.252597996406928
   ],
   [
-   "tray fwd 7mm",
+   "tray back 1.42mm",
    "cover_slot",
    0.0
   ],
   [
-   "tray fwd 7mm",
+   "tray back 1.42mm",
    "biboard_header",
    0.0
   ],
   [
-   "tray fwd 7mm",
+   "add-on back 1.42mm",
+   "cover",
+   0.0
+  ],
+  [
+   "add-on back 1.42mm",
    "under_cover",
    0.0
   ],
   [
-   "tray fwd 7mm",
+   "add-on back 1.42mm",
    "shoulder_r",
    0.0
   ],
   [
-   "tray fwd 7mm",
+   "add-on back 1.42mm",
    "shoulder_l",
    0.0
   ],
   [
-   "tray fwd 1.42mm",
-   "cover_pegs",
-   4.252651141748592
+   "add-on back 1.42mm",
+   "front_plate",
+   0.0
   ],
   [
-   "tray fwd 1.42mm",
+   "add-on back 1.42mm",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "tray back 3.5mm",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "tray back 3.5mm",
    "cover_slot",
    0.0
   ],
   [
-   "tray fwd 1.42mm",
+   "tray back 3.5mm",
    "biboard_header",
    0.0
   ],
   [
-   "tray fwd 1.42mm",
+   "add-on back 3.5mm",
+   "cover",
+   0.0
+  ],
+  [
+   "add-on back 3.5mm",
    "under_cover",
    0.0
   ],
   [
-   "tray fwd 1.42mm",
+   "add-on back 3.5mm",
    "shoulder_r",
    0.0
   ],
   [
-   "tray fwd 1.42mm",
+   "add-on back 3.5mm",
    "shoulder_l",
+   0.0
+  ],
+  [
+   "add-on back 3.5mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "add-on back 3.5mm",
+   "rear_plate_mirror",
+   0.0
+  ],
+  [
+   "tray back 7mm",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "tray back 7mm",
+   "cover_slot",
+   0.0
+  ],
+  [
+   "tray back 7mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "cover",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "under_cover",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "add-on back 7mm",
+   "rear_plate_mirror",
    0.0
   ],
   [
@@ -916,11 +991,11 @@
   }
  },
  "balance": {
-  "mass_g": 118.4,
+  "mass_g": 117.8,
   "com": [
    -0.5,
-   39.9,
-   9.7
+   40.0,
+   9.9
   ],
   "parts": [
    {
@@ -928,17 +1003,17 @@
     "g": 11.6,
     "com": [
      -2.9,
-     30.4,
+     30.5,
      15.5
     ]
    },
    {
     "name": "pod_lid",
-    "g": 35.8,
+    "g": 35.1,
     "com": [
      -0.6,
-     43.0,
-     13.8
+     43.5,
+     14.8
     ]
    },
    {

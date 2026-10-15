@@ -1,4 +1,4 @@
-"""Bittle X platform v2.0: build the parts, the keep-out volumes, the checks and the CAD files.
+"""Bittle X platform v3.0: build the parts, the keep-out volumes, the checks and the CAD files.
 
 Run:  python build.py          (then: python docs.py for interface.json, SPEC.md and the PDF)
 Needs: build123d, manifold3d, numpy. Frame and numbers: interface.py.
@@ -16,7 +16,8 @@ import sys
 
 import numpy as np
 import manifold3d as m3
-from build123d import (Axis, Box, Circle, Cylinder, Polygon, Pos, Rot, RectangleRounded, Plane, chamfer, extrude, export_step)
+from build123d import (Axis, Box, Circle, Cylinder, Polygon, Pos, Rot, Rectangle, RectangleRounded, Plane, chamfer, extrude,
+                       export_step, loft)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -70,6 +71,27 @@ def tear_prism(x, z, r, y0, y1, top_chamfer=0.0, tip=1.0, deg=None):
     return p if tip > 0 else Pos(0, 0, 2 * z) * p.mirror(Plane.XY)
 
 
+def tear_face(x, z, r, y, deg=None):
+    """Teardrop face in the plane at height y (point toward +Z)."""
+    a = math.radians(deg or I.TIP_DEG)
+    c, s_ = r * math.cos(a), r * math.sin(a)
+    f = Circle(r) + Polygon((0, 0), (-c, -s_), (0, -r / math.sin(a)), (c, -s_), align=None)
+    return Pos(x, y, z) * Rot(-90, 0, 0) * f
+
+
+def rect_face(x0, x1, z0, z1, y):
+    return Pos((x0 + x1) / 2, y, (z0 + z1) / 2) * Rot(-90, 0, 0) * Rectangle(x1 - x0, z1 - z0)
+
+
+def lead_ins(face_at, l=None):
+    """45 deg lead-in chamfers at the top and bottom edges of a cut through the mount plate.
+    face_at(grow, y) gives the cut section grown by grow at height y."""
+    l = I.KEY_LEAD if l is None else l
+    y0, y1 = I.MOUNT_Y0, I.MOUNT_Y1
+    return (loft([face_at(0.0, y1 - l), face_at(l, y1)]) + loft([face_at(l, y0), face_at(0.0, y0 + l)])
+            + extrude(face_at(l, y1 - 0.01), amount=1.0) + extrude(face_at(l, y0 - 1.0), amount=1.01))
+
+
 def peg(x, z):
     p = tear_prism(x, z, I.PEG_SHAFT_D / 2, I.PEG_ROOT_Y, I.PEG_HEAD_Y0 + 0.01)
     p += tear_prism(x, z, I.PEG_HEAD_D / 2, I.PEG_HEAD_Y0, I.PEG_HEAD_Y1, I.PEG_HEAD_CHAMFER, I.HEAD_TIP, I.HEAD_TIP_DEG)
@@ -86,10 +108,12 @@ def detent_geometry():
 
     2D model in plan: the shaft teardrop moves along Z between the two bumps. Each beam moves out
     in X until its bump (radius bump_r) is clear of the shaft. dz puts the bump on the shaft with
-    the preload when the shaft is at the front stop (s = 0)."""
+    the preload when the shaft is at the V stop (s = 0).
+    Model frame: +z = forward from the peg (toward the bumps), s = the peg moves toward the bumps
+    (the add-on slides rearward: unlock). The shaft point is toward -z in this frame."""
     D = I.DET
     rs, rb = I.PEG_SHAFT_D / 2, D["bump_r"]
-    S = tear_outline(rs, 1440)
+    S = tear_outline(rs, 1440, tip=-1.0)
     dx = rs - D["travel"] + rb
 
     def defl(s, dz):
@@ -119,7 +143,7 @@ def detent_force():
     n = 2 * len(I.PEGS)
     g = np.gradient(d, ss)
     F = k * d
-    unlock = n * (F * g + I.MU_PLA * F * np.sqrt(1 + g ** 2))     # the add-on moves forward: the peg moves +s
+    unlock = n * (F * g + I.MU_PLA * F * np.sqrt(1 + g ** 2))     # the add-on moves rearward: the peg moves +s
     lock = n * (-F * g + I.MU_PLA * F * np.sqrt(1 + g ** 2))
     return dict(lock_N=round(float(lock.max()), 1), unlock_N=round(float(unlock.max()), 1),
                 hold_N=round(float(n * k * D["preload"]), 2), beam_travel=round(float(d.max()), 2),
@@ -131,24 +155,30 @@ DET_DX, DET_DZ = detent_geometry()[:2]
 
 def keyhole_cutter(px, pz):
     """Tool body: subtract it from the add-on mount plate (add-on frame = robot frame, locked position).
-    Drop-in hole, slot with a round front stop, and the U slits of the two detent beams."""
+    Drop-in hole in front of the peg, slot back to a V stop, lead-in chamfers, and the U slits of the
+    two detent beams (free ends in front of the peg, roots behind it)."""
     D = I.DET
     y0, y1 = I.MOUNT_Y0 - 1, I.MOUNT_Y1 + 1
     hw = I.KEY_SLOT_W / 2
-    zb = pz + I.SLIDE
-    c = tear_prism(px, zb, I.PEG_HEAD_D / 2 + I.KEY_HOLE_GAP, y0, I.HEAD_CLEAR_Y, tip=I.HEAD_TIP, deg=I.HEAD_TIP_DEG)   # the head passes through it
-    zs = pz + I.KEY_SLOT_GAP                               # center of the round front stop
-    c += box(px - hw, px + hw, y0, y1, zs, zb)
-    c += cyl_y(px, zs, y0, y1, hw)
-    zt = pz + DET_DZ + D["free_end"]                       # free end of the beams
-    zr = zt - D["arm"]                                     # beam root
+    g = I.KEY_SLOT_GAP
+    zb = pz - I.SLIDE                                      # drop-in hole center
+    zv = pz - g * math.sqrt(2)                             # V stop: the shaft at pz touches both flanks
+    rh, rv = I.PEG_HEAD_D / 2 + I.KEY_HOLE_GAP, I.PEG_SHAFT_D / 2 + g
+    c = tear_prism(px, zb, rh, y0, I.HEAD_CLEAR_Y, deg=I.HEAD_TIP_DEG)   # the head passes through it
+    c += box(px - hw, px + hw, y0, y1, zb, zv)
+    c += tear_prism(px, zv, rv, y0, y1)
+    c += lead_ins(lambda e, y: tear_face(px, zb, rh + e, y, I.HEAD_TIP_DEG))
+    c += lead_ins(lambda e, y: rect_face(px - hw - e, px + hw + e, zb, zv, y))
+    c += lead_ins(lambda e, y: tear_face(px, zv, rv + e, y))
+    zt = pz - DET_DZ - D["free_end"]                       # free end of the beams (front)
+    zr = zt + D["arm"]                                     # beam root (behind the peg)
     for sx in (1, -1):
         xa, xb = sorted((px + sx * (hw + D["beam_w"]), px + sx * (hw + D["beam_w"] + D["slit_w"])))
-        c += box(xa, xb, y0, y1, zr, zt + D["slit_w"])                                 # outer slit
+        c += box(xa, xb, y0, y1, zt - D["slit_w"], zr)                                 # outer slit
         xa, xb = sorted((px + sx * (hw - 0.2), px + sx * (hw + D["beam_w"] + D["slit_w"])))
-        c += box(xa, xb, y0, y1, zt, zt + D["slit_w"])                                 # end slit
+        c += box(xa, xb, y0, y1, zt - D["slit_w"], zt)                                 # end slit
         xa, xb = sorted((px + sx * (hw - D["slit_w"]), px + sx * hw))
-        c += box(xa, xb, y0, y1, zr, zs)                                               # inner slit, up to the slot
+        c += box(xa, xb, y0, y1, zv, zr)                                               # inner slit, from the slot
     return c
 
 
@@ -158,14 +188,14 @@ def detent_bump(px, pz):
     hw = I.KEY_SLOT_W / 2
     out = None
     for sx in (1, -1):
-        b = cyl_y(px + sx * DET_DX, pz + DET_DZ, I.MOUNT_Y0, I.MOUNT_Y1, D["bump_r"])
+        b = cyl_y(px + sx * DET_DX, pz - DET_DZ, I.MOUNT_Y0, I.MOUNT_Y1, D["bump_r"])
         xa, xb = sorted((px + sx * (hw - 2.0), px + sx * (hw + D["beam_w"])))
-        b &= box(xa, xb, I.MOUNT_Y0, I.MOUNT_Y1, pz + DET_DZ - D["bump_r"], pz + DET_DZ + D["free_end"])
+        b &= box(xa, xb, I.MOUNT_Y0, I.MOUNT_Y1, pz - DET_DZ - D["free_end"], pz - DET_DZ + D["bump_r"])
         out = b if out is None else out + b
     return out
 
 
-STARTER = dict(x=18.5, z=(-19.5, 25.0), r=3.0, rim_w=1.6, rim_top=31.5,
+STARTER = dict(x=18.5, z=(-20.0, 25.5), r=3.0, rim_w=1.6, rim_top=31.5,
                holes=[(x, z) for x in (-5.0, 5.0) for z in (-10.0, 0.0, 10.0)], hole_d=3.2)
 
 
@@ -191,9 +221,9 @@ def starter_plate():
 
 
 def header_keepout():
-    """BiBoard header + 0.4, swept SLIDE to the rear (add-on frame), and the Dupont plug space."""
+    """BiBoard header + 0.4, swept SLIDE to the front (add-on frame), and the Dupont plug space."""
     H, S = I.HDR, I.SLOT
-    k = box(H["x0"] - 0.4, H["x1"] + 0.4, S["y0"], H["top"] + 0.5, H["z0"] - 0.4, H["z1"] + I.SLIDE + 0.4)
+    k = box(H["x0"] - 0.4, H["x1"] + 0.4, S["y0"], H["top"] + 0.5, H["z0"] - I.SLIDE - 0.4, H["z1"] + 0.4)
     plugs = box(S["x0"], S["x1"], H["top"], I.PLUG_TOP, S["z0"], S["z1"])
     return k, plugs
 
@@ -379,12 +409,12 @@ def main():
 
     # keep-out for add-on bodies, add-on frame at the locked position, swept over the slide
     robot = MU.heightfield_solid(support_tris(True), -45, 45, -66, 66, lift=0.3).simplify(0.05)
-    robot_sw = MU.heightfield_solid(support_tris(True), -45, 45, -66, 66 + I.SLIDE, lift=0.3,
-                                    sweep_z=I.SLIDE).simplify(0.05)     # 0.05 mm of the 0.3 mm gap
+    robot_sw = MU.heightfield_solid(support_tris(True), -45, 45, -66 - I.SLIDE, 66, lift=0.3,
+                                    sweep_z=-I.SLIDE).simplify(0.05)    # 0.05 mm of the 0.3 mm gap
     heads = None
     for x, z in I.PEGS:
         h = to_m(tear_prism(x, z, I.PEG_HEAD_D / 2 + 0.4, I.MOUNT_Y1, I.HEAD_CLEAR_Y, tip=I.HEAD_TIP, deg=I.HEAD_TIP_DEG))
-        h = hull_sweep(h, I.SLIDE)
+        h = hull_sweep(h, -I.SLIDE)
         heads = h if heads is None else heads + h
     hdr_m, plug_m = to_m(hdr_k), to_m(plug_k)
     keepout = robot_sw + heads + hdr_m
@@ -407,18 +437,19 @@ def main():
     rows = []
     vol = lambda a, b: (a ^ b).volume()
     for name, dz in (("locked", 0.0), ("at detent bump", DET_DZ), ("drop-on", I.SLIDE)):
-        T = plate_m.translate([0, 0, -dz])
+        T = plate_m.translate([0, 0, dz])        # the add-on goes on behind its place
         rows.append((f"starter_plate {name}", "cover_pegs", vol(T, cover_pegs)))
         rows.append((f"starter_plate {name}", "biboard_header", vol(T, hdr_real)))
         for rn, M in R.items():
             rows.append((f"starter_plate {name}", rn, vol(T, M)))
     rows.append(("starter_plate (body)", "keepout", vol(plate_m - to_m(cutter), keepout)))
-    # one direction only: the plate turned 180 deg (about Y) does not go down over the heads at any Z place
+    # one direction only: the plate turned 180 deg (about Y) does not go down over the heads
     heads_fp = to_m(union(tear_prism(x, z, I.PEG_HEAD_D / 2, I.MOUNT_Y0 - 1, I.HEAD_CLEAR_Y, tip=I.HEAD_TIP, deg=I.HEAD_TIP_DEG) for x, z in I.PEGS))
     turned = plate_m.transform(np.array([[-1.0, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0]]))
-    keyed = min(vol(turned.translate([0, 0, float(dz)]), heads_fp) for dz in np.arange(-24.0, 24.01, 0.25))
-    rows.append(("starter_plate turned 180 (min over Z)", "peg heads", keyed))
-    rows.append(("starter_plate drop-on (lowered)", "peg heads", vol(plate_m.translate([0, 0, -I.SLIDE]), heads_fp)))
+    # Z shifts up to 12 mm: a larger shift puts the plate off the cover top
+    keyed = min(vol(turned.translate([0, 0, float(dz)]), heads_fp) for dz in np.arange(-12.0, 12.01, 0.25))
+    rows.append(("starter_plate turned 180 (min, Z +-12)", "peg heads", keyed))
+    rows.append(("starter_plate drop-on (lowered)", "peg heads", vol(plate_m.translate([0, 0, I.SLIDE]), heads_fp)))
     for k, M in parts.items():
         rows.append((k, "loose_pieces", loose(M)))
     rows.append(("cover_pegs_foot (print)", "loose_pieces", loose(footed)))

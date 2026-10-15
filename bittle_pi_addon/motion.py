@@ -7,8 +7,7 @@ Angles are in degrees, relative to the standing pose of robot.py.
   legs: hip x knee grid. A pose is "addon" when the leg touches the tray or the lid
         and does not touch the robot body. It is "body" when the leg touches the body.
   tail: the Petoi tail against the lid and the tray.
-  install: the tray and the speaker at the drop-on place (7 mm forward) against the head.
-           The speaker goes on after the tray is locked.
+  install: the tray and the speaker at the drop-on place (7 mm behind the locked place) against the head.
 """
 import json
 import os
@@ -52,12 +51,12 @@ def main():
     out["tail"] = dict(lid=round((tail ^ lid).volume(), 1), tray=round((tail ^ tray).volume(), 1))
     print("tail:", out["tail"])
 
-    # install: the tray and the speaker at the drop-on place, head straight ahead
+    # install: the tray and the speaker at the drop-on place (7 mm rearward), head straight ahead
     out["install"] = {}
     for n, M in (("tray", tray), ("speaker", load("models/speaker.stl"))):
-        T = M.translate([0, 0, -PI.SLIDE])
+        T = M.translate([0, 0, PI.SLIDE])
         out["install"][n] = dict(head=round((T ^ head).volume(), 2), gap=round(T.min_gap(head, 10), 2))
-    print("install (7 mm forward) x head:", out["install"])
+    print("install (7 mm rearward) x head:", out["install"])
 
     # legs: one front and one rear leg on each side; the grid is the same for left and right
     # the robot body (the thigh horn sits on the hip servo spline: the hip servos are not in it)

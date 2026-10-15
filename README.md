@@ -15,11 +15,12 @@ The platform is the stock Petoi back cover with 4 teardrop pegs on its flat top.
 goes on the robot in place of the stock cover. The inside of the cover does
 not change, so the BiBoard and the touch sensor fit as before.
 
-- **Tool-free mount.** Put an add-on on the pegs, slide it 7 mm rearward,
-  and it clicks into place. Slide it forward to remove it. Two spring beams
-  at each peg center the add-on, so it does not rattle.
-- **One direction only.** The peg heads and the keyholes are teardrops that
-  point to the front. Turned the wrong way, an add-on does not go on.
+- **Tool-free mount.** Put an add-on on the pegs, slide it 7 mm forward,
+  and it clicks into place. Slide it rearward, away from the head, to remove
+  it closed. Two spring beams at each peg push it into a V stop, so it is
+  centered and does not rattle.
+- **One direction only.** The peg heads and the keyholes are teardrops.
+  Turned the wrong way, an add-on does not go on.
 - **Centered pegs.** The 24 x 20 mm peg pattern is on the center line of
   the robot.
 - **Open interface.** The spec has every number that you need.

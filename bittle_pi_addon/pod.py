@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.14 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
+"""Bittle X Pi add-on rev 0.15 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -7,8 +7,9 @@ Parts
   cover_pegs : the platform (bittle_platform/): Petoi cover, unchanged, plus 4 pegs.
                Each peg root ends inside the 1.6 mm cover wall, so the inside
                of the cover (BiBoard space, touch FPC) does not change.
-  pod_tray   : tray. Teardrop keyholes drop over the pegs 7 mm forward of the locked place (one direction
-               only), slide rearward, click (two cantilever detents for each peg). A notch over the cover slot lets the BiBoard wires in.
+  pod_tray   : tray. Teardrop keyholes drop over the pegs 7 mm behind the locked place (one direction
+               only), slide forward, click (two cantilever detents for each peg). To remove the closed
+               add-on, slide it 7 mm rearward and lift it. A notch over the cover slot lets the BiBoard wires in.
                Holds the Pi Zero 2 W + PiSugar 2 stack (over the BiBoard header, between the
                PiSugar button and switch, near the center line), the 3 W speaker (on two pins
                on a wall at the front end), the NS4168 amp (crosswise at the rear) and the
@@ -34,7 +35,7 @@ from build123d import (
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
-from bittle_platform import interface as PI          # platform v2.0: cover, pegs, keyholes
+from bittle_platform import interface as PI          # platform v3.0: cover, pegs, keyholes
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
@@ -96,12 +97,12 @@ WIRE_Z = (15.6, 24.5)
 WIRE_PATH = [dict(x=(23.9, 28.1), y=(43.2, 48.3), z=(12.0, 24.7)),   # over the plug housings, in the wall opening
              dict(x=(15.6, 28.0), y=(48.3, 55.0), z=WIRE_Z),         # up beside the Pi ports
              dict(x=(-16.0, 28.0), y=(49.6, 55.0), z=WIRE_Z)]        # over the Pi (0.4 over its top) to the GPIO edge
-# Pegs (on the cover) and keyholes (in the tray): platform interface v2.0
+# Pegs (on the cover) and keyholes (in the tray): platform interface v3.0
 PEGS = PI.PEGS
 PEG_SHAFT_D, PEG_HEAD_D = PI.PEG_SHAFT_D, PI.PEG_HEAD_D
 PEG_ROOT_Y = PI.PEG_ROOT_Y
 PEG_HEAD_Y0, PEG_HEAD_Y1 = PI.PEG_HEAD_Y0, PI.PEG_HEAD_Y1
-SLIDE = PI.SLIDE            # the tray drops on SLIDE forward (-Z) of its place, then slides rearward (+Z) to lock
+SLIDE = PI.SLIDE            # the add-on drops on SLIDE rearward (+Z) of its place, then slides forward (-Z) to lock
 KEY_SLOT_W = PI.KEY_SLOT_W
 DET = PI.DET
 
@@ -593,7 +594,7 @@ def build_tray():
                 loc = b_ if loc is None else loc + b_
     for (px, pz) in PEGS:      # full height cut: no locator part over a peg head or its slide path
         loc -= box(px - 4.8, px + 4.8, FLOOR_Y1 - 1, loc_top + 1,
-                   pz - PI.tip_len(PEG_HEAD_D, PI.HEAD_TIP_DEG) - 0.5, pz + SLIDE + 4.4)   # the head and the detent beams
+                   pz - SLIDE - PEG_HEAD_D / 2 - 1.0, pz + PI.tip_len(PEG_HEAD_D, PI.HEAD_TIP_DEG) + 0.5)   # hole, head, beams
     t += loc
     t += amp_place(amp_post())
     t += mic_place(mic_base())
@@ -602,7 +603,7 @@ def build_tray():
         t -= keyhole_cut(px, pz)
         t += keyhole_bump(px, pz)
     # notch over the cover slot (floor and rim, open to the side), includes the slide travel
-    t -= box(SLOT["x0"] - 0.3, 40.0, FLOOR_Y0 - 1, RIM_TOP + 1, SLOT["z0"] - 0.6, SLOT["z1"] + SLIDE + 0.6)
+    t -= box(SLOT["x0"] - 0.3, 40.0, FLOOR_Y0 - 1, RIM_TOP + 1, SLOT["z0"] - SLIDE - 0.6, SLOT["z1"] + 0.6)
     t &= plan_prism(FLOOR_Y0 - 1, H_MAIN)   # nothing outside the lid's inner wall
     t += speaker_wall() & plan_prism(FLOOR_Y0 - 1, H_MAIN, zmin=ZF)   # the pins stand in front of the tray
     t -= bay_solid(T_WALL + TRAY_GAP)   # clear of the bay walls of the lid
@@ -892,7 +893,10 @@ def build_all():
     support = np.concatenate([solid_cover_tris(), shoulder_tris(),
                               load_stl(os.path.join(PREF, "Bittle_FrontPlate.stl"))])
     box_ = lambda *a: b3d_to_manifold(box(*a))
-    clearance = heightfield_solid(support, -W_HAUNCH - 3, W_HAUNCH + 3, ZF - 2, ZR + 2, lift=HUG_GAP)
+    # the lid edge stays HUG_GAP off the robot over the whole slide (the add-on comes off to the rear)
+    from bittle_platform import meshutil as MU
+    clearance = MU.heightfield_solid(support, -W_HAUNCH - 3, W_HAUNCH + 3, ZF - 2, ZR + 2 + SLIDE, lift=HUG_GAP,
+                                     sweep_z=-SLIDE)
     clearance += box_(-27.6, 27.6, 0.0, LID_MIN_Y, COVER_END_Z - 0.5, ZR + 5)
     lid = build_lid() - clearance
     tray = b3d_to_manifold(build_tray())
@@ -931,16 +935,19 @@ def check(parts, models, robot):
     for a in names:
         pcs = sorted(c.volume() for c in printed[a].decompose())
         rows.append((a, "loose_pieces", sum(pcs[:-1])))
-    # slide path: tray at the drop-on position and at the detent bump
+    # slide path: the closed add-on (tray, lid, insert) at the click bump, half way and at the drop-on place
     from bittle_platform import build as BP
-    for s_ in (SLIDE, round(BP.DET_DZ, 2)):
-        T = printed["pod_tray"].translate([0, 0, -s_])
-        rows.append((f"tray fwd {s_:g}mm", "cover_pegs", vol(T, printed["cover_pegs"])))
-        rows.append((f"tray fwd {s_:g}mm", "cover_slot", vol(T, models["cover_slot"])))
-        rows.append((f"tray fwd {s_:g}mm", "biboard_header", vol(T, models["biboard_header"])))
-        rows.append((f"tray fwd {s_:g}mm", "under_cover", vol(T, U)))
-        for rn in ("shoulder_r", "shoulder_l"):
-            rows.append((f"tray fwd {s_:g}mm", rn, vol(T, robot[rn])))
+    closed = printed["pod_tray"] + printed["pod_lid"] + printed["top_insert"]
+    for s_ in (round(BP.DET_DZ, 2), SLIDE / 2, SLIDE):
+        T = printed["pod_tray"].translate([0, 0, s_])
+        A_ = closed.translate([0, 0, s_])
+        rows.append((f"tray back {s_:g}mm", "cover_pegs", vol(T, printed["cover_pegs"])))
+        rows.append((f"tray back {s_:g}mm", "cover_slot", vol(T, models["cover_slot"])))
+        rows.append((f"tray back {s_:g}mm", "biboard_header", vol(T, models["biboard_header"])))
+        rows.append((f"add-on back {s_:g}mm", "cover", vol(A_ - T, printed["cover_pegs"])))
+        rows.append((f"add-on back {s_:g}mm", "under_cover", vol(A_, U)))
+        for rn, M in robot.items():
+            rows.append((f"add-on back {s_:g}mm", rn, vol(A_, M)))
     # port access: a plug body from each port face straight out to the side
     for n, (yc, zc, w, h) in PORT_PLUGS.items():
         B = b3d_to_manifold(box(15.3, 45.0, yc - h / 2, yc + h / 2, zc - w / 2, zc + w / 2))

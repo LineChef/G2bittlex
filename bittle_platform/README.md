@@ -1,8 +1,8 @@
-# Bittle X Platform v2.0 - Interface Specification
+# Bittle X Platform v3.0 - Interface Specification
 
-Version 2.0, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+Version 3.0, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm forward, and it clicks. To remove it, slide it 7 mm rearward and lift it. It comes off closed: the head is not in the way. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
 
-Version 2.0 is not compatible with version 1.x: the pegs have a new shape and a new place. Print the cover and the add-on plates again.
+Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Print the cover and the add-on plates again.
 
 ![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
 
@@ -12,12 +12,12 @@ Version 2.0 is not compatible with version 1.x: the pegs have a new shape and a 
 | Item | Value (mm) |
 |---|---|
 | Frame | X lateral (+X = robot right), Y up, Z along the body (-Z = head end). Origin: center line, middle of the cover. |
-| Pegs (X, Z) | (12, -10), (12, 10), (-12, -10), (-12, 10): a centered 24 x 20 rectangle |
-| Peg | teardrops. Head: R3.5, point 60 deg to the front (-Z), Y 27.8 to 29. Shaft: R2, point 90 deg to the rear (+Z) |
+| Pegs (X, Z) | (12, -5.5), (12, 14.5), (-12, -5.5), (-12, 14.5): a centered 24 x 20 rectangle |
+| Peg | teardrops with the point to the rear (+Z). Head: R3.5, point 60 deg, Y 27.8 to 29. Shaft: R2, point 90 deg |
 | Add-on plate | bottom at Y 26, 1.5 thick at the keyholes |
-| Keyhole | slot 4.7 wide from the peg to 7 mm behind it (+Z), round front stop; drop-in hole at the rear end = the head teardrop + 0.45 |
-| Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
-| Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the front end only). Bumps R1.5 at 1.42 behind the peg, 0.35 into the shaft path. They push the shaft against the front stop and center it. |
+| Keyhole | drop-in hole 7 mm in front of the peg = the head teardrop + 0.45; slot 4.7 wide back to a V stop at the peg; 0.4 lead-in chamfers top and bottom |
+| Fit | put the add-on on 7 mm behind its place, then slide it 7 mm forward until it clicks. Remove: slide it rearward and lift |
+| Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the rear end only). Bumps R1.5 at 1.42 in front of the peg, 0.35 into the shaft path. They push the shaft point into the V stop, which centers it. |
 | Click force | about 4.2 N to slide on and 4.2 N to slide off (all 8 beams, PLA estimate); beam strain 1.12 % |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
 | Size | the pod fits in Z -40..66, \|X\| <= 33.6; outside that, check the legs and the head |
@@ -80,7 +80,7 @@ Open items: the BiBoard header height is an estimate from photos. The legs, the 
 1. On a Bittle X V2, the back touch sensor is a flexible circuit that is glued to the inside of the cover top. It has touch areas on the left, the right, the center and near the tail (docs.petoi.com/extensible-modules/back-touch-sensor).
 2. The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change. Move the circuit from the stock cover to cover_pegs in the same way as on the stock cover.
 3. An add-on on the platform covers most of the touch areas. Disable the back touch mode (serial command Xb) when an add-on is on the robot.
-4. For this reason, the platform has no parts under the cover top. A cover that prints flat without supports needs pegs held from inside the cover, where the circuit is. A possible interface v2 with sockets in a thicker top avoids this.
+4. For this reason, the platform has no parts under the cover top. A cover that prints flat without supports needs pegs held from inside the cover, where the circuit is. A later interface with sockets in a thicker top can avoid this.
 
 ![Bittle X V2 touch areas (red boxes). Image: Petoi, docs.petoi.com/extensible-modules/back-touch-sensor.](doc/petoi_touch_areas.png)
 

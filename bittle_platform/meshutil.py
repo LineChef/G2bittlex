@@ -64,7 +64,7 @@ def save_tris(tri, path):
 
 def heightfield_solid(tris, x0, x1, z0, z1, step=0.4, lift=0.0, floor=0.0, sweep_z=0.0):
     """Closed solid under the top surface of a mesh (raised by `lift`).
-    sweep_z > 0: the surface is also swept that far along +Z (max over the grid shifts)."""
+    sweep_z: the surface is also swept that far along Z (+ or -; max over the grid shifts)."""
     xs = np.arange(x0, x1 + 1e-9, step)
     zs = np.arange(z0, z1 + 1e-9, step)
     H = np.full((len(xs), len(zs)), -1e9)
@@ -97,10 +97,13 @@ def heightfield_solid(tris, x0, x1, z0, z1, step=0.4, lift=0.0, floor=0.0, sweep
         for dj in (-1, 0, 1):
             Hd = np.maximum(Hd, np.roll(np.roll(H, di, 0), dj, 1))
     H = Hd
-    if sweep_z > 0:
+    if sweep_z:
         Hs = H.copy()
-        for k in range(1, int(math.ceil(sweep_z / step)) + 1):
-            Hs[:, k:] = np.maximum(Hs[:, k:], H[:, :-k])
+        for k in range(1, int(math.ceil(abs(sweep_z) / step)) + 1):
+            if sweep_z > 0:
+                Hs[:, k:] = np.maximum(Hs[:, k:], H[:, :-k])
+            else:
+                Hs[:, :-k] = np.maximum(Hs[:, :-k], H[:, k:])
         H = Hs
     nx, nz = len(xs), len(zs)
     top = np.array([[x, H[i, j], z] for i, x in enumerate(xs) for j, z in enumerate(zs)])

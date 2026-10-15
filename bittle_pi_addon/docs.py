@@ -14,7 +14,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.14"
+VERSION = "0.15"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -34,7 +34,7 @@ def content():
       "It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. "
       "It clicks onto the platform pegs. The teardrop keyholes and the arrows on the tray and the lid show the front: "
       "the tray and the lid go on one way only. No tools, glue, tape or supports are necessary.")
-    img("02_ports_right.png", 0.6, "The add-on on the platform, right side: the two port bays.")
+    img("02_ports_right.png", 0.5, "The add-on on the platform, right side: the two port bays.")
 
     h("1. Parts to print")
     tbl([["File (stl/print/)", "Material", "Orientation", "Supports", "Cura profile", "Mass"],
@@ -72,20 +72,20 @@ def content():
     p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1). "
       "Each step below has a link to its view.")
     lst(["Print the platform cover and fit it on the robot in place of the stock cover." + st(2),
-         "Solder the wires to the Pi, the amp and the mic (section 4).",
-         f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs, with the floor arrow to the front. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
-         "Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top." + st(5),
+         "Solder the wires to the Pi, the amp and the mic (section 4). Give the 4 BiBoard wires about 40 mm of slack: it folds into the wire path over the Pi.",
+         "Build the add-on on the bench. Push the mic board down into the slot at the left side of the tray, port to the left." + st(5),
          "Push the amp onto its two pins behind the stack, components to the rear." + st(6),
-         f"Hang the speaker on the two pins of the front wall, ear plate to the rear. Do this after the tray is locked: {PI.SLIDE:g} mm forward, the speaker hits the head." + st(7),
+         "Hang the speaker on the two pins of the front wall, ear plate to the rear." + st(7),
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
-         "Push the Dupont plugs onto the BiBoard header. Bend the wires rearward at the plug tops, then lay them over the Pi to the GPIO edge (the yellow wire path in the viewer)." + st(9),
-         "Optional camera: put the Grove cable through the slot in the left lid wall, behind the speaker. Solder its wires to the Pi (section 4). Leave slack for the head to turn.",
-         "Push the vent insert into the window in the lid top until its 4 clips click. To remove it, push it out from inside.",
-         "Put the lid on with the side arrows to the front. The two pairs of ribs on its left wall go down at each side of the key tabs on the tray rim. Push it down until the 4 snaps click." + st(10),
-         f"To remove: pull the lid walls a little out at the snaps and lift the lid. Lift the speaker off its pins and pull the Dupont plugs off the header. Then slide the tray {PI.SLIDE:g} mm forward and lift it. "
-         f"With the speaker on, the tray cannot slide {PI.SLIDE:g} mm forward: the speaker hits the head."])
-    img("06_tray_loaded.png", 0.46, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
-    img("08_section_center.png", 0.46, "Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.")
+         "Lay the BiBoard wires in the wire path over the Pi. Their Dupont plugs stay out through the notch in the tray floor." + st(9),
+         "Push the vent insert into the window in the lid top until its 4 clips click.",
+         "Put the lid on, side arrows to the front. The two pairs of ribs on its left wall go down at each side of the key tabs. Push it down until the 4 snaps click." + st(10),
+         f"Fit: hold the closed add-on just above the robot and push the Dupont plugs onto the BiBoard header. Put the add-on on the pegs {PI.SLIDE:g} mm behind its place, arrows to the front. "
+         f"Slide it {PI.SLIDE:g} mm forward until it clicks." + st(3) + st(4),
+         "Optional camera: put the Grove cable through the slot in the left lid wall before the lid goes on, and plug it into the camera module in the head.",
+         f"Remove: slide the closed add-on {PI.SLIDE:g} mm rearward, lift it a little, and pull the Dupont plugs off the header. Only open the lid on the bench."])
+    img("06_tray_loaded.png", 0.42, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
+    img("08_section_center.png", 0.42, "Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.")
 
     h("4. Wiring")
     tbl([["Signal", "Pi Zero 2 W", "To"],
@@ -108,8 +108,8 @@ def content():
          ["pod.py", "all dimensions, the build and the checks (fit, slide path, loose pieces, overhang)"],
          ["render.py, docs.py", "the pictures and this guide"],
          ], [62, 108])
-    p("Lid fit. Key tabs and ribs hold the lid on the tray in Z, so a push on the lid does not pop the snaps. "
-      "The snap bumps stand 0.7 mm into the lid wall, with a 25 deg lead-in and a 45 deg catch: the lid comes off with about two times the push.")
+    p(f"Slide and lid. The closed add-on slides off to the rear: the head is 1.35 mm in front of the lid, but the {PI.SLIDE:g} mm to the rear are clear. "
+      "Key tabs and ribs hold the lid on the tray in Z, and the snap bumps stand 0.7 mm into the lid wall (25 deg lead-in, 45 deg catch).")
     p("Ports. The stack is on the center line for balance, so its port edge is 11 mm inside the body side. "
       "The lid has two open port bays in its right side: the wall steps in to 0.45 mm from the port faces. "
       "The front bay has the PiSugar charge port and button and the Pi power and data USB ports. "
