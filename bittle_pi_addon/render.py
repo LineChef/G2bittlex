@@ -23,7 +23,7 @@ C = dict(
     shoulder="[0.95,0.66,0.12]", plate="[0.13,0.13,0.14]", pizero="[0.16,0.55,0.28]",
     pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]", bbplug="[0.85,0.20,0.20]",
     mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
-    wires="[0.95,0.77,0.10]", switch="[0.93,0.93,0.91]",
+    wires="[0.95,0.77,0.10]", switch="[0.93,0.93,0.91]", button="[0.96,0.96,0.95]", camera_mount="[0.91,0.39,0.11]",
 )
 
 
@@ -34,12 +34,12 @@ for _d in DISP:
     _h = _d["color"].lstrip("#")
     C[_d["model"] + "__" + _d["sub"]] = "[" + ",".join(f"{int(_h[i:i + 2], 16) / 255:.3f}" for i in (0, 2, 4)) + "]"
 ELEC = [d["model"] + "__" + d["sub"] for d in DISP]
-EXPLODE = dict(pizero=1.6, pisugar2=1.6, battery=1.6, sd_card=1.6, pi_plugs=1.6, amp_ns4168=1.6, speaker=1.6, mic_sph0645=1.6)
+PRINTED = dict(panel="pod_panel", switch="pod_switch", button="pod_button", camera_mount="pod_camera_mount")
 
 
-def imp(path, color, dy=0.0, dz=0.0, mirror=None):
+def imp(path, color, d=(0, 0, 0), mirror=None):
     m = f"mirror({mirror}) " if mirror else ""
-    return f'translate([0,{dy},{dz}]) {m}color({color}) import("{path}");\n'
+    return f'translate([{d[0]},{d[1]},{d[2]}]) {m}color({color}) import("{path}");\n'
 
 
 def files(cut=None):
@@ -49,6 +49,8 @@ def files(cut=None):
         "body": f"{STL}/installed/pod_body.stl",
         "panel": f"{STL}/installed/pod_panel.stl",
         "switch": f"{STL}/installed/pod_switch.stl",
+        "button": f"{STL}/installed/pod_button.stl",
+        "camera_mount": f"{STL}/installed/pod_camera_mount.stl",
         "shoulder": f"{REF}/Bittle_SideShoulder.stl",
         "plate": f"{REF}/Bittle_FrontPlate.stl",
     }
@@ -76,20 +78,21 @@ def files(cut=None):
     return out
 
 
-def scene(show, cut=None, explode=0.0, robot=True):
+def scene(show, cut=None, explode=False, robot=True):
+    """explode: each part at the end of both its moves in the exploded view (pod.py explode_plan)."""
     f = files(cut)
     s = ""
     for key, path in f.items():
         k = key.split("#")[0]
         if k not in show:
             continue
-        dy = 0.0
+        d = (0, 0, 0)
         if explode:
-            dy = {"panel": 3.4, "switch": 4.4}.get(k, EXPLODE.get(k.split("__")[0], 0.0)) * explode
-        if cut:
-            s += imp(path, C[k], dy=dy)
-        else:
-            s += imp(path, C[k], dy=dy)
+            plan = pod.explode_plan(PRINTED.get(k, k.split("__")[0]), k.split("__")[-1])
+            if plan:
+                d = tuple(a + b for a, b in zip(plan[1], plan[2]))
+        s += imp(path, C[k], d)
+        if not cut:
             if k == "shoulder" and robot:
                 s += imp(path, C[k], mirror="[1,0,0]")
             if k == "plate" and robot:
@@ -113,10 +116,10 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
     return png
 
 
-ALL = ["cover", "body", "panel", "switch", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
+ALL = ["cover", "body", "panel", "switch", "button", "camera_mount", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
 WIRES = [k for k in ELEC if k.startswith("wires_")]
 ALL += WIRES
-OPEN = [k for k in ALL if k not in ("panel", "switch")]
+OPEN = [k for k in ALL if k not in ("panel", "switch", "button", "camera_mount") and not k.startswith("camera__")]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {
@@ -129,7 +132,7 @@ JOBS = {
     "07_open_left": (OPEN, None, 0, "0,-9,40,48,0,215,300", False),
     "08_section": (ALL, ((0, 0, 1.0), 18.0), 0, "0,-18,44,90,0,180,230", True),
     "09_wires": (OPEN, None, 0, "0,-9,40,60,0,140,300", False),
-    "10_exploded": (ALL, None, 6.0, "0,-9,55,62,0,128,440", False),
+    "10_exploded": (ALL, None, True, "0,-9,185,72,0,128,960", False),
     "11_wires_top": (OPEN, None, 0, "4,-9,45,0,0,180,300", False),
     "12_wires_right": (OPEN, None, 0, "14,-9,42,40,0,90,220", False),
 }

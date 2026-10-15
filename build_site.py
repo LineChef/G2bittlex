@@ -21,6 +21,8 @@ MD = os.path.join(SITE, "models")
 PARTS = [
     ("panel", "Top panel (second color)", "Printed", "stl/installed/pod_panel.stl", "#e8641b", (0, 45, 0), None),
     ("switch", "Power switch slider", "Printed", "stl/installed/pod_switch.stl", "#f2f2ef", (0, 52, 0), None),
+    ("button", "Button cap", "Printed", "stl/installed/pod_button.stl", "#f2f2ef", (0, 52, 0), None),
+    ("camera_mount", "Camera mount", "Printed", "stl/installed/pod_camera_mount.stl", "#e8641b", (0, 70, 0), None),
     ("body", "Add-on body", "Printed", "stl/installed/pod_body.stl", "#f2f2ef", (0, 10, 0), None),
     ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
     ("shoulder_r", "Side shoulder R", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), None),
@@ -36,17 +38,18 @@ PARTS = [
      for k in ("lf", "rf", "lr", "rr") for p, n, c in (("thigh", "Thigh", "#f2a71c"), ("shank", "Shank", "#2c2d31"))]
 
 # Electronics and wires: colored sub-parts from pod.py (stl/models/parts.json). ALIAS: pod.py model -> viewer id.
-ALIAS = dict(pizero="pizero", pisugar2="pisugar", battery="battery", sd_card="sd_card", pi_plugs="pi_plugs", amp_ns4168="amp",
+ALIAS = dict(camera="camera", pizero="pizero", pisugar2="pisugar", battery="battery", sd_card="sd_card", pi_plugs="pi_plugs", amp_ns4168="amp",
              speaker="speaker", mic_sph0645="mic", biboard_header="header", biboard_plug="bb_plug")
-EXPLODE = dict(pizero=(8, 40, 0), pisugar=(4, 40, 0), battery=(0, 40, 0), sd_card=(8, 40, 0), pi_plugs=(12, 40, 0), amp=(-14, 30, 0),
-               speaker=(0, 30, 12), mic=(0, 30, -12), header=(0, 0, 0), bb_plug=(14, 30, 0))
+# Exploded view (pod.py explode_plan): a stage (reverse build order), a lift out of the open top, then a move aside.
+EXPLODE = json.load(open(os.path.join(ROOT, "stl", "explode.json")))
+PARTS = [p[:5] + (EXPLODE["parts"].get(os.path.basename(p[3])[:-4]),) + p[6:] for p in PARTS]
 GROUPS = {}
 for _d in json.load(open(os.path.join(ROOT, "stl", "models", "parts.json"))):
     _a = ALIAS.get(_d["model"], "wires")
     _id = _d["model"] + "__" + _d["sub"]
     GROUPS.setdefault(_a, []).append(_id)
     PARTS.append((_id, _d["label"][0].upper() + _d["label"][1:], "Robot" if _a == "header" else "Wires" if _a == "wires" else "Components",
-                  "stl/" + _d["file"], _d["color"], EXPLODE.get(_a, (0, 30, 0)), None))
+                  "stl/" + _d["file"], _d["color"], _d.get("explode"), None))
 
 
 def expand(ids):
@@ -82,9 +85,20 @@ INFO = {
                   files=[("Print STL", AF + "pod_panel.stl"), ("STEP (mesh)", AF + "pod_panel.step"),
                          ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
     "switch": dict(text="A large slider for the small PiSugar 2 power switch. Its tab stands 2 mm out of a slot in the panel. "
-                        "A fork under the panel goes over the switch lever. The slot gives 2 mm of travel each way: the switch sets the end positions.",
-                   attach="Put it on the switch lever, fork down, before the panel goes on. The panel holds it.",
+                        "Its body rides in two dovetail rails under the panel; a fork goes over the switch lever. 2 mm of travel each way: the switch sets the end positions.",
+                   attach="Put it into the rails at their rear end (no lips there) and slide it forward until it clicks, before the panel goes on.",
                    files=[("Print STL", AF + "pod_switch.stl")]),
+    "button": dict(text="The white button cap for the PiSugar button. It slides onto the spring tongue in the panel along a 45 deg dovetail "
+                        "and clicks over a small bump. Press it: the tongue and the arm under it press the PiSugar button.",
+                   attach="Slide it onto the tongue from the slit end until it clicks, before the panel goes on.",
+                   files=[("Print STL", AF + "pod_button.stl")]),
+    "camera_mount": dict(text="The camera mount: a base plate on the front of the panel, two U brackets that hold the ends of the camera case "
+                              "(outside the width of the head), and two clip legs through a window in the panel. It stays clear of the HDMI opening and the switch.",
+                         attach="Push its two clip legs down through the window in the panel until they click. Then put the camera case into the brackets, lens forward.",
+                         files=[("Print STL", AF + "pod_camera_mount.stl")]),
+    "camera": dict(text="The Petoi AI Vision Module in its Petoi case, upright on the front of the add-on, lens forward over the head (15 g). "
+                        "Its Grove cable goes down the front of the body to the BiBoard through the notch in the front-left edge of the cover.",
+                   attach="Put it into the brackets of the camera mount."),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on its long edge: ports up, GPIO header down, SD card to the front. Model: PiSugar (GPL-3.0).",
                    attach="With the PiSugar 2 it slides down into the grooves of the two end posts."),
     "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch are at the top. Model: PiSugar (GPL-3.0).",
@@ -133,30 +147,35 @@ _W = {(w["group"], w["wire"]): (i, w) for i, w in enumerate(WIRES["wires"], 1)}
 STACK = ["battery", "pisugar", "pizero", "sd_card", "pi_plugs"]
 
 
-def _wire_step(key, title=None, more=(), text=""):
+def _wire_step(key, title=None, text=""):
+    """One wire step. The wire comes in with its Dupont housings; a wire laid before (the amp cable) or a housing
+    plugged before (the mic end) is already in place and only glows."""
     i, w = _W[key]
-    ids = [w["id"]] + list(more)
+    laid = key[0] == "amp"
+    new = [h for h in w["housings"] if not h.endswith("_dev") or key[0] != "mic"]
+    if not laid:
+        new = [w["id"]] + new
+    glow = [w["id"]] + list(w["housings"])
     if w.get("pack"):
         text = text or f"Plug a 10 cm jumper from {w['from']} to the Pi {w['to']}. Lay its excess in {('an' if w['slack'][0] in 'aeiou' else 'a')} {w['slack']} as shown."
-    amp = key[0] == "amp"                               # the amp cable runs under the stack: the stack goes see-through too
-    return dict(title=title or f"{w['from']} \u2192 {'Pi ' if w['to'].startswith('pin') else ''}{w['to']}", view="build" if amp else "wires",
-                show=ids, highlight=ids, ghost=["body", "panel"] + (STACK[:4] if amp else []), start={k: [0, 22, 0] for k in ids},
+    return dict(title=title or f"{w['from']} \u2192 {'Pi ' if w['to'].startswith('pin') else ''}{w['to']}", view="build" if laid else "wires",
+                show=new, highlight=glow, ghost=["body", "panel"] + (STACK[:4] if laid else []), start={k: [0, 22, 0] for k in new},
                 text=(text or f"Plug {w['from']} onto the Pi {w['to']}.") + f" (Wire {i} in the route table of the guide.)")
 
 
-WIRE_STEPS = [
-    _wire_step(("amp", "G"), text="Amp cable G: lay it across the floor in front of the front pegs, into the outer lane of the right well, onto Pi pin 14."),
-    _wire_step(("amp", "V"), text="Amp cable V: across the floor, up at once onto Pi pin 2 (5V)."),
-    _wire_step(("amp", "DIN"), text="Amp cable DIN: across the floor, rearward in the inner lane, onto Pi pin 40."),
-    dict(title="Splices", view="wires", ghost=["body", "panel"], highlight=["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc"],
-         show=["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc"],
-         start={k: [0, 22, 0] for k in ("wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc")},
+AMP_CABLE = [_W[("amp", k)][1]["id"] for k in ("G", "V", "BCLK", "LRC", "DIN")]
+MIC_ENDS = [h for w in WIRES["wires"] if w["group"] == "mic" for h in w["housings"] if h.endswith("_dev")]
+SPLICE_IDS = ["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__bclk_pi", "wires_splice__lrclk", "wires_splice__lrclk_pi"]
+
+WIRE_STEPS = [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "uart"] + [
+    _wire_step(("amp", "G"), text="Amp cable G: from the floor in front of the front pegs, in the outer lane of the right well, onto Pi pin 14."),
+    _wire_step(("amp", "V"), text="Amp cable V: up from the floor onto Pi pin 2 (5V)."),
+    _wire_step(("amp", "DIN"), text="Amp cable DIN: rearward in the inner lane, onto Pi pin 40."),
+    dict(title="Splices", view="wires", ghost=["body", "panel"], highlight=SPLICE_IDS + ["wires_amp__bclk", "wires_amp__lrc"],
+         show=SPLICE_IDS, start={k: [0, 22, 0] for k in SPLICE_IDS},
          text="The BCLK and LRCLK splices: a short wire from Pi pin 12 (35) and the amp cable BCLK (LRC) go into the bottom of each sleeve. "
               "The BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs."),
-] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "mic"] + [
-    dict(title="BiBoard plugs", view="wires", ghost=["body", "panel"], show=["bb_plug"], highlight=["bb_plug"], start={"bb_plug": [0, 25, 0]},
-         text="Reach into the right well and push the three Dupont plugs onto the BiBoard header: TX2, RX2, GND (+5V is not wired)."),
-] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "uart"]
+] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "mic"]
 
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
 STEPS = [
@@ -173,22 +192,30 @@ STEPS = [
               "The BiBoard header is now in the notch of the right well."),
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
-    dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
+    dict(title="Mic", view="buildfront", show=["mic"] + MIC_ENDS, start={k: [0, 40, 0] for k in ["mic"] + MIC_ENDS},
          text="Plug the six 10 cm jumpers onto the mic header. Then push the mic down into its groove at the front wall, port to the front."),
-    dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
-         start={"amp": [0, 40, 0], "wires_speaker__pos": [0, 40, 0], "wires_speaker__neg": [0, 40, 0]},
+    dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"] + AMP_CABLE,
+         start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"] + AMP_CABLE},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
-              "Push the bottom edge of the amp down into the slot along the left wall, parts to the inside."),
+              "Push the bottom edge of the amp down into the slot along the left wall, parts to the inside. "
+              "Lay the amp cable across the floor in front of the front pegs and into the right well. The stack goes on top of it."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front. "
               "Then plug the wires one at a time, as the next steps show."),
 ] + WIRE_STEPS + [
-    dict(title="Switch slider", view="build", show=["switch"], start={"switch": [0, 25, 0]},
-         text="Put the switch slider on the PiSugar switch lever, fork down."),
-    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 30, 0]},
+    dict(title="Slider and button into the panel", view="build", show=["panel", "switch", "button"], highlight=["switch", "button"],
+         start={"panel": [0, 35, 0], "switch": [0, 47, 8], "button": [0, 47, 6]}, end={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
+         text="Before the panel goes on: slide the switch slider into the rails under the panel from their rear end until it clicks, "
+              "and slide the white button cap onto the tongue until it clicks. They stay in the panel."),
+    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
          text="Push the panel straight down until the 4 tabs click. The slider tab comes up through its slot. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue near the front is the PiSugar button. "
               "To open, lift the rear edge at the finger notch."),
+    dict(title="Camera mount", view="iso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
+         text="Push the two clip legs of the camera mount down through the window in the front of the panel until they click."),
+    dict(title="Camera", view="iso", show=["camera"], start={"camera": [0, 40, 0]},
+         text="Put the camera case into the two brackets, lens forward. Plug its Grove cable into the BiBoard through the notch in the front-left "
+              "edge of the cover, down the front of the body."),
 ]
 
 
@@ -210,12 +237,13 @@ def main():
             copied[src] = name
         info = INFO.get(pid) or INFO.get(next((a for a, ids in GROUPS.items() if pid in ids), ""), {})
         out.append(dict(id=pid, label=label, group=group, file="models/" + name,
-                        color=color, explode=ex, transform=tf, **info))
+                        color=color, explode=(ex or [0, [0, 0, 0], [0, 0, 0]]), transform=tf, **info))
     checks = json.load(open(os.path.join(ROOT, "stl", "checks.json")))["rows"]
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.16 on Platform v3.1",
+        title="Bittle X Pi Add-on v0.17 on Platform v3.1",
+        explode_stages=EXPLODE["stages"],
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -251,7 +279,7 @@ PACKAGES = [
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.16", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.16.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.17", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.17.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_addon.png", img2="doc/06_open.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic, in a rounded box with a snap-in top panel and a large power switch. Three printed parts, all without supports.",

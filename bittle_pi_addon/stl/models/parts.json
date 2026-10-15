@@ -4,321 +4,1287 @@
   "sub": "board",
   "label": "PiSugar 2 board",
   "file": "models/parts/pisugar2__board.stl",
-  "color": "#e06aa3"
+  "color": "#e06aa3",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    -5,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "pizero",
   "sub": "board",
   "label": "Raspberry Pi Zero 2 W",
   "file": "models/parts/pizero__board.stl",
-  "color": "#2e9b4f"
+  "color": "#2e9b4f",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    8,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "pizero",
   "sub": "heatsink",
   "label": "Pi heatsink (size estimated)",
   "file": "models/parts/pizero__heatsink.stl",
-  "color": "#c9ccd1"
+  "color": "#c9ccd1",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    8,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "battery",
   "sub": "cell",
   "label": "1200 mAh cell",
   "file": "models/parts/battery__cell.stl",
-  "color": "#b9bcc2"
+  "color": "#b9bcc2",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    -15,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "battery",
   "sub": "flap",
   "label": "cell seal",
   "file": "models/parts/battery__flap.stl",
-  "color": "#d9b34a"
+  "color": "#d9b34a",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    -15,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "battery",
   "sub": "lead0",
   "label": "cell lead",
   "file": "models/parts/battery__lead0.stl",
-  "color": "#d83a34"
+  "color": "#d83a34",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    -15,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "battery",
   "sub": "lead1",
   "label": "cell lead",
   "file": "models/parts/battery__lead1.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    -15,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "sd_card",
   "sub": "card",
   "label": "microSD card",
   "file": "models/parts/sd_card__card.stl",
-  "color": "#26272b"
+  "color": "#26272b",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    8,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "pi_plugs",
   "sub": "header",
   "label": "Pi 2x20 header",
   "file": "models/parts/pi_plugs__header.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    8,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "pi_plugs",
   "sub": "pins",
   "label": "header pins",
   "file": "models/parts/pi_plugs__pins.stl",
-  "color": "#d9b34a"
- },
- {
-  "model": "pi_plugs",
-  "sub": "housings",
-  "label": "Dupont housings",
-  "file": "models/parts/pi_plugs__housings.stl",
-  "color": "#3a3b40"
+  "color": "#d9b34a",
+  "explode": [
+   4,
+   [
+    0,
+    80,
+    0
+   ],
+   [
+    8,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "biboard_header",
   "sub": "header",
   "label": "BiBoard 5-pin header (est. height)",
   "file": "models/parts/biboard_header__header.stl",
-  "color": "#0d0d0d"
- },
- {
-  "model": "biboard_plug",
-  "sub": "housings",
-  "label": "Dupont plugs on the BiBoard header (TX2, RX2, GND)",
-  "file": "models/parts/biboard_plug__housings.stl",
-  "color": "#3a3b40"
+  "color": "#0d0d0d",
+  "explode": null
  },
  {
   "model": "amp_ns4168",
   "sub": "pcb",
   "label": "NS4168 amp board",
   "file": "models/parts/amp_ns4168__pcb.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "rings",
   "label": "amp hole rings",
   "file": "models/parts/amp_ns4168__rings.stl",
-  "color": "#e8e8e8"
+  "color": "#e8e8e8",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "headers",
   "label": "amp PH2.0 headers",
   "file": "models/parts/amp_ns4168__headers.stl",
-  "color": "#efe6d2"
+  "color": "#efe6d2",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "plugs",
   "label": "amp PH2.0 plugs",
   "file": "models/parts/amp_ns4168__plugs.stl",
-  "color": "#fbf6ea"
+  "color": "#fbf6ea",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "terminal",
   "label": "amp screw terminal",
   "file": "models/parts/amp_ns4168__terminal.stl",
-  "color": "#2f6fd6"
+  "color": "#2f6fd6",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "screws",
   "label": "terminal screws",
   "file": "models/parts/amp_ns4168__screws.stl",
-  "color": "#c8c8c8"
+  "color": "#c8c8c8",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "amp_ns4168",
   "sub": "ic",
   "label": "NS4168 chip",
   "file": "models/parts/amp_ns4168__ic.stl",
-  "color": "#2a2a2a"
+  "color": "#2a2a2a",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "mic_sph0645",
   "sub": "pcb",
   "label": "SPH0645 mic board",
   "file": "models/parts/mic_sph0645__pcb.stl",
-  "color": "#22303f"
+  "color": "#22303f",
+  "explode": [
+   6,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    -25
+   ]
+  ]
  },
  {
   "model": "mic_sph0645",
   "sub": "mic",
   "label": "SPH0645 mic",
   "file": "models/parts/mic_sph0645__mic.stl",
-  "color": "#c8c8c8"
+  "color": "#c8c8c8",
+  "explode": [
+   6,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    -25
+   ]
+  ]
  },
  {
   "model": "mic_sph0645",
   "sub": "header",
   "label": "mic right-angle header",
   "file": "models/parts/mic_sph0645__header.stl",
-  "color": "#1d1d1f"
- },
- {
-  "model": "mic_sph0645",
-  "sub": "housings",
-  "label": "Dupont housings on the mic header",
-  "file": "models/parts/mic_sph0645__housings.stl",
-  "color": "#3a3b40"
+  "color": "#1d1d1f",
+  "explode": [
+   6,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    -25
+   ]
+  ]
  },
  {
   "model": "speaker",
   "sub": "plate",
   "label": "speaker ear plate",
   "file": "models/parts/speaker__plate.stl",
-  "color": "#26272b"
+  "color": "#26272b",
+  "explode": [
+   7,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    30
+   ]
+  ]
  },
  {
   "model": "speaker",
   "sub": "body",
   "label": "NULLLAB 3 W speaker",
   "file": "models/parts/speaker__body.stl",
-  "color": "#3a3b40"
+  "color": "#3a3b40",
+  "explode": [
+   7,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    30
+   ]
+  ]
  },
  {
   "model": "speaker",
   "sub": "grille",
   "label": "speaker grille",
   "file": "models/parts/speaker__grille.stl",
-  "color": "#5a5b60"
+  "color": "#5a5b60",
+  "explode": [
+   7,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    0,
+    0,
+    30
+   ]
+  ]
+ },
+ {
+  "model": "camera",
+  "sub": "case",
+  "label": "Petoi AI Vision Module in its case",
+  "file": "models/parts/camera__case.stl",
+  "color": "#2b2d33",
+  "explode": [
+   0,
+   [
+    0,
+    250,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_uart",
   "sub": "tx2",
   "label": "uart wire TX2",
   "file": "models/parts/wires_uart__tx2.stl",
-  "color": "#f2f2ef"
+  "color": "#f2f2ef",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "tx2_pi",
+  "label": "uart wire TX2: Dupont housing",
+  "file": "models/parts/wires_uart__tx2_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "tx2_dev",
+  "label": "uart wire TX2: Dupont housing",
+  "file": "models/parts/wires_uart__tx2_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_uart",
   "sub": "rx2",
   "label": "uart wire RX2",
   "file": "models/parts/wires_uart__rx2.stl",
-  "color": "#2e9b4f"
+  "color": "#2e9b4f",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "rx2_pi",
+  "label": "uart wire RX2: Dupont housing",
+  "file": "models/parts/wires_uart__rx2_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "rx2_dev",
+  "label": "uart wire RX2: Dupont housing",
+  "file": "models/parts/wires_uart__rx2_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_uart",
   "sub": "gnd",
   "label": "uart wire GND",
   "file": "models/parts/wires_uart__gnd.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "gnd_pi",
+  "label": "uart wire GND: Dupont housing",
+  "file": "models/parts/wires_uart__gnd_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_uart",
+  "sub": "gnd_dev",
+  "label": "uart wire GND: Dupont housing",
+  "file": "models/parts/wires_uart__gnd_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_amp",
   "sub": "g",
   "label": "amp wire G",
   "file": "models/parts/wires_amp__g.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_amp",
+  "sub": "g_pi",
+  "label": "amp wire G: Dupont housing",
+  "file": "models/parts/wires_amp__g_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_amp",
   "sub": "v",
   "label": "amp wire V",
   "file": "models/parts/wires_amp__v.stl",
-  "color": "#d83a34"
+  "color": "#d83a34",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_amp",
+  "sub": "v_pi",
+  "label": "amp wire V: Dupont housing",
+  "file": "models/parts/wires_amp__v_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_amp",
   "sub": "bclk",
   "label": "amp wire BCLK",
   "file": "models/parts/wires_amp__bclk.stl",
-  "color": "#f0c419"
+  "color": "#f0c419",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_amp",
   "sub": "lrc",
   "label": "amp wire LRC",
   "file": "models/parts/wires_amp__lrc.stl",
-  "color": "#e8641b"
+  "color": "#e8641b",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_amp",
   "sub": "din",
   "label": "amp wire DIN",
   "file": "models/parts/wires_amp__din.stl",
-  "color": "#3a6fd8"
+  "color": "#3a6fd8",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_amp",
+  "sub": "din_pi",
+  "label": "amp wire DIN: Dupont housing",
+  "file": "models/parts/wires_amp__din_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "sel",
   "label": "mic wire SEL",
   "file": "models/parts/wires_mic__sel.stl",
-  "color": "#7a7d85"
+  "color": "#7a7d85",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "sel_pi",
+  "label": "mic wire SEL: Dupont housing",
+  "file": "models/parts/wires_mic__sel_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "sel_dev",
+  "label": "mic wire SEL: Dupont housing",
+  "file": "models/parts/wires_mic__sel_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "lrcl",
   "label": "mic wire LRCL",
   "file": "models/parts/wires_mic__lrcl.stl",
-  "color": "#e8641b"
+  "color": "#e8641b",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "lrcl_dev",
+  "label": "mic wire LRCL: Dupont housing",
+  "file": "models/parts/wires_mic__lrcl_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "dout",
   "label": "mic wire DOUT",
   "file": "models/parts/wires_mic__dout.stl",
-  "color": "#8e5bd8"
+  "color": "#8e5bd8",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "dout_pi",
+  "label": "mic wire DOUT: Dupont housing",
+  "file": "models/parts/wires_mic__dout_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "dout_dev",
+  "label": "mic wire DOUT: Dupont housing",
+  "file": "models/parts/wires_mic__dout_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "bclk",
   "label": "mic wire BCLK",
   "file": "models/parts/wires_mic__bclk.stl",
-  "color": "#f0c419"
+  "color": "#f0c419",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "bclk_dev",
+  "label": "mic wire BCLK: Dupont housing",
+  "file": "models/parts/wires_mic__bclk_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "gnd",
   "label": "mic wire GND",
   "file": "models/parts/wires_mic__gnd.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "gnd_pi",
+  "label": "mic wire GND: Dupont housing",
+  "file": "models/parts/wires_mic__gnd_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "gnd_dev",
+  "label": "mic wire GND: Dupont housing",
+  "file": "models/parts/wires_mic__gnd_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_mic",
   "sub": "3v",
   "label": "mic wire 3V",
   "file": "models/parts/wires_mic__3v.stl",
-  "color": "#d83a34"
+  "color": "#d83a34",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "3v_pi",
+  "label": "mic wire 3V: Dupont housing",
+  "file": "models/parts/wires_mic__3v_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_mic",
+  "sub": "3v_dev",
+  "label": "mic wire 3V: Dupont housing",
+  "file": "models/parts/wires_mic__3v_dev.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_splice",
   "sub": "bclk",
   "label": "splice wire bclk",
   "file": "models/parts/wires_splice__bclk.stl",
-  "color": "#f0c419"
+  "color": "#f0c419",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_splice",
+  "sub": "bclk_pi",
+  "label": "splice wire bclk: Dupont housing",
+  "file": "models/parts/wires_splice__bclk_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_splice",
   "sub": "lrclk",
   "label": "splice wire lrclk",
   "file": "models/parts/wires_splice__lrclk.stl",
-  "color": "#e8641b"
+  "color": "#e8641b",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_splice",
+  "sub": "lrclk_pi",
+  "label": "splice wire lrclk: Dupont housing",
+  "file": "models/parts/wires_splice__lrclk_pi.stl",
+  "color": "#3a3b40",
+  "explode": [
+   3,
+   [
+    6.5,
+    0,
+    0
+   ],
+   [
+    0,
+    130,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_speaker",
   "sub": "pos",
   "label": "speaker wire +",
   "file": "models/parts/wires_speaker__pos.stl",
-  "color": "#d83a34"
+  "color": "#d83a34",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_speaker",
   "sub": "neg",
   "label": "speaker wire -",
   "file": "models/parts/wires_speaker__neg.stl",
-  "color": "#1d1d1f"
+  "color": "#1d1d1f",
+  "explode": [
+   5,
+   [
+    0,
+    45,
+    0
+   ],
+   [
+    -30,
+    0,
+    0
+   ]
+  ]
  },
  {
   "model": "wires_splice",
   "sub": "sleeves",
   "label": "solder splices (heat shrink)",
   "file": "models/parts/wires_splice__sleeves.stl",
-  "color": "#2a2a2a"
+  "color": "#2a2a2a",
+  "explode": [
+   3,
+   [
+    0,
+    130,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
  }
 ]

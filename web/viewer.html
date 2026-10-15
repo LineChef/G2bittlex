@@ -218,8 +218,9 @@ const VIEWS = {
   build: [170, 312, -30],       // the build steps: one steep view from the right, into the open body
   buildfront: [60, 300, 190],   // the same height, from the rear: the inside of the front wall (the mic)
   wires: [70, 215, -40],        // closer, from high above the right: the right well and the Pi header (the wire steps)
+  exploded: [-330, 300, -420],  // far enough back for the full height of the exploded view
 };
-const TARGETS = { build: [0, 42, 6], buildfront: [0, 38, -22], wires: [16, 38, 0] };
+const TARGETS = { exploded: [0, 160, 0], build: [0, 42, 6], buildfront: [0, 38, -22], wires: [16, 38, 0] };
 // smooth camera moves
 let camAnim = null;
 function flyTo(pos, target, ms = 600) {
@@ -279,8 +280,14 @@ function poseMatrix(chain) {
 
 let explodeF = 0;
 function place(m) {
-  const e = m.userData.part.explode;
-  m.position.set(e[0] * explodeF, e[1] * explodeF, e[2] * explodeF).add(m.userData.manual).add(m.userData.anim);
+  // Exploded view: [stage, lift, aside]. The stages run one after another (reverse build order).
+  // In its stage a part makes its first move, then its second (pod.py explode_plan).
+  const [st, lift, aside] = m.userData.part.explode;
+  const n = (manifest.meta && manifest.meta.explode_stages) || 1;
+  const t = Math.min(Math.max(explodeF * n - st, 0), 1);
+  const a = Math.min(t / 0.5, 1), b = Math.max((t - 0.5) / 0.5, 0);
+  m.position.set(lift[0] * a + aside[0] * b, lift[1] * a + aside[1] * b, lift[2] * a + aside[2] * b)
+    .add(m.userData.manual).add(m.userData.anim);
   const chain = robot && robot.chain[m.userData.part.id];
   if (chain) {
     const M = poseMatrix(chain);
@@ -388,6 +395,7 @@ $("resetAll").onclick = () => {
 // ---- explode
 const ex = $("explode");
 ex.addEventListener("input", () => {
+  if (explodeF === 0 && +ex.value > 0) setView("exploded");      // the parts go up to about 350 mm
   explodeF = +ex.value; $("explodeV").textContent = Math.round(explodeF * 100) + "%";
   for (const m of Object.values(parts)) place(m);
 });
