@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.17: one-piece body with a snap-in top panel.
+"""Bittle X Pi add-on rev 0.18: one-piece body with a snap-in top panel.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -50,8 +50,10 @@ HUG_GAP = 0.4
 A = 29.6                    # half width: the BiBoard plug (X to 27.27) is inside the right wall
 Z0, Z1 = -37.8, 56.2        # front and rear faces
 R_PLAN, NEXP = 13.0, 5.0    # plan corner size and squircle exponent
-WALL = 1.8
-IN_A, ZF_IN, ZR_IN = A - WALL, Z0 + WALL, Z1 - WALL     # inner faces: 27.8, -36.0, 54.4
+# 2.0 mm: with the Cura offsets of the body profile (xy 0.144, holes 0.292) the slicer sees 1.996 mm, 4 full lines
+# of 0.5 mm. At 1.8 mm it saw 3.57 lines and changed between 3 and 4 lines along the wall.
+WALL = 2.0
+IN_A, ZF_IN, ZR_IN = A - WALL, Z0 + WALL, Z1 - WALL     # inner faces: 27.6, -35.8, 54.2
 FLOOR_Y0, FLOOR_Y1 = PI.MOUNT_Y0, PI.MOUNT_Y1          # the floor is the platform mount plate
 SEAM = 57.2                 # top of the body walls = bottom of the panel
 TOP = 63.2                  # panel top: 0.3 over the highest port
@@ -141,12 +143,23 @@ BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(6.5, 16.5), t=1.0, slit=0.6
 # The button cap (white) slides onto the free end of the tongue along a 45 deg dovetail and clicks over a bump.
 KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, key_w=2.0, key_d=0.4, clr=0.1, bump=0.15)
 # Camera: the Petoi AI Vision Module in its Petoi case (reference/AiCamera250116-*.stl, 46.7 x 29.3 x 14.9) stands
-# upright on the front of the panel, lens forward over the head. A separate mount: a base plate on the panel, two
-# U brackets that hold the ends of the case (outside the width of the head), and two clip legs through a window in
-# the panel that catch under a frame. It stays clear of the HDMI opening and the switch.
-CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z=-39.8, base=dict(hx=25.6, z=(-33.8, -25.4), t=1.2),
-           brk=dict(t=2.0, clr=0.25, top=79.0, lip_front=0.8, lip_back=1.6), win=dict(hx=11.0, z=(-32.6, -26.6)),
-           frame=dict(t=1.2, y0=57.2), leg=dict(t=0.8, w=4.0, hook=0.5, clr=0.15), mass=15.0)
+# upright on the front of the panel, lens forward over the head. It is turned 180 deg about the lens axis: its Grove
+# socket (a slot in the rear face) is then on the left, clear of the HDMI opening. (Turn the image in software.)
+# A separate mount: a base on the panel with a chin over the rounded front edge, two U brackets that hold the ends of
+# the case (outside the width of the head), and two clip legs through a window in the panel that catch under a frame.
+# A 45 deg ridge on each bracket snaps into a pocket in the end of the case (the pockets of the Petoi head mount,
+# at least 1.8 deep in the STL). It stays clear of the HDMI opening and the switch.
+CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z=-39.8,
+           base=dict(hx=25.65, z=(-35.5, -23.05), t=2.0, chin=3.0, clr=0.15, hdmi_z=-24.1),
+           brk=dict(t=1.2, clr=0.25, lip_front=0.8, lip_back=1.6, top=90.0),
+           ridge=dict(h=0.5, yc=80.0, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85
+
+           win=dict(hx=11.0, z=(-32.6, -26.6)), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.0, hook=0.5, clr=0.15),
+           slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-19.4, -8.4)), mass=15.0)
+# The Grove socket (native x 32.4..37.3, y -19.4..-1.0 on the rear face): the plug in place, and the plug on the
+# BiBoard under the cover (platform GROVE_PLUG). Grove plug body 4.9 x 9.9, 6 mm out of the socket (estimates).
+GROVE_W, GROVE_L, GROVE_OUT = 4.9, 9.9, 6.0
+CAM_WIRE_R, CAM_PITCH = 0.55, 1.15          # Grove cable: 4 wires of 1.1 mm side by side
 
 # BiBoard 5-pin female header in the cover slot (GND, +5V, TX2, RX2, ..). Straight Dupont plugs.
 SLOT = PI.SLOT
@@ -214,7 +227,7 @@ GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6
 
 # Wire paths (check(): no printed part and no other electronics in them). Dupont jumper wire is about 1.4 mm.
 WIRE_PATHS = {
-    "uart: Pi header to BiBoard plug": [dict(x=(18.2, 27.6), y=(31.0, 54.0), z=(-16.5, 30.0))],
+    "uart: Pi header to BiBoard plug": [dict(x=(18.2, IN_A - 0.05), y=(31.0, 54.0), z=(-16.5, 30.0))],
     "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-26.3, -18.6)),
                                         dict(x=(-25.0, -15.6), y=(27.6, 47.0), z=(-18.6, -12.2))],
     "mic: rearward stack in the right well": [dict(x=(22.6, 25.3), y=(33.0, 47.3), z=(-30.5, 4.0)),
@@ -817,9 +830,10 @@ def build_keycap(dz=0.0):
 
 # ---------- camera mount
 def cam_to_body():
+    """Native case frame -> body frame: turned 180 deg about Z (the lens axis), centered, on the base, front at front_z."""
     C = CAM
-    return np.array([[1, 0, 0, -(C["case_x"][0] + C["case_x"][1]) / 2],
-                     [0, 1, 0, TOP + C["base"]["t"] - C["case_y"][0] + 0.05],
+    return np.array([[-1, 0, 0, (C["case_x"][0] + C["case_x"][1]) / 2],
+                     [0, -1, 0, TOP + C["base"]["t"] + C["case_y"][1] + 0.05],
                      [0, 0, 1, C["front_z"] - C["case_z"][0]], [0, 0, 0, 1]], float)
 
 
@@ -827,29 +841,68 @@ def cam_box():
     """The camera case in place, as a box (x0, x1, y0, y1, z0, z1)."""
     C = CAM
     hx = (C["case_x"][1] - C["case_x"][0]) / 2
-    y0 = TOP + C["base"]["t"]
+    y0 = TOP + C["base"]["t"] + 0.05
     return (-hx, hx, y0, y0 + C["case_y"][1] - C["case_y"][0], C["front_z"], C["front_z"] + C["case_z"][1] - C["case_z"][0])
 
 
+def cam_socket():
+    """The Grove plug in the camera socket: (x0, x1, y0, y1, z0, z1). The plug goes in along +Z from the rear."""
+    T = cam_to_body()
+    xs = sorted(T[0, 0] * x + T[0, 3] for x in (32.4, 37.3))
+    yc = float(np.mean([T[1, 1] * y + T[1, 3] for y in (-19.4, -1.0)]))
+    xc = (xs[0] + xs[1]) / 2
+    z1 = cam_box()[5]
+    return (xc - GROVE_W / 2, xc + GROVE_W / 2, yc - GROVE_L / 2, yc + GROVE_L / 2, z1 - 3.0, z1 + GROVE_OUT)
+
+
+def bb_grove_plug():
+    """The Grove plug on the BiBoard, under the cover at the front left (in the platform GROVE_PLUG space)."""
+    G = PI.GROVE_PLUG
+    xc, zc = (G["x"][0] + G["x"][1]) / 2, (G["z"][0] + G["z"][1]) / 2
+    return (xc - GROVE_L / 2, xc + GROVE_L / 2, G["y_top"] - 6.0, G["y_top"], zc - GROVE_W / 2, zc + GROVE_W / 2)
+
+
 def build_camera_mount():
-    """Base plate on the panel, two U brackets for the ends of the case, two clip legs through the window."""
-    C, Bs, Br, W, Lg, Fr = CAM, CAM["base"], CAM["brk"], CAM["win"], CAM["leg"], CAM["frame"]
+    """Base on the panel with a chin over its front edge, two U brackets with a snap ridge, two clip legs through
+    the window."""
+    C, Bs, Br, W, Lg, Fr, Rd = CAM, CAM["base"], CAM["brk"], CAM["win"], CAM["leg"], CAM["frame"], CAM["ridge"]
     x0, x1, y0, y1, z0, z1 = cam_box()
-    m = prism_y(rrect_pts(-Bs["hx"], Bs["hx"], *Bs["z"], 2.0), TOP, TOP + Bs["t"])
     zf, zb = z0 - Br["clr"], z1 + Br["clr"]
+    zfl = zf - Br["lip_front"]
+    yb = TOP + Bs["t"]
+    xi = x1 + Br["clr"]                                   # inner face of a bracket
+    xo = xi + Br["t"]
+    m = prism_y(rrect_pts(-xo, xo, Bs["z"][0], Bs["z"][1], 2.0), TOP, yb)
+    xh, _, sxh, _ = PORT_PLUGS["hdmi"]                    # the rear edge steps back over the HDMI plug
+    m -= mbox(xh - sxh / 2 - 0.5, xh + sxh / 2 + 0.5, TOP - 1, yb + 1, Bs["hdmi_z"], Bs["z"][1] + 1)
+    # chin: the front of the base and the brackets follows the rounded front edge of the panel down 3 mm
+    P = panel_outer()
+    cl = Bs["clr"]
+    Pc = union([P.translate([0, dy, dz]) for dy in (0.0, cl) for dz in (0.0, -cl)])
+    # Its underside is a 45 deg plane over the round (no overhang in the print, front up): y >= z + k, k = the
+    # largest y - z of the panel top edge (98.71 at the center line) + clr.
+    k = 98.71 + Bs["clr"]
+    yl = TOP - Bs["chin"]
+    sec = [(zfl, yb), (zfl, yl), (yl - k, yl), (yb - k, yb)]                  # (z, y) section
+    chin = _cs([(z_, -y_) for z_, y_ in sec]).extrude(2 * xo).transform(np.array([[0, 0, 1, -xo], [0, -1, 0, 0], [1, 0, 0, 0]], float))
+    m += chin - Pc
     for sx in (-1, 1):
-        xi = x1 + Br["clr"]                               # inner face of the bracket
-        xo = xi + Br["t"]
-        m += mbox(*sorted((sx * xi, sx * xo)), TOP, Br["top"], zf - Br["lip_front"], zb + Br["lip_back"])
-        m += mbox(*sorted((sx * (xi - 1.6), sx * xi)), TOP, Br["top"], zb, zb + Br["lip_back"])        # back lip
-        lip = [(sx * xi, zf), (sx * xi, zf - Br["lip_front"]), (sx * (xi - Br["lip_front"]), zf - Br["lip_front"])]
+        X = lambda a, b: sorted((sx * a, sx * b))
+        m += mbox(*X(xi, xo), TOP, Br["top"], zfl, zb + Br["lip_back"])
+        m += mbox(*X(xi - 1.6, xi), TOP, Br["top"], zb, zb + Br["lip_back"])          # back lip
+        lip = [(sx * xi, zf), (sx * xi, zfl), (sx * (xi - Br["lip_front"]), zfl)]
         if sx < 0:
             lip = lip[::-1]
         pts = [(x, -z) for x, z in lip]                   # front lip, 45 deg (it prints last, the part stands on its back)
         m += _cs(pts).extrude(Br["top"] - TOP).transform(np.array([[1, 0, 0, 0], [0, 0, 1, TOP], [0, -1, 0, 0]], float))
+        # snap ridge: 45 deg faces, into the pocket in the end of the case; the bracket flexes out to let the case by
+        h, yc, f = Rd["h"], Rd["yc"], Rd["flat"]
+        rd = [(sx * (xi + 0.01), yc - f / 2 - h), (sx * (xi - h), yc - f / 2), (sx * (xi - h), yc + f / 2), (sx * (xi + 0.01), yc + f / 2 + h)]
+        m += prism_zp(rd if sx < 0 else rd[::-1], *Rd["z"][sx])
         xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.15 inside the window
-        za, zb2 = (W["z"][0] + W["z"][1]) / 2 - Lg["w"] / 2, (W["z"][0] + W["z"][1]) / 2 + Lg["w"] / 2
-        m += mbox(*sorted((sx * xl, sx * (xl - Lg["t"]))), Fr["y0"] - 1.4, TOP + 0.01, za, zb2)
+        zc = (W["z"][0] + W["z"][1]) / 2
+        za, zb2 = zc - Lg["w"] / 2, zc + Lg["w"] / 2
+        m += mbox(*X(xl, xl - Lg["t"]), Fr["y0"] - 1.6, TOP + 0.01, za, zb2)
         e = Lg["hook"] + Lg["clr"]                        # hook: flat catch under the frame, 34 deg lead-in below it
         yt = Fr["y0"] - 0.1
         hk = [(sx * (xl - 0.01), yt), (sx * (xl + e), yt), (sx * (xl - 0.01), yt - 1.5 * e - 0.3)]
@@ -862,6 +915,12 @@ def camera_window():
     return prism_y(rrect_pts(-W["hx"], W["hx"], *W["z"], 1.0), PANEL_IN - 1, TOP + 1)
 
 
+def camera_cable_slot():
+    """A slot in the panel behind the camera for its Grove cable. The plug goes through it (5.9 x 10.9)."""
+    S = CAM["slot"]
+    return prism_y(rrect_pts(*S["x"], *S["z"], 1.0), PANEL_IN - 1, TOP + 1)
+
+
 def camera_frame():
     """Two walls under the panel at the sides of the window: the clip hooks catch under them. (No front or back
     wall: the top edge of the stack is under the back of the window.)"""
@@ -871,7 +930,7 @@ def camera_frame():
 
 def build_panel(with_tabs=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
-    P -= port_openings() + switch_slot() + button_cuts() + keycap_groove() + camera_window()
+    P -= port_openings() + switch_slot() + button_cuts() + keycap_groove() + camera_window() + camera_cable_slot()
     P += panel_forks() + side_lips() + button_arm() + battery_clamp() + switch_rails() + keycap_bump() + camera_frame()
     if with_tabs:
         P += tabs()
@@ -1100,6 +1159,42 @@ def parallel_pair(center, gap, n0):
     return np.array(out_a), np.array(out_b)
 
 
+def parallel_ribbon(center, n, pitch, n0):
+    """n wires side by side along a center line (a flat cable), the offset carried along the line (no twist).
+    The corners of the center line are rounded so that the inner wire keeps R_BEND."""
+    C = round_corners(center, R_BEND + pitch * (n - 1) / 2)[0]
+    T = np.gradient(C, axis=0)
+    T[np.linalg.norm(T, axis=1) < 1e-9] = (0, 0, 1)
+    T /= np.linalg.norm(T, axis=1)[:, None]
+    nrm = np.asarray(n0, float)
+    out = [[] for _ in range(n)]
+    for i, p in enumerate(C):
+        nrm = nrm - np.dot(nrm, T[i]) * T[i]
+        nrm /= np.linalg.norm(nrm)
+        for k in range(n):
+            out[k].append(p + nrm * pitch * (k - (n - 1) / 2))
+    return [np.array(o) for o in out]
+
+
+def camera_cable():
+    """The Grove cable of the camera: from the plug in the camera socket (rear face, left), rearward, down through the
+    slot in the panel, forward under the panel between the amp and the battery, down the front left corner in an S fold
+    to the Grove plug on the BiBoard (through the floor opening over it)."""
+    x0, x1, y0, y1, z0, z1 = cam_socket()
+    xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
+    S = CAM["slot"]
+    zs = (S["z"][0] + S["z"][1]) / 2
+    b = bb_grove_plug()
+    xb, zb = (b[0] + b[1]) / 2, (b[4] + b[5]) / 2
+    # A 10 cm Grove cable: its excess (about 30 mm) is an S fold in the free front left corner (in front of the amp).
+    zl = -31.5
+    center = [(xc, yc, z1), (xc, yc, zs), (xc, 57.5, zs), (-16.0, 56.0, -27.0), (-25.2, 54.0, zl), (-25.2, 35.0, zl),
+              (-20.8, 35.0, zl), (-20.8, 47.0, zl), (-16.4, 47.0, zl), (-16.4, 34.0, zl), (xb, 32.5, zb), (xb, b[3], zb)]
+    W = parallel_ribbon(center, 4, CAM_PITCH, (0, 1, 0))
+    cols = (("SCL", "#f0c419"), ("SDA", "#f2f2ef"), ("VCC", "#d83a34"), ("GND", "#1d1d1f"))
+    return [("camera", lab, col, w) for (lab, col), w in zip(cols, W)]
+
+
 def speaker_leads():
     """The speaker lead pair: from the 2-pin plug at the rear end of the amp, up the left gallery, over the ear
     plate, into the top of the speaker body."""
@@ -1254,10 +1349,12 @@ def build_models():
     groups = {}
     for g, lab, col, pts, smooth in all_routes():
         sub = wire_sub(lab)
-        T = add(f"wires_{g}", sub, f"{g} wire {lab}", tube(pts, rounded=not smooth), col)
+        T = add(f"wires_{g}", sub, f"{g} wire {lab}", tube(pts, r=CAM_WIRE_R if g == "camera" else WIRE_R, rounded=not smooth), col)
         groups[g] = groups.get(g, []) + [T]
         for end, hk in wire_housings(g, lab):                  # its Dupont housings go on with it
             add(f"wires_{g}", f"{sub}_{end}", f"{g} wire {lab}: Dupont housing", HOUSING_MESH[hk], "#3a3b40")
+    groups["camera"].append(add("wires_camera", "plug_cam", "Grove plug in the camera", mbox(*cam_socket()), "#f2f2ef"))
+    groups["camera"].append(add("wires_camera", "plug_bb", "Grove plug on the BiBoard", mbox(*bb_grove_plug()), "#f2f2ef"))
     sleeves = union([mcyl("y", *SPLICE["y"], SPLICE["r"], SPLICE[t][0], SPLICE[t][1], 16) for t in ("bclk", "lrclk")])
     groups["splice"].append(add("wires_splice", "sleeves", "solder splices (heat shrink)", sleeves, "#2a2a2a"))
     for g, Ts in groups.items():
@@ -1582,12 +1679,13 @@ WIRE_FROM = {("uart", "TX2"): "BiBoard TX2", ("uart", "RX2"): "BiBoard RX2", ("u
              ("amp", "G"): "amp G", ("amp", "V"): "amp V", ("amp", "BCLK"): "amp BCLK", ("amp", "LRC"): "amp LRC", ("amp", "DIN"): "amp DIN",
              ("mic", "SEL"): "mic SEL", ("mic", "LRCL"): "mic LRCL", ("mic", "DOUT"): "mic DOUT", ("mic", "BCLK"): "mic BCLK",
              ("mic", "GND"): "mic GND", ("mic", "3V"): "mic 3V", ("splice", "bclk"): "BCLK splice", ("splice", "lrclk"): "LRCLK splice",
-             ("speaker", "+"): "amp speaker +", ("speaker", "-"): "amp speaker -"}
+             ("speaker", "+"): "amp speaker +", ("speaker", "-"): "amp speaker -",
+             **{("camera", k): f"camera Grove {k}" for k in ("SCL", "SDA", "VCC", "GND")}}
 WIRE_TO = {("uart", "TX2"): "pin 10", ("uart", "RX2"): "pin 8", ("uart", "GND"): "pin 6", ("amp", "G"): "pin 14", ("amp", "V"): "pin 2",
            ("amp", "BCLK"): "BCLK splice", ("amp", "LRC"): "LRCLK splice", ("amp", "DIN"): "pin 40", ("mic", "SEL"): "pin 39",
            ("mic", "LRCL"): "LRCLK splice", ("mic", "DOUT"): "pin 38", ("mic", "BCLK"): "BCLK splice", ("mic", "GND"): "pin 9",
            ("mic", "3V"): "pin 1", ("splice", "bclk"): "pin 12", ("splice", "lrclk"): "pin 35", ("speaker", "+"): "speaker +",
-           ("speaker", "-"): "speaker -"}
+           ("speaker", "-"): "speaker -", **{("camera", k): f"BiBoard Grove {k}" for k in ("SCL", "SDA", "VCC", "GND")}}
 
 SETTLED = {}          # (group, label) -> settled polyline, set by settle_all()
 SLACK_SHAPE = {}      # (group, label) -> "arch" or "loop xN"
@@ -1612,7 +1710,7 @@ def all_routes():
             out.append((g, lab, col, SETTLED[(g, lab)], True))
         else:
             out.append((g, lab, col, pts, False))
-    for g, lab, col, pts in speaker_leads():
+    for g, lab, col, pts in speaker_leads() + camera_cable():
         out.append((g, lab, col, pts, True))
     return out
 
@@ -1650,10 +1748,15 @@ def settle_all(parts, models):
         from scipy.spatial import cKDTree
         tree = cKDTree(O)
         if key in PACK_WIRES:
-            for sc, Q0, shape in place_slack(F, P0, PACK_L, O, joints):    # the best shape that is still clean after the clean-up
-                Q = settle_one(F, Q0, O, joints)
-                if _badness(F, Q, tree, ne=4) < 0.5:
+            best = None
+            for sc, Q0, shape0 in place_slack(F, P0, PACK_L, O, joints):   # the first shape that is clean after the clean-up,
+                Q0 = settle_one(F, Q0, O, joints)                          # else the least bad one
+                bad = _badness(F, Q0, tree, ne=4)
+                if best is None or bad < best[0]:
+                    best = (bad, Q0, shape0)
+                if bad < 0.5:
                     break
+            Q, shape = best[1], best[2]
         else:
             Q, shape = settle_one(F, P0, O, joints), "cut to length"
         SETTLED[key] = Q
@@ -1670,13 +1773,13 @@ def wire_report():
     for g, lab, col, pts, smooth in all_routes():
         if smooth:
             P = np.asarray(pts, float)
-            rmin = _min_radius(P) if g != "speaker" else R_BEND
+            rmin = _min_radius(P) if g not in ("speaker", "camera") else R_BEND
         else:
             P, rmin = round_corners(pts)
         L = float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())
         rows.append(dict(group=g, wire=lab, length_mm=round(L, 1), min_bend_r=round(min(rmin, 99), 2), color=col,
                          points=np.round(P, 2).tolist()))
-        tubes.append((f"{g} {lab}", tube(pts, rounded=not smooth)))
+        tubes.append((f"{g} {lab}", tube(pts, r=CAM_WIRE_R if g == "camera" else WIRE_R, rounded=not smooth)))
     joints = union([mcyl("y", SPLICE["y"][0] - 4.0, SPLICE["y"][1] + 3.0, SPLICE["r"] + 2.5, SPLICE[t][0], SPLICE[t][1], 16)
                     for t in ("bclk", "lrclk")])
     cross = []
@@ -1740,7 +1843,8 @@ PATH_ENDS = {"uart": ("pi_plugs", "biboard_plug", "biboard_header"), "i2s": ("pi
              "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker"), "cable": ("pi_plugs",)}
 # Each wire group starts and ends in these parts.
 WIRE_ENDS = {"wires_uart": ("pi_plugs", "biboard_plug"), "wires_amp": ("pi_plugs", "amp_ns4168"),
-             "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_splice": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168")}
+             "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_splice": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168"),
+             "wires_camera": ("camera",)}
 
 
 def check(parts, models, robot):
@@ -1800,7 +1904,7 @@ def check(parts, models, robot):
     Pc = build_panel(with_tabs=False)
     inside = union([models[n] for n in models if n not in ("biboard_header",)])
     Pc = Pc + parts["pod_switch"] + parts["pod_button"]          # the slider and the cap are in the panel when it goes on
-    inside_nc = union([M for k, M in models.items() if k not in ("biboard_header", "camera")])
+    inside_nc = union([M for k, M in models.items() if k not in ("biboard_header", "camera", "wires_camera")])   # the Grove cable goes through its slot
     rows.append(("panel close (max over 12 mm down)", "body + parts",
                  max(vol(Pc.translate([0, float(dy), 0]), parts["pod_body"] + inside_nc) for dy in (0.2, 0.5, 1, 2, 4, 6, 8, 12))))
     # switch: the slider moves +-travel in the slot; the fork pushes the lever
@@ -1938,6 +2042,10 @@ def explode_plan(name, sub=""):
     if name in ("switch", "pod_switch", "button", "pod_button"):
         return 2, (0, 170, 0), (0, -35, 0)                       # out of the bottom of the panel
     if name.startswith("wires_"):
+        if name == "wires_camera":
+            if sub == "plug_cam":
+                return 0, (0, 250, 0), (0, 0, 0)                  # the plug in the camera socket goes with the camera
+            return 2, (0, 170, 0), (0, 0, 0)                      # the Grove cable goes up with the panel (it is in its slot)
         if name == "wires_speaker" or (name == "wires_amp" and not sub.endswith("_pi")):
             return 5, (0, 45, 0), (-30, 0, 0)                     # the speaker lead and the amp cable go with the amp
         if sub.endswith("_pi"):
@@ -1956,7 +2064,7 @@ def explode_plan(name, sub=""):
 
 
 MASS_G = dict(pizero=10.0, pisugar2=10.0, battery=23.5, sd_card=0.4, pi_plugs=5.0, speaker=14.0, amp_ns4168=5.0,
-              mic_sph0645=1.3, camera=CAM["mass"], wires_uart=2.4, wires_amp=4.0, wires_mic=4.8, wires_speaker=1.0,
+              mic_sph0645=1.3, camera=CAM["mass"], wires_uart=2.4, wires_amp=4.0, wires_mic=4.8, wires_speaker=1.0, wires_camera=2.5,
               wires_splice=0.5, biboard_plug=0.5)
 PRINT_FILL = 0.5
 PLA_G_MM3 = 1.24e-3

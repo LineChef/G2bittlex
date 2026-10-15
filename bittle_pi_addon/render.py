@@ -135,6 +135,7 @@ JOBS = {
     "10_exploded": (ALL, None, True, "0,-9,185,72,0,128,960", False),
     "11_wires_top": (OPEN, None, 0, "4,-9,45,0,0,180,300", False),
     "12_wires_right": (OPEN, None, 0, "14,-9,42,40,0,90,220", False),
+    "16_camera_cable": ([k for k in ALL if k not in ("panel", "switch", "button")], None, 0, "-18,25,48,50,0,320,200", False),
 }
 
 

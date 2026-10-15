@@ -16,7 +16,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.17"
+VERSION = "0.18"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -46,15 +46,16 @@ def content():
          ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", "none", "Bittle Fine 0.10 for the best top", f"{pod_mass('pod_panel')} g"],
          ["pod_switch.stl", "PLA, white", "flat side on the bed, tab up", "none", "Bittle Fine 0.10", "0.2 g"],
          ["pod_button.stl", "PLA, white", "upside down: top on the bed", "none", "Bittle Fine 0.10", "0.1 g"],
-         ["pod_camera_mount.stl", "PLA, second color", "base on the bed, brackets up", "none", "Bittle Fine 0.10", f"{pod_mass('pod_camera_mount')} g"],
+         ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", "none", "Bittle Fine 0.10", f"{pod_mass('pod_camera_mount')} g"],
          ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "none: the foot is the support", "Bittle Cover - PLA 0.25", "11 g"],
          ], [38, 22, 36, 16, 42, 14])
-    p(f"Print quality. The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) "
+    p(f"Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. "
+      "The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) "
       "are the tops of the two cable notches at the base of the side walls: 8 mm bridges. The front cable notches are 45 deg chamfers. "
       "The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
       "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the snap bumps have 45 deg catch faces. "
       f"Its only overhang ({pr['pod_panel']['overhang_mm2']:.0f} mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. "
-      "The camera mount has only short bridges (1.2 to 1.4 mm). Keep the seam at the rear.")
+      "The camera mount has a 9.5 mm bridge at the HDMI notch, short bridges at the clip hooks, and a 45 deg chin. Keep the seam at the rear.")
 
     h("2. Electronics")
     tbl([["Part", "Place"],
@@ -66,9 +67,11 @@ def content():
          ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. The ear plate (45 x 31 x 1.5, ruler) is at the middle of the body depth and stands in two side grooves."],
          ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its right edge points into the right well."],
          ["Petoi AI Vision Module", "In its Petoi case, upright on the camera mount at the front of the panel, lens forward over the head. "
-          "Two U brackets hold the ends of the case. The mount clicks into a window in the panel with two clip legs."],
-         ["Head camera cable", "The Grove plug comes out under the front edge of the cover (left side). The platform cover has a notch for it. "
-          "A 45 deg notch in each front bottom corner of the body gives the cable room."],
+          "It is upside down, so that its Grove socket is on the left, clear of the HDMI opening: turn the image 180 deg in software. "
+          "Two U brackets hold the ends of the case; a ridge on each snaps into the pocket in the end of the case."],
+         ["Grove cable, 10 cm", "From the socket in the rear face of the camera, down through a slot in the panel, forward under the panel "
+          "between the amp and the battery, down the front left corner in an S fold, to the Grove plug on the BiBoard. "
+          "The plug comes up through the floor opening over the notch in the platform cover."],
          ["Optional cable", "A notch at the base of each side wall lets a cable in from outside."],
          ], [52, 118])
 
@@ -87,19 +90,22 @@ def content():
     lst(["Fit the platform cover in place of the stock cover." + st(2),
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch of the right well." + st(3) + st(4),
-         "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
-         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front." + st(6),
+         "Push a 10 cm Grove cable onto the Grove plug of the BiBoard through the floor opening at the front left. "
+         "Lay its excess as an S fold in the front left corner and let the free end hang out of the top." + st(5),
+         "Push the speaker down into the two side grooves at the rear, body to the rear." + st(6),
+         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front." + st(7),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. "
-         "Lay the amp cable across the floor in front of the front pegs, into the right well." + st(7),
-         "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(8),
+         "Lay the amp cable across the floor in front of the front pegs, into the right well." + st(8),
+         "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(9),
          "Plug the wires one at a time, in the order of section 5: the BiBoard jumpers, the amp cable, the splices, then the mic jumpers. "
-         "The viewer has one step for each wire." + st(9) + st(21),
+         "The viewer has one step for each wire." + st(10) + st(22),
          "Slide the switch slider into the rails under the panel from their rear end until it clicks. "
-         "Slide the white button cap onto the panel tongue until it clicks. They stay in the panel." + st(22),
-         f"Push the panel straight down until the 4 tabs click (about {S['close_N']:g} N). It fits one way only. "
-         "The slider fork goes over the switch lever and the button cap comes over the PiSugar button." + st(23),
+         "Slide the white button cap onto the panel tongue until it clicks. They stay in the panel." + st(23),
+         "Pass the free end of the Grove cable up through the slot at the front left of the panel. "
+         f"Then push the panel straight down until the 4 tabs click (about {S['close_N']:g} N). It fits one way only. "
+         "The slider fork goes over the switch lever and the button cap comes over the PiSugar button." + st(24),
          "Push the two clip legs of the camera mount down through the window in the front of the panel until they click. "
-         "Put the camera case into the brackets, lens forward. Plug its Grove cable into the BiBoard through the cover notch." + st(24) + st(25),
+         "Push the camera case down into the brackets until it clicks, lens forward. Plug the Grove cable into the socket in its rear face." + st(25) + st(26),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['open_one_end_N']:g} N), then the front. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. "
@@ -152,6 +158,7 @@ def content():
          "Splices: the BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs.",
          "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. The wires after them lie over them."])
     img("11_wires_top.png", 0.36, "From the top, panel off: the wires in 3D.")
+    img("16_camera_cable.png", 0.42, "The Grove cable of the camera, panel off: down through the panel slot, then an S fold to the BiBoard.")
 
     h("6. Checks")
     h0, h1 = MO["head"]["free"]
@@ -163,6 +170,9 @@ def content():
          "Install: the speaker, the mic, the amp and the stack each go straight down 40 mm without contact. The panel goes down without contact. "
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
          "(small contacts of 1 to 2 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
+         "Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 8 mm, it hits the ridges. "
+         "The ridges need 0.5 mm of bracket flex (about 4 N each, 0.4 % strain); the clip legs bend to 1.5 % strain. "
+         "The Grove cable touches no part and no other wire. The head turns without contact with the mount.",
          "Switch and button: the slider moves 2 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
          "The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.",
          f"Robot: the head turns from {h0} to {h1} deg without contact. {len(MO['legs']['front']['addon'])} front and "

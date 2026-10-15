@@ -92,13 +92,15 @@ INFO = {
                         "and clicks over a small bump. Press it: the tongue and the arm under it press the PiSugar button.",
                    attach="Slide it onto the tongue from the slit end until it clicks, before the panel goes on.",
                    files=[("Print STL", AF + "pod_button.stl")]),
-    "camera_mount": dict(text="The camera mount: a base plate on the front of the panel, two U brackets that hold the ends of the camera case "
-                              "(outside the width of the head), and two clip legs through a window in the panel. It stays clear of the HDMI opening and the switch.",
-                         attach="Push its two clip legs down through the window in the panel until they click. Then put the camera case into the brackets, lens forward.",
+    "camera_mount": dict(text="The camera mount: a 2 mm base on the front of the panel with a chin over its front edge, two U brackets that hold "
+                              "the ends of the camera case (outside the width of the head), and two clip legs through a window in the panel. "
+                              "A 45 deg ridge on each bracket snaps into the pocket in each end of the case. It stays clear of the HDMI opening and the switch.",
+                         attach="Push its two clip legs down through the window in the panel until they click. Then push the camera case down into the brackets until it clicks.",
                          files=[("Print STL", AF + "pod_camera_mount.stl")]),
     "camera": dict(text="The Petoi AI Vision Module in its Petoi case, upright on the front of the add-on, lens forward over the head (15 g). "
-                        "Its Grove cable goes down the front of the body to the BiBoard through the notch in the front-left edge of the cover.",
-                   attach="Put it into the brackets of the camera mount."),
+                        "It is upside down, so that its Grove socket is on the left, clear of the HDMI opening: turn the image 180 deg in software. "
+                        "A 10 cm Grove cable goes from the socket down through a slot in the panel to the Grove plug on the BiBoard.",
+                   attach="Push it down into the brackets of the camera mount until it clicks, lens forward. Then plug the Grove cable into the socket in its rear face."),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on its long edge: ports up, GPIO header down, SD card to the front. Model: PiSugar (GPL-3.0).",
                    attach="With the PiSugar 2 it slides down into the grooves of the two end posts."),
     "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch are at the top. Model: PiSugar (GPL-3.0).",
@@ -163,6 +165,7 @@ def _wire_step(key, title=None, text=""):
                 text=(text or f"Plug {w['from']} onto the Pi {w['to']}.") + f" (Wire {i} in the route table of the guide.)")
 
 
+CAM_CABLE = [f"wires_camera__{k}" for k in ("scl", "sda", "vcc", "gnd", "plug_bb")]
 AMP_CABLE = [_W[("amp", k)][1]["id"] for k in ("G", "V", "BCLK", "LRC", "DIN")]
 MIC_ENDS = [h for w in WIRES["wires"] if w["group"] == "mic" for h in w["housings"] if h.endswith("_dev")]
 SPLICE_IDS = ["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__bclk_pi", "wires_splice__lrclk", "wires_splice__lrclk_pi"]
@@ -190,6 +193,9 @@ STEPS = [
     dict(title="Slide to lock", view="build", start={"body": [0, 0, 7]},
          text="Push the body 7 mm forward until it clicks (about 4 N). Two spring beams at each peg push the peg into a V stop, which centers it. "
               "The BiBoard header is now in the notch of the right well."),
+    dict(title="Camera cable", view="buildfront", show=CAM_CABLE, highlight=CAM_CABLE, start={k: [0, 40, 0] for k in CAM_CABLE},
+         text="Push a 10 cm Grove cable onto the Grove plug of the BiBoard through the floor opening at the front left. "
+              "Lay its excess as an S fold in the front left corner and let its free end hang out of the top."),
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"] + MIC_ENDS, start={k: [0, 40, 0] for k in ["mic"] + MIC_ENDS},
@@ -208,14 +214,16 @@ STEPS = [
          text="Before the panel goes on: slide the switch slider into the rails under the panel from their rear end until it clicks, "
               "and slide the white button cap onto the tongue until it clicks. They stay in the panel."),
     dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
-         text="Push the panel straight down until the 4 tabs click. The slider tab comes up through its slot. The forks under the panel hold "
+         text="Pass the free end of the Grove cable up through the slot at the front left of the panel. "
+              "Then push the panel straight down until the 4 tabs click. The slider tab comes up through its slot. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue near the front is the PiSugar button. "
               "To open, lift the rear edge at the finger notch."),
     dict(title="Camera mount", view="iso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
          text="Push the two clip legs of the camera mount down through the window in the front of the panel until they click."),
-    dict(title="Camera", view="iso", show=["camera"], start={"camera": [0, 40, 0]},
-         text="Put the camera case into the two brackets, lens forward. Plug its Grove cable into the BiBoard through the notch in the front-left "
-              "edge of the cover, down the front of the body."),
+    dict(title="Camera", view="iso", show=["camera", "wires_camera__plug_cam"], highlight=["camera", "wires_camera__plug_cam"],
+         start={"camera": [0, 40, 0], "wires_camera__plug_cam": [0, 0, 20]},
+         text="Push the camera case down into the two brackets until the ridges click into its end pockets, lens forward. "
+              "Then plug the Grove cable into the socket in its rear face."),
 ]
 
 
@@ -242,7 +250,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.17 on Platform v3.1",
+        title="Bittle X Pi Add-on v0.18 on Platform v3.1",
         explode_stages=EXPLODE["stages"],
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
@@ -279,7 +287,7 @@ PACKAGES = [
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.17", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.17.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.18", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.18.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_addon.png", img2="doc/06_open.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "and an SPH0645 mic, in a rounded box with a snap-in top panel and a large power switch. Three printed parts, all without supports.",
