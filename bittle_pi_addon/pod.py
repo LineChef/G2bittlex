@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.13 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
+"""Bittle X Pi add-on rev 0.14 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -7,8 +7,8 @@ Parts
   cover_pegs : the platform (bittle_platform/): Petoi cover, unchanged, plus 4 pegs.
                Each peg root ends inside the 1.6 mm cover wall, so the inside
                of the cover (BiBoard space, touch FPC) does not change.
-  pod_tray   : tray. Keyholes drop over the pegs 7 mm forward of the locked place, slide rearward, click
-               (cantilever detents). A notch over the cover slot lets the BiBoard wires in.
+  pod_tray   : tray. Teardrop keyholes drop over the pegs 7 mm forward of the locked place (one direction
+               only), slide rearward, click (two cantilever detents for each peg). A notch over the cover slot lets the BiBoard wires in.
                Holds the Pi Zero 2 W + PiSugar 2 stack (over the BiBoard header, between the
                PiSugar button and switch, near the center line), the 3 W speaker (on two pins
                on a wall at the front end), the NS4168 amp (crosswise at the rear) and the
@@ -34,7 +34,7 @@ from build123d import (
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
-from bittle_platform import interface as PI          # platform v1.3: cover, pegs, keyholes
+from bittle_platform import interface as PI          # platform v2.0: cover, pegs, keyholes
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
@@ -76,14 +76,33 @@ RAIL_TOP = 29.1             # the cell rests on rails above the peg heads
 # (side, z, half length) rim snaps. The right snaps are short: the port bays and the cover slot are on that side.
 SNAPS = [(-1, -6.0, 5.0), (-1, 30.0, 5.0), (1, -16.6, 2.7), (1, 49.0, 2.8)]
 # The lid wall is straight only above Y_FLARE[1] (31), so each bump stands on a rim tab, over that height.
-SNAP_Y, SNAP_TAB_TOP = 33.0, 34.6
-# Pegs (on the cover) and keyholes (in the tray): platform interface v1.3
+SNAP_Y, SNAP_TAB_TOP = 33.0, 35.6
+# Snap bump profile (u = out from the rim face, Y up): it stands SNAP_E out of the rim, so 0.7 into the
+# lid wall (gap 0.4). Lead-in face 25 deg from vertical: the lid goes on with a light push.
+# Catch face 45 deg (the print limit for the tray): to pull the lid off takes about 2 times the push.
+SNAP_E, SNAP_LEAD_DEG, SNAP_CATCH_DEG, SNAP_FLAT = 1.1, 25.0, 45.0, 0.3
+# Keys: tabs on the left tray rim. A pair of ribs in the lid stands at each side of each tab.
+# They hold the lid on the tray in Z, so a push or a pull on the lid does not load the snaps.
+KEYS = [(-1, 4.0), (-1, 44.0)]          # (side, z)
+KEY = dict(w=4.0, top=37.5, gap=0.15, rib_t=1.6, rib_in=0.3, lead=1.0)
+# Front arrows: 0.6 deep in both lid side walls (vertical in the print: no bridge), 0.5 deep in the
+# tray floor. The lid and the tray go on one way only.
+ARROW_LID = dict(z_tip=-33.0, head_l=6.0, head_w=9.0, stem_l=7.0, stem_w=3.4, depth=0.6, y=44.0)
+ARROW_TRAY = dict(z_tip=-9.0, head_l=5.0, head_w=8.0, stem_l=7.0, stem_w=3.0, depth=0.5)
+# Wire path from the BiBoard Dupont plugs over the Pi to the GPIO edge (check(): nothing in it).
+# The insert frame has no side rails over this band, and the insert clips are outside it.
+# The wires leave the plug tops and turn rearward under the end wall of port bay A (Z 13.9 to 15.5).
+WIRE_Z = (15.6, 24.5)
+WIRE_PATH = [dict(x=(23.9, 28.1), y=(43.2, 48.3), z=(12.0, 24.7)),   # over the plug housings, in the wall opening
+             dict(x=(15.6, 28.0), y=(48.3, 55.0), z=WIRE_Z),         # up beside the Pi ports
+             dict(x=(-16.0, 28.0), y=(49.6, 55.0), z=WIRE_Z)]        # over the Pi (0.4 over its top) to the GPIO edge
+# Pegs (on the cover) and keyholes (in the tray): platform interface v2.0
 PEGS = PI.PEGS
 PEG_SHAFT_D, PEG_HEAD_D = PI.PEG_SHAFT_D, PI.PEG_HEAD_D
 PEG_ROOT_Y = PI.PEG_ROOT_Y
 PEG_HEAD_Y0, PEG_HEAD_Y1 = PI.PEG_HEAD_Y0, PI.PEG_HEAD_Y1
 SLIDE = PI.SLIDE            # the tray drops on SLIDE forward (-Z) of its place, then slides rearward (+Z) to lock
-KEY_BIG_D, KEY_SLOT_W = PI.KEY_BIG_D, PI.KEY_SLOT_W
+KEY_SLOT_W = PI.KEY_SLOT_W
 DET = PI.DET
 
 # Speaker: NULLLAB 3 W 4 ohm box speaker (user ruler measurements), crosswise:
@@ -155,7 +174,7 @@ BAYS = [(-11.5, 13.9), (28.8, 44.0)]   # z0, z1: the plug bodies (PORT_PLUGS) + 
 TOP_INS = dict(hx=11.5, z0=0.0, z1=34.0, r=3.0,   # window at the outer face of the top
                seat=0.8,                           # 45 deg seat: the window is 0.8 smaller below it
                frame_t=1.2, frame_y0=53.0,         # frame around the window under the top wall
-               clr=0.15, leg_t=0.8, leg_w=5.0, hook=0.6, legs_z=(-9.0, 9.0))   # hook: 0.45 under the frame; leg strain 2.3 %
+               clr=0.15, leg_t=0.8, leg_w=5.0, hook=0.6, legs_z=(-11.5, 11.5))   # hook: 0.45 under the frame; leg strain 2.3 %
 # Plug bodies for the access check: (Y, Z, width along Z, height), port centers from the models
 PORT_PLUGS = dict(charge=(41.2, CHG_Z, 12.0, 8.0), pi_power=(47.1, -5.1, 11.0, 7.5),
                   pi_usb=(47.1, 7.8, 11.0, 7.5), pi_hdmi=(47.5, 36.4, 14.0, 8.5))
@@ -521,9 +540,11 @@ def top_window():
 
 
 def top_frame():
+    """Ring under the top around the window. The hooks catch under it. No side rails over the wire band."""
     T, s = TOP_INS, TOP_INS["seat"]
     t = T["frame_t"]
-    return rrect_prism(T["hx"] - s + t, T["z0"] + s - t, T["z1"] - s + t, T["r"] - s + t, T["frame_y0"], H_MAIN - T_WALL + 0.1)
+    f = rrect_prism(T["hx"] - s + t, T["z0"] + s - t, T["z1"] - s + t, T["r"] - s + t, T["frame_y0"], H_MAIN - T_WALL + 0.1)
+    return f - box(-40, 40, T["frame_y0"] - 1, H_MAIN - T_WALL - 0.01, WIRE_Z[0] - 0.5, WIRE_Z[1] + 0.5)
 
 
 def build_top_insert():
@@ -571,11 +592,12 @@ def build_tray():
                        box(*sorted((xe, xe + sx * 1.6)), FLOOR_Y1, loc_top, *sorted((ze, ze - sz * 6.0)))):
                 loc = b_ if loc is None else loc + b_
     for (px, pz) in PEGS:      # full height cut: no locator part over a peg head or its slide path
-        loc -= box(px - 4.3, px + 4.3, FLOOR_Y1 - 1, loc_top + 1, pz - 4.3, pz + SLIDE + 4.3)
+        loc -= box(px - 4.8, px + 4.8, FLOOR_Y1 - 1, loc_top + 1,
+                   pz - PI.tip_len(PEG_HEAD_D, PI.HEAD_TIP_DEG) - 0.5, pz + SLIDE + 4.4)   # the head and the detent beams
     t += loc
     t += amp_place(amp_post())
     t += mic_place(mic_base())
-    # keyholes with a cantilever click detent
+    # keyholes with two cantilever click detents each
     for (px, pz) in PEGS:
         t -= keyhole_cut(px, pz)
         t += keyhole_bump(px, pz)
@@ -587,7 +609,10 @@ def build_tray():
     for (sx, zc, hl) in SNAPS:   # rim tab and bump: the bump stands 0.8 out of the rim, 0.4 into the lid wall
         w_i = inner_at(zc)[0] - TRAY_GAP
         t += box(*sorted((sx * (w_i - RIM_T), sx * w_i)), RIM_TOP - 0.01, SNAP_TAB_TOP, zc - hl, zc + hl)
-        t += teardrop_z(sx * w_i, SNAP_Y, zc - hl + 1, zc + hl - 1, 0.8, 0.8 * math.sqrt(2))   # 45 deg underside
+        t += snap_solid(sx, w_i, zc - hl + 1, zc + hl - 1)
+    for (sx, zk) in KEYS:
+        t += key_tab(sx, zk)
+    t -= arrow(ARROW_TRAY, FLOOR_Y1)
     return t
 
 
@@ -609,6 +634,68 @@ def teardrop_x(y, z, x0, x1, r, flat):
     d = Pos((x0 + x1) / 2, y, z) * Rot(45, 0, 0) * Box(x1 - x0, 2 * r, 2 * r)
     d &= box(x0, x1, y - flat, y - r * math.sqrt(0.5), z - 2 * r, z + 2 * r)   # below the tangent points only
     return c + d
+
+
+def snap_pts(grow=0.0):
+    """Snap bump profile (u, y): u = out from the rim face. grow: clearance all around (for the lid groove)."""
+    e, yc = SNAP_E + grow, SNAP_Y
+    ya = yc - SNAP_E * math.tan(math.radians(SNAP_CATCH_DEG)) - grow * 1.5
+    yd = yc + SNAP_FLAT + SNAP_E / math.tan(math.radians(SNAP_LEAD_DEG)) + grow * 1.5
+    return [(-0.6, ya), (0.0, ya), (e, yc - grow * 0.4), (e, yc + SNAP_FLAT + grow * 0.4), (0.0, yd), (-0.6, yd)]
+
+
+def snap_solid(sx, x_face, z0, z1, grow=0.0):
+    """The snap profile along Z, on the rim face at X = sx * x_face (sx = side)."""
+    pts = [(sx * (x_face + u), y, z0) for u, y in snap_pts(grow)]
+    if sx < 0:
+        pts = pts[::-1]
+    return extrude(Face(Wire.make_polygon(pts, close=True)), amount=z1 - z0, dir=(0, 0, 1))
+
+
+def key_tab(sx, zk):
+    """Key tab on the rim: Z faces for the lid ribs, 45 deg lead-in at the top."""
+    K = KEY
+    w_i = inner_at(zk)[0] - TRAY_GAP
+    xa = sx * (w_i - RIM_T)
+    a, b, y0, y1, l = zk - K["w"] / 2, zk + K["w"] / 2, RIM_TOP - 0.01, K["top"], K["lead"]
+    pts = [(xa, y0, a), (xa, y0, b), (xa, y1 - l, b), (xa, y1, b - l), (xa, y1, a + l), (xa, y1 - l, a)]
+    return extrude(Face(Wire.make_polygon(pts, close=True)), amount=RIM_T, dir=(sx, 0, 0))
+
+
+def key_ribs(sx, zk):
+    """Two ribs on the lid wall, one at each side of the key tab (gap KEY['gap'] in Z)."""
+    K = KEY
+    w_i = inner_at(zk)[0]
+    xi = w_i - TRAY_GAP - RIM_T - K["rib_in"]
+    out = None
+    for sz in (-1, 1):
+        zc = zk + sz * (K["w"] / 2 + K["gap"] + K["rib_t"] / 2)
+        r = box(*sorted((sx * xi, sx * (w_i + 1.0))), RIM_TOP + 0.3, H_MAIN, zc - K["rib_t"] / 2, zc + K["rib_t"] / 2)
+        out = r if out is None else out + r
+    return out
+
+
+def arrow_pts(A):
+    """Arrow outline (v, z) that points to the front (-Z); v is across the arrow."""
+    zt, hl, hw, sl, sw = A["z_tip"], A["head_l"], A["head_w"], A["stem_l"], A["stem_w"]
+    return [(0, zt), (hw / 2, zt + hl), (sw / 2, zt + hl), (sw / 2, zt + hl + sl), (-sw / 2, zt + hl + sl),
+            (-sw / 2, zt + hl), (-hw / 2, zt + hl)]
+
+
+def arrow(A, y_top):
+    """Arrow in a top face, cut A['depth'] down from y_top."""
+    f = Face(Wire.make_polygon([(x, y_top - A["depth"], z) for x, z in arrow_pts(A)], close=True))
+    return extrude(f, amount=A["depth"] + 1.0, dir=(0, 1, 0))
+
+
+def arrow_side(A, sx, x_face):
+    """Arrow in a side wall at X = sx * x_face, cut A['depth'] in."""
+    f = Face(Wire.make_polygon([(sx * (x_face - A["depth"]), A["y"] + v, z) for v, z in arrow_pts(A)], close=True))
+    return extrude(f, amount=A["depth"] + 1.0, dir=(sx, 0, 0))
+
+
+def wire_path():
+    return [box(*P["x"], *P["y"], *P["z"]) for P in WIRE_PATH]
 
 
 def teardrop_z(x, y, z0, z1, r, flat):
@@ -689,7 +776,11 @@ def build_lid():
     cuts, adds = [], []
     for (sx, zc, hl) in SNAPS:
         w_i = inner_at(zc)[0] - TRAY_GAP
-        cuts.append(cyl_z(sx * w_i, SNAP_Y, zc - hl + 0.4, zc + hl - 0.4, 0.95))
+        cuts.append(snap_solid(sx, w_i, zc - hl + 0.4, zc + hl - 0.4, grow=0.1))
+    for (sx, zk) in KEYS:
+        adds.append(key_ribs(sx, zk))
+    for sx in (-1, 1):
+        cuts.append(arrow_side(ARROW_LID, sx, wu(ARROW_LID["z_tip"] + 6.0)))
     xa, xb = W_MAIN - T_WALL - 1, W_MAIN + 1
     C = CAM_SLOT     # camera cable slot in the left wall (a 6 mm bridge in the print)
     cuts.append(box(-xb, -xa, C["y0"], C["y0"] + C["h"], C["zc"] - C["w"] / 2, C["zc"] + C["w"] / 2))
@@ -841,7 +932,8 @@ def check(parts, models, robot):
         pcs = sorted(c.volume() for c in printed[a].decompose())
         rows.append((a, "loose_pieces", sum(pcs[:-1])))
     # slide path: tray at the drop-on position and at the detent bump
-    for s_ in (SLIDE, DET["bump_dz"]):
+    from bittle_platform import build as BP
+    for s_ in (SLIDE, round(BP.DET_DZ, 2)):
         T = printed["pod_tray"].translate([0, 0, -s_])
         rows.append((f"tray fwd {s_:g}mm", "cover_pegs", vol(T, printed["cover_pegs"])))
         rows.append((f"tray fwd {s_:g}mm", "cover_slot", vol(T, models["cover_slot"])))
@@ -858,6 +950,21 @@ def check(parts, models, robot):
     for i, a in enumerate(mn):
         for b in mn[i + 1:]:
             rows.append((a, b, vol(models[a], models[b])))
+    # wire path from the Dupont plugs to the GPIO edge: free of every part (the plugs are its start)
+    W = None
+    for w in wire_path():
+        m = b3d_to_manifold(w)
+        W = m if W is None else W + m
+    for b in ADD:
+        rows.append(("wire_path", b, vol(W, printed[b])))
+    for b, M in models.items():
+        if b not in ("dupont_plugs", "biboard_header", "cover_slot"):
+            rows.append(("wire_path", b, vol(W, M)))
+    # one direction only: the lid turned 180 deg (about the lid center) does not go down onto the tray
+    zc = (ZF + ZR) / 2
+    R = printed["pod_lid"].transform(np.array([[-1.0, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 2 * zc]]))
+    rows.append(("lid turned 180 (min, Z +-12)", "pod_tray",
+                 min(vol(R.translate([0, 0, float(dz)]), printed["pod_tray"]) for dz in np.arange(-12.0, 12.01, 1.0))))
     return rows
 
 
@@ -997,6 +1104,11 @@ def main():
             print(f"     {r['area']:6.1f} mm2  flat {r['flat']:5.1f}  at print z {r['z'][0]:.1f}..{r['z'][1]:.1f}  x {r['x'][0]:.1f}..{r['x'][1]:.1f}  y {r['y'][0]:.1f}..{r['y'][1]:.1f}")
     for n, M in models.items():
         save_stl(M, os.path.join(OUT, "models", f"{n}.stl"))
+    W = None
+    for w in wire_path():
+        m = b3d_to_manifold(w)
+        W = m if W is None else W + m
+    save_stl(W, os.path.join(OUT, "models", "wire_path.stl"))      # display only
     rows = check(parts, models, robot)
     bal = balance(parts, models)
     print(f"balance: {bal['mass_g']} g, center of mass x {bal['com'][0]} y {bal['com'][1]} z {bal['com'][2]}")

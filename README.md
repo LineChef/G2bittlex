@@ -1,7 +1,7 @@
 # Bittle X Platform
 
 Click-on add-ons for the Petoi Bittle X robot dog. Print a new back cover
-with 4 pegs, then put hardware on your robot without tools, glue or tape.
+with 4 teardrop pegs, then put hardware on your robot without tools, glue or tape.
 
 **[Website and 3D viewer](https://beetlebugorg.github.io/bittlex/)** ·
 [Platform spec (PDF)](bittle_platform/bittle_platform_spec.pdf) ·
@@ -11,13 +11,16 @@ with 4 pegs, then put hardware on your robot without tools, glue or tape.
 
 ## The platform
 
-The platform is the stock Petoi back cover with 4 pegs on its flat top. It
+The platform is the stock Petoi back cover with 4 teardrop pegs on its flat top. It
 goes on the robot in place of the stock cover. The inside of the cover does
 not change, so the BiBoard and the touch sensor fit as before.
 
 - **Tool-free mount.** Put an add-on on the pegs, slide it 7 mm rearward,
-  and it clicks into place. Slide it forward to remove it.
-- **Centered pegs.** The 24 x 16 mm peg pattern is on the center line of
+  and it clicks into place. Slide it forward to remove it. Two spring beams
+  at each peg center the add-on, so it does not rattle.
+- **One direction only.** The peg heads and the keyholes are teardrops that
+  point to the front. Turned the wrong way, an add-on does not go on.
+- **Centered pegs.** The 24 x 20 mm peg pattern is on the center line of
   the robot.
 - **Open interface.** The spec has every number that you need.
   [`interface.json`](bittle_platform/interface.json) has the same numbers
@@ -43,6 +46,8 @@ clicks onto the platform.
 - Serial link to the BiBoard through the Pi slot in the cover
 - Two open port bays in the right side of the lid: the charge port, the button, the switch, and the Pi USB and mini-HDMI ports are at the bay faces
 - A cable slot for the Petoi AI Vision Module camera in the head
+- Keys hold the lid on the tray, and arrows on the lid and the tray show the front
+- A clear wire path from the BiBoard header over the Pi to the GPIO pads
 - 4 printed parts, all without supports. The vent insert in the lid top is in a second color
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)

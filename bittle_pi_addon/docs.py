@@ -14,7 +14,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.13"
+VERSION = "0.14"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -32,19 +32,20 @@ def content():
 
     p(f"Version {VERSION}, {DATE}. A sample add-on for the Bittle X platform v{PI.VERSION} (../bittle_platform). "
       "It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. "
-      "It clicks onto the platform pegs. No tools, glue, tape or supports are necessary.")
-    img("02_ports_right.png", 0.72, "The add-on on the platform, right side: the two port bays.")
+      "It clicks onto the platform pegs. The teardrop keyholes and the arrows on the tray and the lid show the front: "
+      "the tray and the lid go on one way only. No tools, glue, tape or supports are necessary.")
+    img("02_ports_right.png", 0.6, "The add-on on the platform, right side: the two port bays.")
 
     h("1. Parts to print")
     tbl([["File (stl/print/)", "Material", "Orientation", "Supports", "Cura profile", "Mass"],
          ["pod_tray.stl", "PLA or PETG", "floor on the bed", "none", "Bittle Pi Pod - PLA 0.25", f"{pod_mass('pod_tray')} g"],
          ["pod_lid.stl", "PLA", "upside down: flat top on the bed", "none", "Bittle Pi Pod 0.25, or Bittle Fine 0.10 for the best surface", f"{pod_mass('pod_lid')} g"],
          ["top_insert.stl", "PLA, second color", "upside down: top on the bed", "none", "Bittle Fine 0.10", f"{pod_mass('top_insert')} g"],
-         ["cover_pegs.stl (../bittle_platform)", "PLA", "stand on the rear end", "tree, from the bed", "Bittle Cover - PLA 0.25", "11 g"],
+         ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "none: the foot is the support", "Bittle Cover - PLA 0.25", "11 g"],
          ], [38, 20, 34, 16, 44, 14])
     p("Print quality. Every surface of the add-on parts is at 45 deg or less from vertical, or is a short bridge:")
     lst([f"Tray: {pr['pod_tray']['overhang_mm2']:.0f} mm² of overhang in total. These are the flat bottoms (1.0 wide) of the amp pins. The speaker pins have a 45 deg point at the bottom.",
-         f"Lid: {pr['pod_lid']['overhang_mm2']:.0f} mm² in total. These are the tops (in the print) of the camera cable slot (a 6 mm bridge) and the speaker grille slots. The profiles have the bridge settings on. The floors of the port bays are 45 deg slopes.",
+         f"Lid: {pr['pod_lid']['overhang_mm2']:.0f} mm² in total. These are the tops (in the print) of the camera cable slot (a 6 mm bridge), the speaker grille slots and the 0.6 mm deep side arrows. The profiles have the bridge settings on. The floors of the port bays are 45 deg slopes.",
          "The mic holes in the left lid wall are diamonds, so they print clean without a bridge.",
          "The slots for the mic board and the speaker ear plate are vertical in the print. They have no ceilings.",
          "Keep the seam at the back (the profiles do this)."])
@@ -72,18 +73,19 @@ def content():
       "Each step below has a link to its view.")
     lst(["Print the platform cover and fit it on the robot in place of the stock cover." + st(2),
          "Solder the wires to the Pi, the amp and the mic (section 4).",
-         f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
+         f"Put the tray on the cover {PI.SLIDE:g} mm forward of its place, over the pegs, with the floor arrow to the front. Push it {PI.SLIDE:g} mm rearward until it clicks." + st(3) + st(4),
          "Push the mic board down into the slot at the left side of the tray, port to the left, wire pads at the top." + st(5),
          "Push the amp onto its two pins behind the stack, components to the rear." + st(6),
          f"Hang the speaker on the two pins of the front wall, ear plate to the rear. Do this after the tray is locked: {PI.SLIDE:g} mm forward, the speaker hits the head." + st(7),
          "Put the Pi + PiSugar 2 stack into the tray, battery down, ports to the right." + st(8),
-         "Push the Dupont plugs onto the BiBoard header. Route the wires over the Pi." + st(9),
+         "Push the Dupont plugs onto the BiBoard header. Bend the wires rearward at the plug tops, then lay them over the Pi to the GPIO edge (the yellow wire path in the viewer)." + st(9),
          "Optional camera: put the Grove cable through the slot in the left lid wall, behind the speaker. Solder its wires to the Pi (section 4). Leave slack for the head to turn.",
          "Push the vent insert into the window in the lid top until its 4 clips click. To remove it, push it out from inside.",
-         "Push the lid down until the 4 snaps engage. The lid also stops the tray from sliding forward." + st(10),
-         f"To remove: pull the lid up, lift the speaker off its pins, slide the tray {PI.SLIDE:g} mm forward and lift it."])
-    img("06_tray_loaded.png", 0.56, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
-    img("08_section_center.png", 0.56, "Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.")
+         "Put the lid on with the side arrows to the front. The two pairs of ribs on its left wall go down at each side of the key tabs on the tray rim. Push it down until the 4 snaps click." + st(10),
+         f"To remove: pull the lid walls a little out at the snaps and lift the lid. Lift the speaker off its pins and pull the Dupont plugs off the header. Then slide the tray {PI.SLIDE:g} mm forward and lift it. "
+         f"With the speaker on, the tray cannot slide {PI.SLIDE:g} mm forward: the speaker hits the head."])
+    img("06_tray_loaded.png", 0.46, "The tray without the lid: the speaker (front), the stack on the center line, the mic (left) and the amp (rear).")
+    img("08_section_center.png", 0.46, "Section on the center line (right: front). The speaker hangs on the front pins. The amp stands behind the stack.")
 
     h("4. Wiring")
     tbl([["Signal", "Pi Zero 2 W", "To"],
@@ -106,6 +108,8 @@ def content():
          ["pod.py", "all dimensions, the build and the checks (fit, slide path, loose pieces, overhang)"],
          ["render.py, docs.py", "the pictures and this guide"],
          ], [62, 108])
+    p("Lid fit. Key tabs and ribs hold the lid on the tray in Z, so a push on the lid does not pop the snaps. "
+      "The snap bumps stand 0.7 mm into the lid wall, with a 25 deg lead-in and a 45 deg catch: the lid comes off with about two times the push.")
     p("Ports. The stack is on the center line for balance, so its port edge is 11 mm inside the body side. "
       "The lid has two open port bays in its right side: the wall steps in to 0.45 mm from the port faces. "
       "The front bay has the PiSugar charge port and button and the Pi power and data USB ports. "

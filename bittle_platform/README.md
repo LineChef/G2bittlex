@@ -1,6 +1,8 @@
-# Bittle X Platform v1.3 - Interface Specification
+# Bittle X Platform v2.0 - Interface Specification
 
-Version 1.3, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+Version 2.0, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm rearward, and it clicks. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+
+Version 2.0 is not compatible with version 1.x: the pegs have a new shape and a new place. Print the cover and the add-on plates again.
 
 ![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
 
@@ -10,16 +12,17 @@ Version 1.3, 2026-10-15. The platform is the stock Petoi Bittle X back cover wit
 | Item | Value (mm) |
 |---|---|
 | Frame | X lateral (+X = robot right), Y up, Z along the body (-Z = head end). Origin: center line, middle of the cover. |
-| Pegs (X, Z) | (12, -8), (12, 8), (-12, -8), (-12, 8): a centered 24 x 16 rectangle |
-| Peg | shaft Ø4; head Ø7, Y 27.7 to 28.9 |
+| Pegs (X, Z) | (12, -10), (12, 10), (-12, -10), (-12, 10): a centered 24 x 20 rectangle |
+| Peg | teardrops. Head: R3.5, point 60 deg to the front (-Z), Y 27.8 to 29. Shaft: R2, point 90 deg to the rear (+Z) |
 | Add-on plate | bottom at Y 26, 1.5 thick at the keyholes |
-| Keyhole | slot 5.2 wide from the peg to 7 mm behind it (+Z); Ø8.4 drop-in hole at the rear end |
+| Keyhole | slot 4.7 wide from the peg to 7 mm behind it (+Z), round front stop; drop-in hole at the rear end = the head teardrop + 0.45 |
 | Fit | put the add-on on 7 mm forward of its place, then slide it 7 mm rearward until it clicks |
-| Click (detent) | a 1.2 wide spring beam on the +X side of each slot, freed by a 0.8 U slit (fixed at its front end only); bump R1, 1.5 into the slot, 2.7 behind the peg |
+| Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the front end only). Bumps R1.5 at 1.42 behind the peg, 0.35 into the shaft path. They push the shaft against the front stop and center it. |
+| Click force | about 4.2 N to slide on and 4.2 N to slide off (all 8 beams, PLA estimate); beam strain 1.12 % |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
 | Size | the pod fits in Z -40..66, \|X\| <= 33.6; outside that, check the legs and the head |
 
-![Left: keyhole and click beam in the add-on plate (top view). Right: the peg and the plate (side section).](doc/keyhole.png)
+![Left: keyhole and click beams in the add-on plate (top view, locked). Right: the peg and the plate (side section).](doc/keyhole.png)
 
 ![Plan view: pegs (blue), drop-in holes (green), BiBoard header (red), pod size (gold).](doc/plan.png)
 
@@ -52,10 +55,10 @@ Version 1.3, 2026-10-15. The platform is the stock Petoi Bittle X back cover wit
 | Nozzle | 220 C (PLA) | 220 C (PLA) |
 
 1. Material: PLA works. Use PETG for add-ons that you remove often or that get warm.
-2. Standing on its end, the cover prints the pegs with layers along their length. This makes them strong.
+2. Standing on its end, the cover prints the pegs with layers along their length. This makes them strong. The shaft and collar points are down, so they need no supports.
 3. The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at small teeth.
 4. In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.
-5. The fits use 0.2 to 0.3 clearance. Calibrate your printer if the plate does not slide on.
+5. The fits use 0.35 (slot), 0.45 (drop-in hole) and 0.3 (under the heads) clearance. Calibrate your printer if the plate does not slide on.
 
 
 ## 4. Files

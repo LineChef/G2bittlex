@@ -1,4 +1,4 @@
-"""Bittle X platform v1.3: drawings, renders, interface.json, SPEC.md and the PDF.
+"""Bittle X platform v2.0: drawings, renders, interface.json, SPEC.md and the PDF.
 
 Run build.py first, then:  python docs.py
 README.md and bittle_platform_spec.pdf come from the same content list (CONTENT), so they agree.
@@ -14,7 +14,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, Polygon, Rectangle
+from matplotlib.patches import Circle, PathPatch, Polygon, Rectangle
+from matplotlib.path import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -31,6 +32,12 @@ CHECKS = json.load(open(os.path.join(HERE, "checks.json")))
 # --------------------------------------------------------------------------
 # Drawings
 # --------------------------------------------------------------------------
+def tear_patch(px, pz, r, tip=1.0, deg=None, **kw):
+    """Teardrop outline in a plan drawing (horizontal = Z, vertical = X)."""
+    q = B.tear_outline(r, 240, tip, deg)
+    return Polygon(np.c_[q[:, 1] + pz, q[:, 0] + px], closed=True, **kw)
+
+
 def plan_drawing(path):
     fig, a = plt.subplots(figsize=(11, 7.2))
     v = B.ref_tris(I.COVER_STL).reshape(-1, 3)
@@ -53,16 +60,18 @@ def plan_drawing(path):
                           fill=False, color="tab:red", ls=":", lw=1))
     a.text(S["z1"] + I.SLIDE + 1, (S["x0"] + S["x1"]) / 2, "Pi slot + BiBoard header\n(dotted: keep-out swept 7)", fontsize=7, color="tab:red", va="center")
     for px, pz in I.PEGS:
-        a.add_patch(Circle((pz, px), I.PEG_COLLAR_D / 2, color="tab:blue", alpha=0.25))
-        a.add_patch(Circle((pz, px), I.PEG_HEAD_D / 2, fill=False, color="tab:blue", lw=1.2))
-        a.add_patch(Circle((pz, px), I.PEG_SHAFT_D / 2, color="tab:blue"))
-        a.add_patch(Circle((pz + I.SLIDE, px), I.KEY_BIG_D / 2, fill=False, color="tab:green", ls="--", lw=1))
+        a.add_patch(tear_patch(px, pz, I.PEG_COLLAR_D / 2, color="tab:blue", alpha=0.25))
+        a.add_patch(tear_patch(px, pz, I.PEG_HEAD_D / 2, I.HEAD_TIP, I.HEAD_TIP_DEG, fill=False, color="tab:blue", lw=1.2))
+        a.add_patch(tear_patch(px, pz, I.PEG_SHAFT_D / 2, color="tab:blue"))
+        a.add_patch(tear_patch(px, pz + I.SLIDE, I.PEG_HEAD_D / 2 + I.KEY_HOLE_GAP, I.HEAD_TIP, I.HEAD_TIP_DEG,
+                               fill=False, color="tab:green", ls="--", lw=1))
         a.text(pz, px + (4.3 if px > 0 else -4.3), f"({px:g}, {pz:g})", ha="center", va="center", fontsize=7.5, color="tab:blue")
-    a.annotate("", (-8, -19.5), (8, -19.5), arrowprops=dict(arrowstyle="<->", lw=0.8))
-    a.text(0, -20.2, "16", ha="center", va="top", fontsize=8)
+    dz = I.PEGS[1][1] - I.PEGS[0][1]
+    a.annotate("", (-dz / 2, -19.5), (dz / 2, -19.5), arrowprops=dict(arrowstyle="<->", lw=0.8))
+    a.text(0, -20.2, f"{dz:g}", ha="center", va="top", fontsize=8)
     a.annotate("", (-15, -12), (-15, 12), arrowprops=dict(arrowstyle="<->", lw=0.8))
     a.text(-15.6, 0, "24", ha="right", va="center", fontsize=8)
-    a.text(19.5, -12, "drop-in hole\nof the add-on (+7)", fontsize=6.5, color="tab:green", ha="left", va="center")
+    a.text(23.5, -12, "drop-in hole\nof the add-on (+7)", fontsize=6.5, color="tab:green", ha="left", va="center")
     E = I.ENVELOPE
     for z in E["z"]:
         a.axvline(z, color="goldenrod", lw=0.9, ls="-.")
@@ -82,32 +91,31 @@ def plan_drawing(path):
 def keyhole_drawing(path):
     fig, (a, b) = plt.subplots(1, 2, figsize=(11.5, 4.9), gridspec_kw=dict(width_ratios=[1, 1.15]))
     D = I.DET
-    px, pz = 0.0, 0.0
-    zb = pz + I.SLIDE
-    w2 = I.KEY_SLOT_W / 2
-    a.add_patch(Circle((zb, px), I.KEY_BIG_D / 2, fill=False, lw=1.5))
-    a.add_patch(Rectangle((pz, px - w2), I.SLIDE, I.KEY_SLOT_W, fill=False, lw=1.5))
-    a.add_patch(Circle((pz, px), w2, fill=False, lw=1.5))
-    bx0 = w2 + D["beam_w"]
-    zt = pz + D["bump_dz"] + D["bump_r"] + 0.2
-    zr = pz + D["bump_dz"] - D["arm"]
-    a.add_patch(Rectangle((zr, bx0), zt + D["slit_w"] - zr, D["slit_w"], color="0.55"))
-    a.add_patch(Rectangle((zt, w2 - 0.2), D["slit_w"], bx0 + D["slit_w"] - w2 + 0.2, color="0.55"))
-    a.add_patch(Rectangle((zr, w2), zt - zr, D["beam_w"], color="tab:orange", alpha=0.35))
-    a.add_patch(Rectangle((zr, w2 - D["slit_w"]), pz - zr, D["slit_w"], color="0.55"))      # inner slit
-    a.add_patch(Circle((pz + D["bump_dz"], w2 - D["bump_in"] + D["bump_r"]), D["bump_r"], color="tab:red"))
-    a.add_patch(Circle((pz, px), I.PEG_SHAFT_D / 2, color="tab:blue", alpha=0.35))
-    a.annotate("", (pz, -5.6), (zb, -5.6), arrowprops=dict(arrowstyle="<->"))
-    a.text((zb + pz) / 2, -6.2, f"SLIDE {I.SLIDE:g}", ha="center", va="top", fontsize=8)
-    a.text(zb, -4.4, f"Ø{I.KEY_BIG_D:g} drop-in\ncenter (px, pz+{I.SLIDE:g})", ha="center", va="top", fontsize=7.5)
-    a.text(pz + 3.7, -1.2, f"slot {I.KEY_SLOT_W:g} wide", fontsize=7.5)
-    a.annotate(f"bump R{D['bump_r']:g} at pz+{D['bump_dz']:g},\n{D['bump_in']:g} into the slot", (pz + D["bump_dz"] - 0.3, w2 - D["bump_in"] + D["bump_r"] - 0.5),
-               (-9.5, -3.6), color="tab:red", fontsize=7.5, arrowprops=dict(arrowstyle="->", color="tab:red", lw=0.7))
-    a.text(zr + 0.2, bx0 + D["slit_w"] + 0.5, f"beam {D['beam_w']:g} wide, arm {D['arm']:g}, slits {D['slit_w']:g}", color="tab:orange", fontsize=7.5)
-    a.text(pz, 0, "peg\n(locked)", ha="center", va="center", fontsize=6.5)
-    a.annotate("", (pz + 4, 6.9), (pz - 4, 6.9), arrowprops=dict(arrowstyle="->", lw=1.2))
-    a.text(pz + 4.5, 6.9, "add-on slides +Z (rearward) to lock", fontsize=7.5, va="center")
-    a.set_xlim(-10, 14); a.set_ylim(-8.5, 8); a.set_aspect("equal")
+    px, pz = I.PEGS[1]
+    zb = I.SLIDE
+    # the starter plate around one keyhole, at mid thickness (holes cut out)
+    sec = B.to_m(B.starter_plate()).transform(np.array([[1.0, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0]])).slice(-(I.MOUNT_Y0 + I.MOUNT_T / 2))
+    verts, codes = [], []
+    for poly in sec.to_polygons():
+        q = np.array(poly)
+        q = np.c_[q[:, 1] - pz, q[:, 0] - px]
+        verts += list(q) + [q[0]]
+        codes += [Path.MOVETO] + [Path.LINETO] * (len(q) - 1) + [Path.CLOSEPOLY]
+    a.add_patch(PathPatch(Path(verts, codes), facecolor="goldenrod", alpha=0.45, edgecolor="k", lw=0.6))
+    a.add_patch(tear_patch(0, 0, I.PEG_HEAD_D / 2, I.HEAD_TIP, I.HEAD_TIP_DEG, fill=False, color="tab:blue", lw=1.2, ls="--"))
+    a.add_patch(tear_patch(0, 0, I.PEG_SHAFT_D / 2, color="tab:blue", alpha=0.6))
+    for sx in (1, -1):
+        a.add_patch(Circle((B.DET_DZ, sx * B.DET_DX), D["bump_r"], fill=False, color="tab:red", lw=0.8))
+    a.annotate("", (0, -6.4), (zb, -6.4), arrowprops=dict(arrowstyle="<->"))
+    a.text(zb / 2, -6.9, f"SLIDE {I.SLIDE:g}", ha="center", va="top", fontsize=8)
+    a.text(zb + 1.5, -4.9, f"drop-in hole: head + {I.KEY_HOLE_GAP:g}", ha="center", va="top", fontsize=7.5)
+    a.text(-1.0, 4.9, "head (dashed): point to the front", color="tab:blue", fontsize=7.5, ha="center")
+    a.annotate(f"two bumps R{D['bump_r']:g}: they hold the shaft\nagainst the front stop", (B.DET_DZ, -B.DET_DX + D["bump_r"] - 0.3),
+               (-9.5, -3.9), color="tab:red", fontsize=7.5, arrowprops=dict(arrowstyle="->", color="tab:red", lw=0.7))
+    a.text(-9.5, 6.9, f"beams {D['beam_w']:g} wide, arm {D['arm']:g}, slits {D['slit_w']:g}", color="0.3", fontsize=7.5)
+    a.annotate("", (4, 8.3), (-4, 8.3), arrowprops=dict(arrowstyle="->", lw=1.2))
+    a.text(4.5, 8.3, "add-on slides +Z (rearward) to lock", fontsize=7.5, va="center")
+    a.set_xlim(-10, 16); a.set_ylim(-8.5, 9.2); a.set_aspect("equal")
     a.set_xlabel("Z (mm, relative to peg)   - = front"); a.set_ylabel("X (mm, relative to peg)")
     a.set_title("Keyhole in the add-on mount plate (top view)")
     a.grid(True, lw=0.3)
@@ -126,13 +134,13 @@ def keyhole_drawing(path):
         b.add_patch(Rectangle((x0 if sx > 0 else -13, I.MOUNT_Y0), 13 - x0, I.MOUNT_T, color="goldenrod", alpha=0.8))
     b.text(4.0, I.MOUNT_Y0 + 0.5, "add-on mount plate", fontsize=7)
     levels = [(I.HEAD_CLEAR_Y, f"{I.HEAD_CLEAR_Y:g} keep-out top over the head sweep"),
-              (I.PEG_HEAD_Y1, f"{I.PEG_HEAD_Y1:g} head top (Ø{I.PEG_HEAD_D:g}, {c:g} chamfer)"),
+              (I.PEG_HEAD_Y1, f"{I.PEG_HEAD_Y1:g} head top ({c:g} chamfer)"),
               (I.PEG_HEAD_Y0, f"{I.PEG_HEAD_Y0:g} head underside"),
               (I.MOUNT_Y1, f"{I.MOUNT_Y1:g} plate top (max)"),
               (I.MOUNT_Y0, f"{I.MOUNT_Y0:g} plate bottom = mount face"),
-              (I.PEG_COLLAR_Y1, f"{I.PEG_COLLAR_Y1:g} collar top (Ø{I.PEG_COLLAR_D:g})"),
+              (I.PEG_COLLAR_Y1, f"{I.PEG_COLLAR_Y1:g} collar top"),
               (yt, f"{yt:g} cover top"),
-              (I.PEG_ROOT_Y, f"{I.PEG_ROOT_Y:g} shaft root (Ø{I.PEG_SHAFT_D:g})"),
+              (I.PEG_ROOT_Y, f"{I.PEG_ROOT_Y:g} shaft root"),
               (I.COVER_INNER_AT_PEGS, f"{I.COVER_INNER_AT_PEGS:g} cover inner surface")]
     ys = np.linspace(I.COVER_INNER_AT_PEGS - 0.1, I.HEAD_CLEAR_Y + 0.2, len(levels))[::-1]
     for (y, t), yl in zip(levels, ys):
@@ -196,6 +204,7 @@ def fmt(v):
 def content():
     D, E, H = I.DET, I.ENVELOPE, I.HDR
     cl = CHECKS["clearances"]
+    DF = CHECKS["detent"]
     pegs = ", ".join(f"({x:g}, {z:g})" for x, z in I.PEGS)
     X = []
     h = lambda t: X.append(("h", t))
@@ -204,25 +213,30 @@ def content():
     img = lambda f, w=1.0, cap="": X.append(("img", f, w, cap))
     lst = lambda items: X.append(("list", items))
 
-    p(f"Version {I.VERSION}, {DATE}. The platform is the stock Petoi Bittle X back cover with 4 pegs on its top. "
+    p(f"Version {I.VERSION}, {DATE}. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. "
       f"An add-on has a plate with 4 keyholes. Put it on the pegs, slide it {I.SLIDE:g} mm rearward, and it clicks. "
+      "The keyholes have the shape of the pegs, so the add-on goes on in one direction only. "
       "No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.")
-    img("r2_starter.png", 0.7, "The platform (dark) with the starter plate (yellow).")
+    p("Version 2.0 is not compatible with version 1.x: the pegs have a new shape and a new place. Print the cover and the add-on plates again.")
+    img("r2_starter.png", 0.6, "The platform (dark) with the starter plate (yellow).")
 
     h("1. Key numbers")
     tbl([["Item", "Value (mm)"],
          ["Frame", "X lateral (+X = robot right), Y up, Z along the body (-Z = head end). Origin: center line, middle of the cover."],
-         ["Pegs (X, Z)", f"{pegs}: a centered 24 x 16 rectangle"],
-         ["Peg", f"shaft Ø{I.PEG_SHAFT_D:g}; head Ø{I.PEG_HEAD_D:g}, Y {I.PEG_HEAD_Y0:g} to {I.PEG_HEAD_Y1:g}"],
+         ["Pegs (X, Z)", f"{pegs}: a centered 24 x {I.PEGS[1][1] - I.PEGS[0][1]:g} rectangle"],
+         ["Peg", f"teardrops. Head: R{I.PEG_HEAD_D / 2:g}, point {I.HEAD_TIP_DEG * 2:g} deg to the front (-Z), Y {I.PEG_HEAD_Y0:g} to {I.PEG_HEAD_Y1:g}. "
+                 f"Shaft: R{I.PEG_SHAFT_D / 2:g}, point {I.TIP_DEG * 2:g} deg to the rear (+Z)"],
          ["Add-on plate", f"bottom at Y {I.MOUNT_Y0:g}, {I.MOUNT_T:g} thick at the keyholes"],
-         ["Keyhole", f"slot {I.KEY_SLOT_W:g} wide from the peg to {I.SLIDE:g} mm behind it (+Z); Ø{I.KEY_BIG_D:g} drop-in hole at the rear end"],
+         ["Keyhole", f"slot {I.KEY_SLOT_W:g} wide from the peg to {I.SLIDE:g} mm behind it (+Z), round front stop; drop-in hole at the rear end = the head teardrop + {I.KEY_HOLE_GAP:g}"],
          ["Fit", f"put the add-on on {I.SLIDE:g} mm forward of its place, then slide it {I.SLIDE:g} mm rearward until it clicks"],
-         ["Click (detent)", f"a {D['beam_w']:g} wide spring beam on the +X side of each slot, freed by a {D['slit_w']:g} U slit (fixed at its front end only); bump R{D['bump_r']:g}, {D['bump_in']:g} into the slot, {D['bump_dz']:g} behind the peg"],
+         ["Click (detent)", f"two {D['beam_w']:g} wide spring beams, one on each side of each slot, freed by {D['slit_w']:g} U slits (fixed at the front end only). "
+                            f"Bumps R{D['bump_r']:g} at {B.DET_DZ:.2f} behind the peg, {D['travel']:g} into the shaft path. They push the shaft against the front stop and center it."],
+         ["Click force", f"about {DF['lock_N']:g} N to slide on and {DF['unlock_N']:g} N to slide off (all {2 * len(I.PEGS)} beams, PLA estimate); beam strain {DF['strain_pct']:g} %"],
          ["Keep clear", f"the peg heads as they slide; the BiBoard header in the cover slot (X {H['x0']:g}..{H['x1']:g}, Z {H['z0']:g}..{H['z1']:g}, top Y {H['top']:g})"],
          ["Size", f"the pod fits in Z {E['z'][0]:g}..{E['z'][1]:g}, |X| <= {E['half_w_low']:g}; outside that, check the legs and the head"],
          ], [30, 140])
-    img("keyhole.png", 1.0, "Left: keyhole and click beam in the add-on plate (top view). Right: the peg and the plate (side section).")
-    img("plan.png", 0.92, "Plan view: pegs (blue), drop-in holes (green), BiBoard header (red), pod size (gold).")
+    img("keyhole.png", 0.95, "Left: keyhole and click beams in the add-on plate (top view, locked). Right: the peg and the plate (side section).")
+    img("plan.png", 0.78, "Plan view: pegs (blue), drop-in holes (green), BiBoard header (red), pod size (gold).")
 
     h("2. Design an add-on")
     lst(["Start from cad/starter_plate.step. It has the keyholes and the click beams.",
@@ -247,10 +261,10 @@ def content():
          ["Nozzle", "220 C (PLA)", "220 C (PLA)"],
          ], [70, 50, 50])
     lst(["Material: PLA works. Use PETG for add-ons that you remove often or that get warm.",
-         "Standing on its end, the cover prints the pegs with layers along their length. This makes them strong.",
+         "Standing on its end, the cover prints the pegs with layers along their length. This makes them strong. The shaft and collar points are down, so they need no supports.",
          "The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at small teeth.",
          "In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.",
-         "The fits use 0.2 to 0.3 clearance. Calibrate your printer if the plate does not slide on."])
+         f"The fits use {I.KEY_SLOT_GAP:g} (slot), {I.KEY_HOLE_GAP:g} (drop-in hole) and {I.PEG_HEAD_Y0 - I.MOUNT_Y1:.1f} (under the heads) clearance. Calibrate your printer if the plate does not slide on."])
 
     h("4. Files")
     tbl([["File", "Content"],
@@ -274,7 +288,7 @@ def content():
          "when an add-on is on the robot.",
          "For this reason, the platform has no parts under the cover top. A cover that prints flat without supports "
          "needs pegs held from inside the cover, where the circuit is. A possible interface v2 with sockets in a thicker top avoids this."])
-    img("petoi_touch_areas.png", 0.6, "Bittle X V2 touch areas (red boxes). Image: Petoi, docs.petoi.com/extensible-modules/back-touch-sensor.")
+    img("petoi_touch_areas.png", 0.45, "Bittle X V2 touch areas (red boxes). Image: Petoi, docs.petoi.com/extensible-modules/back-touch-sensor.")
 
     h("6. License")
     p("The designs and this document are CC BY 4.0, and the code is MIT (Jeremy Collins). "
@@ -290,7 +304,7 @@ def interface_dict():
     d["frame"] = "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover"
     d["fit_sequence"] = f"place {I.SLIDE:g} mm forward (-Z) of the locked place, lower onto the pegs, slide {I.SLIDE:g} mm rearward (+Z) until the detents click"
     d["keyholes"] = [dict(peg=[x, z], slot=[[x, z], [x, z + I.SLIDE]], drop_in_center=[x, z + I.SLIDE],
-                          bump_center=[x + I.KEY_SLOT_W / 2 - I.DET["bump_in"] + I.DET["bump_r"], z + I.DET["bump_dz"]])
+                          bump_centers=[[x + B.DET_DX, z + B.DET_DZ], [x - B.DET_DX, z + B.DET_DZ]])
                      for x, z in I.PEGS]
     d["clearances"] = CHECKS["clearances"]
     return rnd(d)
