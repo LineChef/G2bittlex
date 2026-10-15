@@ -1,8 +1,8 @@
-# Bittle X Platform v3.0 - Interface Specification
+# Bittle X Platform v3.1 - Interface Specification
 
-Version 3.0, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm forward, and it clicks. To remove it, slide it 7 mm rearward and lift it. It comes off closed: the head is not in the way. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+Version 3.1, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm forward, and it clicks. To remove it, slide it 7 mm rearward and lift it. It comes off closed: the head is not in the way. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
 
-Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Print the cover and the add-on plates again.
+Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Version 3.1 adds a notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera cable). The pegs and the keyholes are the same as in 3.0. Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).
 
 ![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
 
@@ -78,7 +78,7 @@ Open items: the BiBoard header height is an estimate from photos. The legs, the 
 ## 5. Bittle X V2 back touch sensor
 
 1. On a Bittle X V2, the back touch sensor is a flexible circuit that is glued to the inside of the cover top. It has touch areas on the left, the right, the center and near the tail (docs.petoi.com/extensible-modules/back-touch-sensor).
-2. The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change. Move the circuit from the stock cover to cover_pegs in the same way as on the stock cover.
+2. The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change, except at the Grove notch at the front-left edge. Move the circuit from the stock cover to cover_pegs in the same way as on the stock cover.
 3. An add-on on the platform covers most of the touch areas. Disable the back touch mode (serial command Xb) when an add-on is on the robot.
 4. For this reason, the platform has no parts under the cover top. A cover that prints flat without supports needs pegs held from inside the cover, where the circuit is. A later interface with sockets in a thicker top can avoid this.
 

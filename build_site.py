@@ -91,7 +91,7 @@ INFO = {
                     attach="It is screwed to the Pi. The two boards go into the end grooves together."),
     "battery": dict(text="The 1200 mAh cell of the PiSugar 2, on the left side of the stack.",
                     attach="It is fixed to the PiSugar 2. It stands 1.5 mm above the peg heads."),
-    "pi_plugs": dict(text="The space for Dupont plugs on the 2x20 Pi header (header plastic 2.5 + plugs 14 mm). The real build uses only some pins.",
+    "pi_plugs": dict(text="The soldered 2x20 Pi header with Dupont housings on the 12 pins in use (pin map: the wiring blueprint).",
                      attach="Push the jumpers onto the Pi header before the stack goes in."),
     "amp": dict(text="NULLLAB NS4168 I2S amp, on edge along the left wall. Its parts face the battery.",
                 attach="Push its bottom edge down into the slot of the bar on the floor. Forks under the panel hold its top edge."),
@@ -99,13 +99,14 @@ INFO = {
                     attach="Push the ends of the ear plate down into the two side grooves, body to the rear."),
     "mic": dict(text="SPH0645 I2S mic board at the front wall, away from the speaker. The port faces 7 holes in the front face.",
                 attach="Push it down into the two grooves, port to the front."),
-    "header": dict(text="The 5-pin BiBoard header (GND, +5V, TX2, RX2) in the Pi slot of the cover. The height is an estimate.",
+    "header": dict(text="The 5-pin BiBoard header (TX2, RX2, GND, +5V, +5V) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
-    "bb_plug": dict(text="A straight Dupont plug on the BiBoard header, inside the right wall.",
+    "bb_plug": dict(text="Three straight Dupont plugs on the BiBoard header (TX2, RX2, GND), inside the right wall. +5V is not wired.",
                     attach="Plug it in from the top after the body is on the robot (the panel is off)."),
     "sd_card": dict(text="The microSD card. About 2.5 mm of it stands out of the holder at the front end of the Pi (not measured).",
                     attach="To change it, lift the stack out."),
     "wires": dict(text="The jumper wires (1.4 mm), on the routes that pod.py checks: no wire touches a printed part or another board. "
+                       "BCLK (pin 12) and LRCLK (pin 35) each go to a soldered splice (black sleeve) and on to the mic and the amp. "
                        "The jumpers are longer than shown: fold the slack into the right well.",
                   attach="Each jumper goes from its Pi header pin to the part. See the wiring table in the guide."),
     "wire_paths": dict(text="The free paths for the wires: the BiBoard wires in the right well, the I2S wires under the stack to the amp, "
@@ -131,27 +132,27 @@ STEPS = [
          text="The Bittle X without its back cover: the head is at the front, the tail at the rear. The BiBoard header stands up at the right side."),
     dict(title="Fit the platform", view="iso", show=["cover"], start={"cover": [0, 40, 0]},
          text="Fit the platform cover in place of the stock cover. It has 4 pegs on its top."),
-    dict(title="Put the body on", view="iso", show=["body"], start={"body": [0, 35, 7]}, end={"body": [0, 0, 7]},
+    dict(title="Put the body on", view="build", show=["body"], start={"body": [0, 35, 7]}, end={"body": [0, 0, 7]},
          text="Put the empty body on the pegs 7 mm behind its place, grille to the rear. "
               "The teardrop peg heads go through the teardrop holes. Turned the wrong way, the body does not go down."),
-    dict(title="Slide to lock", view="right", start={"body": [0, 0, 7]},
+    dict(title="Slide to lock", view="build", start={"body": [0, 0, 7]},
          text="Push the body 7 mm forward until it clicks (about 4 N). Two spring beams at each peg push the peg into a V stop, which centers it. "
               "The BiBoard header is now in the notch of the right well."),
-    dict(title="Speaker", view="rear", show=["speaker"], start={"speaker": [0, 40, 0]},
+    dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
-    dict(title="Mic", view="front", show=["mic"], start={"mic": [0, 40, 0]},
+    dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
          text="Push the mic board down into the two grooves at the front wall, port to the front."),
-    dict(title="Amp", view="left", show=["amp"], start={"amp": [0, 40, 0]},
+    dict(title="Amp", view="build", show=["amp"], start={"amp": [0, 40, 0]},
          text="Push the bottom edge of the amp down into the slot along the left wall, parts to the inside. "
-              "The I2S wires go under the stack: lay them across the floor behind the rear pegs first."),
-    dict(title="Pi stack", view="iso", show=STACK, start={k: [0, 45, 0] for k in STACK},
+              "Plug the amp cable in at the front end first. Lay it down the left front and across the floor in front of the front pegs, into the lanes of the right well."),
+    dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the jumpers onto the Pi header. Then push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front."),
-    dict(title="Wires", view="iso", show=["bb_plug", "wires"], start={"bb_plug": [0, 25, 0], "wires": [0, 25, 0]},
-         text="Reach into the right well and push the Dupont plugs onto the BiBoard header (GND, TX2, RX2). Fold the slack of the wires into the right well. "
+    dict(title="Wires", view="build", show=["bb_plug", "wires"], start={"bb_plug": [0, 25, 0], "wires": [0, 25, 0]},
+         text="Reach into the right well and push the Dupont plugs onto the BiBoard header (TX2, RX2, GND). Fold the slack of the wires into the right well. "
               "The checks keep every wire off the printed parts and the other boards."),
-    dict(title="Switch slider", view="iso", show=["switch"], start={"switch": [0, 25, 0]},
+    dict(title="Switch slider", view="build", show=["switch"], start={"switch": [0, 25, 0]},
          text="Put the switch slider on the PiSugar switch lever, fork down."),
-    dict(title="Panel", view="iso", show=["panel"], start={"panel": [0, 30, 0]},
+    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 30, 0]},
          text="Push the panel straight down until the 4 tabs click. The slider tab comes up through its slot. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue near the front is the PiSugar button. "
               "To open, lift the rear edge at the finger notch."),
@@ -181,7 +182,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.16 on Platform v3.0",
+        title="Bittle X Pi Add-on v0.16 on Platform v3.1",
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
         bounds=dict(x=[-40, 40], z=[-70, 80], y=[-12, 70]),
@@ -208,7 +209,7 @@ def main():
 HOME = os.path.join(PROJ, "site")
 LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
-    dict(key="platform", name="Bittle X Platform v3.0", dir="bittle_platform", zip="bittle_platform_v3.0.zip",
+    dict(key="platform", name="Bittle X Platform v3.1", dir="bittle_platform", zip="bittle_platform_v3.1.zip",
          pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
          text="The stock Petoi Bittle X back cover with 4 pegs on its top. Add-ons drop onto the pegs, "
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "

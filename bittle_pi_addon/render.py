@@ -123,6 +123,7 @@ JOBS = {
     # name: (show, cut, explode, camera, ortho)
     "02_addon": (ALL, None, 0, "0,-17.0,8,62,0,128,300", False),
     "04_top": (ALL, None, 0, "-2,-4.0,62,35,0,200,150", False),
+    "05_front_notch": (ALL, None, 0, "-4,30.0,30,78,0,200,150", False),
     "03_rear": (ALL, None, 0, "0,-17.0,8,62,0,312,300", False),
     "06_open": (OPEN, None, 0, "0,-17.0,8,48,0,150,280", False),
     "07_open_left": (OPEN, None, 0, "0,-17.0,8,48,0,215,280", False),

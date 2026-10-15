@@ -215,13 +215,16 @@ addEventListener("resize", resize);
 const VIEWS = {
   iso: [-230, 170, -230], front: [0, 20, -330], rear: [0, 20, 340],
   left: [-350, 20, 5], right: [350, 20, 5], top: [0, 400, 5.01],
+  build: [170, 312, -30],       // the build steps: one steep view from the right, into the open body
+  buildfront: [60, 300, 190],   // the same height, from the rear: the inside of the front wall (the mic)
 };
+const TARGETS = { build: [0, 42, 6], buildfront: [0, 38, -22] };
 // smooth camera moves
 let camAnim = null;
 function flyTo(pos, target, ms = 600) {
   camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), ms };
 }
-function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(0, 10, 0)); }
+function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(...(TARGETS[v] || [0, 10, 0]))); }
 
 const manifest = await (await fetch("manifest.json")).json();
 $("title").textContent = manifest.meta.title;

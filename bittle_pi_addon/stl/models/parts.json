@@ -79,7 +79,7 @@
  {
   "model": "biboard_plug",
   "sub": "housings",
-  "label": "Dupont plugs on the BiBoard header",
+  "label": "Dupont plugs on the BiBoard header (TX2, RX2, GND)",
   "file": "models/parts/biboard_plug__housings.stl",
   "color": "#3a3b40"
  },
@@ -176,37 +176,37 @@
  },
  {
   "model": "wires_uart",
+  "sub": "tx2",
+  "label": "uart wire TX2",
+  "file": "models/parts/wires_uart__tx2.stl",
+  "color": "#f2f2ef"
+ },
+ {
+  "model": "wires_uart",
+  "sub": "rx2",
+  "label": "uart wire RX2",
+  "file": "models/parts/wires_uart__rx2.stl",
+  "color": "#2e9b4f"
+ },
+ {
+  "model": "wires_uart",
   "sub": "gnd",
   "label": "uart wire GND",
   "file": "models/parts/wires_uart__gnd.stl",
   "color": "#1d1d1f"
  },
  {
-  "model": "wires_uart",
-  "sub": "tx",
-  "label": "uart wire TX > RX2",
-  "file": "models/parts/wires_uart__tx.stl",
-  "color": "#2e9b4f"
- },
- {
-  "model": "wires_uart",
-  "sub": "rx",
-  "label": "uart wire RX < TX2",
-  "file": "models/parts/wires_uart__rx.stl",
-  "color": "#f2f2ef"
- },
- {
   "model": "wires_amp",
-  "sub": "gnd",
-  "label": "amp wire GND",
-  "file": "models/parts/wires_amp__gnd.stl",
+  "sub": "g",
+  "label": "amp wire G",
+  "file": "models/parts/wires_amp__g.stl",
   "color": "#1d1d1f"
  },
  {
   "model": "wires_amp",
-  "sub": "5v",
-  "label": "amp wire 5V",
-  "file": "models/parts/wires_amp__5v.stl",
+  "sub": "v",
+  "label": "amp wire V",
+  "file": "models/parts/wires_amp__v.stl",
   "color": "#d83a34"
  },
  {
@@ -218,9 +218,9 @@
  },
  {
   "model": "wires_amp",
-  "sub": "lrclk",
-  "label": "amp wire LRCLK",
-  "file": "models/parts/wires_amp__lrclk.stl",
+  "sub": "lrc",
+  "label": "amp wire LRC",
+  "file": "models/parts/wires_amp__lrc.stl",
   "color": "#e8641b"
  },
  {
@@ -229,6 +229,13 @@
   "label": "amp wire DIN",
   "file": "models/parts/wires_amp__din.stl",
   "color": "#3a6fd8"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "sel",
+  "label": "mic wire SEL",
+  "file": "models/parts/wires_mic__sel.stl",
+  "color": "#7a7d85"
  },
  {
   "model": "wires_mic",
@@ -266,32 +273,18 @@
   "color": "#d83a34"
  },
  {
-  "model": "wires_camera",
-  "sub": "gnd",
-  "label": "camera wire GND",
-  "file": "models/parts/wires_camera__gnd.stl",
-  "color": "#1d1d1f"
- },
- {
-  "model": "wires_camera",
-  "sub": "3v3",
-  "label": "camera wire 3V3",
-  "file": "models/parts/wires_camera__3v3.stl",
-  "color": "#d83a34"
- },
- {
-  "model": "wires_camera",
-  "sub": "sda",
-  "label": "camera wire SDA",
-  "file": "models/parts/wires_camera__sda.stl",
-  "color": "#f2f2ef"
- },
- {
-  "model": "wires_camera",
-  "sub": "scl",
-  "label": "camera wire SCL",
-  "file": "models/parts/wires_camera__scl.stl",
+  "model": "wires_splice",
+  "sub": "bclk",
+  "label": "splice wire bclk",
+  "file": "models/parts/wires_splice__bclk.stl",
   "color": "#f0c419"
+ },
+ {
+  "model": "wires_splice",
+  "sub": "lrclk",
+  "label": "splice wire lrclk",
+  "file": "models/parts/wires_splice__lrclk.stl",
+  "color": "#e8641b"
  },
  {
   "model": "wires_speaker",
@@ -306,5 +299,12 @@
   "label": "speaker wire -",
   "file": "models/parts/wires_speaker__neg.stl",
   "color": "#1d1d1f"
+ },
+ {
+  "model": "wires_splice",
+  "sub": "sleeves",
+  "label": "solder splices (heat shrink)",
+  "file": "models/parts/wires_splice__sleeves.stl",
+  "color": "#2a2a2a"
  }
 ]

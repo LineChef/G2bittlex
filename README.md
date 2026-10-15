@@ -13,7 +13,8 @@ with 4 teardrop pegs, then put hardware on your robot without tools, glue or tap
 
 The platform is the stock Petoi back cover with 4 teardrop pegs on its flat top. It
 goes on the robot in place of the stock cover. The inside of the cover does
-not change, so the BiBoard and the touch sensor fit as before.
+not change, so the BiBoard and the touch sensor fit as before. A notch in the
+front-left edge lets the head camera plug out.
 
 - **Tool-free mount.** Put an add-on on the pegs, slide it 7 mm forward,
   and it clicks into place. Slide it rearward, away from the head, to remove

@@ -220,6 +220,25 @@ def starter_plate():
     return p
 
 
+def grove_notch():
+    """Cut through the cover shell at the front-left edge (v3.1): room for the BiBoard Grove plug and its cable."""
+    N = I.GROVE_NOTCH
+    (x0, x1), (z0, z1), r = N["x"], N["z"], 2.0           # round inside corners
+    return (box(x0, x1, 0.0, 40.0, z0, z1 - r) + box(x0 + r, x1 - r, 0.0, 40.0, z1 - r - 0.01, z1)
+            + cyl_y(x0 + r, z1 - r, 0.0, 40.0, r) + cyl_y(x1 - r, z1 - r, 0.0, 40.0, r))
+
+
+def grove_plug():
+    """Estimated space of the Grove plug and the cable bend, from the cover surface up to GROVE_PLUG y_top."""
+    G = I.GROVE_PLUG
+    return box(*G["x"], 10.0, G["y_top"], *G["z"])
+
+
+def cover_with_notch():
+    """The stock Petoi cover with the Grove notch."""
+    return MU.mesh_to_manifold(ref_tris(I.COVER_STL)) - to_m(grove_notch())
+
+
 def header_keepout():
     """BiBoard header + 0.4, swept SLIDE to the front (add-on frame), and the Dupont plug space."""
     H, S = I.HDR, I.SLOT
@@ -405,8 +424,7 @@ def main():
     export_step(plate, os.path.join(CAD, "starter_plate.step"))
 
     # ---- mesh parts
-    cover = MU.mesh_to_manifold(ref_tris(I.COVER_STL))
-    cover_pegs = cover + to_m(P)
+    cover_pegs = cover_with_notch() + to_m(P)
     plate_m = to_m(plate)
 
     # keep-out for add-on bodies, add-on frame at the locked position, swept over the slide
@@ -419,7 +437,7 @@ def main():
         h = hull_sweep(h, -I.SLIDE)
         heads = h if heads is None else heads + h
     hdr_m, plug_m = to_m(hdr_k), to_m(plug_k)
-    keepout = robot_sw + heads + hdr_m
+    keepout = robot_sw + heads + hdr_m + hull_sweep(to_m(grove_plug()), -I.SLIDE)
 
     parts = dict(cover_pegs=cover_pegs, starter_plate=plate_m)
     installed = dict(parts, keepout=keepout)
@@ -457,7 +475,7 @@ def main():
     rows.append(("cover_pegs_foot (print)", "loose_pieces", loose(footed)))
     ovh = {k: overhang_area(print_orient(k, M)) for k, M in parts.items()}
     ovh["cover_pegs_foot"] = overhang_area(footed)
-    ovh["cover_stock"] = overhang_area(print_orient("cover_stock", cover))
+    ovh["cover_stock"] = overhang_area(print_orient("cover_stock", MU.mesh_to_manifold(ref_tris(I.COVER_STL))))
     mass = {k: round(M.volume() * 1.24e-3, 1) for k, M in parts.items()}    # PLA, solid
     clear = dict(
         plate_to_collar=round(I.MOUNT_Y0 - I.PEG_COLLAR_Y1, 2),

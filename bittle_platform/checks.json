@@ -122,13 +122,13 @@
   ]
  ],
  "overhang_mm2": {
-  "cover_pegs": 198.61520385742188,
+  "cover_pegs": 177.87701416015625,
   "starter_plate": 0.0,
-  "cover_pegs_foot": 220.34149169921875,
+  "cover_pegs_foot": 199.60328674316406,
   "cover_stock": 198.61520385742188
  },
  "mass_g_pla_solid": {
-  "cover_pegs": 11.4,
+  "cover_pegs": 11.1,
   "starter_plate": 3.6
  },
  "clearances": {

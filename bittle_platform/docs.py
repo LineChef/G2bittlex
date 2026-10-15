@@ -1,4 +1,4 @@
-"""Bittle X platform v3.0: drawings, renders, interface.json, SPEC.md and the PDF.
+"""Bittle X platform v3.1: drawings, renders, interface.json, SPEC.md and the PDF.
 
 Run build.py first, then:  python docs.py
 README.md and bittle_platform_spec.pdf come from the same content list (CONTENT), so they agree.
@@ -219,7 +219,9 @@ def content():
       f"To remove it, slide it {I.SLIDE:g} mm rearward and lift it. It comes off closed: the head is not in the way. "
       "The keyholes have the shape of the pegs, so the add-on goes on in one direction only. "
       "No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.")
-    p("Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Print the cover and the add-on plates again.")
+    p("Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. "
+      "Version 3.1 adds a notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera cable). "
+      "The pegs and the keyholes are the same as in 3.0. Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).")
     img("r2_starter.png", 0.6, "The platform (dark) with the starter plate (yellow).")
 
     h("1. Key numbers")
@@ -284,7 +286,7 @@ def content():
     lst(["On a Bittle X V2, the back touch sensor is a flexible circuit that is glued to the inside of the cover top. "
          "It has touch areas on the left, the right, the center and near the tail "
          "(docs.petoi.com/extensible-modules/back-touch-sensor).",
-         "The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change. "
+         "The peg roots stop inside the 1.4 mm wall, so the inside of the cover does not change, except at the Grove notch at the front-left edge. "
          "Move the circuit from the stock cover to cover_pegs in the same way as on the stock cover.",
          "An add-on on the platform covers most of the touch areas. Disable the back touch mode (serial command Xb) "
          "when an add-on is on the robot.",

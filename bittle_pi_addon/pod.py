@@ -33,7 +33,7 @@ from build123d import Box, Cylinder, Pos, Rot, export_stl
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
-from bittle_platform import interface as PI          # platform v3.0: cover, pegs, keyholes
+from bittle_platform import interface as PI          # platform v3.1: cover, pegs, keyholes
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
@@ -59,7 +59,7 @@ RT = 4.0                    # round on the top edge; the last 45 deg of it is a 
 PANEL_T = 1.6
 PANEL_IN = TOP - PANEL_T    # 61.6, underside of the panel top
 
-# Pegs (on the cover) and keyholes (in the floor): platform interface v3.0
+# Pegs (on the cover) and keyholes (in the floor): platform interface v3.1
 PEGS = PI.PEGS
 SLIDE = PI.SLIDE            # the body drops on SLIDE rearward (+Z) of its place, then slides forward (-Z) to lock
 DET = PI.DET
@@ -169,9 +169,14 @@ LIPS_Z = [(-26.0, -16.0), (18.0, 26.0)]
 LIP = dict(t=1.2, y0=54.2, gap=0.15)
 # Finger notch in the rear wall under the seam: lift the rear edge of the panel here.
 NOTCH = dict(hw=7.0, h=1.5, d=1.0)
-# Camera cable: the Grove cable of the Petoi AI Vision Module comes along the side of the robot and
-# goes in through a notch at the base of the right wall (a matching notch on the left), to the Pi header.
+# Cable notches at the base of the side walls (both sides, the same): for an optional cable from outside,
+# for example the Grove cable of the Petoi AI Vision Module. The blueprint has no camera wires to the Pi.
 CAM_NOTCH = dict(z=(-15.0, -7.0), y1=28.6)
+# Front cable notches: the Grove cable of the head camera comes out under the front edge of the cover
+# (left side, photo reference/signal-2026-10-15-102120.jpeg) and runs up to the head. A 45 deg chamfer
+# across each front bottom corner of the body (the same on the right) gives it room. h = height at the front face.
+FRONT_NOTCH = dict(x=(12.5, 25.5), h=6.0, z1=-26.9)    # z1: rear end of the floor opening over the Grove plug (platform v3.1)
+FRONT_CABLE = dict(x=(-24.0, -14.0), y=(FLOOR_Y0, FLOOR_Y0 + 3.5), z=(Z0 - 3.0, Z0 + 2.0))   # cable space (check)
 # Grille in the rear face, mic holes in the front face
 GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6)
 
@@ -186,7 +191,7 @@ WIRE_PATHS = {
     "speaker: amp rear end to the speaker": [dict(x=(-24.5, -18.5), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
-    "camera: notch to the Pi header": [dict(x=(18.2, IN_A - 0.2), y=(FLOOR_Y1 + 0.1, 36.5), z=(-15.0, -9.0))],
+    "cable: right notch into the right well": [dict(x=(18.2, IN_A - 0.2), y=(FLOOR_Y1 + 0.1, 36.5), z=(-15.0, -9.0))],
 }
 WIRE_R = 0.7
 # Space for a finger tip over the BiBoard plug (panel off)
@@ -586,8 +591,14 @@ def build_body():
         B += keyhole_bump(px, pz)
     N = HDR_NOTCH
     B -= mbox(*N["x"], FLOOR_Y0 - 1, 30.0, *N["z"])                       # the BiBoard header comes up here
-    for sx in (-1, 1):                                                     # camera cable notches
+    for sx in (-1, 1):                                                     # cable notches
         B -= mbox(*sorted((sx * (IN_A - 2.0), sx * (A + 1))), FLOOR_Y0 - 1, CAM_NOTCH["y1"], *CAM_NOTCH["z"])
+    h = FRONT_NOTCH["h"]
+    tri = [(FLOOR_Y0 - 1, Z0 - 1), (FLOOR_Y0 + h + 1, Z0 - 1), (FLOOR_Y0 - 1, Z0 + h + 1)]     # 45 deg face
+    for sx in (-1, 1):
+        xs = sorted((sx * FRONT_NOTCH["x"][0], sx * FRONT_NOTCH["x"][1]))
+        B -= prism_x(tri, *xs)
+        B -= mbox(*xs, FLOOR_Y0 - 1, FLOOR_Y1 + 0.01, ZF_IN - 0.5, FRONT_NOTCH["z1"])     # floor opening over the Grove plug
     B -= pockets()
     nt = _cs([(NOTCH["hw"] + NOTCH["h"] * math.cos(t), SEAM + NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)]
              + [(-NOTCH["hw"] - NOTCH["h"] * math.cos(t), SEAM - NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)])
@@ -736,21 +747,49 @@ def rbox(axis, x0, x1, y0, y1, z0, z1, r, n=16):
     return m3.Manifold.batch_hull(cs)
 
 
-def chaikin(pts, k=2):
-    """Round the corners of a polyline (the end points stay)."""
-    P = np.asarray(pts, float)
-    for _ in range(k):
-        Q = [P[0]]
-        for a, b in zip(P[:-1], P[1:]):
-            Q += [0.75 * a + 0.25 * b, 0.25 * a + 0.75 * b]
-        Q.append(P[-1])
-        P = np.array(Q)
-    return P
+R_BEND = 2.0          # smallest bend radius of a jumper wire (silicone 26 AWG, 1.4 mm): about 1.4 x its size
+WIRE_PITCH = 1.5      # center distance of wires side by side
 
 
-def tube(pts, r=WIRE_R, smooth=2):
-    """A wire along a polyline: hulls of spheres at the points."""
-    P = chaikin(pts, smooth) if smooth else np.asarray(pts, float)
+def round_corners(pts, R=R_BEND, n=8):
+    """Polyline with each corner replaced by a circular arc of radius R. Where two corners need more than the
+    segment between them, both arcs get smaller. Returns (points, the smallest radius used)."""
+    P = [np.asarray(p, float) for p in pts]
+    P = [p for k, p in enumerate(P) if k == 0 or np.linalg.norm(p - P[k - 1]) > 1e-6]
+    m = len(P)
+    turn, t = [0.0] * m, [0.0] * m
+    for i in range(1, m - 1):
+        u, v = P[i] - P[i - 1], P[i + 1] - P[i]
+        turn[i] = math.acos(float(np.clip(np.dot(u, v) / np.linalg.norm(u) / np.linalg.norm(v), -1, 1)))
+        t[i] = R * math.tan(turn[i] / 2) if turn[i] > 1e-3 else 0.0
+    for i in range(m - 1):                                  # share each segment between its two corners
+        L = np.linalg.norm(P[i + 1] - P[i])
+        if t[i] + t[i + 1] > L:
+            k = L / (t[i] + t[i + 1])
+            t[i], t[i + 1] = t[i] * k, t[i + 1] * k
+    out, rmin = [P[0]], 1e9
+    for i in range(1, m - 1):
+        if t[i] < 1e-6:
+            out.append(P[i])
+            continue
+        u = (P[i] - P[i - 1]) / np.linalg.norm(P[i] - P[i - 1])
+        v = (P[i + 1] - P[i]) / np.linalg.norm(P[i + 1] - P[i])
+        r = t[i] / math.tan(turn[i] / 2)
+        rmin = min(rmin, r)
+        w = (v - u) / np.linalg.norm(v - u)
+        ctr = P[i] + w * (r / math.cos(turn[i] / 2))
+        a1, a2 = P[i] - u * t[i] - ctr, P[i] + v * t[i] - ctr
+        for sv in np.linspace(0, 1, n):
+            ang = turn[i] * sv
+            out.append(ctr + (math.sin(turn[i] - ang) * a1 + math.sin(ang) * a2) / math.sin(turn[i]))
+    out.append(P[-1])
+    out = [p for k, p in enumerate(out) if k == 0 or np.linalg.norm(p - out[k - 1]) > 1e-6]
+    return np.array(out), rmin
+
+
+def tube(pts, r=WIRE_R, rounded=True):
+    """A wire along a polyline: hulls of spheres at the points (corners rounded first)."""
+    P = round_corners(pts)[0] if rounded else np.asarray(pts, float)
     S = [m3.Manifold.sphere(r, 10).translate(list(p)) for p in P]
     return union([m3.Manifold.batch_hull([a, b]) for a, b in zip(S[:-1], S[1:])])
 
@@ -758,7 +797,7 @@ def tube(pts, r=WIRE_R, smooth=2):
 # Pi header: 2x20, pin 1 at the SD card end (front), odd pins in the inner row, even pins at the board edge (down).
 HDR_BASE_X = (PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 2.6)
 HOUSING_END = HDR_BASE_X[1] + 14.0                  # Dupont housing: 2.5 x 2.5 x 14
-EXIT_X = HOUSING_END + 1.5
+EXIT_X = HOUSING_END + 0.8                          # the wire leaves the housing straight for 0.8 mm
 
 
 def pin_yz(n):
@@ -767,7 +806,7 @@ def pin_yz(n):
 
 
 def bb_pin_z(k):
-    """BiBoard header pin k (0 = GND, 1 = +5V, 2 = TX2, 3 = RX2): order assumed from the front."""
+    """BiBoard header pin k, from the front: TX2, RX2, GND, +5V, +5V (wiring blueprint; the direction is not verified)."""
     return HDR["z0"] + 1.27 + 2.54 * k
 
 
@@ -776,60 +815,121 @@ AMP_PLUG_Y = [AMP_Y0 + AMP["h"] - v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G
 AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # front face of the I2S plug
 MIC_HOLE_Y = MIC["y0"] + MIC["l"] - 1.27                                      # solder holes along the top edge
 MIC_HOLE_X = [-6.35 + 2.54 * k for k in range(6)]                            # SEL, LRCL, DOUT, BCLK, GND, 3V
+# BCLK and LRCLK: one wire from Pi pin 12 (35) to a soldered splice, then one wire to the mic and one to the amp
+# (reference/g2-wiring-blueprint.html). The splices are vertical heat-shrink sleeves in the right well:
+# the Pi wire and the amp wire go into the bottom end, the mic wire into the top end.
+SPLICE = dict(bclk=(21.2, -2.0), lrclk=(22.7, 22.0), y=(39.0, 45.0), r=1.25)
+LRCL_LANE = 22.7      # the mic LRCL wire runs rearward in its own lane: in the flat cable it is above DOUT, but it leaves first
+# Lanes in the right well (X): the mic wires come down at MIC_LANE, the UART wires rise at UART_X,
+# the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES.
+MIC_LANE, UART_X, FLOOR_WIRE = 21.2, 26.0, FLOOR_Y1 + 0.75
+AMP_LANES = dict(DIN=22.2, LRC=23.6, BCLK=25.2, G=26.7)
+AMP_V_X = 21.4
 
 
-def to_pin(n, via):
-    """End of a wire route: via points, then straight into the housing of Pi pin n."""
+def into_pin(n):
+    """Last points of a route into the housing of Pi pin n: along -X out of the right well."""
     y, z = pin_yz(n)
-    return list(via) + [(EXIT_X + 0.8, y, z), (EXIT_X, y, z), (HOUSING_END, y, z)]
+    return [(EXIT_X, y, z), (HOUSING_END, y, z)]
 
 
-# Wires: (group, label, color, Pi pin, points from the far end to the Pi header). Pins: see the wiring table.
+def splice_end(t, top):
+    x, z = SPLICE[t]
+    return (x, SPLICE["y"][1] if top else SPLICE["y"][0], z)
+
+
+# Wires: (group, label, color, points from the far end to the Pi header or a splice).
+# Pin map: reference/g2-wiring-blueprint.html (the user's wiring blueprint).
 def wire_routes():
     W = []
-    # UART to the BiBoard: Pi GND 6 -> GND, TX 8 -> RX2, RX 10 -> TX2. Up from the header plugs, over, down into the BiBoard plugs.
-    for i, (n, k, col, lab) in enumerate(((6, 0, "#1d1d1f", "GND"), (8, 3, "#2e9b4f", "TX > RX2"), (10, 2, "#f2f2ef", "RX < TX2"))):
+    # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Out of the housing, along the floor of the right
+    # well to the right wall, up, rearward over the BiBoard plugs, down into them. The order turns over (pin 6 is the
+    # front pin and goes to the rear plug), so each wire runs rearward at its own height.
+    for n, k, col, lab, lvl in ((10, 0, "#f2f2ef", "TX2", 45.6), (8, 1, "#2e9b4f", "RX2", 47.2), (6, 2, "#1d1d1f", "GND", 48.8)):
         y, z = pin_yz(n)
         zb = bb_pin_z(k)
-        pts = [(BB_X, BB_PLUG["y"][1], zb), (BB_X, 46.5 + i, zb), (22.0, 50.5 - i, (z + zb) / 2 + 2)]
-        W.append(("uart", lab, col, to_pin(n, pts)))
-    # I2S + power to the amp: from the I2S plug at the front end of the amp, down to the floor, across under the
-    # stack in front of the front pegs, up the right well to the header.
-    for i, (n, col, lab) in enumerate(((9, "#1d1d1f", "GND"), (2, "#d83a34", "5V"), (12, "#f0c419", "BCLK"),
-                                       (35, "#e8641b", "LRCLK"), (40, "#3a6fd8", "DIN"))):
-        y, z = pin_yz(n)
-        zc = -19.2 - 1.6 * i
-        pts = [(-23.2, AMP_PLUG_Y[i], AMP_PLUG_Z0), (-23.2, AMP_PLUG_Y[i], -14.6), (-21.0, 28.3, zc), (-14.0, 28.3, zc),
-               (19.0, 28.3, zc), (20.6, 28.6, zc + 1.0), (20.6, y - 1.0, z)]
-        W.append(("amp", lab, col, to_pin(n, pts)))
-    # Mic: from the solder holes on the back face, up in front of the front post, over it, into the right well.
-    for k, n, col, lab in ((1, 35, "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"), (3, 12, "#f0c419", "BCLK"),
-                           (4, 14, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
-        y, z = pin_yz(n)
+        pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
+        W.append(("uart", lab, col, pts))
+    # Amp: a flat cable from the I2S plug at the front end of the amp. Forward, down to the floor (the cable turns
+    # over: G is the front wire on the floor), across under the stack in front of the front pegs, then each wire
+    # runs rearward in its own lane on the floor of the right well and comes up at its pin or splice.
+    order = ("G", "V", "BCLK", "LRC", "DIN")
+    for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#f0c419", "#e8641b", "#3a6fd8"))):
+        zf = -17.0 - 1.6 * (4 - i)
+        start = [(-23.2, AMP_PLUG_Y[i], AMP_PLUG_Z0), (-23.2, AMP_PLUG_Y[i], zf), (-23.2, FLOOR_WIRE, zf)]
+        if lab == "V":                                         # 5V: pin 2, at the front
+            y, z = pin_yz(2)
+            pts = start + [(AMP_V_X, FLOOR_WIRE, zf), (AMP_V_X, y, z)] + into_pin(2)
+        else:
+            xl = AMP_LANES[lab]
+            if lab in ("BCLK", "LRC"):                         # up into the bottom of the splice
+                t = "bclk" if lab == "BCLK" else "lrclk"
+                sx, sz = SPLICE[t]
+                y0 = SPLICE["y"][0]
+                zl = sz - 1.0 if lab == "LRC" else sz
+                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, zl), (xl, y0 - 4.0, zl), (sx + 0.6, y0 - 1.5, sz),
+                               splice_end(t, False)]
+            else:
+                n = 14 if lab == "G" else 40
+                y, z = pin_yz(n)
+                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z), (xl, y, z)] + into_pin(n)
+        W.append(("amp", lab, col, pts))
+    # Mic: from the solder holes along its top edge (back face), up in front of the front post as a flat cable,
+    # to the right over the stack front end (each wire at its own height), rearward down the right well at
+    # MIC_LANE. The lowest wire leaves first: 3V (pin 1), GND (pin 9), BCLK (splice), LRCL (splice), DOUT (pin 38),
+    # SEL (pin 39, to GND: left channel).
+    for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
+                           (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
         x = MIC_HOLE_X[k]
-        pts = [(x, MIC_HOLE_Y, MIC_Z[1]), (x, MIC_HOLE_Y, -33.0), (x, 51.4, -33.0), (8.2 + 0.5 * k, 52.6, -30.3),
-               (21.0 - 0.5 * k, 46.0, -24.0), (21.0, y + 2.0, z)]
-        W.append(("mic", lab, col, to_pin(n, pts)))
-    # Camera (Grove): in through the right notch on the floor, up to the header. Outside, it goes along the robot side.
-    for i, (n, col, lab) in enumerate(((20, "#1d1d1f", "GND"), (17, "#d83a34", "3V3"), (3, "#f2f2ef", "SDA"), (5, "#f0c419", "SCL"))):
+        lvl = 46.5 + WIRE_PITCH * (5 - k)
+        zb = MIC_Z[0] + 1.6 + WIRE_R                       # the wires lie on the back face: bend them before soldering
+        lane = LRCL_LANE if lab == "LRCL" else MIC_LANE
+        pts = [(x, MIC_HOLE_Y, zb), (x, lvl, zb), (lane, lvl, zb)]
+        if isinstance(t, str):
+            sx, sz = SPLICE[t]
+            pts += [(lane, lvl, sz), splice_end(t, True)]
+        else:
+            y, z = pin_yz(t)
+            pts += [(lane, lvl, z), (lane, y, z)] + into_pin(t)
+        W.append(("mic", lab, col, pts))
+    # The Pi end of each splice: pin 12 (GPIO18, BCLK) and pin 35 (GPIO19, LRCLK), into the bottom of the sleeve.
+    # It runs 2.5 mm over the other housing wires (pin 14 at Y 32.2).
+    for t, n, col in (("bclk", 12, "#f0c419"), ("lrclk", 35, "#e8641b")):
         y, z = pin_yz(n)
-        zc = CAM_NOTCH["z"][1] - 1.5 - 1.6 * i
-        pts = [(36.0, 23.5, zc), (31.5, 27.3, zc), (27.6, 27.6, zc), (25.2, 28.4, zc), (22.6, 28.6, zc), (21.4, y - 1.5, z)]
-        W.append(("camera", lab, col, to_pin(n, pts)))
+        sx, sz = SPLICE[t]
+        if t == "bclk":         # rearward along Z at Y 36.4, 4 mm over the wire of pin 14
+            pts = [splice_end(t, False), (sx, 36.4, sz), (sx, 36.4, z), (sx, y, z)] + into_pin(n)
+        else:
+            pts = [splice_end(t, False), (sx, y, z)] + into_pin(n)
+        W.append(("splice", t, col, pts))
     return W
 
 
+def parallel_pair(center, gap, n0):
+    """Two wires side by side along a center line, the offset carried along the line (no twist, no crossing)."""
+    C = round_corners(center, R_BEND + gap)[0]
+    T = np.gradient(C, axis=0)
+    T[np.linalg.norm(T, axis=1) < 1e-9] = (0, 0, 1)
+    T /= np.linalg.norm(T, axis=1)[:, None]
+    nrm = np.asarray(n0, float)
+    out_a, out_b = [], []
+    for i, p in enumerate(C):
+        nrm = nrm - np.dot(nrm, T[i]) * T[i]
+        nrm /= np.linalg.norm(nrm)
+        out_a.append(p + nrm * gap / 2)
+        out_b.append(p - nrm * gap / 2)
+    return np.array(out_a), np.array(out_b)
+
+
 def speaker_leads():
-    """The two speaker leads: from the top of the speaker body, over the ear plate, down the left gallery
-    into the 2-pin plug at the rear end of the amp."""
-    out = []
+    """The speaker lead pair: from the 2-pin plug at the rear end of the amp, up the left gallery, over the ear
+    plate, into the top of the speaker body."""
     zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
-    for i, (col, lab) in enumerate((("#d83a34", "+"), ("#1d1d1f", "-"))):
-        y_p = AMP_Y0 + AMP["h"] - 12.05 + (i - 0.5) * 2.0
-        pts = [(-23.2, y_p, zp), (-23.2, y_p, zp + 1.8), (-20.6, 51.5, 34.7), (-15.0, 59.8 - 0.0 * i, 35.2 + 0.0 * i),
-               (-11.0 + 1.6 * i, 59.8, 41.2), (-10.0 + 1.6 * i, 59.3, 43.2), (-10.0 + 1.6 * i, SPK_Y0 + SPK["d"] - 0.5, 44.0)]
-        out.append(("speaker", lab, col, pts))
-    return out
+    yc = AMP_Y0 + AMP["h"] - 12.05
+    center = [(-23.2, yc, zp), (-23.2, yc, 33.6), (-23.2, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, 41.8),
+              (-11.0, SPK_Y0 + SPK["d"] - 0.5, 44.0)]
+    a, b = parallel_pair(center, 2.0, (0, 1, 0))
+    return [("speaker", "+", "#d83a34", a), ("speaker", "-", "#1d1d1f", b)]
 
 
 def build_models():
@@ -874,8 +974,8 @@ def build_models():
     hdr -= union([mbox(BB_X - 0.5, BB_X + 0.5, HDR["top"] - 3.0, HDR["top"] + 1, bb_pin_z(k) - 0.5, bb_pin_z(k) + 0.5) for k in range(5)])
     add("biboard_header", "header", "BiBoard 5-pin header (est. height)", hdr, "#0d0d0d")
     bb = union([rbox("y", BB_X - 1.25, BB_X + 1.25, BB_PLUG["y"][0], BB_PLUG["y"][1], bb_pin_z(k) - 1.25, bb_pin_z(k) + 1.25, 0.25, 8)
-                for k in (0, 2, 3)])
-    add("biboard_plug", "housings", "Dupont plugs on the BiBoard header", bb, "#3a3b40")
+                for k in (0, 1, 2)])
+    add("biboard_plug", "housings", "Dupont plugs on the BiBoard header (TX2, RX2, GND)", bb, "#3a3b40")
     # NS4168 amp (NULLLAB photo and drawing): u along the board from the front (I2S) end, v down from the top edge
     L = AMP_L
     x0, x1 = AMP_X
@@ -934,11 +1034,38 @@ def build_models():
     # wires
     groups = {}
     for g, lab, col, pts in W + speaker_leads():
-        T = add(f"wires_{g}", lab.split()[0].lower().replace("+", "pos").replace("-", "neg"), f"{g} wire {lab}", tube(pts), col)
+        T = add(f"wires_{g}", lab.split()[0].lower().replace("+", "pos").replace("-", "neg"), f"{g} wire {lab}",
+                tube(pts, rounded=(g != "speaker")), col)
         groups[g] = groups.get(g, []) + [T]
+    sleeves = union([mcyl("y", *SPLICE["y"], SPLICE["r"], SPLICE[t][0], SPLICE[t][1], 16) for t in ("bclk", "lrclk")])
+    groups["splice"].append(add("wires_splice", "sleeves", "solder splices (heat shrink)", sleeves, "#2a2a2a"))
     for g, Ts in groups.items():
         models[f"wires_{g}"] = union(Ts)
     return models, D
+
+
+def wire_report():
+    """Each wire: length and smallest bend radius; and every pair of wires that pass through each other
+    (outside the splices, where wires join)."""
+    import itertools
+    rows, tubes = [], []
+    for g, lab, col, pts in wire_routes() + speaker_leads():
+        if g == "speaker":
+            P, rmin = np.asarray(pts, float), R_BEND + 1.0 - 1.0      # the pair: center radius R_BEND + 2, inner wire R_BEND + 1
+        else:
+            P, rmin = round_corners(pts)
+        L = float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())
+        rows.append(dict(group=g, wire=lab, length_mm=round(L, 1), min_bend_r=round(min(rmin, 99), 2), color=col,
+                         points=np.round(P, 2).tolist()))
+        tubes.append((f"{g} {lab}", tube(pts, rounded=(g != "speaker"))))
+    joints = union([mcyl("y", SPLICE["y"][0] - 4.0, SPLICE["y"][1] + 3.0, SPLICE["r"] + 2.5, SPLICE[t][0], SPLICE[t][1], 16)
+                    for t in ("bclk", "lrclk")])
+    cross = []
+    for (a, A), (b, B) in itertools.combinations(tubes, 2):
+        v = ((A ^ B) - joints).volume()
+        if v > 0.02:
+            cross.append((a, b, round(v, 2)))
+    return rows, cross
 
 
 def real_models():
@@ -980,8 +1107,8 @@ def robot_parts():
 
 
 def build_all():
-    cover = mesh_to_manifold(load_stl(os.path.join(PREF, COVER_STL)))
-    return dict(cover_pegs=cover + b3d_to_manifold(build_pegs()), pod_body=build_body(), pod_panel=build_panel(),
+    from bittle_platform import build as BP
+    return dict(cover_pegs=BP.cover_with_notch() + b3d_to_manifold(build_pegs()), pod_body=build_body(), pod_panel=build_panel(),
                 pod_switch=build_switch())
 
 
@@ -991,10 +1118,10 @@ def wire_paths():
 
 # Endpoints of each wire path: these models may be in it.
 PATH_ENDS = {"uart": ("pi_plugs", "biboard_plug", "biboard_header"), "i2s": ("pi_plugs", "amp_ns4168"),
-             "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker"), "camera": ("pi_plugs",)}
+             "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker"), "cable": ("pi_plugs",)}
 # Each wire group starts and ends in these parts.
 WIRE_ENDS = {"wires_uart": ("pi_plugs", "biboard_plug"), "wires_amp": ("pi_plugs", "amp_ns4168"),
-             "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_camera": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168")}
+             "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_splice": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168")}
 
 
 def check(parts, models, robot):
@@ -1082,6 +1209,12 @@ def check(parts, models, robot):
             rows.append((f"wires {key}", b, vol(W, parts[b])))
         others = union([M for m, M in models.items() if m not in PATH_ENDS[key] and not m.startswith("wires_")])
         rows.append((f"wires {key}", "other parts", vol(W, others)))
+    G = PI.GROVE_PLUG
+    plug = mbox(*G["x"], 10.0, G["y_top"], *G["z"])
+    rows.append(("Grove plug space (max over the slide)", "pod_body",
+                 max(vol(parts["pod_body"].translate([0, 0, s_]), plug) for s_ in (0.0, 1.0, 2.0, 3.5, 5.0, SLIDE))))
+    C = mbox(*FRONT_CABLE["x"], *FRONT_CABLE["y"], *FRONT_CABLE["z"])
+    rows.append(("camera cable space, front left", "pod_body", vol(C, parts["pod_body"])))
     F = mbox(*FINGER["x"], *FINGER["y"], *FINGER["z"])
     rows.append(("finger over the BiBoard plug", "pod_body", vol(F, parts["pod_body"])))
     rows.append(("finger over the BiBoard plug", "other parts", vol(F, union([M for m, M in models.items()
@@ -1216,6 +1349,11 @@ def main(fast=False):
     json.dump(disp, open(os.path.join(OUT, "models", "parts.json"), "w"), indent=1)       # display: colored sub-parts
     save_stl(union(list(wire_paths().values())), os.path.join(OUT, "models", "wire_paths.stl"))      # display only
     rows = check(parts, models, robot)
+    wires, cross = wire_report()
+    rows.append(("wires: pairs that pass through each other", "-", float(len(cross))))
+    rows.append((f"wires: bends under {R_BEND - 0.05:.2f} mm radius", "-", float(sum(w["min_bend_r"] < R_BEND - 0.05 for w in wires))))
+    json.dump(dict(wires=wires, crossings=cross, r_bend=R_BEND, wire_d=2 * WIRE_R), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
+    print("wires: longest", max(w["length_mm"] for w in wires), "mm; smallest bend", min(w["min_bend_r"] for w in wires), "mm; crossings", len(cross))
     bal = balance(parts, models)
     snap = snap_force()
     clicks = BP.detent_force()

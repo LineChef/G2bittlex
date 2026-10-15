@@ -15,7 +15,7 @@ Frame (the Petoi reference STL frame), units mm:
   Origin: on the robot center line, at the middle of the cover length.
 """
 
-VERSION = "3.0"
+VERSION = "3.1"
 
 # --------------------------------------------------------------------------
 # Stock cover (measured from the Petoi STL)
@@ -30,6 +30,11 @@ SLOT = dict(x0=24.25, x1=27.75, y0=19.5, z0=11.75, z1=25.75)   # Pi slot in the 
 # BiBoard 5-pin female header in the slot (GND, +5V, TX2, RX2, ..). Height is a photo estimate.
 HDR = dict(x0=24.73, x1=27.27, z0=12.4, z1=25.1, top=29.1)
 PLUG_TOP = 48.0                 # Y of free space for straight Dupont plugs and wires on the header
+# v3.1: notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera
+# cable) and its cable. The plug is a little inside the front edge (user photo, not measured): GROVE_PLUG is
+# an estimate of its space above the cover. Add-ons keep out of it (keepout.stl has it, swept over the slide).
+GROVE_NOTCH = dict(x=(-25.5, -12.5), z=(-38.0, -26.45))
+GROVE_PLUG = dict(x=(-25.0, -13.0), y_top=30.0, z=(-37.0, -27.0))
 
 # --------------------------------------------------------------------------
 # Pegs (part of the platform)

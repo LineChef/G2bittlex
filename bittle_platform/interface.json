@@ -25,6 +25,15 @@
   "hug_gap": 0.4
  },
  "E_PLA": 2400.0,
+ "GROVE_NOTCH": {
+  "x": [-25.5, -12.5],
+  "z": [-38.0, -26.45]
+ },
+ "GROVE_PLUG": {
+  "x": [-25.0, -13.0],
+  "y_top": 30.0,
+  "z": [-37.0, -27.0]
+ },
  "HDR": {
   "x0": 24.73,
   "x1": 27.27,
@@ -67,7 +76,7 @@
   "z1": 25.75
  },
  "TIP_DEG": 45.0,
- "VERSION": "3.0",
+ "VERSION": "3.1",
  "frame": "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover",
  "fit_sequence": "place 7 mm rearward (+Z) of the locked place, lower onto the pegs, slide 7 mm forward (-Z) until the detents click; remove: slide 7 mm rearward and lift",
  "keyholes": [
@@ -229,13 +238,13 @@
    ]
   ],
   "overhang_mm2": {
-   "cover_pegs": 198.615,
+   "cover_pegs": 177.877,
    "starter_plate": 0.0,
-   "cover_pegs_foot": 220.341,
+   "cover_pegs_foot": 199.603,
    "cover_stock": 198.615
   },
   "mass_g_pla_solid": {
-   "cover_pegs": 11.4,
+   "cover_pegs": 11.1,
    "starter_plate": 3.6
   },
   "clearances": {

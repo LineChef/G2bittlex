@@ -97,7 +97,7 @@
   ],
   [
    "cover_pegs",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -172,8 +172,8 @@
   ],
   [
    "pod_body",
-   "wires_camera",
-   0.00016397475504835923
+   "wires_splice",
+   0.0
   ],
   [
    "pod_body",
@@ -247,13 +247,13 @@
   ],
   [
    "pod_panel",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
    "pod_panel",
    "wires_speaker",
-   0.0006296670850060582
+   0.0
   ],
   [
    "pod_switch",
@@ -322,7 +322,7 @@
   ],
   [
    "pod_switch",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -607,7 +607,7 @@
   ],
   [
    "pizero",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -672,7 +672,7 @@
   ],
   [
    "pisugar2",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -732,7 +732,7 @@
   ],
   [
    "battery",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -787,7 +787,7 @@
   ],
   [
    "sd_card",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -857,7 +857,7 @@
   ],
   [
    "biboard_header",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -892,7 +892,7 @@
   ],
   [
    "biboard_plug",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -927,7 +927,7 @@
   ],
   [
    "speaker",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -947,7 +947,7 @@
   ],
   [
    "amp_ns4168",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -962,7 +962,7 @@
   ],
   [
    "mic_sph0645",
-   "wires_camera",
+   "wires_splice",
    0.0
   ],
   [
@@ -1166,67 +1166,67 @@
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "cover_pegs",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "shoulder_r",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "shoulder_l",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "front_plate",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "head",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "neck_mount",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "rear_plate",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "hip_servos",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "tail",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "leg_lf",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "leg_rf",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "leg_lr",
    0.0
   ],
   [
-   "wires_camera",
+   "wires_splice",
    "leg_rr",
    0.0
   ],
@@ -1548,7 +1548,7 @@
   [
    "panel close (max over 12 mm down)",
    "body + parts",
-   0.0006296670850061276
+   0.0
   ],
   [
    "switch slider -2mm",
@@ -1691,23 +1691,33 @@
    0.0
   ],
   [
-   "wires camera",
+   "wires cable",
    "pod_body",
    0.0
   ],
   [
-   "wires camera",
+   "wires cable",
    "pod_panel",
    0.0
   ],
   [
-   "wires camera",
+   "wires cable",
    "pod_switch",
    0.0
   ],
   [
-   "wires camera",
+   "wires cable",
    "other parts",
+   0.0
+  ],
+  [
+   "Grove plug space (max over the slide)",
+   "pod_body",
+   0.002531184177197153
+  ],
+  [
+   "camera cable space, front left",
+   "pod_body",
    0.0
   ],
   [
@@ -1778,6 +1788,16 @@
   [
    "plug charge",
    "pod_switch",
+   0.0
+  ],
+  [
+   "wires: pairs that pass through each other",
+   "-",
+   0.0
+  ],
+  [
+   "wires: bends under 1.95 mm radius",
+   "-",
    0.0
   ]
  ],
@@ -1863,20 +1883,20 @@
   }
  },
  "balance": {
-  "mass_g": 116.5,
+  "mass_g": 115.8,
   "com": [
    -2.6,
-   43.9,
-   13.1
+   44.0,
+   13.5
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 32.7,
+    "g": 32.0,
     "com": [
      -0.3,
-     37.4,
-     9.8
+     37.6,
+     10.8
     ]
    },
    {
@@ -1955,9 +1975,9 @@
     "name": "pi_plugs",
     "g": 3.0,
     "com": [
-     8.3,
+     7.9,
      33.3,
-     -1.4
+     1.2
     ]
    },
    {
@@ -1966,7 +1986,7 @@
     "com": [
      26.0,
      36.1,
-     17.9
+     16.2
     ]
    }
   ]
