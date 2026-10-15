@@ -78,7 +78,9 @@ def keep_zone(px, pz):
 # rev 0.15 (FLAT_*), then turned with STAND.
 FLAT_GPIO_X, FLAT_Z_CSI, FLAT_DY = -16.5, -16.0, 45.0
 FLAT_Z_SD = FLAT_Z_CSI + 65.0
-PI_PCB_TOP_X = 1.5                         # the Pi component face
+# The stack sits STACK_DX right of center, so the battery is nearer the center line. The Pi plugs end at X 18.0.
+STACK_DX = 4.9
+PI_PCB_TOP_X = 1.5 + STACK_DX              # the Pi component face
 STACK_Y0 = 30.0                            # GPIO edge of the boards (2.5 over the floor)
 STACK_ZF = -29.2                           # SD end of the boards (front)
 STACK_ZR = STACK_ZF + 65.0                 # CSI end (rear); the CSI connector stands 0.9 behind it
@@ -86,27 +88,30 @@ STAND = np.array([[0, 1, 0, PI_PCB_TOP_X - (FLAT_DY + 0.8)],
                   [1, 0, 0, STACK_Y0 - FLAT_GPIO_X],
                   [0, 0, -1, STACK_ZF + FLAT_Z_SD],
                   [0, 0, 0, 1]], dtype=float)
-BAT = dict(x=(-15.2, -5.2), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=(STACK_ZF + 4.5, STACK_ZF + 60.5))   # PiSugar repo batt-1200
-PCB_X = (-2.3, 1.5)                        # PiSugar PCB back face .. Pi PCB component face
+# A pin-fin heatsink on the SoC of the Pi (user photo). Its size is an estimate: 14 x 14 mm, 6.5 mm high.
+HEATSINK = dict(x0=PI_PCB_TOP_X + 1.3, y=(40.0, 54.0), z=(STACK_ZF + 17.8, STACK_ZF + 31.8), base=1.5, h=6.5, n=5, pin=1.6)
+BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=(STACK_ZF + 4.5, STACK_ZF + 60.5))   # PiSugar repo batt-1200
+PCB_X = (-2.3 + STACK_DX, 1.5 + STACK_DX)  # PiSugar PCB back face .. Pi PCB component face
 # The user's Pi has a soldered 2x20 male header with Dupont jumpers on it (photos reference/signal-*.jpeg).
 HDR_ZC = STACK_ZF + 32.5                   # header center along the board
-PI_PLUGS = dict(x=(PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 0.1 + 2.5 + 14.0), y=(STACK_Y0 + 0.96, STACK_Y0 + 6.04),
-                z=(HDR_ZC - 25.4, HDR_ZC + 25.4))     # header plastic 2.5 + plug housings 14; the model PCB face is at X 1.6
+DUPONT_L = 10.0       # the Dupont housing on a jumper end (user measurement); header pins 11.64 mm long, 2.5 mm plastic
+PI_PLUGS = dict(x=(PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 0.1 + 2.5 + DUPONT_L), y=(STACK_Y0 + 0.96, STACK_Y0 + 6.04),
+                z=(HDR_ZC - 25.4, HDR_ZC + 25.4))     # header plastic 2.5 + plug housings; the model PCB face is 0.1 over PI_PCB_TOP_X
 # End posts: vertical grooves for the two PCB ends; the bottom of the groove is the stop.
-POST = dict(x=(-4.6, 5.1), top=50.0, clr=0.25, depth=2.15)
-POST_F = (STACK_ZF - 2.8, STACK_ZF + POST["depth"] + 0.1)     # front post: the SD card stands out about 2.5 in front of the board
+POST = dict(x=(-4.6 + STACK_DX, 5.1 + STACK_DX), top=50.0, clr=0.25, depth=2.15)
+POST_F = (STACK_ZF - 0.75, STACK_ZF + POST["depth"] + 0.1)    # front post: short in Z, the mic header is in front of it; the SD card goes through it
 POST_R = (STACK_ZR - 2.4, STACK_ZR + 2.0)                     # rear post: the CSI connector stands out 0.9
-SD = dict(x=(1.3, 3.35), y=(34.75, 55.25))                    # SD holder on the Pi component face (model) + clearance
-SD_CARD = dict(x=(1.3, 3.1), y=(39.0, 52.0), out=2.9)         # card: 11 wide, about 2.5 out of the holder (not measured)
-CSI = dict(x=(0.0, 3.05), y=(33.5, 56.5), out=1.15)           # CSI connector (model) + clearance
+SD = dict(x=(1.3 + STACK_DX, 3.35 + STACK_DX), y=(34.75, 55.25))                    # SD holder on the Pi component face (model) + clearance
+SD_CARD = dict(x=(1.3 + STACK_DX, 3.1 + STACK_DX), y=(39.0, 52.0), out=2.9)         # card: 11 wide, about 2.5 out of the holder (not measured)
+CSI = dict(x=(0.0 + STACK_DX, 3.05 + STACK_DX), y=(33.5, 56.5), out=1.15)           # CSI connector (model) + clearance
 
 # Ports (from the models): PiSugar charge, button, switch; Pi power, data USB, mini-HDMI. All up.
 # The Pi power port and the PiSugar charge port are side by side: plug in one of them at a time.
 PORT_PLUGS = dict(                 # (x center, z center, x size, z size) of the plug body
-    hdmi=(3.25, STACK_ZF + 12.65, 8.5, 14.0),
-    pi_usb=(2.9, STACK_ZF + 41.6, 7.5, 11.0),
-    pi_power=(2.9, STACK_ZF + 54.1, 7.5, 11.0),
-    charge=(-3.6, STACK_ZF + 53.7, 8.0, 12.0),
+    hdmi=(3.25 + STACK_DX, STACK_ZF + 12.65, 8.5, 14.0),
+    pi_usb=(2.9 + STACK_DX, STACK_ZF + 41.6, 7.5, 11.0),
+    pi_power=(2.9 + STACK_DX, STACK_ZF + 54.1, 7.5, 11.0),
+    charge=(-3.6 + STACK_DX, STACK_ZF + 53.7, 8.0, 12.0),
 )
 PORT_TOP = 61.3                    # highest port face
 # Port openings in the panel: each one is the plug body + PORT_CLR, with round corners and a 45 deg
@@ -118,26 +123,29 @@ FORK = dict(len=2.0, lip=1.85, clr_y=0.1)
 # Power switch: the PiSugar slide switch lever (model: X -3.66..-2.66, Y 59.5..60.9, 1.3 long in Z) is
 # 0.9 above the board edge. A slider part rests on it: a fork goes over the lever, a 5.5 x 5 tab stands
 # 2 mm out of a slot in the panel. The lever travel is not measured: the slot gives +-2.0.
-SW_LEVER = dict(x=(-3.66, -2.66), y=(59.5, 60.9), z=(STACK_ZF + 12.1, STACK_ZF + 13.4))
-SW = dict(zc=STACK_ZF + 12.75, travel=2.0, body_x=(-12.0, -2.45), body_y=(60.15, 61.45), body_hz=2.45,
-          notch_x=(-3.9, -2.4), notch_hz=0.85, notch_y=61.0,
-          tab_x=(-9.9, -4.6), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.1)
+SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=(STACK_ZF + 12.1, STACK_ZF + 13.4))
+SW = dict(zc=STACK_ZF + 12.75, travel=2.0, body_x=(-12.0 + STACK_DX, -2.45 + STACK_DX), body_y=(60.15, 61.45), body_hz=2.45,
+          notch_x=(-3.9 + STACK_DX, -2.4 + STACK_DX), notch_hz=0.85, notch_y=61.0,
+          tab_x=(-9.9 + STACK_DX, -4.6 + STACK_DX), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.1)
 # Button: a spring tongue in the panel top over the PiSugar button (model: X -3.8..-2.8, top Y 60.2).
 # The tongue is 1.0 thick (thinned from below). An arm under its free end stands 0.2 over the button.
-BTN = dict(x=(-10.5, -4.5), z=(6.5, 16.5), t=1.0, slit=0.6, cap=(-3.8, -2.8, 12.89, 14.75, 60.2),
-           arm_x=(-6.5, -2.5), arm_z=(12.8, 14.8), gap=0.2, press=0.6)
+BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(6.5, 16.5), t=1.0, slit=0.6, cap=(-3.8 + STACK_DX, -2.8 + STACK_DX, 12.89, 14.75, 60.2),
+           arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(12.8, 14.8), gap=0.2, press=0.6)
 
 # BiBoard 5-pin female header in the cover slot (GND, +5V, TX2, RX2, ..). Straight Dupont plugs.
 SLOT = PI.SLOT
 HDR = PI.HDR
-BB_PLUG = dict(x=(HDR["x0"], HDR["x1"]), y=(HDR["top"], HDR["top"] + 14.0), z=(HDR["z0"], HDR["z1"]))
+BB_PLUG = dict(x=(HDR["x0"], HDR["x1"]), y=(HDR["top"], HDR["top"] + DUPONT_L), z=(HDR["z0"], HDR["z1"]))
 HDR_NOTCH = dict(x=(23.9, IN_A + 0.01), z=(HDR["z0"] - SLIDE - 0.8, HDR["z1"] + 0.8))   # floor notch: header + slide
 
 # Speaker: NULLLAB 3 W 4 ohm box speaker (user ruler measurements). Ear plate 45 x 31 x 1.5 (X, Y, Z),
 # body 27 x 30 x 14.3 behind it. It stands at the rear, sound face to the rear grille. The two ends of
 # the ear plate go down into vertical grooves.
 SPK = dict(l=45.0, body_l=27.0, d=31.0, h=14.3, ear_t=1.5, hole_d=4.0, hole_in=4.5)
-SPK_ZE = 38.2                              # front face of the ear plate
+SPK_ZE = 44.8                              # front face of the ear plate
+# The ear plate is at the middle of the body depth (user photo reference/signal-2026-10-15-113357.jpeg):
+# the body stands out (h - ear_t) / 2 in front of the ear plate and the same behind it.
+SPK_BODY_Z = (SPK_ZE + SPK["ear_t"] / 2 - SPK["h"] / 2, SPK_ZE + SPK["ear_t"] / 2 + SPK["h"] / 2)
 SPK_Y0 = FLOOR_Y1 + 0.1
 SPK_GROOVE = dict(x_in=21.25, clr=0.25, lip=1.5, top=56.5, clr_y=0.4)
 
@@ -161,11 +169,12 @@ MIC = dict(w=12.7, l=16.7, t=1.8, y0=30.5, clr=0.1)
 # the pack jumpers (female) plug onto it. A straight header does not fit: the stack is 2 mm behind the mic.
 MIC_Z = (ZF_IN + 0.4, ZF_IN + 0.4 + MIC["t"])     # -35.6 .. -33.8
 MIC_PORT_Y = MIC["y0"] + MIC["l"] / 2            # port assumed at the board center (not measured)
+MIC_X = 2.7           # the mic is right of center: its header passes 0.2 mm right of the SD card
 MIC_Z_BACK = MIC_Z[0] + 1.6                      # back face of the PCB
 MIC_PIN_Z = MIC_Z_BACK + 2.6                     # the bent pins run 2.6 mm off the back face
-MIC_HDR_X = (MIC["w"] / 2 - 1.1, MIC["w"] / 2 + 1.4)       # header body over the right edge (0.15 from the front stack post)
+MIC_HDR_X = (MIC_X + MIC["w"] / 2 - 1.1, MIC_X + MIC["w"] / 2 + 1.4)       # header body over the right edge
 MIC_PIN_Y = [MIC["y0"] + 3.27 + 2.54 * (5 - k) for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V (top to bottom)
-MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + 14.0)
+MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
 
 # Panel snaps: four spring tabs, two on the front wall and two on the rear wall. Each tab hangs from
 # the panel and has a bump that clicks into a pocket in the wall. The catch face is 45 deg (the print
@@ -201,7 +210,7 @@ WIRE_PATHS = {
 }
 WIRE_R = 0.7
 # Space for a finger tip over the BiBoard plug (panel off)
-FINGER = dict(x=(6.0, IN_A - 0.2), y=(37.0, SEAM), z=(11.0, 27.0))
+FINGER = dict(x=(11.0, IN_A - 0.2), y=(37.0, SEAM), z=(11.0, 27.0))
 
 
 def flat_ps2():
@@ -531,7 +540,7 @@ def mic_posts():
     p = mbox(-hw - 2.25, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] - c, za, zb)            # base
     p += mbox(-hw - 2.25, -hw + 0.5, FLOOR_Y1 - 0.01, M["y0"] + M["l"] + 0.3, za, zb)  # left post
     p += mbox(hw - 0.5, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] + 1.4, za, zb)             # right corner post (under the header)
-    return p - mbox(-hw - c, hw + c, M["y0"] - c, 99, ZF_IN, MIC_Z[1] + c)
+    return (p - mbox(-hw - c, hw + c, M["y0"] - c, 99, ZF_IN, MIC_Z[1] + c)).translate([MIC_X, 0, 0])
 
 
 def amp_base():
@@ -613,7 +622,7 @@ def build_body():
     holes = [teardrop_z(ZR_IN - 0.5, Z1 + 0.5, GRILLE["d"] / 2, x, y) for x in GRILLE["x"] for y in GRILLE["y"]]
     for a in [None] + list(range(0, 360, 60)):                             # mic holes around the port
         dx, dy = (0.0, 0.0) if a is None else (2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a)))
-        holes.append(teardrop_z(Z0 - 0.5, ZF_IN + 0.5, 0.5, dx, MIC_PORT_Y + dy, n=12))
+        holes.append(teardrop_z(Z0 - 0.5, ZF_IN + 0.5, 0.5, MIC_X + dx, MIC_PORT_Y + dy, n=12))
     B -= union(holes)
     return B
 
@@ -804,7 +813,7 @@ def tube(pts, r=WIRE_R, rounded=True):
 
 # Pi header: 2x20, pin 1 at the SD card end (front), odd pins in the inner row, even pins at the board edge (down).
 HDR_BASE_X = (PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 2.6)
-HOUSING_END = HDR_BASE_X[1] + 14.0                  # Dupont housing: 2.5 x 2.5 x 14
+HOUSING_END = HDR_BASE_X[1] + DUPONT_L             # Dupont housing on the header pins
 EXIT_X = HOUSING_END + 0.8                          # the wire leaves the housing straight for 0.8 mm
 
 
@@ -829,7 +838,7 @@ SPLICE = dict(bclk=(21.2, -2.0), lrclk=(21.0, 22.0), y=(39.0, 45.0), r=1.25)
 # the BiBoard plugs), the UART wires rise at UART_X, the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES.
 MIC_RIB, UART_X, FLOOR_WIRE = (24.6, 23.2), 27.0, FLOOR_Y1 + 0.75
 AMP_LANES = dict(DIN=22.2, LRC=23.6, BCLK=25.2, G=26.7)
-AMP_V_X = 21.4
+AMP_V_X = 21.9
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
 
 
@@ -915,10 +924,10 @@ def wire_routes():
     for t, n, col in (("bclk", 12, "#f0c419"), ("lrclk", 35, "#e8641b")):
         y, z = pin_yz(n)
         sx, sz = SPLICE[t]
-        if t == "bclk":         # rearward along Z at Y 36.4, 4 mm over the wire of pin 14
-            pts = [splice_end(t, False), (sx, 36.4, sz), (sx, 36.4, z), (sx, y, z)] + into_pin(n)
-        else:
-            pts = [splice_end(t, False), (sx, y, z)] + into_pin(n)
+        if t == "bclk":         # rearward along Z at Y 36.4, 4 mm over the wire of pin 14, down at X 22.2
+            pts = [splice_end(t, False), (sx, 37.6, sz), (22.2, 36.4, sz - 1.5), (22.2, 36.4, z), (22.2, y, z)] + into_pin(n)
+        else:                   # one quarter turn from the bottom of the sleeve into the housing of pin 35
+            pts = [splice_end(t, False), (sx, y, z), (HOUSING_END, y, z)]
         W.append(("splice", t, col, pts))
     return W
 
@@ -944,8 +953,9 @@ def speaker_leads():
     plate, into the top of the speaker body."""
     zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
     yc = AMP_Y0 + AMP["h"] - 12.05
-    center = [(-23.2, yc, zp), (-23.2, yc, 33.6), (-23.2, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, 41.8),
-              (-11.0, SPK_Y0 + SPK["d"] - 0.5, 44.0)]
+    zt = SPK_ZE + SPK["ear_t"] + 3.0                            # the leads leave the top of the rear half of the body
+    center = [(-23.2, yc, zp), (-23.2, yc, 33.6), (-23.2, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, zt - 2.2),
+              (-11.0, SPK_Y0 + SPK["d"] - 0.5, zt)]
     a, b = parallel_pair(center, 2.0, (0, 1, 0))
     return [("speaker", "+", "#d83a34", a), ("speaker", "-", "#1d1d1f", b)]
 
@@ -958,17 +968,27 @@ def build_models():
         return M
     pisugar = add("pisugar2", "board", "PiSugar 2 board", stl_manifold("pisugar2Board.STL", STAND @ flat_ps2()), "#e06aa3")
     pizero = add("pizero", "board", "Raspberry Pi Zero 2 W", stl_manifold("RaspberryPiZeroW-1.STL", STAND @ flat_pi()), "#2e9b4f")
+    H = HEATSINK                                            # pin-fin heatsink on the SoC (user photo; size estimated)
+    x0 = H["x0"]
+    hs = mbox(x0, x0 + H["base"], *H["y"], *H["z"])
+    pitch = (H["y"][1] - H["y"][0]) / H["n"]
+    for a_ in range(H["n"]):
+        for b_ in range(H["n"]):
+            yc_, zc_ = H["y"][0] + pitch * (a_ + 0.5), H["z"][0] + pitch * (b_ + 0.5)
+            hs += mbox(x0 + H["base"] - 0.01, x0 + H["h"], yc_ - H["pin"] / 2, yc_ + H["pin"] / 2, zc_ - H["pin"] / 2, zc_ + H["pin"] / 2)
+    add("pizero", "heatsink", "Pi heatsink (size estimated)", hs, "#c9ccd1")
+    pizero = pizero + hs
     # battery: a pouch cell with round edges, a seal flap at the front end, and two leads to the PiSugar 2 (lead place estimated)
     bx, by, bz = BAT["x"], BAT["y"], BAT["z"]
     cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0] + 2.5, bz[1], 1.6), "#b9bcc2")
     xm = (bx[0] + bx[1]) / 2
     flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[0], bz[0] + 2.6, 0.45), "#d9b34a")
-    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[0] + 0.3), (xm + d, 34.0, bz[0] - 0.6), (-6.6, 34.5 + d, bz[0] - 0.4),
+    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[0] + 0.3), (xm + d, 34.0, bz[0] - 0.6), (-6.6 + STACK_DX, 34.5 + d, bz[0] - 0.4),
                                                              (-5.5, 34.5 + d, bz[0] + 2.5)], 0.5), c)
              for i, (d, c) in enumerate(((-0.7, "#d83a34"), (0.7, "#1d1d1f")))]
     bat = cell + flap + union(leads)
     # microSD card: the part out of the holder (about 2.5 mm, not measured)
-    card = add("sd_card", "card", "microSD card", rbox("x", 1.85, 2.85, 39.5, 50.5, STACK_ZF - 2.5, STACK_ZF - 0.05, 0.8), "#26272b")
+    card = add("sd_card", "card", "microSD card", rbox("x", 1.85 + STACK_DX, 2.85 + STACK_DX, 39.5, 50.5, STACK_ZF - 2.5, STACK_ZF - 0.05, 0.8), "#26272b")
     # Pi header: base, the pins without a plug, a Dupont housing on each pin in use
     W = wire_routes()
     used_pins = set()
@@ -1024,24 +1044,24 @@ def build_models():
     # right edge with the six Dupont housings on its pins
     M = MIC
     pcb_z = (MIC_Z[0], MIC_Z_BACK)
-    mp = rbox("z", -M["w"] / 2, M["w"] / 2, M["y0"], M["y0"] + M["l"], *pcb_z, 0.8)
-    mp -= mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.4, 0.0, MIC_PORT_Y, 12)
+    mp = rbox("z", MIC_X - M["w"] / 2, MIC_X + M["w"] / 2, M["y0"], M["y0"] + M["l"], *pcb_z, 0.8)
+    mp -= mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.4, MIC_X, MIC_PORT_Y, 12)
     add("mic_sph0645", "pcb", "SPH0645 mic board", mp, "#22303f")
-    can = mbox(-1.75, 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, pcb_z[1] - 0.01, pcb_z[1] + 1.0)
+    can = mbox(MIC_X - 1.75, MIC_X + 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, pcb_z[1] - 0.01, pcb_z[1] + 1.0)
     add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
     hb = mbox(*MIC_HDR_X, MIC_PIN_Y[-1] - 1.27, MIC_PIN_Y[0] + 1.27, pcb_z[1] - 0.01, MIC_PIN_Z + 1.25)
     add("mic_sph0645", "header", "mic right-angle header", hb, "#1d1d1f")
     mh = union([rbox("x", *MIC_HOUSING_X, y - 1.25, y + 1.25, MIC_PIN_Z - 1.25, MIC_PIN_Z + 1.25, 0.25, 8) for y in MIC_PIN_Y])
     add("mic_sph0645", "housings", "Dupont housings on the mic header", mh, "#3a3b40")
     mic = mp + can + hb + mh
-    # speaker: black ear plate with two holes; round-edged box behind it; the sound face (rear) has a grille
+    # speaker: round-edged box with the black ear plate around its middle; the sound face (rear) has a grille
     z0, z1 = SPK_ZE, SPK_ZE + SPK["ear_t"]
     yc = SPK_Y0 + SPK["d"] / 2
     plate = rbox("z", -SPK["l"] / 2, SPK["l"] / 2, SPK_Y0, SPK_Y0 + SPK["d"], z0, z1, 2.0)
     plate -= union([mcyl("z", z0 - 1, z1 + 1, SPK["hole_d"] / 2, xh, yc) for xh in (-SPK["l"] / 2 + SPK["hole_in"], SPK["l"] / 2 - SPK["hole_in"])])
     add("speaker", "plate", "speaker ear plate", plate, "#26272b")
-    ze = z1 + SPK["h"]
-    body = rbox("z", -SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, z1 - 0.01, ze, 3.0)
+    ze = SPK_BODY_Z[1]
+    body = rbox("z", -SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, SPK_BODY_Z[0], ze, 3.0)
     body -= rbox("z", -SPK["body_l"] / 2 + 2.5, SPK["body_l"] / 2 - 2.5, SPK_Y0 + 3.0, SPK_Y0 + SPK["d"] - 3.0, ze - 0.6, ze + 1, 2.0)
     add("speaker", "body", "NULLLAB 3 W speaker", body, "#3a3b40")
     mesh = rbox("z", -SPK["body_l"] / 2 + 2.5, SPK["body_l"] / 2 - 2.5, SPK_Y0 + 3.0, SPK_Y0 + SPK["d"] - 3.0, ze - 0.6, ze - 0.4, 2.0)
@@ -1069,7 +1089,7 @@ def build_models():
 # slack does. Ends: fixed, straight out of the housing for 2 mm.
 # --------------------------------------------------------------------------
 GRID_H = 0.5
-SETTLE = dict(seg=1.0, iters=5000, grow=0.6, gravity=0.006, bend=0.5, spans=(1, 2, 3, 4, 6, 8), clear=0.25, wire_gap=1.62,
+SETTLE = dict(seg=1.0, iters=5000, grow=0.6, gravity=0.006, bend=0.5, spans=(1, 2, 3, 4, 6, 8), clear=0.35, wire_gap=1.62,
               end_nodes=4, length_passes=10)
 
 
@@ -1221,33 +1241,42 @@ def _arch(P, i0, i1, u, A):
     return Q
 
 
-def _loop(P, i, u, R, turns, pitch=1.7):
-    """Insert a service loop at node i: `turns` turns of radius R in the plane of the wire and u, a pitch apart."""
+def _loop(P, i, u, R, turns, pitch=1.7, h=0.0):
+    """Insert a service loop at node i: a stem h out along u (made normal to the wire), `turns` turns of radius R,
+    and the stem back, a pitch to the side each turn. h = 0: the loop sits on the wire."""
     t = _frame(P, i)
     v = u - np.dot(u, t) * t
     if np.linalg.norm(v) < 0.3:
         return None
     v /= np.linalg.norm(v)
     b = np.cross(t, v)
-    ctr = P[i] + v * R
-    pts = []
+    base = P[i]
+    pts = [base + v * h * k / max(1, int(h / 0.5)) for k in range(int(h / 0.5) + 1)] if h > 0 else []
+    s0 = base + v * h
+    ctr = s0 + v * R
     n = int(turns * 2 * math.pi * R / 0.5) + 8
     for k in range(n + 1):
         ang = 2 * math.pi * turns * k / n
         pts.append(ctr - v * R * math.cos(ang) + t * R * math.sin(ang) + b * pitch * turns * k / n)
+    off = b * pitch * turns
+    if h > 0:
+        pts += [s0 + off - v * h * k / max(1, int(h / 0.5)) for k in range(1, int(h / 0.5) + 1)]
     pts = np.array(pts)
     rest = P[i + 1:]
-    shift = pts[-1] - pts[0]                               # the coil ends a pitch to the side: blend back to the wire end
-    return np.vstack([P[:i], pts, rest + shift * np.linspace(1, 0, len(rest))[:, None]])
+    return np.vstack([P[:i], pts, rest + off * np.linspace(1, 0, len(rest))[:, None]])
+
+
+TIDY_X = 16.0         # neat wiring: the slack of the right-well wires stays right of this X (over the Pi plugs)
 
 
 def _badness(F, P, tree, ne=8):
-    """Penetration of parts and of other wires (mm, summed): 0 = clean."""
+    """Penetration of parts and of other wires (mm, summed): 0 = clean. Slack out of the right well costs a little."""
     Q = P[ne:-ne]
     if not len(Q):
         return 0.0
+    untidy = 0.004 * float(np.clip(TIDY_X - Q[:, 0], 0, None).sum())
     d, _ = _field_at(F, Q)
-    bad = float(np.clip(WIRE_R + SETTLE["clear"] - d, 0, None).sum())
+    bad = float(np.clip(WIRE_R + SETTLE["clear"] - d, 0, None).sum()) + untidy
     if tree is not None:
         dd, _ = tree.query(Q, distance_upper_bound=SETTLE["wire_gap"])
         bad += float(np.clip(SETTLE["wire_gap"] - dd[np.isfinite(dd)], 0, None).sum())
@@ -1260,13 +1289,14 @@ def place_slack(F, P0, L, others, joints):
     P0 = _resample(P0, int(_length(P0) / 0.5) + 1)
     n = len(P0)
     others = cKDTree(others) if others is not None and len(others) else None
+    cands = []
     dirs = [np.array(d, float) / np.linalg.norm(d) for d in
             [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)] +
             [(a_, b_, 0) for a_ in (-1, 1) for b_ in (-1, 1)] + [(0, a_, b_) for a_ in (-1, 1) for b_ in (-1, 1)] +
             [(a_, 0, b_) for a_ in (-1, 1) for b_ in (-1, 1)]]
     best = None
     ne = 8
-    spans = [(a_, a_ + w_) for w_ in (0.3, 0.45, 0.6, 0.8) for a_ in np.arange(0.05, 0.96 - w_, 0.1)]
+    spans = [(a_, a_ + w_) for w_ in (0.25, 0.35, 0.5, 0.65) for a_ in np.arange(0.1, 0.81 - w_, 0.05)]   # away from the plug ends
     for frac in spans:
         i0, i1 = int(n * frac[0]), int(n * frac[1])
         if i1 - i0 < 10 or i0 < ne or i1 > n - ne:
@@ -1280,24 +1310,28 @@ def place_slack(F, P0, L, others, joints):
                 lo, hi = (mid, hi) if _length(_arch(P0, i0, i1, u, mid)) < L else (lo, mid)
             Q = _arch(P0, i0, i1, u, hi)
             sc = _badness(F, Q, others)
+            cands.append((sc, Q, "arch"))
             if best is None or sc < best[0]:
                 best = (sc, Q, "arch")
     if True:                                               # also try a coil; an arch wins a tie
         dL = L - _length(P0)
-        for turns in (1, 2, 3):
-            R = dL / (2 * math.pi * turns)
-            if R < 3.0:
-                continue
-            for frac in np.linspace(0.12, 0.88, 13):
-                i = int(n * frac)
-                for u in dirs:
-                    Q = _loop(P0, i, u, R, turns)
-                    if Q is None:
-                        continue
-                    sc = _badness(F, Q, others) + 0.05
-                    if best is None or sc < best[0]:
-                        best = (sc, Q, f"loop x{turns}")
-    return best
+        for h in (0.0, 5.0, 10.0, 15.0):                   # a loop on the wire, or on a stem out to free space
+            for turns in (1, 2, 3):
+                R = (dL - 2 * h) / (2 * math.pi * turns)
+                if R < 3.0 or R > 9.0:
+                    continue
+                for frac in np.linspace(0.15, 0.8, 14):
+                    i = int(n * frac)
+                    for u in dirs:
+                        Q = _loop(P0, i, u, R, turns, h=h)
+                        if Q is None:
+                            continue
+                        sc = _badness(F, Q, others) + 0.05 + 0.01 * h
+                        cands.append((sc, Q, f"loop x{turns}" + (f" on a {h:g} mm stem" if h else "")))
+                        if best is None or sc < best[0]:
+                            best = (sc, Q, f"loop x{turns}" + (f" on a {h:g} mm stem" if h else ""))
+    cands.sort(key=lambda c: c[0])
+    return cands[:12] if cands else [best]
 
 
 def settle_one(F, P, others, joints, iters=600):
@@ -1338,6 +1372,18 @@ def settle_one(F, P, others, joints, iters=600):
         P[ne:-ne] = Q
     return P
 
+
+# The two ends of each wire, for the guide and the viewer
+WIRE_FROM = {("uart", "TX2"): "BiBoard TX2", ("uart", "RX2"): "BiBoard RX2", ("uart", "GND"): "BiBoard GND",
+             ("amp", "G"): "amp G", ("amp", "V"): "amp V", ("amp", "BCLK"): "amp BCLK", ("amp", "LRC"): "amp LRC", ("amp", "DIN"): "amp DIN",
+             ("mic", "SEL"): "mic SEL", ("mic", "LRCL"): "mic LRCL", ("mic", "DOUT"): "mic DOUT", ("mic", "BCLK"): "mic BCLK",
+             ("mic", "GND"): "mic GND", ("mic", "3V"): "mic 3V", ("splice", "bclk"): "BCLK splice", ("splice", "lrclk"): "LRCLK splice",
+             ("speaker", "+"): "amp speaker +", ("speaker", "-"): "amp speaker -"}
+WIRE_TO = {("uart", "TX2"): "pin 10", ("uart", "RX2"): "pin 8", ("uart", "GND"): "pin 6", ("amp", "G"): "pin 14", ("amp", "V"): "pin 2",
+           ("amp", "BCLK"): "BCLK splice", ("amp", "LRC"): "LRCLK splice", ("amp", "DIN"): "pin 40", ("mic", "SEL"): "pin 39",
+           ("mic", "LRCL"): "LRCLK splice", ("mic", "DOUT"): "pin 38", ("mic", "BCLK"): "BCLK splice", ("mic", "GND"): "pin 9",
+           ("mic", "3V"): "pin 1", ("splice", "bclk"): "pin 12", ("splice", "lrclk"): "pin 35", ("speaker", "+"): "speaker +",
+           ("speaker", "-"): "speaker -"}
 
 SETTLED = {}          # (group, label) -> settled polyline, set by settle_all()
 SLACK_SHAPE = {}      # (group, label) -> "arch" or "loop xN"
@@ -1389,11 +1435,15 @@ def settle_all(parts, models):
         P0 = round_corners(guides[key])[0]
         later = [dense(guides[k]) for k in SETTLE_ORDER[idx + 1:]]       # the paths of the wires still to come
         O = np.concatenate(others + later)
+        from scipy.spatial import cKDTree
+        tree = cKDTree(O)
         if key in PACK_WIRES:
-            sc, Q, shape = place_slack(F, P0, PACK_L, O, joints)
+            for sc, Q0, shape in place_slack(F, P0, PACK_L, O, joints):    # the best shape that is still clean after the clean-up
+                Q = settle_one(F, Q0, O, joints)
+                if _badness(F, Q, tree, ne=4) - 0.004 * float(np.clip(TIDY_X - Q[4:-4, 0], 0, None).sum()) < 0.02:
+                    break
         else:
-            Q, shape = P0, "cut to length"
-        Q = settle_one(F, Q, O, joints)
+            Q, shape = settle_one(F, P0, O, joints), "cut to length"
         SETTLED[key] = Q
         SLACK_SHAPE[key] = shape
         others.append(Q)
@@ -1715,6 +1765,8 @@ def main(fast=False):
         k = (w["group"], w["wire"])
         w["slack"] = SLACK_SHAPE.get(k, "")
         w["pack"] = k in PACK_WIRES
+        w["from"], w["to"] = WIRE_FROM[k], WIRE_TO[k]
+        w["id"] = "wires_" + k[0] + "__" + k[1].split()[0].lower().replace("+", "pos").replace("-", "neg")
     json.dump(dict(wires=wires, crossings=cross, r_bend=R_BEND, r_slack=R_SLACK, wire_d=2 * WIRE_R, pack_l=PACK_L,
                    order=[list(k) for k in SETTLE_ORDER]), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
     print("wires: longest", max(w["length_mm"] for w in wires), "mm; smallest bend", min(w["min_bend_r"] for w in wires), "mm; crossings", len(cross))

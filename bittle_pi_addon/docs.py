@@ -55,11 +55,12 @@ def content():
 
     h("2. Electronics")
     tbl([["Part", "Place"],
-         ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", "On the long edge over the robot center: ports and PiSugar controls up, GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards."],
+         ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm right of the center line so the battery is near it: ports and PiSugar controls up, "
+          "GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards. The pin-fin heatsink on the SoC points into the right well (14 x 14 x 6.5 mm, estimated)."],
          ["Dupont jumpers", "10 cm female-female jumpers from a pack: 3 to the BiBoard, 6 to the mic (2 of them through the splices)."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
-         ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. Ear plate 45 x 31 x 1.5 in two side grooves (ruler)."],
+         ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. The ear plate (45 x 31 x 1.5, ruler) is at the middle of the body depth and stands in two side grooves."],
          ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its right edge points into the right well."],
          ["Head camera cable", "The Grove cable comes out under the front edge of the cover (left side) and runs up to the head. A 45 deg notch in each front bottom corner of the body gives it room."],
          ["Optional cable", "A notch at the base of each side wall lets a cable in from outside."],
@@ -81,11 +82,12 @@ def content():
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch of the right well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
          "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front." + st(6),
-         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. Lay the amp cable across the floor in front of the front pegs." + st(7),
-         "Push the jumpers onto the Pi header. Push the Pi + PiSugar 2 stack down into the end grooves, over the I2S wires." + st(8),
-         "Reach into the right well and push the three Dupont plugs onto the BiBoard header (TX2, RX2, GND). Fold the slack into the right well." + st(9),
-         "Put the switch slider on the PiSugar switch lever, fork down." + st(10),
-         f"Push the panel straight down until the 4 tabs click (about {S['close_N']:g} N). It fits one way only. The slider tab comes up through its slot." + st(11),
+         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside." + st(7),
+         "Push the Pi + PiSugar 2 stack down into the end grooves. Lay the amp cable across the floor in front of the front pegs, under the stack." + st(8),
+         "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the mic jumpers, then the BiBoard plugs and jumpers. "
+         "The viewer has one step for each wire." + st(9) + st(19),
+         "Put the switch slider on the PiSugar switch lever, fork down." + st(23),
+         f"Push the panel straight down until the 4 tabs click (about {S['close_N']:g} N). It fits one way only. The slider tab comes up through its slot." + st(24),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['open_one_end_N']:g} N), then the front. "
          f"Remove: open the panel, pull the BiBoard plug off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. "
@@ -153,7 +155,7 @@ def content():
          f"{len(MO['legs']['rear']['addon'])} rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. "
          f"The Petoi tail is {T['gap']:g} mm under the add-on, and {T['drop_on_gap']:g} mm at the drop-on place."])
     p("Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. "
-      "The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. "
+      "The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. The heatsink size is estimated. "
       "To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.")
 
     h("7. Files and license")
@@ -171,16 +173,7 @@ def content():
     return X
 
 
-WIRE_FROM = {("uart", "TX2"): "BiBoard TX2", ("uart", "RX2"): "BiBoard RX2", ("uart", "GND"): "BiBoard GND",
-             ("amp", "G"): "amp G", ("amp", "V"): "amp V", ("amp", "BCLK"): "amp BCLK", ("amp", "LRC"): "amp LRC", ("amp", "DIN"): "amp DIN",
-             ("mic", "SEL"): "mic SEL", ("mic", "LRCL"): "mic LRCL", ("mic", "DOUT"): "mic DOUT", ("mic", "BCLK"): "mic BCLK",
-             ("mic", "GND"): "mic GND", ("mic", "3V"): "mic 3V", ("splice", "bclk"): "BCLK splice", ("splice", "lrclk"): "LRCLK splice",
-             ("speaker", "+"): "amp speaker +", ("speaker", "-"): "amp speaker -"}
-WIRE_TO = {("uart", "TX2"): "pin 10", ("uart", "RX2"): "pin 8", ("uart", "GND"): "pin 6", ("amp", "G"): "pin 14", ("amp", "V"): "pin 2",
-           ("amp", "BCLK"): "BCLK splice", ("amp", "LRC"): "LRCLK splice", ("amp", "DIN"): "pin 40", ("mic", "SEL"): "pin 39",
-           ("mic", "LRCL"): "LRCLK splice", ("mic", "DOUT"): "pin 38", ("mic", "BCLK"): "BCLK splice", ("mic", "GND"): "pin 9",
-           ("mic", "3V"): "pin 1", ("splice", "bclk"): "pin 12", ("splice", "lrclk"): "pin 35", ("speaker", "+"): "speaker +",
-           ("speaker", "-"): "speaker -"}
+WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 ROUTE = dict(uart="right well: along the floor to the right wall, up, rearward over the BiBoard plugs (each wire at its own height), down into them",
              amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the right well",
              mic="from the mic header into the right well, rearward as a flat stack; the lowest wire leaves first",

@@ -14,6 +14,13 @@
   "color": "#2e9b4f"
  },
  {
+  "model": "pizero",
+  "sub": "heatsink",
+  "label": "Pi heatsink (size estimated)",
+  "file": "models/parts/pizero__heatsink.stl",
+  "color": "#c9ccd1"
+ },
+ {
   "model": "battery",
   "sub": "cell",
   "label": "1200 mAh cell",

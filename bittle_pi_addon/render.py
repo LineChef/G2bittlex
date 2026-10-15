@@ -120,18 +120,18 @@ OPEN = [k for k in ALL if k not in ("panel", "switch")]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {
-    # name: (show, cut, explode, camera, ortho)
-    "02_addon": (ALL, None, 0, "0,-17.0,8,62,0,128,300", False),
-    "04_top": (ALL, None, 0, "-2,-4.0,62,35,0,200,150", False),
-    "05_front_notch": (ALL, None, 0, "-4,30.0,30,78,0,200,150", False),
-    "03_rear": (ALL, None, 0, "0,-17.0,8,62,0,312,300", False),
-    "06_open": (OPEN, None, 0, "0,-17.0,8,48,0,150,280", False),
-    "07_open_left": (OPEN, None, 0, "0,-17.0,8,48,0,215,280", False),
+    # name: (show, cut, explode, camera, ortho). Camera centers on the add-on (OpenSCAD Z = model Y about 42).
+    "02_addon": (ALL, None, 0, "0,-9,38,62,0,128,340", False),
+    "03_rear": (ALL, None, 0, "0,-9,38,62,0,312,340", False),
+    "04_top": (ALL, None, 0, "2,-4,62,35,0,200,170", False),
+    "05_front_notch": (ALL, None, 0, "-4,30.0,30,78,0,200,170", False),
+    "06_open": (OPEN, None, 0, "0,-9,40,48,0,150,300", False),
+    "07_open_left": (OPEN, None, 0, "0,-9,40,48,0,215,300", False),
     "08_section": (ALL, ((0, 0, 1.0), 18.0), 0, "0,-18,44,90,0,180,230", True),
-    "09_wires": (OPEN, None, 0, "0,-17.0,8,60,0,140,280", False),
-    "11_wires_top": (OPEN, None, 0, "0,-9.0,40,0,0,180,190", False),
-    "12_wires_right": (OPEN, None, 0, "14,-8.0,40,40,0,90,170", False),
-    "10_exploded": (ALL, None, 6.0, "0,-17.0,25,62,0,128,380", False),
+    "09_wires": (OPEN, None, 0, "0,-9,40,60,0,140,300", False),
+    "10_exploded": (ALL, None, 6.0, "0,-9,55,62,0,128,440", False),
+    "11_wires_top": (OPEN, None, 0, "4,-9,45,0,0,180,300", False),
+    "12_wires_right": (OPEN, None, 0, "14,-9,42,40,0,90,220", False),
 }
 
 

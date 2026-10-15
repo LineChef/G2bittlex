@@ -125,6 +125,35 @@ INFO = {
     "robot_battery": dict(text="The robot battery under the body.", attach="Part of the robot."),
 }
 
+# One build step for each wire (the plug order of the guide, stl/wires.json)
+WIRES = json.load(open(os.path.join(ROOT, "stl", "wires.json")))
+_W = {(w["group"], w["wire"]): (i, w) for i, w in enumerate(WIRES["wires"], 1)}
+
+
+def _wire_step(key, title=None, more=(), text=""):
+    i, w = _W[key]
+    ids = [w["id"]] + list(more)
+    if w.get("pack"):
+        text = text or f"Plug a 10 cm jumper from {w['from']} to the Pi {w['to']}. Lay its excess in {('an' if w['slack'][0] in 'aeiou' else 'a')} {w['slack']} as shown."
+    return dict(title=title or f"{w['from']} \u2192 {'Pi ' if w['to'].startswith('pin') else ''}{w['to']}", view="wires", show=ids,
+                highlight=ids, start={k: [0, 22, 0] for k in ids},
+                text=(text or f"Plug {w['from']} onto the Pi {w['to']}.") + f" (Wire {i} in the route table of the guide.)")
+
+
+WIRE_STEPS = [
+    _wire_step(("amp", "G"), text="Amp cable G: lay it across the floor in front of the front pegs, into the outer lane of the right well, onto Pi pin 14."),
+    _wire_step(("amp", "V"), text="Amp cable V: across the floor, up at once onto Pi pin 2 (5V)."),
+    _wire_step(("amp", "DIN"), text="Amp cable DIN: across the floor, rearward in the inner lane, onto Pi pin 40."),
+    dict(title="Splices", view="wires", highlight=["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc"],
+         show=["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc"],
+         start={k: [0, 22, 0] for k in ("wires_splice__sleeves", "wires_splice__bclk", "wires_splice__lrclk", "wires_amp__bclk", "wires_amp__lrc")},
+         text="The BCLK and LRCLK splices: a short wire from Pi pin 12 (35) and the amp cable BCLK (LRC) go into the bottom of each sleeve. "
+              "The BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs."),
+] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "mic"] + [
+    dict(title="BiBoard plugs", view="wires", show=["bb_plug"], highlight=["bb_plug"], start={"bb_plug": [0, 25, 0]},
+         text="Reach into the right well and push the three Dupont plugs onto the BiBoard header: TX2, RX2, GND (+5V is not wired)."),
+] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "uart"]
+
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
 STACK = ["battery", "pisugar", "pizero", "sd_card", "pi_plugs"]
 STEPS = [
@@ -143,15 +172,14 @@ STEPS = [
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
          text="Plug the six 10 cm jumpers onto the mic header. Then push the mic down into its groove at the front wall, port to the front."),
-    dict(title="Amp", view="build", show=["amp"], start={"amp": [0, 40, 0]},
-         text="Push the bottom edge of the amp down into the slot along the left wall, parts to the inside. "
-              "Plug the amp cable in at the front end first. Lay it down the left front and across the floor in front of the front pegs, into the lanes of the right well."),
+    dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
+         start={"amp": [0, 40, 0], "wires_speaker__pos": [0, 40, 0], "wires_speaker__neg": [0, 40, 0]},
+         text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
+              "Push the bottom edge of the amp down into the slot along the left wall, parts to the inside."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
-         text="Push the jumpers onto the Pi header. Then push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front."),
-    dict(title="Wires", view="build", show=["bb_plug", "wires"], start={"bb_plug": [0, 25, 0], "wires": [0, 25, 0]},
-         text="Plug the jumpers one at a time (the order is in the guide): the mic wires onto the Pi pins and the splices, then the BiBoard wires "
-              "onto the BiBoard header: GND, RX2, TX2. Each 10 cm jumper is longer than its route: lay the excess in an arch or a loop as shown. "
-              "The checks keep every wire off the printed parts, the boards and the other wires."),
+         text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front. "
+              "Then plug the wires one at a time, as the next steps show."),
+] + WIRE_STEPS + [
     dict(title="Switch slider", view="build", show=["switch"], start={"switch": [0, 25, 0]},
          text="Put the switch slider on the PiSugar switch lever, fork down."),
     dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 30, 0]},
@@ -197,6 +225,8 @@ def main():
         st = dict(st)
         if "show" in st:
             st["show"] = expand(st["show"])
+        if "highlight" in st:
+            st["highlight"] = expand(st["highlight"])
         for k in ("start", "end"):
             if k in st:
                 st[k] = {i: v for key, v in st[k].items() for i in expand([key])}
