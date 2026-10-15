@@ -99,13 +99,13 @@
     <h2>Explode</h2>
     <div class="row"><input id="explode" type="range" min="0" max="1" step="0.01" value="0"><span class="val" id="explodeV">0%</span></div>
 
-    <h2>Lid opacity</h2>
+    <h2>Case opacity</h2>
     <div class="row"><input id="lidop" type="range" min="0.05" max="1" step="0.01" value="1"><span class="val" id="lidopV">100%</span></div>
 
     <div id="poseBox" style="display:none">
     <h2>Colors</h2>
-    <div class="row"><span class="lbl">Lid</span><span class="btns" id="colLid"></span></div>
-    <div class="row"><span class="lbl">Insert</span><span class="btns" id="colIns"></span></div>
+    <div class="row"><span class="lbl">Body</span><span class="btns" id="colLid"></span></div>
+    <div class="row"><span class="lbl">Panel</span><span class="btns" id="colIns"></span></div>
     <h2>Robot pose (deg)</h2>
     <div class="row"><span class="lbl">Head turn</span><input id="p_head" type="range" min="-90" max="90" step="1" value="0"><span class="val" id="v_head">0</span></div>
     <div class="row"><span class="lbl">Front hips</span><input id="p_hip_f" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="v_hip_f">0</span></div>
@@ -290,7 +290,7 @@ let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false;
 function styleAll() {
   for (const m of Object.values(parts)) {
     const id = m.userData.part.id, mat = m.material;
-    let op = (id === "lid" || id === "top_insert") ? lidOpacity : 1;
+    let op = (id === "body" || id === "panel") ? lidOpacity : 1;
     const ghost = ghostOthers && selected && m !== selected;
     if (ghost) op = Math.min(op, 0.12);
     m.userData.ghost = ghost;
@@ -385,14 +385,14 @@ ex.addEventListener("input", () => {
   for (const m of Object.values(parts)) place(m);
 });
 
-// ---- lid opacity
+// ---- case opacity (body and panel)
 $("lidop").addEventListener("input", e => {
   lidOpacity = +e.target.value; $("lidopV").textContent = Math.round(lidOpacity * 100) + "%"; styleAll();
 });
 
-// ---- colors: try filament colors on the lid and the top insert
+// ---- colors: try filament colors on the body and the panel
 const FIL = { gray: "#9ea0a4", orange: "#e8641b", navy: "#24345c", white: "#f2f2ef", black: "#1d1d1f" };
-for (const [box, id, def] of [["colLid", "lid", "gray"], ["colIns", "top_insert", "orange"]]) {
+for (const [box, id, def] of [["colLid", "body", "white"], ["colIns", "panel", "orange"]]) {
   if (!parts[id]) continue;
   for (const [n, c] of Object.entries(FIL)) {
     const b = document.createElement("button");
@@ -409,7 +409,7 @@ function poseNote() {
   const M = robot.motion, out = [];
   if (M) {
     const [h0, h1] = M.head.free;
-    if (pose.head < h0 || pose.head > h1) out.push(`<span class="bad">The head touches the lid front</span> (no contact from ${h0} to ${h1} deg).`);
+    if (pose.head < h0 || pose.head > h1) out.push(`<span class="bad">The head touches the add-on front</span> (no contact from ${h0} to ${h1} deg).`);
     const G = M.legs, snap = (v, [a, b, s]) => Math.max(a, Math.min(b, Math.round((v - a) / s) * s + a));
     for (const [end, k] of [["front", "f"], ["rear", "r"]]) {
       const key = JSON.stringify([snap(pose[`hip_${k}`], [G.hips[0], G.hips[1] - G.hips[2], G.hips[2]]), snap(pose[`knee_${k}`], [G.knees[0], G.knees[1] - G.knees[2], G.knees[2]])]);
@@ -640,7 +640,10 @@ addEventListener("hashchange", fromHash);
 
 // ---- checks table
 for (const c of manifest.meta.checks) {
-  const cls = c.v < 0.05 ? "ok" : (c.a.startsWith("tray fwd 2.7") || c.b === "amp_ns4168") ? "warn" : "bad";
+  // intended: the click bumps press on the peg shafts; the panel turned 180 deg must not fit; the switch fork and the button arm must touch
+  const intended = (c.a === "cover_pegs" && c.b === "pod_body") || (c.a.startsWith("body back") && c.b === "cover_pegs")
+    || c.a.startsWith("panel turned") || c.a.includes("(must touch)");
+  const cls = c.v < 0.05 ? "ok" : intended ? "warn" : "bad";
   const d = document.createElement("div");
   d.innerHTML = `<span>${c.a} × ${c.b}</span><span class="${cls}">${Math.abs(c.v).toFixed(2)}${cls === "warn" ? " (intended)" : ""}</span>`;
   $("checks").appendChild(d);

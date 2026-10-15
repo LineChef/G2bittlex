@@ -19,10 +19,11 @@ RDIR = os.path.join(ROOT, "doc")
 TMP = os.path.join(ROOT, "stl", "tmp")
 
 C = dict(
-    lid="[0.62,0.63,0.65]", insert="[0.91,0.39,0.11]", tray="[0.80,0.80,0.82]", cover="[0.20,0.20,0.22]",
+    panel="[0.91,0.39,0.11]", body="[0.93,0.93,0.91]", cover="[0.20,0.20,0.22]",
     shoulder="[0.95,0.66,0.12]", plate="[0.13,0.13,0.14]", pizero="[0.16,0.55,0.28]",
-    pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]",
-     mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
+    pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]", bbplug="[0.85,0.20,0.20]",
+    mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
+    wires="[0.95,0.77,0.10]", switch="[0.93,0.93,0.91]",
 )
 
 
@@ -35,17 +36,19 @@ def files(cut=None):
     """Return {name: path} for all scene meshes, optionally cut by a plane."""
     src = {
         "cover": f"{STL}/installed/cover_pegs.stl",
-        "tray": f"{STL}/installed/pod_tray.stl",
-        "lid": f"{STL}/installed/pod_lid.stl",
-        "insert": f"{STL}/installed/top_insert.stl",
+        "body": f"{STL}/installed/pod_body.stl",
+        "panel": f"{STL}/installed/pod_panel.stl",
+        "switch": f"{STL}/installed/pod_switch.stl",
         "mic": f"{STL}/models/mic_sph0645.stl",
         "pizero": f"{STL}/models/pizero.stl",
         "pisugar": f"{STL}/models/pisugar2.stl",
         "amp": f"{STL}/models/amp_ns4168.stl",
-        "plugs": f"{STL}/models/dupont_plugs.stl",
+        "plugs": f"{STL}/models/pi_plugs.stl",
         "spk": f"{STL}/models/speaker.stl",
         "battery": f"{STL}/models/battery.stl",
         "hdr": f"{STL}/models/biboard_header.stl",
+        "bbplug": f"{STL}/models/biboard_plug.stl",
+        "wires": f"{STL}/models/wire_paths.stl",
         "shoulder": f"{REF}/Bittle_SideShoulder.stl",
         "plate": f"{REF}/Bittle_FrontPlate.stl",
     }
@@ -80,8 +83,8 @@ def scene(show, cut=None, explode=0.0, robot=True):
             continue
         dy = 0.0
         if explode:
-            dy = {"lid": 3.4, "insert": 3.4, "pizero": 1.6, "pisugar": 1.6, "battery": 1.6,
-                  "amp": 1.6, "plugs": 0.0, "spk": 1.6, "tray": 0.5, "mic": 1.6}.get(k, 0.0) * explode
+            dy = {"panel": 3.4, "switch": 4.4, "pizero": 1.6, "pisugar": 1.6, "battery": 1.6,
+                  "amp": 1.6, "plugs": 1.6, "spk": 1.6, "mic": 1.6}.get(k, 0.0) * explode
         if cut:
             s += imp(path, C[k], dy=dy)
         else:
@@ -109,15 +112,20 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
     return png
 
 
-ALL = ["cover", "tray", "lid", "insert", "mic", "pizero", "pisugar", "battery", "hdr", "plugs", "amp", "spk", "shoulder", "plate"]
-NOLID = [k for k in ALL if k not in ("lid", "insert")]
+ALL = ["cover", "body", "panel", "switch", "mic", "pizero", "pisugar", "battery", "hdr", "bbplug", "plugs", "amp", "spk", "shoulder", "plate"]
+OPEN = [k for k in ALL if k not in ("panel", "switch")]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {
     # name: (show, cut, explode, camera, ortho)
-    "02_ports_right": (ALL, None, 0, "0,-17.0,8,62,0,128,300", False),
-    "06_tray_loaded": (NOLID, None, 0, "0,-17.0,8,52,0,220,280", False),
-    "08_section_center": (ALL, ((-1.0, 0, 0), 0.0), 0, "0,-9.0,6,90,0,90,280", True),
+    "02_addon": (ALL, None, 0, "0,-17.0,8,62,0,128,300", False),
+    "04_top": (ALL, None, 0, "-2,-4.0,62,35,0,200,150", False),
+    "03_rear": (ALL, None, 0, "0,-17.0,8,62,0,312,300", False),
+    "06_open": (OPEN, None, 0, "0,-17.0,8,48,0,150,280", False),
+    "07_open_left": (OPEN, None, 0, "0,-17.0,8,48,0,215,280", False),
+    "08_section": (ALL, ((0, 0, 1.0), 18.0), 0, "0,-18,44,90,0,180,230", True),
+    "09_wires": (OPEN + ["wires"], None, 0, "0,-17.0,8,60,0,140,280", False),
+    "10_exploded": (ALL, None, 6.0, "0,-17.0,25,62,0,128,380", False),
 }
 
 

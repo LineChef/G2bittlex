@@ -1,4 +1,4 @@
-"""Bittle X platform interface, version 1.0. All numbers for add-on design are here.
+"""Bittle X platform interface. All numbers for add-on design are here.
 
 The platform is the stock Petoi Bittle X back cover (Bittle_Cover_with_hole_for_Pi.stl)
 with 4 teardrop pegs on its flat top. Add-ons drop onto the pegs, slide forward, and click.
@@ -90,10 +90,10 @@ MU_PLA = 0.3                    # PLA on PLA friction, for the detent force esti
 # Envelope (checked with the pod; outside this, check the robot yourself)
 # --------------------------------------------------------------------------
 ENVELOPE = dict(
-    z=(-40.0, 66.0),            # front and rear limits used by the pod
-    half_w_low=33.6,            # max |X| at the bottom edge over the hip plates (lid hugs the shoulders, 0.4 gap)
-    half_w_high=26.4,           # max |X| above Y 31 (pod spine)
-    top=59.4,                   # pod top; no robot limit, but a high mass makes the robot less stable
+    z=(-37.8, 56.2),            # front and rear faces of the Pi add-on body
+    half_w_low=29.6,            # max |X| of the add-on body (flat floor at Y 26.0, over the cover and the shoulders)
+    half_w_high=29.6,           # max |X| above Y 31
+    top=63.2,                   # add-on top; no robot limit, but a high mass makes the robot less stable
     com_z_max=10.0,             # keep the add-on center of mass within this distance of Z 0 (robot center)
     hug_gap=0.4,                # gap to the cover and the shoulder plates
 )

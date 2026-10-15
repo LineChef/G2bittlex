@@ -35,23 +35,20 @@ not change, so the BiBoard and the touch sensor fit as before.
 
 ## Example: the Pi add-on
 
-![The Pi add-on on the platform](bittle_pi_addon/doc/02_ports_right.png)
+![The Pi add-on on the platform](bittle_pi_addon/doc/02_addon.png)
 
-A Raspberry Pi with a battery, a speaker and a microphone, in one pod that
-clicks onto the platform.
+A Raspberry Pi with a battery, a speaker and a microphone, in one rounded box
+that clicks onto the platform.
 
-- Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh)
-- NS4168 I2S amp and a 3 W speaker, sound out of the front grille
-- SPH0645 I2S microphone on the left side, away from the speaker
-- Balanced: the Pi stack is on the center line, and the speaker at the front balances it
-- Serial link to the BiBoard through the Pi slot in the cover
-- Two open port bays in the right side of the lid: the charge port, the button, the switch, and the Pi USB and mini-HDMI ports are at the bay faces
-- A cable slot for the Petoi AI Vision Module camera in the head
-- Keys hold the lid on the tray, and arrows on the lid and the tray show the front
-- A clear wire path from the BiBoard header over the Pi to the GPIO pads
-- 4 printed parts, all without supports. The vent insert in the lid top is in a second color
+- Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh), on its long edge over the robot center, ports up
+- NS4168 I2S amp and a 3 W speaker at the rear, sound out of the rear grille
+- SPH0645 I2S microphone at the front, away from the speaker
+- One-piece body: it clicks onto the platform empty, then every part goes in from the top
+- Serial link to the BiBoard: the Dupont plug goes onto the header inside the right wall, and all the wires stay inside
+- A snap-in top panel with openings shaped to the plugs, a large power switch slider and a large button
+- 3 printed parts, all without supports
 
-![Inside the Pi add-on](bittle_pi_addon/doc/06_tray_loaded.png)
+![Inside the Pi add-on](bittle_pi_addon/doc/06_open.png)
 
 ## Make your own add-on
 

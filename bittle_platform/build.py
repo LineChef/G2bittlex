@@ -347,8 +347,10 @@ def overhang_regions(M, limit_deg=45.5, bed=0.3, min_area=0.5):
 # (about 56 x 1.6 mm) and its center of mass is 2 mm past that strip, over the leaning
 # top face. The foot is a 3-layer plate with fins under that face. The fins stand
 # FOOT["gap"] off the cover and touch it only at small teeth, so they snap off.
+# Each tooth is one layer tall (tooth_h, at 0.25 mm layers) and 0.6 wide: 21 teeth, about 3 mm2 of
+# contact in total. Only the teeth hold, so the foot breaks off clean.
 FOOT = dict(t=0.75, y=(-14.0, 4.0), x=30.0, fins_x=(-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0),
-            fin_t=0.8, fin_h=14.0, gap=0.3, teeth_z=(0.0, 2.5, 5.5, 8.5, 11.5), tooth=0.6)
+            fin_t=0.8, fin_h=14.0, gap=0.45, teeth_z=(1.0, 6.0, 11.0), tooth=0.6, tooth_h=0.25)
 
 
 def dilate(M, d):
@@ -376,7 +378,7 @@ def cover_foot(P):
     teeth = None
     for xf in F["fins_x"]:
         for zt in F["teeth_z"]:
-            tb = to_m(box(xf - F["tooth"] / 2, xf + F["tooth"] / 2, y0, y1, zt, zt + F["tooth"]))
+            tb = to_m(box(xf - F["tooth"] / 2, xf + F["tooth"] / 2, y0, y1, zt, zt + F["tooth_h"]))
             tb = tb ^ reach
             teeth = tb if teeth is None else teeth + tb
     return (foot + teeth) - P

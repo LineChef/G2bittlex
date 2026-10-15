@@ -2,37 +2,32 @@
  "rows": [
   [
    "cover_pegs",
-   "pod_tray",
-   0.1989457001854131
+   "pod_body",
+   0.1991728933223772
   ],
   [
    "cover_pegs",
-   "pod_lid",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "top_insert",
-   0.0
-  ],
-  [
-   "pod_tray",
-   "pod_lid",
-   0.0
-  ],
-  [
-   "pod_tray",
-   "top_insert",
-   0.0
-  ],
-  [
-   "pod_lid",
-   "top_insert",
+   "pod_panel",
    0.0
   ],
   [
    "cover_pegs",
-   "pisugar2",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "pod_body",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "pod_body",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "pod_switch",
    0.0
   ],
   [
@@ -42,1014 +37,1261 @@
   ],
   [
    "cover_pegs",
-   "battery",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "biboard_header",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "dupont_plugs",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "speaker",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "cover_slot",
-   4.153468819421448e-10
-  ],
-  [
-   "pod_tray",
    "pisugar2",
    0.0
   ],
   [
-   "pod_tray",
-   "pizero",
-   0.0
-  ],
-  [
-   "pod_tray",
+   "cover_pegs",
    "battery",
    0.0
   ],
   [
-   "pod_tray",
+   "cover_pegs",
+   "sd_card",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "cover_pegs",
    "biboard_header",
    0.0
   ],
   [
-   "pod_tray",
-   "dupont_plugs",
+   "cover_pegs",
+   "biboard_plug",
    0.0
   ],
   [
-   "pod_tray",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "pod_tray",
+   "cover_pegs",
    "speaker",
-   -6.680853786855678e-16
+   0.0
   ],
   [
-   "pod_tray",
+   "cover_pegs",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "cover_pegs",
    "mic_sph0645",
    0.0
   ],
   [
-   "pod_tray",
-   "amp_ns4168",
-   0.0010257771806577395
-  ],
-  [
-   "pod_tray",
-   "cover_slot",
+   "pod_body",
+   "pizero",
    0.0
   ],
   [
-   "pod_lid",
+   "pod_body",
    "pisugar2",
    0.0
   ],
   [
-   "pod_lid",
-   "pizero",
-   0.0
-  ],
-  [
-   "pod_lid",
+   "pod_body",
    "battery",
    0.0
   ],
   [
-   "pod_lid",
+   "pod_body",
+   "sd_card",
+   0.0
+  ],
+  [
+   "pod_body",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "pod_body",
    "biboard_header",
    0.0
   ],
   [
-   "pod_lid",
-   "dupont_plugs",
+   "pod_body",
+   "biboard_plug",
    0.0
   ],
   [
-   "pod_lid",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "pod_lid",
+   "pod_body",
    "speaker",
    0.0
   ],
   [
-   "pod_lid",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "pod_lid",
+   "pod_body",
    "amp_ns4168",
    0.0
   ],
   [
-   "pod_lid",
-   "cover_slot",
+   "pod_body",
+   "mic_sph0645",
    0.0
   ],
   [
-   "top_insert",
+   "pod_panel",
+   "pizero",
+   0.0
+  ],
+  [
+   "pod_panel",
    "pisugar2",
    0.0
   ],
   [
-   "top_insert",
-   "pizero",
-   0.0
-  ],
-  [
-   "top_insert",
+   "pod_panel",
    "battery",
    0.0
   ],
   [
-   "top_insert",
+   "pod_panel",
+   "sd_card",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "pod_panel",
    "biboard_header",
    0.0
   ],
   [
-   "top_insert",
-   "dupont_plugs",
+   "pod_panel",
+   "biboard_plug",
    0.0
   ],
   [
-   "top_insert",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "top_insert",
+   "pod_panel",
    "speaker",
    0.0
   ],
   [
-   "top_insert",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "top_insert",
+   "pod_panel",
    "amp_ns4168",
    0.0
   ],
   [
-   "top_insert",
-   "cover_slot",
+   "pod_panel",
+   "mic_sph0645",
    0.0
   ],
   [
-   "pod_tray",
-   "under_cover",
+   "pod_switch",
+   "pizero",
    0.0
   ],
   [
-   "pod_lid",
-   "under_cover",
+   "pod_switch",
+   "pisugar2",
    0.0
   ],
   [
-   "top_insert",
-   "under_cover",
+   "pod_switch",
+   "battery",
    0.0
   ],
   [
-   "pod_tray",
-   "shoulder_r",
+   "pod_switch",
+   "sd_card",
    0.0
   ],
   [
-   "pod_tray",
-   "shoulder_l",
+   "pod_switch",
+   "pi_plugs",
    0.0
   ],
   [
-   "pod_tray",
-   "front_plate",
-   0.0
-  ],
-  [
-   "pod_tray",
-   "rear_plate_mirror",
-   0.0
-  ],
-  [
-   "pod_lid",
-   "shoulder_r",
-   0.0
-  ],
-  [
-   "pod_lid",
-   "shoulder_l",
-   0.0
-  ],
-  [
-   "pod_lid",
-   "front_plate",
-   0.0
-  ],
-  [
-   "pod_lid",
-   "rear_plate_mirror",
-   0.0
-  ],
-  [
-   "top_insert",
-   "shoulder_r",
-   0.0
-  ],
-  [
-   "top_insert",
-   "shoulder_l",
-   0.0
-  ],
-  [
-   "top_insert",
-   "front_plate",
-   0.0
-  ],
-  [
-   "top_insert",
-   "rear_plate_mirror",
-   0.0
-  ],
-  [
-   "cover_pegs",
-   "loose_pieces",
-   0
-  ],
-  [
-   "pod_tray",
-   "loose_pieces",
-   0
-  ],
-  [
-   "pod_lid",
-   "loose_pieces",
-   0
-  ],
-  [
-   "top_insert",
-   "loose_pieces",
-   0
-  ],
-  [
-   "tray back 1.42mm",
-   "cover_pegs",
-   4.252597996406928
-  ],
-  [
-   "tray back 1.42mm",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "tray back 1.42mm",
+   "pod_switch",
    "biboard_header",
    0.0
   ],
   [
-   "add-on back 1.42mm",
-   "cover",
+   "pod_switch",
+   "biboard_plug",
    0.0
   ],
   [
-   "add-on back 1.42mm",
+   "pod_switch",
+   "speaker",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_body",
    "under_cover",
    0.0
   ],
   [
-   "add-on back 1.42mm",
+   "pod_body",
    "shoulder_r",
    0.0
   ],
   [
-   "add-on back 1.42mm",
+   "pod_body",
    "shoulder_l",
    0.0
   ],
   [
-   "add-on back 1.42mm",
+   "pod_body",
    "front_plate",
    0.0
   ],
   [
-   "add-on back 1.42mm",
-   "rear_plate_mirror",
+   "pod_body",
+   "head",
    0.0
   ],
   [
-   "tray back 3.5mm",
+   "pod_body",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "pod_body",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "pod_body",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "pod_body",
+   "tail",
+   0.0
+  ],
+  [
+   "pod_body",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "pod_body",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "pod_body",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "pod_body",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "under_cover",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "front_plate",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "head",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "tail",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "under_cover",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "front_plate",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "head",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "tail",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "leg_rr",
+   0.0
+  ],
+  [
    "cover_pegs",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pod_body",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pod_panel",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pod_switch",
+   "loose_pieces",
+   0
+  ],
+  [
+   "pizero",
+   "pisugar2",
+   0.01332106672735095
+  ],
+  [
+   "pizero",
+   "battery",
    0.0
   ],
   [
-   "tray back 3.5mm",
-   "cover_slot",
+   "pizero",
+   "sd_card",
    0.0
   ],
   [
-   "tray back 3.5mm",
+   "pizero",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "pizero",
    "biboard_header",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "cover",
+   "pizero",
+   "biboard_plug",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "under_cover",
+   "pizero",
+   "speaker",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "shoulder_r",
+   "pizero",
+   "amp_ns4168",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "shoulder_l",
+   "pizero",
+   "mic_sph0645",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "front_plate",
+   "pisugar2",
+   "battery",
    0.0
   ],
   [
-   "add-on back 3.5mm",
-   "rear_plate_mirror",
+   "pisugar2",
+   "sd_card",
    0.0
   ],
   [
-   "tray back 7mm",
-   "cover_pegs",
+   "pisugar2",
+   "pi_plugs",
    0.0
   ],
   [
-   "tray back 7mm",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "tray back 7mm",
+   "pisugar2",
    "biboard_header",
    0.0
   ],
   [
-   "add-on back 7mm",
-   "cover",
+   "pisugar2",
+   "biboard_plug",
    0.0
   ],
   [
-   "add-on back 7mm",
+   "pisugar2",
+   "speaker",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "battery",
+   "sd_card",
+   0.0
+  ],
+  [
+   "battery",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "battery",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "battery",
+   "biboard_plug",
+   0.0
+  ],
+  [
+   "battery",
+   "speaker",
+   0.0
+  ],
+  [
+   "battery",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "battery",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "sd_card",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "sd_card",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "sd_card",
+   "biboard_plug",
+   0.0
+  ],
+  [
+   "sd_card",
+   "speaker",
+   0.0
+  ],
+  [
+   "sd_card",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "sd_card",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pi_plugs",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pi_plugs",
+   "biboard_plug",
+   0.0
+  ],
+  [
+   "pi_plugs",
+   "speaker",
+   0.0
+  ],
+  [
+   "pi_plugs",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pi_plugs",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "speaker",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "speaker",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "speaker",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "speaker",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "amp_ns4168",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_body",
+   "keyhole keep zones",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
+   "cover_pegs",
+   4.252920939635521
+  ],
+  [
+   "body back 1.42mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
    "under_cover",
    0.0
   ],
   [
-   "add-on back 7mm",
+   "body back 1.42mm",
    "shoulder_r",
    0.0
   ],
   [
-   "add-on back 7mm",
+   "body back 1.42mm",
    "shoulder_l",
    0.0
   ],
   [
-   "add-on back 7mm",
+   "body back 1.42mm",
    "front_plate",
    0.0
   ],
   [
-   "add-on back 7mm",
-   "rear_plate_mirror",
+   "body back 1.42mm",
+   "head",
    0.0
   ],
   [
-   "plug charge",
-   "pod_lid",
+   "body back 1.42mm",
+   "neck_mount",
    0.0
   ],
   [
-   "plug charge",
-   "pod_tray",
+   "body back 1.42mm",
+   "rear_plate",
    0.0
   ],
   [
-   "plug pi_power",
-   "pod_lid",
+   "body back 1.42mm",
+   "hip_servos",
    0.0
   ],
   [
-   "plug pi_power",
-   "pod_tray",
+   "body back 1.42mm",
+   "tail",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "body back 1.42mm",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "under_cover",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "head",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "tail",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "body back 3.5mm",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "under_cover",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "front_plate",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "head",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "tail",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "body back 7mm",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "install speaker (max over 40 mm down)",
+   "body + parts in",
+   0.0
+  ],
+  [
+   "install mic (max over 40 mm down)",
+   "body + parts in",
+   0.0
+  ],
+  [
+   "install amp (max over 40 mm down)",
+   "body + parts in",
+   0.0
+  ],
+  [
+   "install stack (max over 40 mm down)",
+   "body + parts in",
+   0.0
+  ],
+  [
+   "panel close (max over 12 mm down)",
+   "body + parts",
+   0.0
+  ],
+  [
+   "switch slider -2mm",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "switch slider -2mm",
+   "parts (not the PiSugar)",
+   0.0
+  ],
+  [
+   "switch slider -2mm",
+   "pisugar2 (not the lever)",
+   4.2851504075652926e-08
+  ],
+  [
+   "switch slider +2mm",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "switch slider +2mm",
+   "parts (not the PiSugar)",
+   0.0
+  ],
+  [
+   "switch slider +2mm",
+   "pisugar2 (not the lever)",
+   5.649616358072178e-09
+  ],
+  [
+   "switch fork at rest",
+   "lever",
+   0.0
+  ],
+  [
+   "switch fork moved 0.3mm (must touch)",
+   "lever",
+   0.07500000000000082
+  ],
+  [
+   "button arm at rest",
+   "button",
+   0.0
+  ],
+  [
+   "button arm pressed (must touch)",
+   "button",
+   0.7439999999999956
+  ],
+  [
+   "button arm pressed",
+   "parts (not the PiSugar)",
+   0.0
+  ],
+  [
+   "panel turned 180 (min, Z +-6)",
+   "body + parts",
+   12.19999971188261
+  ],
+  [
+   "wires uart",
+   "pod_body",
+   0.0
+  ],
+  [
+   "wires uart",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "wires uart",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "wires uart",
+   "other parts",
+   0.0
+  ],
+  [
+   "wires i2s",
+   "pod_body",
+   0.0
+  ],
+  [
+   "wires i2s",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "wires i2s",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "wires i2s",
+   "other parts",
+   0.0
+  ],
+  [
+   "wires mic",
+   "pod_body",
+   0.0
+  ],
+  [
+   "wires mic",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "wires mic",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "wires mic",
+   "other parts",
+   0.0
+  ],
+  [
+   "wires speaker",
+   "pod_body",
+   0.0
+  ],
+  [
+   "wires speaker",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "wires speaker",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "wires speaker",
+   "other parts",
+   0.0
+  ],
+  [
+   "wires camera",
+   "pod_body",
+   0.0
+  ],
+  [
+   "wires camera",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "wires camera",
+   "pod_switch",
+   0.0
+  ],
+  [
+   "wires camera",
+   "other parts",
+   0.0
+  ],
+  [
+   "finger over the BiBoard plug",
+   "pod_body",
+   0.0
+  ],
+  [
+   "finger over the BiBoard plug",
+   "other parts",
+   0.0
+  ],
+  [
+   "plug hdmi",
+   "pod_body",
+   0.0
+  ],
+  [
+   "plug hdmi",
+   "pod_panel",
+   0.0
+  ],
+  [
+   "plug hdmi",
+   "pod_switch",
    0.0
   ],
   [
    "plug pi_usb",
-   "pod_lid",
+   "pod_body",
    0.0
   ],
   [
    "plug pi_usb",
-   "pod_tray",
+   "pod_panel",
    0.0
   ],
   [
-   "plug pi_hdmi",
-   "pod_lid",
+   "plug pi_usb",
+   "pod_switch",
    0.0
   ],
   [
-   "plug pi_hdmi",
-   "pod_tray",
+   "plug pi_power",
+   "pod_body",
    0.0
   ],
   [
-   "pisugar2",
-   "pizero",
-   0.013321135947382958
-  ],
-  [
-   "pisugar2",
-   "battery",
+   "plug pi_power",
+   "pod_panel",
    0.0
   ],
   [
-   "pisugar2",
-   "biboard_header",
+   "plug pi_power",
+   "pod_switch",
    0.0
   ],
   [
-   "pisugar2",
-   "dupont_plugs",
+   "plug charge",
+   "pod_body",
    0.0
   ],
   [
-   "pisugar2",
-   "camera_cable",
+   "plug charge",
+   "pod_panel",
    0.0
   ],
   [
-   "pisugar2",
-   "speaker",
+   "plug charge",
+   "pod_switch",
    0.0
-  ],
-  [
-   "pisugar2",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "pisugar2",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "pisugar2",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "pizero",
-   "battery",
-   0.0
-  ],
-  [
-   "pizero",
-   "biboard_header",
-   0.0
-  ],
-  [
-   "pizero",
-   "dupont_plugs",
-   0.0
-  ],
-  [
-   "pizero",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "pizero",
-   "speaker",
-   0.0
-  ],
-  [
-   "pizero",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "pizero",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "pizero",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "battery",
-   "biboard_header",
-   0.0
-  ],
-  [
-   "battery",
-   "dupont_plugs",
-   0.0
-  ],
-  [
-   "battery",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "battery",
-   "speaker",
-   0.0
-  ],
-  [
-   "battery",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "battery",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "battery",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "dupont_plugs",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "speaker",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "biboard_header",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "dupont_plugs",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "dupont_plugs",
-   "speaker",
-   0.0
-  ],
-  [
-   "dupont_plugs",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "dupont_plugs",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "dupont_plugs",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "camera_cable",
-   "speaker",
-   0.0
-  ],
-  [
-   "camera_cable",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "camera_cable",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "camera_cable",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "speaker",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "speaker",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "speaker",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "mic_sph0645",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "mic_sph0645",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "amp_ns4168",
-   "cover_slot",
-   0.0
-  ],
-  [
-   "wire_path",
-   "pod_tray",
-   0.0
-  ],
-  [
-   "wire_path",
-   "pod_lid",
-   0.0
-  ],
-  [
-   "wire_path",
-   "top_insert",
-   0.0
-  ],
-  [
-   "wire_path",
-   "pisugar2",
-   0.0
-  ],
-  [
-   "wire_path",
-   "pizero",
-   0.0
-  ],
-  [
-   "wire_path",
-   "battery",
-   0.0
-  ],
-  [
-   "wire_path",
-   "camera_cable",
-   0.0
-  ],
-  [
-   "wire_path",
-   "speaker",
-   0.0
-  ],
-  [
-   "wire_path",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "wire_path",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "lid turned 180 (min, Z +-12)",
-   "pod_tray",
-   293.38451540760957
   ]
  ],
  "printing": {
-  "pod_tray": {
-   "overhang_mm2": 6.4,
+  "pod_body": {
+   "overhang_mm2": 28.8,
    "regions": [
     {
-     "area": 3.2,
-     "flat": 1.0,
+     "area": 14.4,
+     "flat": 14.4,
      "x": [
-      4.0,
-      6.5
+      -29.6,
+      -27.8
      ],
      "y": [
-      -39.0,
-      -37.7
+      16.2,
+      24.2
      ],
      "z": [
-      2.7,
-      3.3
+      2.6,
+      2.6
      ]
     },
     {
-     "area": 3.2,
-     "flat": 1.0,
+     "area": 14.4,
+     "flat": 14.4,
      "x": [
-      4.0,
-      6.5
+      27.8,
+      29.6
      ],
      "y": [
-      -39.0,
-      -37.7
+      16.2,
+      24.2
      ],
      "z": [
-      18.7,
-      19.3
+      2.6,
+      2.6
      ]
     }
    ]
   },
-  "pod_lid": {
-   "overhang_mm2": 38.4,
+  "pod_panel": {
+   "overhang_mm2": 4.4,
    "regions": [
     {
-     "area": 9.6,
-     "flat": 9.6,
+     "area": 4.4,
+     "flat": 4.4,
      "x": [
-      -26.4,
-      -24.8
+      -4.7,
+      -2.5
      ],
      "y": [
-      -30.5,
-      -24.5
+      3.6,
+      5.6
      ],
      "z": [
-      27.4,
-      27.4
-     ]
-    },
-    {
-     "area": 4.5,
-     "flat": 0.0,
-     "x": [
-      -26.4,
-      -25.8
-     ],
-     "y": [
-      -46.0,
-      -40.0
-     ],
-     "z": [
-      15.4,
-      19.9
-     ]
-    },
-    {
-     "area": 4.5,
-     "flat": 0.0,
-     "x": [
-      25.8,
-      26.4
-     ],
-     "y": [
-      -46.0,
-      -40.0
-     ],
-     "z": [
-      15.4,
-      19.9
-     ]
-    },
-    {
-     "area": 4.2,
-     "flat": 4.2,
-     "x": [
-      -26.4,
-      -25.8
-     ],
-     "y": [
-      -40.0,
-      -33.0
-     ],
-     "z": [
-      17.1,
-      17.1
-     ]
-    },
-    {
-     "area": 4.2,
-     "flat": 4.2,
-     "x": [
-      25.8,
-      26.4
-     ],
-     "y": [
-      -40.0,
-      -33.0
-     ],
-     "z": [
-      17.1,
-      17.1
-     ]
-    },
-    {
-     "area": 1.9,
-     "flat": 1.9,
-     "x": [
-      -9.1,
-      -7.9
-     ],
-     "y": [
-      -53.0,
-      -51.4
-     ],
-     "z": [
-      27.4,
-      27.4
+      2.0,
+      2.0
      ]
     }
    ]
   },
-  "top_insert": {
-   "overhang_mm2": 12.0,
+  "pod_switch": {
+   "overhang_mm2": 2.5,
    "regions": [
     {
-     "area": 3.0,
-     "flat": 3.0,
+     "area": 2.5,
+     "flat": 2.5,
      "x": [
-      -11.1,
-      -10.6
+      3.3,
+      4.8
      ],
      "y": [
-      -14.0,
-      -9.0
+      -0.9,
+      0.9
      ],
      "z": [
-      6.4,
-      6.4
-     ]
-    },
-    {
-     "area": 3.0,
-     "flat": 3.0,
-     "x": [
-      -11.1,
-      -10.6
-     ],
-     "y": [
-      9.0,
-      14.0
-     ],
-     "z": [
-      6.4,
-      6.4
-     ]
-    },
-    {
-     "area": 3.0,
-     "flat": 3.0,
-     "x": [
-      10.6,
-      11.1
-     ],
-     "y": [
-      -14.0,
-      -9.0
-     ],
-     "z": [
-      6.4,
-      6.4
-     ]
-    },
-    {
-     "area": 3.0,
-     "flat": 3.0,
-     "x": [
-      10.6,
-      11.1
-     ],
-     "y": [
-      9.0,
-      14.0
-     ],
-     "z": [
-      6.4,
-      6.4
+      0.9,
+      0.9
      ]
     }
    ]
   }
  },
  "balance": {
-  "mass_g": 117.8,
+  "mass_g": 116.6,
   "com": [
-   -0.5,
-   40.0,
-   9.9
+   -2.5,
+   43.9,
+   13.2
   ],
   "parts": [
    {
-    "name": "pod_tray",
-    "g": 11.6,
+    "name": "pod_body",
+    "g": 32.8,
     "com": [
-     -2.9,
-     30.5,
-     15.5
+     -0.3,
+     37.4,
+     9.8
     ]
    },
    {
-    "name": "pod_lid",
-    "g": 35.1,
+    "name": "pod_panel",
+    "g": 12.6,
     "com": [
-     -0.6,
-     43.5,
-     14.8
+     -0.5,
+     61.4,
+     9.6
     ]
    },
    {
-    "name": "top_insert",
-    "g": 1.1,
+    "name": "pod_switch",
+    "g": 0.2,
     "com": [
-     0.0,
-     58.1,
-     17.0
+     -7.3,
+     62.2,
+     -16.4
     ]
    },
    {
     "name": "pizero",
     "g": 11.0,
     "com": [
-     -0.5,
-     45.5,
-     16.5
+     1.2,
+     46.0,
+     3.3
     ]
    },
    {
     "name": "pisugar2",
     "g": 8.0,
     "com": [
-     -1.1,
-     42.5,
-     16.7
+     -1.8,
+     45.4,
+     3.1
     ]
    },
    {
     "name": "battery",
     "g": 23.0,
     "com": [
-     -1.5,
-     34.1,
-     16.5
+     -10.2,
+     45.0,
+     3.3
     ]
    },
    {
@@ -1057,37 +1299,63 @@
     "g": 20.0,
     "com": [
      0.0,
-     41.5,
-     -26.8
+     43.1,
+     45.7
     ]
    },
    {
     "name": "amp_ns4168",
     "g": 4.0,
     "com": [
-     -2.1,
-     40.0,
-     54.9
+     -23.9,
+     40.7,
+     14.2
     ]
    },
    {
     "name": "mic_sph0645",
     "g": 1.0,
     "com": [
-     -20.4,
-     39.6,
-     18.0
+     -0.0,
+     37.3,
+     -34.6
     ]
    },
    {
-    "name": "dupont_plugs",
+    "name": "pi_plugs",
     "g": 3.0,
     "com": [
+     9.8,
+     33.5,
+     3.3
+    ]
+   },
+   {
+    "name": "biboard_plug",
+    "g": 1.0,
+    "com": [
      26.0,
-     38.6,
-     18.8
+     36.1,
+     18.7
     ]
    }
   ]
+ },
+ "snap": {
+  "tab_k_N_per_mm": 4.79,
+  "tab_travel": 0.45,
+  "push_one_tab_N": 2.3,
+  "pull_one_tab_N": 4.0,
+  "close_N": 9.1,
+  "open_one_end_N": 8.0,
+  "strain_pct": 1.19
+ },
+ "clicks": {
+  "lock_N": 4.2,
+  "unlock_N": 4.2,
+  "hold_N": 1.47,
+  "beam_travel": 0.35,
+  "strain_pct": 1.12,
+  "k_N_per_mm": 3.69
  }
 }

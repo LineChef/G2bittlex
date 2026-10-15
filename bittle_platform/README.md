@@ -20,7 +20,7 @@ Version 3.0 is not compatible with earlier versions: the pegs have a new shape a
 | Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the rear end only). Bumps R1.5 at 1.42 in front of the peg, 0.35 into the shaft path. They push the shaft point into the V stop, which centers it. |
 | Click force | about 4.2 N to slide on and 4.2 N to slide off (all 8 beams, PLA estimate); beam strain 1.12 % |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
-| Size | the pod fits in Z -40..66, \|X\| <= 33.6; outside that, check the legs and the head |
+| Size | the pod fits in Z -37.8..56.2, \|X\| <= 29.6; outside that, check the legs and the head |
 
 ![Left: keyhole and click beams in the add-on plate (top view, locked). Right: the peg and the plate (side section).](doc/keyhole.png)
 
@@ -56,7 +56,7 @@ Version 3.0 is not compatible with earlier versions: the pegs have a new shape a
 
 1. Material: PLA works. Use PETG for add-ons that you remove often or that get warm.
 2. Standing on its end, the cover prints the pegs with layers along their length. This makes them strong. The shaft and collar points are down, so they need no supports.
-3. The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at small teeth.
+3. The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at 21 small teeth, each one layer tall. Twist the foot off after the print.
 4. In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.
 5. The fits use 0.35 (slot), 0.45 (drop-in hole) and 0.3 (under the heads) clearance. Calibrate your printer if the plate does not slide on.
 

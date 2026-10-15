@@ -264,7 +264,7 @@ def content():
          ], [70, 50, 50])
     lst(["Material: PLA works. Use PETG for add-ons that you remove often or that get warm.",
          "Standing on its end, the cover prints the pegs with layers along their length. This makes them strong. The shaft and collar points are down, so they need no supports.",
-         "The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at small teeth.",
+         "The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at 21 small teeth, each one layer tall. Twist the foot off after the print.",
          "In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.",
          f"The fits use {I.KEY_SLOT_GAP:g} (slot), {I.KEY_HOLE_GAP:g} (drop-in hole) and {I.PEG_HEAD_Y0 - I.MOUNT_Y1:.1f} (under the heads) clearance. Calibrate your printer if the plate does not slide on."])
 

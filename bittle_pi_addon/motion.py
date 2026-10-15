@@ -3,11 +3,10 @@
 Run after pod.py:  python motion.py  ->  stl/motion.json
 
 Angles are in degrees, relative to the standing pose of robot.py.
-  head: contact volume with the lid for each head turn angle.
-  legs: hip x knee grid. A pose is "addon" when the leg touches the tray or the lid
-        and does not touch the robot body. It is "body" when the leg touches the body.
-  tail: the Petoi tail against the lid and the tray.
-  install: the tray and the speaker at the drop-on place (7 mm behind the locked place) against the head.
+  head: contact volume with the add-on for each head turn angle.
+  legs: hip x knee grid. A pose is "addon" when the leg touches the body or the panel
+        and does not touch the robot body. It is "body" when the leg touches the robot body.
+  tail: the Petoi tail against the add-on, in place and at the drop-on place.
 """
 import json
 import os
@@ -32,8 +31,7 @@ def load(rel):
 
 def main():
     R = RB.Robot()
-    lid, tray = load("installed/pod_lid.stl"), load("installed/pod_tray.stl")
-    addon = lid + tray
+    addon = load("installed/pod_body.stl") + load("installed/pod_panel.stl")
     out = {}
 
     # head turn
@@ -41,29 +39,24 @@ def main():
     rows = []
     for a in range(-90, 91, 5):
         H = head.transform(RB.rot(R.joints["head"]["axis"], a, R.joints["head"]["p"]))
-        rows.append([a, round((H ^ lid).volume(), 2), round(H.min_gap(lid, 10), 2)])
+        rows.append([a, round((H ^ addon).volume(), 2), round(H.min_gap(addon, 10), 2)])
     free = [a for a, v, g in rows if v < 0.05]
     out["head"] = dict(rows=rows, free=[min(free), max(free)], gap0=[g for a, v, g in rows if a == 0][0])
     print("head: no contact from", min(free), "to", max(free), "deg; gap straight ahead", out["head"]["gap0"], "mm")
 
-    # tail
+    # tail: in place and at the drop-on place (SLIDE rearward)
     tail = R.parts["tail"]
-    out["tail"] = dict(lid=round((tail ^ lid).volume(), 1), tray=round((tail ^ tray).volume(), 1))
+    out["tail"] = dict(contact=round((tail ^ addon).volume(), 2), gap=round(tail.min_gap(addon, 10), 2),
+                       drop_on_contact=round((tail ^ addon.translate([0, 0, PI.SLIDE])).volume(), 2),
+                       drop_on_gap=round(tail.min_gap(addon.translate([0, 0, PI.SLIDE]), 10), 2))
     print("tail:", out["tail"])
-
-    # install: the tray and the speaker at the drop-on place (7 mm rearward), head straight ahead
-    out["install"] = {}
-    for n, M in (("tray", tray), ("speaker", load("models/speaker.stl"))):
-        T = M.translate([0, 0, PI.SLIDE])
-        out["install"][n] = dict(head=round((T ^ head).volume(), 2), gap=round(T.min_gap(head, 10), 2))
-    print("install (7 mm rearward) x head:", out["install"])
 
     # legs: one front and one rear leg on each side; the grid is the same for left and right
     # the robot body (the thigh horn sits on the hip servo spline: the hip servos are not in it)
     body = (pod.mesh_to_manifold(pod.load_stl(os.path.join(ROOT, "stl", "installed", "cover_pegs.stl")))
             + R.parts["rear_plate"] + R.parts["neck_mount"])
     for n, rp in pod.robot_parts().items():
-        if n != "rear_plate_mirror":
+        if n in ("shoulder_r", "shoulder_l", "front_plate"):
             body += rp
     legs = {}
     for end in ("front", "rear"):
