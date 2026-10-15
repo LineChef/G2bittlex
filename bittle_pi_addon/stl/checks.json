@@ -81,6 +81,31 @@
    0.0
   ],
   [
+   "cover_pegs",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "pod_body",
    "pizero",
    0.0
@@ -131,6 +156,31 @@
    0.0
   ],
   [
+   "pod_body",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pod_body",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pod_body",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pod_body",
+   "wires_camera",
+   0.00016397475504835923
+  ],
+  [
+   "pod_body",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "pod_panel",
    "pizero",
    0.0
@@ -181,6 +231,31 @@
    0.0
   ],
   [
+   "pod_panel",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pod_panel",
+   "wires_speaker",
+   0.0006296670850060582
+  ],
+  [
    "pod_switch",
    "pizero",
    0.0
@@ -228,6 +303,31 @@
   [
    "pod_switch",
    "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pod_switch",
+   "wires_speaker",
    0.0
   ],
   [
@@ -491,6 +591,31 @@
    0.0
   ],
   [
+   "pizero",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pizero",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pizero",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pizero",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pizero",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "pisugar2",
    "battery",
    0.0
@@ -531,6 +656,31 @@
    0.0
   ],
   [
+   "pisugar2",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pisugar2",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "battery",
    "sd_card",
    0.0
@@ -566,6 +716,31 @@
    0.0
   ],
   [
+   "battery",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "battery",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "battery",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "battery",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "battery",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "sd_card",
    "pi_plugs",
    0.0
@@ -596,6 +771,31 @@
    0.0
   ],
   [
+   "sd_card",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "sd_card",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "sd_card",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "sd_card",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "sd_card",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "pi_plugs",
    "biboard_header",
    0.0
@@ -621,6 +821,11 @@
    0.0
   ],
   [
+   "pi_plugs",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "biboard_header",
    "speaker",
    0.0
@@ -633,6 +838,31 @@
   [
    "biboard_header",
    "mic_sph0645",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "biboard_header",
+   "wires_speaker",
    0.0
   ],
   [
@@ -651,6 +881,26 @@
    0.0
   ],
   [
+   "biboard_plug",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "biboard_plug",
+   "wires_speaker",
+   0.0
+  ],
+  [
    "speaker",
    "amp_ns4168",
    0.0
@@ -661,8 +911,388 @@
    0.0
   ],
   [
+   "speaker",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "speaker",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "speaker",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "speaker",
+   "wires_camera",
+   0.0
+  ],
+  [
    "amp_ns4168",
    "mic_sph0645",
+   0.0
+  ],
+  [
+   "amp_ns4168",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "amp_ns4168",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "amp_ns4168",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "mic_sph0645",
+   "wires_speaker",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "front_plate",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "head",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "tail",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "wires_uart",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "front_plate",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "head",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "tail",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "wires_amp",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "front_plate",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "head",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "tail",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "wires_mic",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "front_plate",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "head",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "tail",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "wires_camera",
+   "leg_rr",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "cover_pegs",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "shoulder_r",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "shoulder_l",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "front_plate",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "head",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "neck_mount",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "rear_plate",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "hip_servos",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "tail",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "leg_lf",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "leg_rf",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "leg_lr",
+   0.0
+  ],
+  [
+   "wires_speaker",
+   "leg_rr",
    0.0
   ],
   [
@@ -918,7 +1548,7 @@
   [
    "panel close (max over 12 mm down)",
    "body + parts",
-   0.0
+   0.0006296670850061276
   ],
   [
    "switch slider -2mm",
@@ -1153,14 +1783,14 @@
  ],
  "printing": {
   "pod_body": {
-   "overhang_mm2": 28.8,
+   "overhang_mm2": 29.5,
    "regions": [
     {
-     "area": 14.4,
-     "flat": 14.4,
+     "area": 15.1,
+     "flat": 15.1,
      "x": [
       -29.6,
-      -27.8
+      -27.5
      ],
      "y": [
       16.2,
@@ -1233,16 +1863,16 @@
   }
  },
  "balance": {
-  "mass_g": 116.6,
+  "mass_g": 116.5,
   "com": [
-   -2.5,
+   -2.6,
    43.9,
-   13.2
+   13.1
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 32.8,
+    "g": 32.7,
     "com": [
      -0.3,
      37.4,
@@ -1255,7 +1885,7 @@
     "com": [
      -0.5,
      61.4,
-     9.6
+     9.4
     ]
    },
    {
@@ -1291,43 +1921,43 @@
     "com": [
      -10.2,
      45.0,
-     3.3
+     4.4
     ]
    },
    {
     "name": "speaker",
     "g": 20.0,
     "com": [
-     0.0,
+     -0.0,
      43.1,
-     45.7
+     45.5
     ]
    },
    {
     "name": "amp_ns4168",
     "g": 4.0,
     "com": [
-     -23.9,
+     -24.5,
      40.7,
-     14.2
+     10.8
     ]
    },
    {
     "name": "mic_sph0645",
     "g": 1.0,
     "com": [
-     -0.0,
-     37.3,
-     -34.6
+     0.0,
+     35.2,
+     -34.8
     ]
    },
    {
     "name": "pi_plugs",
     "g": 3.0,
     "com": [
-     9.8,
-     33.5,
-     3.3
+     8.3,
+     33.3,
+     -1.4
     ]
    },
    {
@@ -1336,7 +1966,7 @@
     "com": [
      26.0,
      36.1,
-     18.7
+     17.9
     ]
    }
   ]

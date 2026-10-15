@@ -23,16 +23,6 @@ PARTS = [
     ("switch", "Power switch slider", "Printed", "stl/installed/pod_switch.stl", "#f2f2ef", (0, 52, 0), None),
     ("body", "Add-on body", "Printed", "stl/installed/pod_body.stl", "#f2f2ef", (0, 10, 0), None),
     ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
-    ("pizero", "Raspberry Pi Zero 2 W", "Components", "stl/models/pizero.stl", "#2e9b4f", (8, 40, 0), None),
-    ("pisugar", "PiSugar 2 board", "Components", "stl/models/pisugar2.stl", "#e06aa3", (4, 40, 0), None),
-    ("battery", "1200 mAh cell", "Components", "stl/models/battery.stl", "#4a78d8", (0, 40, 0), None),
-    ("pi_plugs", "Dupont plugs on the Pi header", "Components", "stl/models/pi_plugs.stl", "#d83a34", (12, 40, 0), None),
-    ("amp", "NS4168 amp", "Components", "stl/models/amp_ns4168.stl", "#1f5f8f", (-14, 30, 0), None),
-    ("speaker", "NULLLAB 3 W speaker (rear)", "Components", "stl/models/speaker.stl", "#7a52b8", (0, 30, 12), None),
-    ("mic", "SPH0645 mic (front)", "Components", "stl/models/mic_sph0645.stl", "#d83a34", (0, 30, -12), None),
-    ("header", "BiBoard 5-pin header (est. height)", "Robot", "stl/models/biboard_header.stl", "#0d0d0d", (0, 0, 0), None),
-    ("bb_plug", "Dupont plug on the BiBoard header", "Components", "stl/models/biboard_plug.stl", "#d83a34", (14, 30, 0), None),
-    ("wire_paths", "Wire paths (checked free)", "Components", "stl/models/wire_paths.stl", "#f0c419", (0, 30, 0), None),
     ("shoulder_r", "Side shoulder R", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), None),
     ("shoulder_l", "Side shoulder L", "Robot", "../bittle_platform/reference/Bittle_SideShoulder.stl", "#f2a71c", (0, 0, 0), "mirror_x"),
     ("front_plate", "Front plate", "Robot", "../bittle_platform/reference/Bittle_FrontPlate.stl", "#26272b", (0, 0, 0), None),
@@ -44,6 +34,28 @@ PARTS = [
     ("tail", "Tail (Petoi model)", "Robot", "../bittle_platform/stl/robot/tail.stl", "#3a3b40", (0, 0, 0), None),
 ] + [(f"{p}_{k}", f"{n} {k.upper()}", "Robot", f"../bittle_platform/stl/robot/{p}_{k}.stl", c, (0, 0, 0), None)
      for k in ("lf", "rf", "lr", "rr") for p, n, c in (("thigh", "Thigh", "#f2a71c"), ("shank", "Shank", "#2c2d31"))]
+
+# Electronics and wires: colored sub-parts from pod.py (stl/models/parts.json). ALIAS: pod.py model -> viewer id.
+ALIAS = dict(pizero="pizero", pisugar2="pisugar", battery="battery", sd_card="sd_card", pi_plugs="pi_plugs", amp_ns4168="amp",
+             speaker="speaker", mic_sph0645="mic", biboard_header="header", biboard_plug="bb_plug")
+EXPLODE = dict(pizero=(8, 40, 0), pisugar=(4, 40, 0), battery=(0, 40, 0), sd_card=(8, 40, 0), pi_plugs=(12, 40, 0), amp=(-14, 30, 0),
+               speaker=(0, 30, 12), mic=(0, 30, -12), header=(0, 0, 0), bb_plug=(14, 30, 0))
+GROUPS = {}
+for _d in json.load(open(os.path.join(ROOT, "stl", "models", "parts.json"))):
+    _a = ALIAS.get(_d["model"], "wires")
+    _id = _d["model"] + "__" + _d["sub"]
+    GROUPS.setdefault(_a, []).append(_id)
+    PARTS.append((_id, _d["label"][0].upper() + _d["label"][1:], "Robot" if _a == "header" else "Wires" if _a == "wires" else "Components",
+                  "stl/" + _d["file"], _d["color"], EXPLODE.get(_a, (0, 30, 0)), None))
+
+
+def expand(ids):
+    """Viewer ids of a step: a model name stands for all its sub-parts."""
+    out = []
+    for i in ids:
+        out += GROUPS.get(i, [i])
+    return out
+
 
 # Text for the part card in the viewer: what the part is, how it attaches, downloads (relative to site/viewer/).
 PF, AF = "../files/platform/", "../files/addon/"
@@ -91,6 +103,11 @@ INFO = {
                    attach="It is part of the robot."),
     "bb_plug": dict(text="A straight Dupont plug on the BiBoard header, inside the right wall.",
                     attach="Plug it in from the top after the body is on the robot (the panel is off)."),
+    "sd_card": dict(text="The microSD card. About 2.5 mm of it stands out of the holder at the front end of the Pi (not measured).",
+                    attach="To change it, lift the stack out."),
+    "wires": dict(text="The jumper wires (1.4 mm), on the routes that pod.py checks: no wire touches a printed part or another board. "
+                       "The jumpers are longer than shown: fold the slack into the right well.",
+                  attach="Each jumper goes from its Pi header pin to the part. See the wiring table in the guide."),
     "wire_paths": dict(text="The free paths for the wires: the BiBoard wires in the right well, the I2S wires under the stack to the amp, "
                             "the mic wires over the mic, the speaker wires over the amp, and the camera cable from the right notch. "
                             "The check in pod.py keeps every part out of them.",
@@ -107,7 +124,7 @@ INFO = {
 }
 
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
-STACK = ["battery", "pisugar", "pizero", "pi_plugs"]
+STACK = ["battery", "pisugar", "pizero", "sd_card", "pi_plugs"]
 STEPS = [
     dict(title="The robot", show=["shoulder_r", "shoulder_l", "front_plate", "rear_plate", "header", "head", "neck_mount", "hip_servos",
                                   "robot_battery", "tail"] + [f"{p}_{k}" for k in ("lf", "rf", "lr", "rr") for p in ("thigh", "shank")], view="iso",
@@ -129,9 +146,9 @@ STEPS = [
               "The I2S wires go under the stack: lay them across the floor behind the rear pegs first."),
     dict(title="Pi stack", view="iso", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the jumpers onto the Pi header. Then push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front."),
-    dict(title="Wires", view="iso", show=["bb_plug", "wire_paths"], start={"bb_plug": [0, 25, 0], "wire_paths": [0, 25, 0]},
-         text="Reach into the right well and push the Dupont plug onto the BiBoard header. Fold the slack of the wires into the right well. "
-              "The yellow boxes are the wire paths that the checks keep clear."),
+    dict(title="Wires", view="iso", show=["bb_plug", "wires"], start={"bb_plug": [0, 25, 0], "wires": [0, 25, 0]},
+         text="Reach into the right well and push the Dupont plugs onto the BiBoard header (GND, TX2, RX2). Fold the slack of the wires into the right well. "
+              "The checks keep every wire off the printed parts and the other boards."),
     dict(title="Switch slider", view="iso", show=["switch"], start={"switch": [0, 25, 0]},
          text="Put the switch slider on the PiSugar switch lever, fork down."),
     dict(title="Panel", view="iso", show=["panel"], start={"panel": [0, 30, 0]},
@@ -157,8 +174,9 @@ def main():
             name = os.path.basename(os.path.dirname(src)) + "_" + os.path.basename(src)
             shutil.copy2(path, os.path.join(MD, name))
             copied[src] = name
+        info = INFO.get(pid) or INFO.get(next((a for a, ids in GROUPS.items() if pid in ids), ""), {})
         out.append(dict(id=pid, label=label, group=group, file="models/" + name,
-                        color=color, explode=ex, transform=tf, **INFO.get(pid, {})))
+                        color=color, explode=ex, transform=tf, **info))
     checks = json.load(open(os.path.join(ROOT, "stl", "checks.json")))["rows"]
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
@@ -171,7 +189,16 @@ def main():
     )
     robot = json.load(open(os.path.join(PROJ, "bittle_platform", "stl", "robot", "robot.json")))
     robot["motion"] = json.load(open(os.path.join(ROOT, "stl", "motion.json")))
-    json.dump(dict(parts=out, meta=meta, steps=STEPS, robot=robot), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
+    steps = []
+    for st in STEPS:
+        st = dict(st)
+        if "show" in st:
+            st["show"] = expand(st["show"])
+        for k in ("start", "end"):
+            if k in st:
+                st[k] = {i: v for key, v in st[k].items() for i in expand([key])}
+        steps.append(st)
+    json.dump(dict(parts=out, meta=meta, steps=steps, robot=robot), open(os.path.join(SITE, "manifest.json"), "w"), indent=1)
     print("site ready:", len(out), "parts")
 
 

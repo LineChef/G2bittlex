@@ -14,7 +14,7 @@ Version 0.16, 2026-10-15. A sample add-on for the Bittle X platform v3.0 (../bit
 | pod_switch.stl | PLA | flat side on the bed, tab up | none | Bittle Fine 0.10 | 0.2 g |
 | cover_pegs_foot.stl (../bittle_platform) | PLA | stand on the rear end | none: the foot is the support | Bittle Cover - PLA 0.25 | 11 g |
 
-Print quality. The body walls are vertical and its floor is on the bed. The only overhangs (29 mm² in total) are the tops of the two camera cable notches at the base of the side walls: 8 mm bridges. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the snap bumps have 45 deg catch faces. Its only overhang (4 mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. Keep the seam at the rear.
+Print quality. The body walls are vertical and its floor is on the bed. The only overhangs (30 mm² in total) are the tops of the two camera cable notches at the base of the side walls: 8 mm bridges. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the snap bumps have 45 deg catch faces. Its only overhang (4 mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. Keep the seam at the rear.
 
 
 ## 2. Electronics
@@ -23,12 +23,12 @@ Print quality. The body walls are vertical and its floor is on the bed. The only
 |---|---|
 | Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh | On the long edge over the robot center: ports and PiSugar controls up, GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards. |
 | Dupont jumpers | On the soldered Pi header. 4 of them go to the BiBoard header (GND, +5V, TX2, RX2) in the right well. |
-| NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. |
+| NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end. |
 | NULLLAB 3 W 4 ohm speaker | At the rear, sound to the grille in the rear face. Ear plate 45 x 31 x 1.5 in two side grooves (ruler). |
-| HiLetgo SPH0645 I2S mic | 16.7 x 12.7 x 1.8 board at the front wall, port to the front, in two grooves. |
+| HiLetgo SPH0645 I2S mic | 16.7 x 12.7 x 1.8 board at the front wall, port to the front, in two grooves. Solder the wires to the pins at its top edge. |
 | Petoi AI Vision Module (optional) | Stays in the head. Its Grove cable comes along the robot side and in through the notch at the base of the right wall. |
 
-Balance. The add-on weighs about 117 g (printed parts in PLA and typical masses of the electronics, not weighed). The Pi stack, the heaviest part, is over the robot center. The speaker is at the rear, away from the mic. So the center of mass of the add-on is 13.2 mm behind the robot center and 2.5 mm left of the center line, 19 mm above the cover top. The platform spec recommends 10 mm or less: with the speaker at the front it is about 7 mm. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs about 116 g (printed parts in PLA and typical masses of the electronics, not weighed). The Pi stack, the heaviest part, is over the robot center. The speaker is at the rear, away from the mic. So the center of mass of the add-on is 13.1 mm behind the robot center and 2.6 mm left of the center line, 19 mm above the cover top. The platform spec recommends 10 mm or less: with the speaker at the front it is about 7 mm. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -39,7 +39,7 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 4.2 N). The BiBoard header is now in the notch of the right well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
 3. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
 4. Push the mic down into the two grooves at the front wall, port to the front. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
-5. Lay the I2S wires (amp and mic) across the floor behind the rear pegs. Push the amp down into the slot along the left wall, parts to the inside. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
+5. Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. Lay the amp cable across the floor in front of the front pegs. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
 6. Push the jumpers onto the Pi header. Push the Pi + PiSugar 2 stack down into the end grooves, over the I2S wires. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Reach into the right well and push the Dupont plug onto the BiBoard header. Fold the slack into the right well. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9))
 8. Put the switch slider on the PiSugar switch lever, fork down. ([viewer step 10](https://beetlebugorg.github.io/bittlex/viewer/#step=10))
@@ -49,8 +49,6 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. The ribbed slider beside the HDMI opening moves the PiSugar power switch (2 mm of slot travel each way; the switch sets the end positions). The tongue near the front of the panel is a large button: press it to press the PiSugar button.
 
 ![The top: HDMI, the switch slider, data USB, charge and Pi power, and the button tongue.](doc/04_top.png)
-
-![The body without the panel: the stack on its edge, the plug block on the Pi header, the speaker at the rear.](doc/06_open.png)
 
 
 ## 4. Wiring
@@ -66,7 +64,9 @@ On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The
 | Speaker | - | amp + / - to the speaker |
 | Camera I2C (Grove) | SDA GPIO2 pin 3, SCL GPIO3 pin 5, 3V3 pin 17, GND pin 14 | AI Vision Module Grove: SDA, SCL, VCC, GND |
 
-Wire paths. pod.py keeps five paths free of all parts (yellow in the viewer). BiBoard wires: in the right well, from the Pi header plugs to the BiBoard plug. I2S wires: a 2.2 mm space on the floor under the stack, behind the rear pegs, to the amp. Mic wires: over the mic to the right well. Speaker wires: over the amp to the speaker. Camera cable: from the right notch to the front end of the Pi header. A finger tip (21 x 16 mm) reaches the BiBoard plug from the top: nothing is in that space.
+Wire routes. pod.py models each jumper as a 1.4 mm wire on its route and checks that no wire touches a printed part or another board. BiBoard wires: up from the Pi header in the right well, then down into the BiBoard plugs. Amp cable: from the I2S plug at the front end of the amp, across the floor under the stack (a 2.2 mm space in front of the front pegs), up the right well to the header. Mic wires: up from the mic pins, over the front post, into the right well. Speaker leads: over the ear plate and down the left side to the rear end of the amp. Camera cable: in through the right notch, up to the header. Two mic wires share the BCLK and LRCLK housings with the amp wires (two wires in one Dupont housing). A finger tip (21 x 16 mm) reaches the BiBoard plug from the top.
+
+![From the top, panel off: the Pi header with Dupont housings on the pins in use, and the wire routes.](doc/11_wires_top.png)
 
 
 ## 5. Checks

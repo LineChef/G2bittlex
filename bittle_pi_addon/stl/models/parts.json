@@ -1,0 +1,310 @@
+[
+ {
+  "model": "pisugar2",
+  "sub": "board",
+  "label": "PiSugar 2 board",
+  "file": "models/parts/pisugar2__board.stl",
+  "color": "#e06aa3"
+ },
+ {
+  "model": "pizero",
+  "sub": "board",
+  "label": "Raspberry Pi Zero 2 W",
+  "file": "models/parts/pizero__board.stl",
+  "color": "#2e9b4f"
+ },
+ {
+  "model": "battery",
+  "sub": "cell",
+  "label": "1200 mAh cell",
+  "file": "models/parts/battery__cell.stl",
+  "color": "#b9bcc2"
+ },
+ {
+  "model": "battery",
+  "sub": "flap",
+  "label": "cell seal",
+  "file": "models/parts/battery__flap.stl",
+  "color": "#d9b34a"
+ },
+ {
+  "model": "battery",
+  "sub": "lead0",
+  "label": "cell lead",
+  "file": "models/parts/battery__lead0.stl",
+  "color": "#d83a34"
+ },
+ {
+  "model": "battery",
+  "sub": "lead1",
+  "label": "cell lead",
+  "file": "models/parts/battery__lead1.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "sd_card",
+  "sub": "card",
+  "label": "microSD card",
+  "file": "models/parts/sd_card__card.stl",
+  "color": "#26272b"
+ },
+ {
+  "model": "pi_plugs",
+  "sub": "header",
+  "label": "Pi 2x20 header",
+  "file": "models/parts/pi_plugs__header.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "pi_plugs",
+  "sub": "pins",
+  "label": "header pins",
+  "file": "models/parts/pi_plugs__pins.stl",
+  "color": "#d9b34a"
+ },
+ {
+  "model": "pi_plugs",
+  "sub": "housings",
+  "label": "Dupont housings",
+  "file": "models/parts/pi_plugs__housings.stl",
+  "color": "#3a3b40"
+ },
+ {
+  "model": "biboard_header",
+  "sub": "header",
+  "label": "BiBoard 5-pin header (est. height)",
+  "file": "models/parts/biboard_header__header.stl",
+  "color": "#0d0d0d"
+ },
+ {
+  "model": "biboard_plug",
+  "sub": "housings",
+  "label": "Dupont plugs on the BiBoard header",
+  "file": "models/parts/biboard_plug__housings.stl",
+  "color": "#3a3b40"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "pcb",
+  "label": "NS4168 amp board",
+  "file": "models/parts/amp_ns4168__pcb.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "rings",
+  "label": "amp hole rings",
+  "file": "models/parts/amp_ns4168__rings.stl",
+  "color": "#e8e8e8"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "headers",
+  "label": "amp PH2.0 headers",
+  "file": "models/parts/amp_ns4168__headers.stl",
+  "color": "#efe6d2"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "plugs",
+  "label": "amp PH2.0 plugs",
+  "file": "models/parts/amp_ns4168__plugs.stl",
+  "color": "#fbf6ea"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "terminal",
+  "label": "amp screw terminal",
+  "file": "models/parts/amp_ns4168__terminal.stl",
+  "color": "#2f6fd6"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "screws",
+  "label": "terminal screws",
+  "file": "models/parts/amp_ns4168__screws.stl",
+  "color": "#c8c8c8"
+ },
+ {
+  "model": "amp_ns4168",
+  "sub": "ic",
+  "label": "NS4168 chip",
+  "file": "models/parts/amp_ns4168__ic.stl",
+  "color": "#2a2a2a"
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "pcb",
+  "label": "SPH0645 mic board",
+  "file": "models/parts/mic_sph0645__pcb.stl",
+  "color": "#22303f"
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "pads",
+  "label": "mic solder pads",
+  "file": "models/parts/mic_sph0645__pads.stl",
+  "color": "#d9b34a"
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "mic",
+  "label": "SPH0645 mic",
+  "file": "models/parts/mic_sph0645__mic.stl",
+  "color": "#c8c8c8"
+ },
+ {
+  "model": "speaker",
+  "sub": "plate",
+  "label": "speaker ear plate",
+  "file": "models/parts/speaker__plate.stl",
+  "color": "#26272b"
+ },
+ {
+  "model": "speaker",
+  "sub": "body",
+  "label": "NULLLAB 3 W speaker",
+  "file": "models/parts/speaker__body.stl",
+  "color": "#3a3b40"
+ },
+ {
+  "model": "speaker",
+  "sub": "grille",
+  "label": "speaker grille",
+  "file": "models/parts/speaker__grille.stl",
+  "color": "#5a5b60"
+ },
+ {
+  "model": "wires_uart",
+  "sub": "gnd",
+  "label": "uart wire GND",
+  "file": "models/parts/wires_uart__gnd.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "wires_uart",
+  "sub": "tx",
+  "label": "uart wire TX > RX2",
+  "file": "models/parts/wires_uart__tx.stl",
+  "color": "#2e9b4f"
+ },
+ {
+  "model": "wires_uart",
+  "sub": "rx",
+  "label": "uart wire RX < TX2",
+  "file": "models/parts/wires_uart__rx.stl",
+  "color": "#f2f2ef"
+ },
+ {
+  "model": "wires_amp",
+  "sub": "gnd",
+  "label": "amp wire GND",
+  "file": "models/parts/wires_amp__gnd.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "wires_amp",
+  "sub": "5v",
+  "label": "amp wire 5V",
+  "file": "models/parts/wires_amp__5v.stl",
+  "color": "#d83a34"
+ },
+ {
+  "model": "wires_amp",
+  "sub": "bclk",
+  "label": "amp wire BCLK",
+  "file": "models/parts/wires_amp__bclk.stl",
+  "color": "#f0c419"
+ },
+ {
+  "model": "wires_amp",
+  "sub": "lrclk",
+  "label": "amp wire LRCLK",
+  "file": "models/parts/wires_amp__lrclk.stl",
+  "color": "#e8641b"
+ },
+ {
+  "model": "wires_amp",
+  "sub": "din",
+  "label": "amp wire DIN",
+  "file": "models/parts/wires_amp__din.stl",
+  "color": "#3a6fd8"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "lrcl",
+  "label": "mic wire LRCL",
+  "file": "models/parts/wires_mic__lrcl.stl",
+  "color": "#e8641b"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "dout",
+  "label": "mic wire DOUT",
+  "file": "models/parts/wires_mic__dout.stl",
+  "color": "#8e5bd8"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "bclk",
+  "label": "mic wire BCLK",
+  "file": "models/parts/wires_mic__bclk.stl",
+  "color": "#f0c419"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "gnd",
+  "label": "mic wire GND",
+  "file": "models/parts/wires_mic__gnd.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "wires_mic",
+  "sub": "3v",
+  "label": "mic wire 3V",
+  "file": "models/parts/wires_mic__3v.stl",
+  "color": "#d83a34"
+ },
+ {
+  "model": "wires_camera",
+  "sub": "gnd",
+  "label": "camera wire GND",
+  "file": "models/parts/wires_camera__gnd.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "wires_camera",
+  "sub": "3v3",
+  "label": "camera wire 3V3",
+  "file": "models/parts/wires_camera__3v3.stl",
+  "color": "#d83a34"
+ },
+ {
+  "model": "wires_camera",
+  "sub": "sda",
+  "label": "camera wire SDA",
+  "file": "models/parts/wires_camera__sda.stl",
+  "color": "#f2f2ef"
+ },
+ {
+  "model": "wires_camera",
+  "sub": "scl",
+  "label": "camera wire SCL",
+  "file": "models/parts/wires_camera__scl.stl",
+  "color": "#f0c419"
+ },
+ {
+  "model": "wires_speaker",
+  "sub": "pos",
+  "label": "speaker wire +",
+  "file": "models/parts/wires_speaker__pos.stl",
+  "color": "#d83a34"
+ },
+ {
+  "model": "wires_speaker",
+  "sub": "neg",
+  "label": "speaker wire -",
+  "file": "models/parts/wires_speaker__neg.stl",
+  "color": "#1d1d1f"
+ }
+]

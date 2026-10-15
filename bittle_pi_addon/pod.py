@@ -146,12 +146,17 @@ SPK_GROOVE = dict(x_in=21.25, clr=0.25, lip=1.5, top=56.5, clr_y=0.4)
 AMP = dict(t=1.6, l=38.4, h=22.4, comp=10.0)
 AMP_X = (-IN_A + 0.5, -IN_A + 0.5 + AMP["t"])   # -27.3 .. -25.7
 AMP_Y0 = 28.5
-AMP_Z = (-3.0, -3.0 + AMP["l"])                  # screw terminal at the front end, 5-pin PH2.0 at the rear end
-AMP_FORKS = [8.0, 30.0]                          # z0 of the panel forks over the amp top edge (2.5 long)
+AMP_Z = (-9.0, -9.0 + AMP["l"])                  # I2S 5-pin PH2.0 at the front end, speaker 2-pin PH2.0 and the screw terminal at the rear end
+AMP_FORKS = [2.0, 12.0]                          # z0 of the panel forks over the amp top edge (2.5 long)
+# Board layout from the NULLLAB photo (u from the I2S end, v down from the top edge, mm). The PH2.0 headers are
+# side entry: the plugs go in along the board, from the ends. ph=height of the PH headers over the PCB.
+AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0, 36.8, 0.75, 7.6), ic=(17.7, 24.0, 7.2, 13.6),
+             holes=[(15.2, 2.65), (15.2, 19.3)], hole_d=4.7, ph=5.0, term_h=8.5, plug_out=3.7)
 
-# SPH0645 mic board (Adafruit 3421 size, 12.7 x 16.7 x 1.8) at the front wall, centered, port face to
-# the front. Its two sides go down into grooves. Sound holes in the front face.
-MIC = dict(w=12.7, l=16.7, t=1.8, y0=29.0, clr=0.1)
+# SPH0645 mic board (Adafruit 3421 size, 16.7 x 12.7 x 1.8) at the front wall, centered, port face to
+# the front, the 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V) along the top edge. Its two sides go down into
+# grooves. Sound holes in the front face.
+MIC = dict(w=16.7, l=12.7, t=1.8, y0=29.0, clr=0.1)
 MIC_Z = (ZF_IN + 0.4, ZF_IN + 0.4 + MIC["t"])     # -35.6 .. -33.8
 MIC_PORT_Y = MIC["y0"] + MIC["l"] / 2            # port assumed at the board center (not measured)
 
@@ -170,17 +175,20 @@ CAM_NOTCH = dict(z=(-15.0, -7.0), y1=28.6)
 # Grille in the rear face, mic holes in the front face
 GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6)
 
-# Wire paths (check(): no part in them). Dupont jumper wire is about 1.6 mm.
+# Wire paths (check(): no printed part and no other electronics in them). Dupont jumper wire is about 1.4 mm.
 WIRE_PATHS = {
-    "uart: Pi header to BiBoard plug": [dict(x=(18.2, 27.6), y=(31.0, 54.0), z=(4.6, 30.0))],
-    "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(22.5, 33.0)),
-                                        dict(x=(-23.8, -15.4), y=(27.6, 30.3), z=(22.5, 33.0))],
-    "mic: over the mic to the right well": [dict(x=(-6.5, 21.0), y=(46.2, 52.0), z=(-35.5, -32.4)),
-                                            dict(x=(8.8, 21.0), y=(37.0, 52.0), z=(-32.4, -22.3))],
-    "speaker: over the amp to the speaker": [dict(x=(-23.8, -15.6), y=(51.2, 56.0), z=(-3.0, 36.3)),
-                                             dict(x=(-21.0, -15.6), y=(41.0, 56.0), z=(36.3, 38.0))],
+    "uart: Pi header to BiBoard plug": [dict(x=(18.2, 27.6), y=(31.0, 54.0), z=(-16.5, 30.0))],
+    "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-26.3, -18.6)),
+                                        dict(x=(-25.0, -15.6), y=(27.6, 47.0), z=(-18.6, -12.2))],
+    "mic: over the mic to the right well": [dict(x=(-7.1, 7.1), y=(42.3, 52.0), z=(-33.6, -32.2)),
+                                            dict(x=(-7.1, 21.0), y=(50.6, 54.0), z=(-33.6, -29.9)),
+                                            dict(x=(5.6, 21.0), y=(37.0, 54.0), z=(-29.9, -22.3))],
+    "speaker: amp rear end to the speaker": [dict(x=(-24.5, -18.5), y=(33.5, 52.0), z=(31.6, 36.2)),
+                                             dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
+                                             dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
     "camera: notch to the Pi header": [dict(x=(18.2, IN_A - 0.2), y=(FLOOR_Y1 + 0.1, 36.5), z=(-15.0, -9.0))],
 }
+WIRE_R = 0.7
 # Space for a finger tip over the BiBoard plug (panel off)
 FINGER = dict(x=(6.0, IN_A - 0.2), y=(37.0, SEAM), z=(11.0, 27.0))
 
@@ -579,7 +587,7 @@ def build_body():
     N = HDR_NOTCH
     B -= mbox(*N["x"], FLOOR_Y0 - 1, 30.0, *N["z"])                       # the BiBoard header comes up here
     for sx in (-1, 1):                                                     # camera cable notches
-        B -= mbox(*sorted((sx * (IN_A - 1.0), sx * (A + 1))), FLOOR_Y0 - 1, CAM_NOTCH["y1"], *CAM_NOTCH["z"])
+        B -= mbox(*sorted((sx * (IN_A - 2.0), sx * (A + 1))), FLOOR_Y0 - 1, CAM_NOTCH["y1"], *CAM_NOTCH["z"])
     B -= pockets()
     nt = _cs([(NOTCH["hw"] + NOTCH["h"] * math.cos(t), SEAM + NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)]
              + [(-NOTCH["hw"] - NOTCH["h"] * math.cos(t), SEAM - NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)])
@@ -710,37 +718,231 @@ def snap_force():
 # --------------------------------------------------------------------------
 # Models (electronics, robot)
 # --------------------------------------------------------------------------
-def real_models():
-    pisugar = stl_manifold("pisugar2Board.STL", STAND @ flat_ps2())
-    pizero = stl_manifold("RaspberryPiZeroW-1.STL", STAND @ flat_pi())
-    bat = mbox(*BAT["x"], *BAT["y"], *BAT["z"])
-    P = PI_PLUGS
-    plugs = mbox(*P["x"], *P["y"], *P["z"])
-    card = mbox(1.55, 2.85, 39.5, 50.5, STACK_ZF - 2.5, STACK_ZF - 0.05)     # the part of the SD card out of the holder (not in the Pi model)
-    # NS4168 amp: PCB + connectors (NULLLAB drawing and photo); the parts face +X
-    x0, x1 = AMP_X
-    za, zb, yb = AMP_Z[0], AMP_Z[1], AMP_Y0
-    amp = mbox(x0, x1, yb, yb + AMP["h"], za, zb)
-    amp += mbox(x1, x1 + 6.0, yb + 2.0, yb + 20.0, zb - 6.0, zb)                   # 5-pin PH2.0 (signal, rear end)
-    amp += mbox(x1, x1 + AMP["comp"], yb + 12.5, yb + AMP["h"], za, za + 7.5)      # screw terminal (speaker, front end)
-    amp += mbox(x1, x1 + 6.0, yb + 3.0, yb + 11.5, za, za + 6.0)                   # 2-pin PH2.0
-    amp += mbox(x1, x1 + 1.8, yb + 7.0, yb + 13.0, za + 13.0, za + 19.0)           # IC
-    M = MIC
-    mic = mbox(-M["w"] / 2, M["w"] / 2, M["y0"], M["y0"] + M["l"], *MIC_Z)
-    mic += mbox(-2.0, 2.0, M["y0"] + 6.0, M["y0"] + 10.0, MIC_Z[1], MIC_Z[1] + 1.2)   # parts on the back face
-    # speaker: ear plate at the front, body behind it
-    z0, z1 = SPK_ZE, SPK_ZE + SPK["ear_t"]
-    yc = SPK_Y0 + SPK["d"] / 2
-    spk = mbox(-SPK["l"] / 2, SPK["l"] / 2, SPK_Y0, SPK_Y0 + SPK["d"], z0, z1)
-    for xh in (-SPK["l"] / 2 + SPK["hole_in"], SPK["l"] / 2 - SPK["hole_in"]):
-        spk -= mcyl("z", z0 - 1, z1 + 1, SPK["hole_d"] / 2, xh, yc)
-    spk += mbox(-SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, z1, z1 + SPK["h"])
+def rbox(axis, x0, x1, y0, y1, z0, z1, r, n=16):
+    """Box with round edges along one axis (radius r): the hull of four cylinders."""
+    cs = []
+    if axis == "z":
+        for x in (x0 + r, x1 - r):
+            for y in (y0 + r, y1 - r):
+                cs.append(mcyl("z", z0, z1, r, x, y, n))
+    elif axis == "x":
+        for y in (y0 + r, y1 - r):
+            for z in (z0 + r, z1 - r):
+                cs.append(mcyl("x", x0, x1, r, y, z, n))
+    else:
+        for x in (x0 + r, x1 - r):
+            for z in (z0 + r, z1 - r):
+                cs.append(mcyl("y", y0, y1, r, x, z, n))
+    return m3.Manifold.batch_hull(cs)
+
+
+def chaikin(pts, k=2):
+    """Round the corners of a polyline (the end points stay)."""
+    P = np.asarray(pts, float)
+    for _ in range(k):
+        Q = [P[0]]
+        for a, b in zip(P[:-1], P[1:]):
+            Q += [0.75 * a + 0.25 * b, 0.25 * a + 0.75 * b]
+        Q.append(P[-1])
+        P = np.array(Q)
+    return P
+
+
+def tube(pts, r=WIRE_R, smooth=2):
+    """A wire along a polyline: hulls of spheres at the points."""
+    P = chaikin(pts, smooth) if smooth else np.asarray(pts, float)
+    S = [m3.Manifold.sphere(r, 10).translate(list(p)) for p in P]
+    return union([m3.Manifold.batch_hull([a, b]) for a, b in zip(S[:-1], S[1:])])
+
+
+# Pi header: 2x20, pin 1 at the SD card end (front), odd pins in the inner row, even pins at the board edge (down).
+HDR_BASE_X = (PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 2.6)
+HOUSING_END = HDR_BASE_X[1] + 14.0                  # Dupont housing: 2.5 x 2.5 x 14
+EXIT_X = HOUSING_END + 1.5
+
+
+def pin_yz(n):
+    k = (n - 1) // 2
+    return STACK_Y0 + 3.5 + (1.27 if n % 2 else -1.27), HDR_ZC - 25.4 + 1.27 + 2.54 * k
+
+
+def bb_pin_z(k):
+    """BiBoard header pin k (0 = GND, 1 = +5V, 2 = TX2, 3 = RX2): order assumed from the front."""
+    return HDR["z0"] + 1.27 + 2.54 * k
+
+
+BB_X = (HDR["x0"] + HDR["x1"]) / 2
+AMP_PLUG_Y = [AMP_Y0 + AMP["h"] - v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN
+AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # front face of the I2S plug
+MIC_HOLE_Y = MIC["y0"] + MIC["l"] - 1.27                                      # solder holes along the top edge
+MIC_HOLE_X = [-6.35 + 2.54 * k for k in range(6)]                            # SEL, LRCL, DOUT, BCLK, GND, 3V
+
+
+def to_pin(n, via):
+    """End of a wire route: via points, then straight into the housing of Pi pin n."""
+    y, z = pin_yz(n)
+    return list(via) + [(EXIT_X + 0.8, y, z), (EXIT_X, y, z), (HOUSING_END, y, z)]
+
+
+# Wires: (group, label, color, Pi pin, points from the far end to the Pi header). Pins: see the wiring table.
+def wire_routes():
+    W = []
+    # UART to the BiBoard: Pi GND 6 -> GND, TX 8 -> RX2, RX 10 -> TX2. Up from the header plugs, over, down into the BiBoard plugs.
+    for i, (n, k, col, lab) in enumerate(((6, 0, "#1d1d1f", "GND"), (8, 3, "#2e9b4f", "TX > RX2"), (10, 2, "#f2f2ef", "RX < TX2"))):
+        y, z = pin_yz(n)
+        zb = bb_pin_z(k)
+        pts = [(BB_X, BB_PLUG["y"][1], zb), (BB_X, 46.5 + i, zb), (22.0, 50.5 - i, (z + zb) / 2 + 2)]
+        W.append(("uart", lab, col, to_pin(n, pts)))
+    # I2S + power to the amp: from the I2S plug at the front end of the amp, down to the floor, across under the
+    # stack in front of the front pegs, up the right well to the header.
+    for i, (n, col, lab) in enumerate(((9, "#1d1d1f", "GND"), (2, "#d83a34", "5V"), (12, "#f0c419", "BCLK"),
+                                       (35, "#e8641b", "LRCLK"), (40, "#3a6fd8", "DIN"))):
+        y, z = pin_yz(n)
+        zc = -19.2 - 1.6 * i
+        pts = [(-23.2, AMP_PLUG_Y[i], AMP_PLUG_Z0), (-23.2, AMP_PLUG_Y[i], -14.6), (-21.0, 28.3, zc), (-14.0, 28.3, zc),
+               (19.0, 28.3, zc), (20.6, 28.6, zc + 1.0), (20.6, y - 1.0, z)]
+        W.append(("amp", lab, col, to_pin(n, pts)))
+    # Mic: from the solder holes on the back face, up in front of the front post, over it, into the right well.
+    for k, n, col, lab in ((1, 35, "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"), (3, 12, "#f0c419", "BCLK"),
+                           (4, 14, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
+        y, z = pin_yz(n)
+        x = MIC_HOLE_X[k]
+        pts = [(x, MIC_HOLE_Y, MIC_Z[1]), (x, MIC_HOLE_Y, -33.0), (x, 51.4, -33.0), (8.2 + 0.5 * k, 52.6, -30.3),
+               (21.0 - 0.5 * k, 46.0, -24.0), (21.0, y + 2.0, z)]
+        W.append(("mic", lab, col, to_pin(n, pts)))
+    # Camera (Grove): in through the right notch on the floor, up to the header. Outside, it goes along the robot side.
+    for i, (n, col, lab) in enumerate(((20, "#1d1d1f", "GND"), (17, "#d83a34", "3V3"), (3, "#f2f2ef", "SDA"), (5, "#f0c419", "SCL"))):
+        y, z = pin_yz(n)
+        zc = CAM_NOTCH["z"][1] - 1.5 - 1.6 * i
+        pts = [(36.0, 23.5, zc), (31.5, 27.3, zc), (27.6, 27.6, zc), (25.2, 28.4, zc), (22.6, 28.6, zc), (21.4, y - 1.5, z)]
+        W.append(("camera", lab, col, to_pin(n, pts)))
+    return W
+
+
+def speaker_leads():
+    """The two speaker leads: from the top of the speaker body, over the ear plate, down the left gallery
+    into the 2-pin plug at the rear end of the amp."""
+    out = []
+    zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
+    for i, (col, lab) in enumerate((("#d83a34", "+"), ("#1d1d1f", "-"))):
+        y_p = AMP_Y0 + AMP["h"] - 12.05 + (i - 0.5) * 2.0
+        pts = [(-23.2, y_p, zp), (-23.2, y_p, zp + 1.8), (-20.6, 51.5, 34.7), (-15.0, 59.8 - 0.0 * i, 35.2 + 0.0 * i),
+               (-11.0 + 1.6 * i, 59.8, 41.2), (-10.0 + 1.6 * i, 59.3, 43.2), (-10.0 + 1.6 * i, SPK_Y0 + SPK["d"] - 0.5, 44.0)]
+        out.append(("speaker", lab, col, pts))
+    return out
+
+
+def build_models():
+    """The electronics in place. Returns (models for the checks, display parts: (model, sub, label, mesh, color))."""
+    D = []
+    def add(key, sub, label, M, col):
+        D.append((key, sub, label, M, col))
+        return M
+    pisugar = add("pisugar2", "board", "PiSugar 2 board", stl_manifold("pisugar2Board.STL", STAND @ flat_ps2()), "#e06aa3")
+    pizero = add("pizero", "board", "Raspberry Pi Zero 2 W", stl_manifold("RaspberryPiZeroW-1.STL", STAND @ flat_pi()), "#2e9b4f")
+    # battery: a pouch cell with round edges, a seal flap at the front end, and two leads to the PiSugar 2 (lead place estimated)
+    bx, by, bz = BAT["x"], BAT["y"], BAT["z"]
+    cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0] + 2.5, bz[1], 1.6), "#b9bcc2")
+    xm = (bx[0] + bx[1]) / 2
+    flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[0], bz[0] + 2.6, 0.45), "#d9b34a")
+    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[0] + 0.3), (xm + d, 34.0, bz[0] - 0.6), (-6.6, 34.5 + d, bz[0] - 0.4),
+                                                             (-5.5, 34.5 + d, bz[0] + 2.5)], 0.5), c)
+             for i, (d, c) in enumerate(((-0.7, "#d83a34"), (0.7, "#1d1d1f")))]
+    bat = cell + flap + union(leads)
+    # microSD card: the part out of the holder (about 2.5 mm, not measured)
+    card = add("sd_card", "card", "microSD card", rbox("x", 1.85, 2.85, 39.5, 50.5, STACK_ZF - 2.5, STACK_ZF - 0.05, 0.8), "#26272b")
+    # Pi header: base, the pins without a plug, a Dupont housing on each pin in use
+    W = wire_routes()
+    used_pins = set()
+    for g, lab, col, pts in W:
+        y, z = pts[-1][1], pts[-1][2]
+        for n in range(1, 41):
+            if abs(pin_yz(n)[0] - y) < 0.01 and abs(pin_yz(n)[1] - z) < 0.01:
+                used_pins.add(n)
+    base = add("pi_plugs", "header", "Pi 2x20 header", mbox(*HDR_BASE_X, PI_PLUGS["y"][0], PI_PLUGS["y"][1], *PI_PLUGS["z"]), "#1d1d1f")
+    pins = union([mbox(HDR_BASE_X[1] - 0.01, HDR_BASE_X[1] + 6.0, y - 0.32, y + 0.32, z - 0.32, z + 0.32)
+                  for y, z in (pin_yz(n) for n in range(1, 41) if n not in used_pins)])
+    add("pi_plugs", "pins", "header pins", pins, "#d9b34a")
+    hous = union([rbox("x", HDR_BASE_X[1], HOUSING_END, y - 1.25, y + 1.25, z - 1.25, z + 1.25, 0.25, 8)
+                   for y, z in (pin_yz(n) for n in sorted(used_pins))])
+    add("pi_plugs", "housings", "Dupont housings", hous, "#3a3b40")
+    pi_plugs = base + pins + hous
+    # BiBoard header (female, 5 pins) and three male Dupont plugs on GND, TX2, RX2
     cov = load_stl(os.path.join(PREF, "Bittle_Cover.stl")).reshape(-1, 3)
     m = (cov[:, 0] > HDR["x0"]) & (cov[:, 0] < HDR["x1"]) & (cov[:, 2] > HDR["z0"]) & (cov[:, 2] < HDR["z1"])
     hdr = mbox(HDR["x0"], HDR["x1"], float(cov[m, 1].min()) - 3.0, HDR["top"], HDR["z0"], HDR["z1"])
-    bb = mbox(*BB_PLUG["x"], *BB_PLUG["y"], *BB_PLUG["z"])
-    return dict(pizero=pizero, pisugar2=pisugar, battery=bat, sd_card=card, pi_plugs=plugs,
-                biboard_header=hdr, biboard_plug=bb, speaker=spk, amp_ns4168=amp, mic_sph0645=mic)
+    hdr -= union([mbox(BB_X - 0.5, BB_X + 0.5, HDR["top"] - 3.0, HDR["top"] + 1, bb_pin_z(k) - 0.5, bb_pin_z(k) + 0.5) for k in range(5)])
+    add("biboard_header", "header", "BiBoard 5-pin header (est. height)", hdr, "#0d0d0d")
+    bb = union([rbox("y", BB_X - 1.25, BB_X + 1.25, BB_PLUG["y"][0], BB_PLUG["y"][1], bb_pin_z(k) - 1.25, bb_pin_z(k) + 1.25, 0.25, 8)
+                for k in (0, 2, 3)])
+    add("biboard_plug", "housings", "Dupont plugs on the BiBoard header", bb, "#3a3b40")
+    # NS4168 amp (NULLLAB photo and drawing): u along the board from the front (I2S) end, v down from the top edge
+    L = AMP_L
+    x0, x1 = AMP_X
+    yt = AMP_Y0 + AMP["h"]
+    zu = lambda u: AMP_Z[0] + u
+    yv = lambda v: yt - v
+    pcb = rbox("x", x0, x1, AMP_Y0, yt, *AMP_Z, 1.0)
+    pcb -= union([mcyl("x", x0 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u)) for u, v in L["holes"]])
+    add("amp_ns4168", "pcb", "NS4168 amp board", pcb, "#1d1d1f")
+    rings = union([mcyl("x", x1 - 0.01, x1 + 0.05, L["hole_d"] / 2 + 1.0, yv(v), zu(u)) - mcyl("x", x1 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u))
+                   for u, v in L["holes"]])
+    add("amp_ns4168", "rings", "amp hole rings", rings, "#e8e8e8")
+    ph = lambda r: mbox(x1, x1 + L["ph"], yv(r[3]), yv(r[2]), zu(r[0]), zu(r[1]))
+    hdrs = ph(L["ph5"]) + ph(L["ph2"])
+    add("amp_ns4168", "headers", "amp PH2.0 headers", hdrs, "#efe6d2")
+    p5 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph5"][3]) + 0.5, yv(L["ph5"][2]) - 0.5, AMP_PLUG_Z0, zu(L["ph5"][0]) + 0.01)
+    p2 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph2"][3]) + 0.5, yv(L["ph2"][2]) - 0.5, zu(L["ph2"][1]) - 0.01, zu(L["ph2"][1]) + L["plug_out"])
+    add("amp_ns4168", "plugs", "amp PH2.0 plugs", p5 + p2, "#fbf6ea")
+    t = L["term"]
+    term = mbox(x1, x1 + L["term_h"], yv(t[3]), yv(t[2]), zu(t[0]), zu(t[1]))
+    add("amp_ns4168", "terminal", "amp screw terminal", term, "#2f6fd6")
+    screws = union([mcyl("x", x1 + L["term_h"] - 0.01, x1 + L["term_h"] + 0.3, 1.2, yv(v), zu(32.9)) for v in (2.3, 5.9)])
+    add("amp_ns4168", "screws", "terminal screws", screws, "#c8c8c8")
+    ic = mbox(x1, x1 + 1.5, yv(L["ic"][3]), yv(L["ic"][2]), zu(L["ic"][0]), zu(L["ic"][1]))
+    add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
+    amp = pcb + hdrs + p5 + p2 + term + screws + ic
+    # SPH0645 mic board (Adafruit 3421): PCB, mic part on the back face, solder holes along the top edge, port hole
+    M = MIC
+    pcb_z = (MIC_Z[0], MIC_Z[0] + 1.6)
+    mp = rbox("z", -M["w"] / 2, M["w"] / 2, M["y0"], M["y0"] + M["l"], *pcb_z, 0.8)
+    mp -= mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.4, 0.0, MIC_PORT_Y, 12)
+    mp -= union([mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.5, x, MIC_HOLE_Y, 12) for x in MIC_HOLE_X])
+    add("mic_sph0645", "pcb", "SPH0645 mic board", mp, "#22303f")
+    pads = union([mcyl("z", pcb_z[1] - 0.01, pcb_z[1] + 0.05, 0.85, x, MIC_HOLE_Y, 16) for x in MIC_HOLE_X])
+    pads -= union([mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.5, x, MIC_HOLE_Y, 12) for x in MIC_HOLE_X])
+    add("mic_sph0645", "pads", "mic solder pads", pads, "#d9b34a")
+    can = mbox(-1.75, 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, pcb_z[1] - 0.01, pcb_z[1] + 1.0)
+    add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
+    mic = mp + pads + can
+    # speaker: black ear plate with two holes; round-edged box behind it; the sound face (rear) has a grille
+    z0, z1 = SPK_ZE, SPK_ZE + SPK["ear_t"]
+    yc = SPK_Y0 + SPK["d"] / 2
+    plate = rbox("z", -SPK["l"] / 2, SPK["l"] / 2, SPK_Y0, SPK_Y0 + SPK["d"], z0, z1, 2.0)
+    plate -= union([mcyl("z", z0 - 1, z1 + 1, SPK["hole_d"] / 2, xh, yc) for xh in (-SPK["l"] / 2 + SPK["hole_in"], SPK["l"] / 2 - SPK["hole_in"])])
+    add("speaker", "plate", "speaker ear plate", plate, "#26272b")
+    ze = z1 + SPK["h"]
+    body = rbox("z", -SPK["body_l"] / 2, SPK["body_l"] / 2, SPK_Y0 + 0.5, SPK_Y0 + SPK["d"] - 0.5, z1 - 0.01, ze, 3.0)
+    body -= rbox("z", -SPK["body_l"] / 2 + 2.5, SPK["body_l"] / 2 - 2.5, SPK_Y0 + 3.0, SPK_Y0 + SPK["d"] - 3.0, ze - 0.6, ze + 1, 2.0)
+    add("speaker", "body", "NULLLAB 3 W speaker", body, "#3a3b40")
+    mesh = rbox("z", -SPK["body_l"] / 2 + 2.5, SPK["body_l"] / 2 - 2.5, SPK_Y0 + 3.0, SPK_Y0 + SPK["d"] - 3.0, ze - 0.6, ze - 0.4, 2.0)
+    mesh -= union([mcyl("z", ze - 1, ze + 1, 0.45, x, y, 8) for x in np.arange(-9.0, 9.1, 1.5) for y in np.arange(SPK_Y0 + 4.5, SPK_Y0 + SPK["d"] - 4.4, 1.5)])
+    add("speaker", "grille", "speaker grille", mesh, "#5a5b60")
+    spk = plate + body + mesh
+    models = dict(pizero=pizero, pisugar2=pisugar, battery=bat, sd_card=card, pi_plugs=pi_plugs,
+                  biboard_header=hdr, biboard_plug=bb, speaker=spk, amp_ns4168=amp, mic_sph0645=mic)
+    # wires
+    groups = {}
+    for g, lab, col, pts in W + speaker_leads():
+        T = add(f"wires_{g}", lab.split()[0].lower().replace("+", "pos").replace("-", "neg"), f"{g} wire {lab}", tube(pts), col)
+        groups[g] = groups.get(g, []) + [T]
+    for g, Ts in groups.items():
+        models[f"wires_{g}"] = union(Ts)
+    return models, D
+
+
+def real_models():
+    return build_models()[0]
 
 
 STACK = ("pizero", "pisugar2", "battery", "sd_card", "pi_plugs")
@@ -790,6 +992,9 @@ def wire_paths():
 # Endpoints of each wire path: these models may be in it.
 PATH_ENDS = {"uart": ("pi_plugs", "biboard_plug", "biboard_header"), "i2s": ("pi_plugs", "amp_ns4168"),
              "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker"), "camera": ("pi_plugs",)}
+# Each wire group starts and ends in these parts.
+WIRE_ENDS = {"wires_uart": ("pi_plugs", "biboard_plug"), "wires_amp": ("pi_plugs", "amp_ns4168"),
+             "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_camera": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168")}
 
 
 def check(parts, models, robot):
@@ -814,8 +1019,18 @@ def check(parts, models, robot):
     mn = list(models)
     for i, a in enumerate(mn):
         for b in mn[i + 1:]:
-            if not (a == "biboard_header" and b == "biboard_plug"):
-                rows.append((a, b, vol(models[a], models[b])))
+            if a == "biboard_header" and b == "biboard_plug":
+                continue
+            if a.startswith("wires_") and b.startswith("wires_"):
+                continue                                   # wires may touch other wires
+            w, o = (a, b) if a.startswith("wires_") else (b, a)
+            if w.startswith("wires_") and o in WIRE_ENDS[w]:
+                continue                                   # a wire ends in its plug
+            rows.append((a, b, vol(models[a], models[b])))
+    for w in (m for m in models if m.startswith("wires_")):
+        rows.append((w, "cover_pegs", vol(models[w], parts["cover_pegs"])))
+        for b, M in robot.items():
+            rows.append((w, b, vol(models[w], M)))
     # nothing on the floor over the keyholes (pegs, slide paths, click beams)
     K = union([mbox(k[0], k[1], FLOOR_Y1 + 0.01, KEEP_Y, k[2], k[3]) for k in (keep_zone(px, pz) for px, pz in PEGS)])
     rows.append(("pod_body", "keyhole keep zones", vol(parts["pod_body"], K)))
@@ -865,11 +1080,12 @@ def check(parts, models, robot):
         key = n.split(":")[0]
         for b in ADD:
             rows.append((f"wires {key}", b, vol(W, parts[b])))
-        others = union([M for m, M in models.items() if m not in PATH_ENDS[key]])
+        others = union([M for m, M in models.items() if m not in PATH_ENDS[key] and not m.startswith("wires_")])
         rows.append((f"wires {key}", "other parts", vol(W, others)))
     F = mbox(*FINGER["x"], *FINGER["y"], *FINGER["z"])
     rows.append(("finger over the BiBoard plug", "pod_body", vol(F, parts["pod_body"])))
-    rows.append(("finger over the BiBoard plug", "other parts", vol(F, union([M for m, M in models.items() if m != "biboard_plug"]))))
+    rows.append(("finger over the BiBoard plug", "other parts", vol(F, union([M for m, M in models.items()
+                                                                            if m != "biboard_plug" and not m.startswith("wires_")]))))
     for n, (xc, zc_, sx, sz) in PORT_PLUGS.items():
         B = mbox(xc - sx / 2, xc + sx / 2, PORT_TOP + 0.2, 95.0, zc_ - sz / 2, zc_ + sz / 2)
         for b in ADD:
@@ -919,7 +1135,7 @@ def print_orient(name, M):
 
 
 def export_assembly(path, models):
-    """One STEP file with the robot, the platform and the add-on in place: named, colored parts.
+    """One STEP file with the robot, the platform and the add-on in place: named, colored parts (no wires).
     Exact B-rep for the pegs; simplified meshes for the rest (0.05 mm for the add-on, 0.15 mm for the
     robot, the cover and the boards)."""
     from build123d import Compound, Color, export_step
@@ -985,9 +1201,19 @@ def main(fast=False):
         for r in regs[:8]:
             print(f"     {r['area']:6.1f} mm2  flat {r['flat']:5.1f}  at print z {r['z'][0]:.1f}..{r['z'][1]:.1f}  x {r['x'][0]:.1f}..{r['x'][1]:.1f}  y {r['y'][0]:.1f}..{r['y'][1]:.1f}")
     for f in os.listdir(os.path.join(OUT, "models")):
-        os.unlink(os.path.join(OUT, "models", f))
+        if f.endswith(".stl"):
+            os.unlink(os.path.join(OUT, "models", f))
     for n, M in models.items():
         save_stl(M, os.path.join(OUT, "models", f"{n}.stl"))
+    os.makedirs(os.path.join(OUT, "models", "parts"), exist_ok=True)
+    for f in os.listdir(os.path.join(OUT, "models", "parts")):
+        os.unlink(os.path.join(OUT, "models", "parts", f))
+    disp = []
+    for key, sub, label, M, col in build_models()[1]:
+        f = f"{key}__{sub}.stl"
+        save_stl(M, os.path.join(OUT, "models", "parts", f))
+        disp.append(dict(model=key, sub=sub, label=label, file=f"models/parts/{f}", color=col))
+    json.dump(disp, open(os.path.join(OUT, "models", "parts.json"), "w"), indent=1)       # display: colored sub-parts
     save_stl(union(list(wire_paths().values())), os.path.join(OUT, "models", "wire_paths.stl"))      # display only
     rows = check(parts, models, robot)
     bal = balance(parts, models)

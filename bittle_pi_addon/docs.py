@@ -55,9 +55,10 @@ def content():
     tbl([["Part", "Place"],
          ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", "On the long edge over the robot center: ports and PiSugar controls up, GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards."],
          ["Dupont jumpers", "On the soldered Pi header. 4 of them go to the BiBoard header (GND, +5V, TX2, RX2) in the right well."],
-         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor."],
+         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. "
+          "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
          ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. Ear plate 45 x 31 x 1.5 in two side grooves (ruler)."],
-         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board at the front wall, port to the front, in two grooves."],
+         ["HiLetgo SPH0645 I2S mic", "16.7 x 12.7 x 1.8 board at the front wall, port to the front, in two grooves. Solder the wires to the pins at its top edge."],
          ["Petoi AI Vision Module (optional)", "Stays in the head. Its Grove cable comes along the robot side and in through the notch at the base of the right wall."],
          ], [52, 118])
 
@@ -77,7 +78,7 @@ def content():
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch of the right well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
          "Push the mic down into the two grooves at the front wall, port to the front." + st(6),
-         "Lay the I2S wires (amp and mic) across the floor behind the rear pegs. Push the amp down into the slot along the left wall, parts to the inside." + st(7),
+         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. Lay the amp cable across the floor in front of the front pegs." + st(7),
          "Push the jumpers onto the Pi header. Push the Pi + PiSugar 2 stack down into the end grooves, over the I2S wires." + st(8),
          "Reach into the right well and push the Dupont plug onto the BiBoard header. Fold the slack into the right well." + st(9),
          "Put the switch slider on the PiSugar switch lever, fork down." + st(10),
@@ -88,7 +89,6 @@ def content():
       "The ribbed slider beside the HDMI opening moves the PiSugar power switch (2 mm of slot travel each way; the switch sets the end positions). "
       "The tongue near the front of the panel is a large button: press it to press the PiSugar button.")
     img("04_top.png", 0.42, "The top: HDMI, the switch slider, data USB, charge and Pi power, and the button tongue.")
-    img("06_open.png", 0.42, "The body without the panel: the stack on its edge, the plug block on the Pi header, the speaker at the rear.")
 
     h("4. Wiring")
     tbl([["Signal", "Pi Zero 2 W", "To"],
@@ -101,12 +101,13 @@ def content():
          ["Speaker", "-", "amp + / - to the speaker"],
          ["Camera I2C (Grove)", "SDA GPIO2 pin 3, SCL GPIO3 pin 5, 3V3 pin 17, GND pin 14", "AI Vision Module Grove: SDA, SCL, VCC, GND"],
          ], [30, 62, 78])
-    p("Wire paths. pod.py keeps five paths free of all parts (yellow in the viewer). "
-      "BiBoard wires: in the right well, from the Pi header plugs to the BiBoard plug. "
-      "I2S wires: a 2.2 mm space on the floor under the stack, behind the rear pegs, to the amp. "
-      "Mic wires: over the mic to the right well. Speaker wires: over the amp to the speaker. "
-      "Camera cable: from the right notch to the front end of the Pi header. "
-      "A finger tip (21 x 16 mm) reaches the BiBoard plug from the top: nothing is in that space.")
+    p("Wire routes. pod.py models each jumper as a 1.4 mm wire on its route and checks that no wire touches a printed part or another board. "
+      "BiBoard wires: up from the Pi header in the right well, then down into the BiBoard plugs. "
+      "Amp cable: from the I2S plug at the front end of the amp, across the floor under the stack (a 2.2 mm space in front of the front pegs), up the right well to the header. "
+      "Mic wires: up from the mic pins, over the front post, into the right well. Speaker leads: over the ear plate and down the left side to the rear end of the amp. "
+      "Camera cable: in through the right notch, up to the header. Two mic wires share the BCLK and LRCLK housings with the amp wires (two wires in one Dupont housing). "
+      "A finger tip (21 x 16 mm) reaches the BiBoard plug from the top.")
+    img("11_wires_top.png", 0.42, "From the top, panel off: the Pi header with Dupont housings on the pins in use, and the wire routes.")
 
     h("5. Checks")
     h0, h1 = MO["head"]["free"]

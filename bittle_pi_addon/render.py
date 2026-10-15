@@ -27,6 +27,16 @@ C = dict(
 )
 
 
+# Electronics and wires: colored sub-parts from pod.py (stl/models/parts.json)
+import json  # noqa: E402
+DISP = json.load(open(os.path.join(STL, "models", "parts.json")))
+for _d in DISP:
+    _h = _d["color"].lstrip("#")
+    C[_d["model"] + "__" + _d["sub"]] = "[" + ",".join(f"{int(_h[i:i + 2], 16) / 255:.3f}" for i in (0, 2, 4)) + "]"
+ELEC = [d["model"] + "__" + d["sub"] for d in DISP]
+EXPLODE = dict(pizero=1.6, pisugar2=1.6, battery=1.6, sd_card=1.6, pi_plugs=1.6, amp_ns4168=1.6, speaker=1.6, mic_sph0645=1.6)
+
+
 def imp(path, color, dy=0.0, dz=0.0, mirror=None):
     m = f"mirror({mirror}) " if mirror else ""
     return f'translate([0,{dy},{dz}]) {m}color({color}) import("{path}");\n'
@@ -39,19 +49,11 @@ def files(cut=None):
         "body": f"{STL}/installed/pod_body.stl",
         "panel": f"{STL}/installed/pod_panel.stl",
         "switch": f"{STL}/installed/pod_switch.stl",
-        "mic": f"{STL}/models/mic_sph0645.stl",
-        "pizero": f"{STL}/models/pizero.stl",
-        "pisugar": f"{STL}/models/pisugar2.stl",
-        "amp": f"{STL}/models/amp_ns4168.stl",
-        "plugs": f"{STL}/models/pi_plugs.stl",
-        "spk": f"{STL}/models/speaker.stl",
-        "battery": f"{STL}/models/battery.stl",
-        "hdr": f"{STL}/models/biboard_header.stl",
-        "bbplug": f"{STL}/models/biboard_plug.stl",
-        "wires": f"{STL}/models/wire_paths.stl",
         "shoulder": f"{REF}/Bittle_SideShoulder.stl",
         "plate": f"{REF}/Bittle_FrontPlate.stl",
     }
+    for d in DISP:
+        src[d["model"] + "__" + d["sub"]] = f"{STL}/{d['file']}"
     if not cut:
         return src
     os.makedirs(TMP, exist_ok=True)
@@ -83,8 +85,7 @@ def scene(show, cut=None, explode=0.0, robot=True):
             continue
         dy = 0.0
         if explode:
-            dy = {"panel": 3.4, "switch": 4.4, "pizero": 1.6, "pisugar": 1.6, "battery": 1.6,
-                  "amp": 1.6, "plugs": 1.6, "spk": 1.6, "mic": 1.6}.get(k, 0.0) * explode
+            dy = {"panel": 3.4, "switch": 4.4}.get(k, EXPLODE.get(k.split("__")[0], 0.0)) * explode
         if cut:
             s += imp(path, C[k], dy=dy)
         else:
@@ -112,7 +113,9 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
     return png
 
 
-ALL = ["cover", "body", "panel", "switch", "mic", "pizero", "pisugar", "battery", "hdr", "bbplug", "plugs", "amp", "spk", "shoulder", "plate"]
+ALL = ["cover", "body", "panel", "switch", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
+WIRES = [k for k in ELEC if k.startswith("wires_")]
+ALL += WIRES
 OPEN = [k for k in ALL if k not in ("panel", "switch")]
 ROBOT = ["cover", "shoulder", "plate"]
 
@@ -124,7 +127,9 @@ JOBS = {
     "06_open": (OPEN, None, 0, "0,-17.0,8,48,0,150,280", False),
     "07_open_left": (OPEN, None, 0, "0,-17.0,8,48,0,215,280", False),
     "08_section": (ALL, ((0, 0, 1.0), 18.0), 0, "0,-18,44,90,0,180,230", True),
-    "09_wires": (OPEN + ["wires"], None, 0, "0,-17.0,8,60,0,140,280", False),
+    "09_wires": (OPEN, None, 0, "0,-17.0,8,60,0,140,280", False),
+    "11_wires_top": (OPEN, None, 0, "0,-9.0,40,0,0,180,190", False),
+    "12_wires_right": (OPEN, None, 0, "14,-8.0,40,40,0,90,170", False),
     "10_exploded": (ALL, None, 6.0, "0,-17.0,25,62,0,128,380", False),
 }
 
