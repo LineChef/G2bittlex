@@ -35,6 +35,11 @@
   .row .name:hover { background: var(--chip); }
   .row .name.sel { background: var(--accent); color: var(--accent-ink); }
   .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); flex: none; }
+  label.sw { cursor: pointer; position: relative; }
+  label.sw input, .colpick input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; border: 0; padding: 0; }
+  .fil { width: 22px; height: 22px; padding: 0; }
+  .colpick { position: relative; width: 22px; height: 22px; border-radius: 6px; border: 1px dashed var(--line); display: inline-grid;
+             place-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
   input[type=range] { width: 100%; accent-color: var(--accent); }
   .btns { display: flex; flex-wrap: wrap; gap: 6px; }
   button { background: var(--chip); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
@@ -102,10 +107,12 @@
     <h2>Case opacity</h2>
     <div class="row"><input id="lidop" type="range" min="0.05" max="1" step="0.01" value="1"><span class="val" id="lidopV">100%</span></div>
 
-    <div id="poseBox" style="display:none">
     <h2>Colors</h2>
-    <div class="row"><span class="lbl">Body</span><span class="btns" id="colLid"></span></div>
-    <div class="row"><span class="lbl">Panel</span><span class="btns" id="colIns"></span></div>
+    <div id="colors"></div>
+    <div class="sub">Click the color square of any part in the parts list to give it any color.</div>
+    <div class="btns"><button id="colReset">Reset colors</button><button id="colLink">Copy a link to these colors</button></div>
+
+    <div id="poseBox" style="display:none">
     <h2>Robot pose (deg)</h2>
     <div class="row"><span class="lbl">Head turn</span><input id="p_head" type="range" min="-90" max="90" step="1" value="0"><span class="val" id="v_head">0</span></div>
     <div class="row"><span class="lbl">Front hips</span><input id="p_hip_f" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="v_hip_f">0</span></div>
@@ -323,7 +330,8 @@ for (const [g, list] of Object.entries(groups)) {
   pl.appendChild(head);
   for (const p of list) {
     const r = document.createElement("div"); r.className = "row";
-    r.innerHTML = `<input type="checkbox" checked data-id="${p.id}"><span class="sw" style="background:${p.color}"></span><span class="name" data-sel="${p.id}">${p.label}</span>`;
+    r.innerHTML = `<input type="checkbox" checked data-id="${p.id}"><label class="sw" data-sw="${p.id}" title="Color" style="background:${p.color}">` +
+      `<input type="color" data-col="${p.id}" value="${p.color}"></label><span class="name" data-sel="${p.id}">${p.label}</span>`;
     pl.appendChild(r);
   }
 }
@@ -346,7 +354,7 @@ function select(m) {
   const card = $("card");
   if (!m) { card.style.display = "none"; ghostOthers = false; moveMode = false; $("cMove").classList.remove("on"); $("cGhost").classList.remove("on"); styleAll(); return; }
   const p = m.userData.part;
-  $("cSw").style.background = p.color; $("cName").textContent = p.label; $("cGrp").textContent = p.group;
+  $("cSw").style.background = "#" + m.material.color.getHexString(); $("cName").textContent = p.label; $("cGrp").textContent = p.group;
   $("cText").textContent = p.text || ""; $("cText").style.display = p.text ? "" : "none";
   $("cAtt").textContent = p.attach || ""; $("cAtt").style.display = p.attach ? "" : "none";
   $("cDims").textContent = fmtDims(m);
@@ -405,17 +413,54 @@ $("lidop").addEventListener("input", e => {
   lidOpacity = +e.target.value; $("lidopV").textContent = Math.round(lidOpacity * 100) + "%"; styleAll();
 });
 
-// ---- colors: try filament colors on the body and the panel
-const FIL = { gray: "#9ea0a4", orange: "#e8641b", navy: "#24345c", white: "#f2f2ef", black: "#1d1d1f" };
-for (const [box, id, def] of [["colLid", "body", "white"], ["colIns", "panel", "orange"]]) {
-  if (!parts[id]) continue;
-  for (const [n, c] of Object.entries(FIL)) {
-    const b = document.createElement("button");
-    b.title = n; b.style.cssText = `width:22px;height:22px;padding:0;background:${c}`;
-    b.classList.toggle("on", n === def);
-    b.onclick = () => { parts[id].material.color.set(c); for (const x of $(box).children) x.classList.toggle("on", x === b); };
-    $(box).appendChild(b);
-  }
+// ---- colors: any part can have any color. The printed parts have buttons for the filaments of the project.
+// The choice stays in this browser (localStorage) and goes into a link (#colors=body:navy,panel:e8641b).
+const FIL = { white: "#f2f2ef", gray: "#9ea0a4", orange: "#e8641b", navy: "#24345c", black: "#1d1d1f" };
+const PRINTED = [["body", "Body"], ["panel", "Panel"], ["switch", "Switch slider"], ["button", "Button cap"],
+                 ["camera_mount", "Camera mount"], ["cover", "Platform cover"]].filter(([id]) => parts[id]);
+const DEF = Object.fromEntries(manifest.parts.map(p => [p.id, p.color]));
+const COL_KEY = "bittlex.colors";
+let colors = {};
+const norm = c => (FIL[c] || (c.startsWith("#") ? c : "#" + c)).toLowerCase();
+function saveColors() { try { localStorage.setItem(COL_KEY, JSON.stringify(colors)); } catch (e) {} }
+function setColor(id, c, save = true) {
+  if (!parts[id]) return;
+  c = norm(c);
+  parts[id].material.color.set(c);
+  if (c === DEF[id].toLowerCase()) delete colors[id]; else colors[id] = c;
+  const sw = pl.querySelector(`[data-sw="${id}"]`);
+  if (sw) { sw.style.background = c; sw.querySelector("input").value = c; }
+  for (const b of document.querySelectorAll(`[data-fil="${id}"]`)) b.classList.toggle("on", b.dataset.c === c);
+  const pk = document.querySelector(`[data-pick="${id}"]`);
+  if (pk) pk.value = c;
+  if (selected === parts[id]) $("cSw").style.background = c;
+  if (save) saveColors();
+}
+for (const [id, name] of PRINTED) {
+  const r = document.createElement("div"); r.className = "row";
+  let h = `<span class="lbl">${name}</span><span class="btns">`;
+  for (const [n, c] of Object.entries(FIL)) h += `<button class="fil" title="${n}" data-fil="${id}" data-c="${c}" style="background:${c}"></button>`;
+  h += `<label class="colpick" title="Any color">+<input type="color" data-pick="${id}" value="${DEF[id]}"></label></span>`;
+  r.innerHTML = h;
+  $("colors").appendChild(r);
+}
+$("colors").addEventListener("click", e => { const b = e.target.closest("[data-fil]"); if (b) setColor(b.dataset.fil, b.dataset.c); });
+$("colors").addEventListener("input", e => { if (e.target.dataset.pick) setColor(e.target.dataset.pick, e.target.value); });
+pl.addEventListener("input", e => { if (e.target.dataset.col) setColor(e.target.dataset.col, e.target.value); });
+$("colReset").onclick = () => { for (const id of Object.keys(colors)) setColor(id, DEF[id], false); colors = {}; saveColors(); };
+$("colLink").onclick = () => {
+  const name = c => Object.keys(FIL).find(k => FIL[k] === c) || c.slice(1);
+  const u = new URL(location.href);
+  u.hash = "colors=" + Object.entries(colors).map(([id, c]) => `${id}:${name(c)}`).join(",");
+  navigator.clipboard?.writeText(u.toString());
+  $("colLink").textContent = "Link copied";
+  setTimeout(() => { $("colLink").textContent = "Copy a link to these colors"; }, 1500);
+};
+for (const id of Object.keys(DEF)) setColor(id, DEF[id], false);       // marks the default filament buttons
+try { for (const [id, c] of Object.entries(JSON.parse(localStorage.getItem(COL_KEY) || "{}"))) setColor(id, c, false); } catch (e) {}
+{
+  const hc = new URLSearchParams(location.hash.slice(1)).get("colors");
+  if (hc) for (const kv of hc.split(",")) { const [id, c] = kv.split(":"); if (id && c) setColor(id, c); }
 }
 
 // ---- robot pose panel
