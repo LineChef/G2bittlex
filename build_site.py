@@ -97,8 +97,9 @@ INFO = {
                 attach="Push its bottom edge down into the slot of the bar on the floor. Forks under the panel hold its top edge."),
     "speaker": dict(text="NULLLAB 3 W 4 ohm speaker at the rear. The sound goes out of the grille in the rear face.",
                     attach="Push the ends of the ear plate down into the two side grooves, body to the rear."),
-    "mic": dict(text="SPH0645 I2S mic board at the front wall, away from the speaker. The port faces 7 holes in the front face.",
-                attach="Push it down into the two grooves, port to the front."),
+    "mic": dict(text="SPH0645 I2S mic board at the front wall, away from the speaker. The port faces 7 holes in the front face. "
+                     "A right-angle header along its right edge points into the right well.",
+                attach="Plug the six jumpers onto its header, then push it down into its groove and slot, port to the front."),
     "header": dict(text="The 5-pin BiBoard header (TX2, RX2, GND, +5V, +5V) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
     "bb_plug": dict(text="Three straight Dupont plugs on the BiBoard header (TX2, RX2, GND), inside the right wall. +5V is not wired.",
@@ -141,15 +142,16 @@ STEPS = [
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
-         text="Push the mic board down into the two grooves at the front wall, port to the front."),
+         text="Plug the six 10 cm jumpers onto the mic header. Then push the mic down into its groove at the front wall, port to the front."),
     dict(title="Amp", view="build", show=["amp"], start={"amp": [0, 40, 0]},
          text="Push the bottom edge of the amp down into the slot along the left wall, parts to the inside. "
               "Plug the amp cable in at the front end first. Lay it down the left front and across the floor in front of the front pegs, into the lanes of the right well."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the jumpers onto the Pi header. Then push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the right, SD card to the front."),
     dict(title="Wires", view="build", show=["bb_plug", "wires"], start={"bb_plug": [0, 25, 0], "wires": [0, 25, 0]},
-         text="Reach into the right well and push the Dupont plugs onto the BiBoard header (TX2, RX2, GND). Fold the slack of the wires into the right well. "
-              "The checks keep every wire off the printed parts and the other boards."),
+         text="Plug the jumpers one at a time (the order is in the guide): the mic wires onto the Pi pins and the splices, then the BiBoard wires "
+              "onto the BiBoard header: GND, RX2, TX2. Each 10 cm jumper is longer than its route: lay the excess in an arch or a loop as shown. "
+              "The checks keep every wire off the printed parts, the boards and the other wires."),
     dict(title="Switch slider", view="build", show=["switch"], start={"switch": [0, 25, 0]},
          text="Put the switch slider on the PiSugar switch lever, fork down."),
     dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 30, 0]},

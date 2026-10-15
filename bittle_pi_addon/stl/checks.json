@@ -168,7 +168,7 @@
   [
    "pod_body",
    "wires_mic",
-   0.0
+   8.533283289291244e-06
   ],
   [
    "pod_body",
@@ -728,7 +728,7 @@
   [
    "battery",
    "wires_mic",
-   0.0
+   0.006422049300253121
   ],
   [
    "battery",
@@ -1796,7 +1796,7 @@
    0.0
   ],
   [
-   "wires: bends under 1.95 mm radius",
+   "wires: designed bends under 1.95 mm, slack bends under 1.35 mm",
    "-",
    0.0
   ]
@@ -1894,7 +1894,7 @@
     "name": "pod_body",
     "g": 32.0,
     "com": [
-     -0.3,
+     -0.4,
      37.6,
      10.8
     ]
@@ -1966,9 +1966,9 @@
     "name": "mic_sph0645",
     "g": 1.0,
     "com": [
-     0.0,
-     35.2,
-     -34.8
+     8.5,
+     39.7,
+     -32.7
     ]
    },
    {

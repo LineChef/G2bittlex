@@ -156,9 +156,16 @@ AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0
 # SPH0645 mic board (Adafruit 3421 size, 16.7 x 12.7 x 1.8) at the front wall, centered, port face to
 # the front, the 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V) along the top edge. Its two sides go down into
 # grooves. Sound holes in the front face.
-MIC = dict(w=16.7, l=12.7, t=1.8, y0=29.0, clr=0.1)
+MIC = dict(w=12.7, l=16.7, t=1.8, y0=30.5, clr=0.1)
+# The mic has a 6-pin right-angle male header along its right edge (pins to +X, toward the right well), and
+# the pack jumpers (female) plug onto it. A straight header does not fit: the stack is 2 mm behind the mic.
 MIC_Z = (ZF_IN + 0.4, ZF_IN + 0.4 + MIC["t"])     # -35.6 .. -33.8
 MIC_PORT_Y = MIC["y0"] + MIC["l"] / 2            # port assumed at the board center (not measured)
+MIC_Z_BACK = MIC_Z[0] + 1.6                      # back face of the PCB
+MIC_PIN_Z = MIC_Z_BACK + 2.6                     # the bent pins run 2.6 mm off the back face
+MIC_HDR_X = (MIC["w"] / 2 - 1.1, MIC["w"] / 2 + 1.4)       # header body over the right edge (0.15 from the front stack post)
+MIC_PIN_Y = [MIC["y0"] + 3.27 + 2.54 * (5 - k) for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V (top to bottom)
+MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + 14.0)
 
 # Panel snaps: four spring tabs, two on the front wall and two on the rear wall. Each tab hangs from
 # the panel and has a bump that clicks into a pocket in the wall. The catch face is 45 deg (the print
@@ -185,9 +192,8 @@ WIRE_PATHS = {
     "uart: Pi header to BiBoard plug": [dict(x=(18.2, 27.6), y=(31.0, 54.0), z=(-16.5, 30.0))],
     "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-26.3, -18.6)),
                                         dict(x=(-25.0, -15.6), y=(27.6, 47.0), z=(-18.6, -12.2))],
-    "mic: over the mic to the right well": [dict(x=(-7.1, 7.1), y=(42.3, 52.0), z=(-33.6, -32.2)),
-                                            dict(x=(-7.1, 21.0), y=(50.6, 54.0), z=(-33.6, -29.9)),
-                                            dict(x=(5.6, 21.0), y=(37.0, 54.0), z=(-29.9, -22.3))],
+    "mic: rearward stack in the right well": [dict(x=(22.6, 25.3), y=(33.0, 47.3), z=(-30.5, 4.0)),
+                                              dict(x=(22.4, 23.9), y=(40.5, 47.3), z=(4.0, 21.0))],
     "speaker: amp rear end to the speaker": [dict(x=(-24.5, -18.5), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
@@ -517,13 +523,14 @@ def stack_posts():
 
 
 def mic_posts():
-    """Two posts with grooves for the sides of the mic board, and a base under it. The front wall is in front of it."""
+    """A post with a groove for the left side of the mic board, a short post under its right corner, and a base
+    with a slot for its bottom edge. The front wall is in front of it. The header and the plugs are at the right."""
     M, c = MIC, MIC["clr"]
     hw = M["w"] / 2
     za, zb = ZF_IN - 0.5, MIC_Z[1] + c + 1.5
     p = mbox(-hw - 2.25, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] - c, za, zb)            # base
-    for sx in (-1, 1):
-        p += mbox(*sorted((sx * (hw - 0.5), sx * (hw + 2.25))), FLOOR_Y1 - 0.01, M["y0"] + M["l"] + 0.3, za, zb)
+    p += mbox(-hw - 2.25, -hw + 0.5, FLOOR_Y1 - 0.01, M["y0"] + M["l"] + 0.3, za, zb)  # left post
+    p += mbox(hw - 0.5, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] + 1.4, za, zb)             # right corner post (under the header)
     return p - mbox(-hw - c, hw + c, M["y0"] - c, 99, ZF_IN, MIC_Z[1] + c)
 
 
@@ -747,7 +754,8 @@ def rbox(axis, x0, x1, y0, y1, z0, z1, r, n=16):
     return m3.Manifold.batch_hull(cs)
 
 
-R_BEND = 2.0          # smallest bend radius of a jumper wire (silicone 26 AWG, 1.4 mm): about 1.4 x its size
+R_BEND = 2.0          # smallest bend radius of a designed route (jumper wire 1.4 mm): about 1.4 x its size
+R_SLACK = 1.35        # smallest bend radius in the slack arches and loops of the pack jumpers
 WIRE_PITCH = 1.5      # center distance of wires side by side
 
 
@@ -813,18 +821,16 @@ def bb_pin_z(k):
 BB_X = (HDR["x0"] + HDR["x1"]) / 2
 AMP_PLUG_Y = [AMP_Y0 + AMP["h"] - v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN
 AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # front face of the I2S plug
-MIC_HOLE_Y = MIC["y0"] + MIC["l"] - 1.27                                      # solder holes along the top edge
-MIC_HOLE_X = [-6.35 + 2.54 * k for k in range(6)]                            # SEL, LRCL, DOUT, BCLK, GND, 3V
 # BCLK and LRCLK: one wire from Pi pin 12 (35) to a soldered splice, then one wire to the mic and one to the amp
 # (reference/g2-wiring-blueprint.html). The splices are vertical heat-shrink sleeves in the right well:
 # the Pi wire and the amp wire go into the bottom end, the mic wire into the top end.
-SPLICE = dict(bclk=(21.2, -2.0), lrclk=(22.7, 22.0), y=(39.0, 45.0), r=1.25)
-LRCL_LANE = 22.7      # the mic LRCL wire runs rearward in its own lane: in the flat cable it is above DOUT, but it leaves first
-# Lanes in the right well (X): the mic wires come down at MIC_LANE, the UART wires rise at UART_X,
-# the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES.
-MIC_LANE, UART_X, FLOOR_WIRE = 21.2, 26.0, FLOOR_Y1 + 0.75
+SPLICE = dict(bclk=(21.2, -2.0), lrclk=(21.0, 22.0), y=(39.0, 45.0), r=1.25)
+# Lanes in the right well (X): the mic wires run rearward as a flat stack at MIC_RIB (X 24.6, then X 23.2 beside
+# the BiBoard plugs), the UART wires rise at UART_X, the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES.
+MIC_RIB, UART_X, FLOOR_WIRE = (24.6, 23.2), 27.0, FLOOR_Y1 + 0.75
 AMP_LANES = dict(DIN=22.2, LRC=23.6, BCLK=25.2, G=26.7)
 AMP_V_X = 21.4
+PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
 
 
 def into_pin(n):
@@ -874,23 +880,35 @@ def wire_routes():
                 y, z = pin_yz(n)
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z), (xl, y, z)] + into_pin(n)
         W.append(("amp", lab, col, pts))
-    # Mic: from the solder holes along its top edge (back face), up in front of the front post as a flat cable,
-    # to the right over the stack front end (each wire at its own height), rearward down the right well at
-    # MIC_LANE. The lowest wire leaves first: 3V (pin 1), GND (pin 9), BCLK (splice), LRCL (splice), DOUT (pin 38),
-    # SEL (pin 39, to GND: left channel).
+    # Mic: pack jumpers from the housings on the mic header (they leave along +X), rearward as a flat stack in the
+    # right well (each wire at its own height: SEL at the top, 3V at the bottom). The lowest wire leaves first:
+    # 3V (pin 1), GND (pin 9), BCLK (splice), LRCL (splice), DOUT (pin 38), SEL (pin 39, to GND: left channel).
+    xa, xb = MIC_RIB
+    mz = MIC_PIN_Z
     for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
                            (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
-        x = MIC_HOLE_X[k]
-        lvl = 46.5 + WIRE_PITCH * (5 - k)
-        zb = MIC_Z[0] + 1.6 + WIRE_R                       # the wires lie on the back face: bend them before soldering
-        lane = LRCL_LANE if lab == "LRCL" else MIC_LANE
-        pts = [(x, MIC_HOLE_Y, zb), (x, lvl, zb), (lane, lvl, zb)]
-        if isinstance(t, str):
-            sx, sz = SPLICE[t]
-            pts += [(lane, lvl, sz), splice_end(t, True)]
+        y = MIC_PIN_Y[k]
+        pts = [(MIC_HOUSING_X[1], y, mz), (MIC_HOUSING_X[1] + 1.2, y, mz), (xa, y, mz + 2.0)]
+        if lab == "3V":
+            yp, zp = pin_yz(1)
+            pts += [(xa, y, zp - 3.0), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(1)
+        elif lab == "GND":
+            yp, zp = pin_yz(9)
+            pts += [(xa, y, zp - 3.0), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(9)
+        elif lab == "BCLK":
+            sx, sz = SPLICE["bclk"]
+            pts += [(xa, y, sz - 5.0), (sx + 1.4, y, sz - 3.0), (sx + 1.4, SPLICE["y"][1] + 2.0, sz - 1.0), (sx, SPLICE["y"][1] + 1.2, sz),
+                    splice_end("bclk", True)]
         else:
-            y, z = pin_yz(t)
-            pts += [(lane, lvl, z), (lane, y, z)] + into_pin(t)
+            pts += [(xa, y, 5.0), (xb, y, 9.0)]
+            if lab == "LRCL":
+                sx, sz = SPLICE["lrclk"]
+                pts += [(xb, y, sz - 5.0), (sx + 1.2, SPLICE["y"][1] + 1.5, sz - 2.0), (sx, SPLICE["y"][1] + 1.2, sz),
+                        splice_end("lrclk", True)]
+            else:
+                n = 38 if lab == "DOUT" else 39
+                yp, zp = pin_yz(n)
+                pts += [(xb, y, zp - 2.0), (xb - 0.3, yp + 3.0, zp), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(n)
         W.append(("mic", lab, col, pts))
     # The Pi end of each splice: pin 12 (GPIO18, BCLK) and pin 35 (GPIO19, LRCLK), into the bottom of the sleeve.
     # It runs 2.5 mm over the other housing wires (pin 14 at Y 32.2).
@@ -1002,19 +1020,20 @@ def build_models():
     ic = mbox(x1, x1 + 1.5, yv(L["ic"][3]), yv(L["ic"][2]), zu(L["ic"][0]), zu(L["ic"][1]))
     add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
     amp = pcb + hdrs + p5 + p2 + term + screws + ic
-    # SPH0645 mic board (Adafruit 3421): PCB, mic part on the back face, solder holes along the top edge, port hole
+    # SPH0645 mic board (Adafruit 3421 size): PCB, mic part on the back face, port hole, right-angle header at the
+    # right edge with the six Dupont housings on its pins
     M = MIC
-    pcb_z = (MIC_Z[0], MIC_Z[0] + 1.6)
+    pcb_z = (MIC_Z[0], MIC_Z_BACK)
     mp = rbox("z", -M["w"] / 2, M["w"] / 2, M["y0"], M["y0"] + M["l"], *pcb_z, 0.8)
     mp -= mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.4, 0.0, MIC_PORT_Y, 12)
-    mp -= union([mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.5, x, MIC_HOLE_Y, 12) for x in MIC_HOLE_X])
     add("mic_sph0645", "pcb", "SPH0645 mic board", mp, "#22303f")
-    pads = union([mcyl("z", pcb_z[1] - 0.01, pcb_z[1] + 0.05, 0.85, x, MIC_HOLE_Y, 16) for x in MIC_HOLE_X])
-    pads -= union([mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.5, x, MIC_HOLE_Y, 12) for x in MIC_HOLE_X])
-    add("mic_sph0645", "pads", "mic solder pads", pads, "#d9b34a")
     can = mbox(-1.75, 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, pcb_z[1] - 0.01, pcb_z[1] + 1.0)
     add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
-    mic = mp + pads + can
+    hb = mbox(*MIC_HDR_X, MIC_PIN_Y[-1] - 1.27, MIC_PIN_Y[0] + 1.27, pcb_z[1] - 0.01, MIC_PIN_Z + 1.25)
+    add("mic_sph0645", "header", "mic right-angle header", hb, "#1d1d1f")
+    mh = union([rbox("x", *MIC_HOUSING_X, y - 1.25, y + 1.25, MIC_PIN_Z - 1.25, MIC_PIN_Z + 1.25, 0.25, 8) for y in MIC_PIN_Y])
+    add("mic_sph0645", "housings", "Dupont housings on the mic header", mh, "#3a3b40")
+    mic = mp + can + hb + mh
     # speaker: black ear plate with two holes; round-edged box behind it; the sound face (rear) has a grille
     z0, z1 = SPK_ZE, SPK_ZE + SPK["ear_t"]
     yc = SPK_Y0 + SPK["d"] / 2
@@ -1033,9 +1052,9 @@ def build_models():
                   biboard_header=hdr, biboard_plug=bb, speaker=spk, amp_ns4168=amp, mic_sph0645=mic)
     # wires
     groups = {}
-    for g, lab, col, pts in W + speaker_leads():
+    for g, lab, col, pts, smooth in all_routes():
         T = add(f"wires_{g}", lab.split()[0].lower().replace("+", "pos").replace("-", "neg"), f"{g} wire {lab}",
-                tube(pts, rounded=(g != "speaker")), col)
+                tube(pts, rounded=not smooth), col)
         groups[g] = groups.get(g, []) + [T]
     sleeves = union([mcyl("y", *SPLICE["y"], SPLICE["r"], SPLICE[t][0], SPLICE[t][1], 16) for t in ("bclk", "lrclk")])
     groups["splice"].append(add("wires_splice", "sleeves", "solder splices (heat shrink)", sleeves, "#2a2a2a"))
@@ -1044,20 +1063,358 @@ def build_models():
     return models, D
 
 
+# --------------------------------------------------------------------------
+# Wire settling: each pack jumper is PACK_L long. It starts on its guide route (shorter) and grows to PACK_L,
+# pushed out of every part and every other wire, with a little gravity. The excess finds free space, as real
+# slack does. Ends: fixed, straight out of the housing for 2 mm.
+# --------------------------------------------------------------------------
+GRID_H = 0.5
+SETTLE = dict(seg=1.0, iters=5000, grow=0.6, gravity=0.006, bend=0.5, spans=(1, 2, 3, 4, 6, 8), clear=0.25, wire_gap=1.62,
+              end_nodes=4, length_passes=10)
+
+
+def obstacle_field(solids):
+    """Signed distance (mm) to the solids on a grid inside the body: > 0 in free space."""
+    from matplotlib.path import Path
+    from scipy.ndimage import distance_transform_edt
+    h = GRID_H
+    xs, ys, zs = np.arange(-28.6, 28.61, h), np.arange(27.0, 62.61, h), np.arange(-36.6, 55.11, h)
+    occ = np.zeros((len(xs), len(ys), len(zs)), bool)
+    X, Y = np.meshgrid(xs, ys, indexing="ij")
+    pts = np.c_[X.ravel(), Y.ravel()]
+    for k, z in enumerate(zs):
+        inside = np.zeros(len(pts), bool)
+        for poly in solids.slice(float(z)).to_polygons():
+            if len(poly) > 2:
+                inside ^= Path(np.asarray(poly)).contains_points(pts)
+        occ[:, :, k] = inside.reshape(X.shape)
+    occ[:, ys < FLOOR_Y1 + 0.05, :] = True                 # the floor, also over its openings
+    sdf = (distance_transform_edt(~occ) - distance_transform_edt(occ)) * h
+    g = np.gradient(sdf, h)
+    return dict(o=np.array([xs[0], ys[0], zs[0]]), h=h, sdf=sdf, g=g)
+
+
+def _field_at(F, P):
+    from scipy.ndimage import map_coordinates
+    idx = ((P - F["o"]) / F["h"]).T
+    d = map_coordinates(F["sdf"], idx, order=1, mode="nearest")
+    g = np.stack([map_coordinates(gi, idx, order=1, mode="nearest") for gi in F["g"]], axis=1)
+    return d, g
+
+
+def _resample(P, n):
+    P = np.asarray(P, float)
+    s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))]
+    t = np.linspace(0, s[-1], n)
+    return np.stack([np.interp(t, s, P[:, i]) for i in range(3)], axis=1)
+
+
+def settle_wires(F, free, fixed, joints):
+    """free: [(key, guide points, target length)]; fixed: [polylines]; joints: [(center, radius)] where wires may meet.
+    Returns {key: settled polyline}."""
+    from scipy.spatial import cKDTree
+    S = SETTLE
+    ne = S["end_nodes"]
+    wires = []
+    for key, pts, L in free:
+        P0 = round_corners(pts)[0]
+        L0 = float(np.linalg.norm(np.diff(P0, axis=0), axis=1).sum())
+        n = int(round(L / S["seg"])) + 1
+        P = _resample(P0, n)
+        d0 = (P[1] - P[0]) / np.linalg.norm(P[1] - P[0])
+        d1 = (P[-2] - P[-1]) / np.linalg.norm(P[-2] - P[-1])
+        wires.append(dict(key=key, P=P, a=P[0].copy(), b=P[-1].copy(), da=d0, db=d1, L0=L0, L=L, n=n))
+    fixP = np.concatenate([_resample(round_corners(q)[0], max(2, int(np.linalg.norm(np.diff(round_corners(q)[0], axis=0), axis=1).sum() / 0.8)))
+                           for q in fixed]) if fixed else np.zeros((0, 3))
+    fix_tree = cKDTree(fixP) if len(fixP) else None
+    jc = np.array([j[0] for j in joints]) if joints else np.zeros((0, 3))
+    jr = np.array([j[1] for j in joints]) if joints else np.zeros(0)
+    def in_joint(Q):
+        if not len(jc):
+            return np.zeros(len(Q), bool)
+        return (np.linalg.norm(Q[:, None, :] - jc[None], axis=2) < jr[None]).any(1)
+    rng = np.random.default_rng(1)
+    for w in wires:                                       # a small kink so the wire buckles sideways, not along itself
+        w["P"][ne:-ne] += rng.normal(0, 0.05, w["P"][ne:-ne].shape)
+    owner = np.concatenate([np.full(w["n"], i) for i, w in enumerate(wires)])
+    index = np.concatenate([np.arange(w["n"]) for w in wires])
+    for it in range(S["iters"]):
+        f = min(1.0, it / (S["iters"] * S["grow"]))
+        for w in wires:
+            P, n = w["P"], w["n"]
+            rest = (w["L0"] + (w["L"] - w["L0"]) * f) / (n - 1)
+            for k in range(ne):                           # straight out of the housing
+                P[k] = w["a"] + w["da"] * rest * k
+                P[n - 1 - k] = w["b"] + w["db"] * rest * k
+            P[ne:-ne, 1] -= S["gravity"]
+            for span in S["spans"]:                       # bending stiffness over short and long spans: smooth arcs
+                if n - 2 * span <= 2 * ne:
+                    continue
+                lap = 0.5 * (P[:-2 * span] + P[2 * span:]) - P[span:-span]
+                lo, hi = max(ne, span), min(n - ne, n - span)
+                P[lo:hi] += S["bend"] / len(S["spans"]) * lap[lo - span:hi - span]
+            for _ in range(S["length_passes"]):           # segment lengths
+                d = P[1:] - P[:-1]
+                l = np.linalg.norm(d, axis=1)[:, None]
+                c = (l - rest) / np.maximum(l, 1e-9) * d * 0.5
+                mv = np.zeros_like(P)
+                mv[:-1] += c
+                mv[1:] -= c
+                P[ne:-ne] += mv[ne:-ne]
+        A = np.concatenate([w["P"] for w in wires])
+        # wire to wire
+        tree = cKDTree(A)
+        pairs = tree.query_pairs(S["wire_gap"], output_type="ndarray")
+        if len(pairs):
+            i, j = pairs[:, 0], pairs[:, 1]
+            keep = (owner[i] != owner[j]) | (np.abs(index[i] - index[j]) > 6)
+            keep &= ~(in_joint(A[i]) & in_joint(A[j]))
+            i, j = i[keep], j[keep]
+            d = A[i] - A[j]
+            l = np.linalg.norm(d, axis=1)[:, None]
+            c = (S["wire_gap"] - l) / np.maximum(l, 1e-6) * d * 0.5
+            mv = np.zeros_like(A)
+            np.add.at(mv, i, c)
+            np.add.at(mv, j, -c)
+            A += mv
+        if fix_tree is not None:
+            dd, jj = fix_tree.query(A, distance_upper_bound=S["wire_gap"])
+            m = np.isfinite(dd) & ~in_joint(A)
+            if m.any():
+                d = A[m] - fixP[jj[m]]
+                l = np.linalg.norm(d, axis=1)[:, None]
+                A[m] += (S["wire_gap"] - l) / np.maximum(l, 1e-6) * d
+        # parts
+        dist, grad = _field_at(F, A)
+        m = dist < WIRE_R + S["clear"]
+        if m.any():
+            gn = grad[m] / np.maximum(np.linalg.norm(grad[m], axis=1)[:, None], 1e-6)
+            A[m] += gn * (WIRE_R + S["clear"] - dist[m])[:, None]
+        k0 = 0
+        for w in wires:
+            n = w["n"]
+            w["P"][ne:-ne] = A[k0 + ne:k0 + n - ne]
+            k0 += n
+    return {w["key"]: w["P"] for w in wires}
+
+
+def _length(P):
+    return float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())
+
+
+def _frame(P, i):
+    t = P[min(i + 1, len(P) - 1)] - P[max(i - 1, 0)]
+    return t / np.linalg.norm(t)
+
+
+def _arch(P, i0, i1, u, A):
+    """Bulge the nodes i0..i1 along u (made normal to the wire), sin^2 profile of height A."""
+    Q = P.copy()
+    m = i1 - i0
+    for k in range(m + 1):
+        t = _frame(P, i0 + k)
+        v = u - np.dot(u, t) * t
+        nv = np.linalg.norm(v)
+        if nv < 1e-6:
+            continue
+        Q[i0 + k] += (v / nv) * A * math.sin(math.pi * k / m) ** 2
+    return Q
+
+
+def _loop(P, i, u, R, turns, pitch=1.7):
+    """Insert a service loop at node i: `turns` turns of radius R in the plane of the wire and u, a pitch apart."""
+    t = _frame(P, i)
+    v = u - np.dot(u, t) * t
+    if np.linalg.norm(v) < 0.3:
+        return None
+    v /= np.linalg.norm(v)
+    b = np.cross(t, v)
+    ctr = P[i] + v * R
+    pts = []
+    n = int(turns * 2 * math.pi * R / 0.5) + 8
+    for k in range(n + 1):
+        ang = 2 * math.pi * turns * k / n
+        pts.append(ctr - v * R * math.cos(ang) + t * R * math.sin(ang) + b * pitch * turns * k / n)
+    pts = np.array(pts)
+    rest = P[i + 1:]
+    shift = pts[-1] - pts[0]                               # the coil ends a pitch to the side: blend back to the wire end
+    return np.vstack([P[:i], pts, rest + shift * np.linspace(1, 0, len(rest))[:, None]])
+
+
+def _badness(F, P, tree, ne=8):
+    """Penetration of parts and of other wires (mm, summed): 0 = clean."""
+    Q = P[ne:-ne]
+    if not len(Q):
+        return 0.0
+    d, _ = _field_at(F, Q)
+    bad = float(np.clip(WIRE_R + SETTLE["clear"] - d, 0, None).sum())
+    if tree is not None:
+        dd, _ = tree.query(Q, distance_upper_bound=SETTLE["wire_gap"])
+        bad += float(np.clip(SETTLE["wire_gap"] - dd[np.isfinite(dd)], 0, None).sum())
+    return bad
+
+
+def place_slack(F, P0, L, others, joints):
+    """A wire of length L on the guide route P0 (shorter): an arch, or else a service loop. Best clean shape."""
+    from scipy.spatial import cKDTree
+    P0 = _resample(P0, int(_length(P0) / 0.5) + 1)
+    n = len(P0)
+    others = cKDTree(others) if others is not None and len(others) else None
+    dirs = [np.array(d, float) / np.linalg.norm(d) for d in
+            [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)] +
+            [(a_, b_, 0) for a_ in (-1, 1) for b_ in (-1, 1)] + [(0, a_, b_) for a_ in (-1, 1) for b_ in (-1, 1)] +
+            [(a_, 0, b_) for a_ in (-1, 1) for b_ in (-1, 1)]]
+    best = None
+    ne = 8
+    spans = [(a_, a_ + w_) for w_ in (0.3, 0.45, 0.6, 0.8) for a_ in np.arange(0.05, 0.96 - w_, 0.1)]
+    for frac in spans:
+        i0, i1 = int(n * frac[0]), int(n * frac[1])
+        if i1 - i0 < 10 or i0 < ne or i1 > n - ne:
+            continue
+        for u in dirs:
+            lo, hi = 0.0, 60.0
+            if _length(_arch(P0, i0, i1, u, hi)) < L:
+                continue
+            for _ in range(30):
+                mid = (lo + hi) / 2
+                lo, hi = (mid, hi) if _length(_arch(P0, i0, i1, u, mid)) < L else (lo, mid)
+            Q = _arch(P0, i0, i1, u, hi)
+            sc = _badness(F, Q, others)
+            if best is None or sc < best[0]:
+                best = (sc, Q, "arch")
+    if True:                                               # also try a coil; an arch wins a tie
+        dL = L - _length(P0)
+        for turns in (1, 2, 3):
+            R = dL / (2 * math.pi * turns)
+            if R < 3.0:
+                continue
+            for frac in np.linspace(0.12, 0.88, 13):
+                i = int(n * frac)
+                for u in dirs:
+                    Q = _loop(P0, i, u, R, turns)
+                    if Q is None:
+                        continue
+                    sc = _badness(F, Q, others) + 0.05
+                    if best is None or sc < best[0]:
+                        best = (sc, Q, f"loop x{turns}")
+    return best
+
+
+def settle_one(F, P, others, joints, iters=600):
+    """Clean up a placed wire: push out of parts and other wires, keep it smooth, keep its length."""
+    from scipy.spatial import cKDTree
+    S = SETTLE
+    P = _resample(P, int(round(_length(P) / S["seg"])) + 1)
+    rest = _length(P) / (len(P) - 1)
+    ne = S["end_nodes"]
+    tree = cKDTree(others) if others is not None and len(others) else None
+    for _ in range(iters):
+        lap = 0.5 * (P[:-2] + P[2:]) - P[1:-1]
+        P[ne:-ne] += 0.15 * lap[ne - 1:-(ne - 1)]
+        for _ in range(12):
+            d = P[1:] - P[:-1]
+            l = np.linalg.norm(d, axis=1)[:, None]
+            c = (l - rest) / np.maximum(l, 1e-9) * d * 0.5
+            mv = np.zeros_like(P)
+            mv[:-1] += c
+            mv[1:] -= c
+            P[ne:-ne] += mv[ne:-ne]
+        Q = P[ne:-ne]
+        if tree is not None:
+            dd, jj = tree.query(Q, distance_upper_bound=S["wire_gap"])
+            m = np.isfinite(dd)
+            if joints:
+                jc = np.array([j[0] for j in joints]); jr = np.array([j[1] for j in joints])
+                m &= ~(np.linalg.norm(Q[:, None] - jc[None], axis=2) < jr[None]).any(1)
+            if m.any():
+                d = Q[m] - others[jj[m]]
+                l = np.linalg.norm(d, axis=1)[:, None]
+                Q[m] += (S["wire_gap"] - l) / np.maximum(l, 1e-6) * d
+        dist, grad = _field_at(F, Q)
+        m = dist < WIRE_R + S["clear"]
+        if m.any():
+            gn = grad[m] / np.maximum(np.linalg.norm(grad[m], axis=1)[:, None], 1e-6)
+            Q[m] += gn * (WIRE_R + S["clear"] - dist[m])[:, None]
+        P[ne:-ne] = Q
+    return P
+
+
+SETTLED = {}          # (group, label) -> settled polyline, set by settle_all()
+SLACK_SHAPE = {}      # (group, label) -> "arch" or "loop xN"
+PACK_WIRES = {("uart", "TX2"), ("uart", "RX2"), ("uart", "GND"), ("mic", "SEL"), ("mic", "DOUT"), ("mic", "GND"), ("mic", "3V")}
+CUT_WIRES = {("mic", "BCLK"), ("mic", "LRCL")}      # the mic legs of the splices: cut to length when the splice is made
+
+
+def _min_radius(P, span=3):
+    """Smallest bend radius along a dense polyline (circle through points `span` apart)."""
+    a, b, c = P[:-2 * span], P[span:-span], P[2 * span:]
+    ab, bc, ca = np.linalg.norm(b - a, axis=1), np.linalg.norm(c - b, axis=1), np.linalg.norm(a - c, axis=1)
+    area = np.linalg.norm(np.cross(b - a, c - a), axis=1) / 2
+    r = ab * bc * ca / np.maximum(4 * area, 1e-9)
+    return float(r.min()) if len(r) else 99.0
+
+
+def all_routes():
+    """(group, label, color, points, already smooth) for every wire: settled pack wires, designed routes for the rest."""
+    out = []
+    for g, lab, col, pts in wire_routes():
+        if (g, lab) in SETTLED:
+            out.append((g, lab, col, SETTLED[(g, lab)], True))
+        else:
+            out.append((g, lab, col, pts, False))
+    for g, lab, col, pts in speaker_leads():
+        out.append((g, lab, col, pts, True))
+    return out
+
+
+# The order the wires go in, one at a time (the guide follows it): the mic jumpers, then the BiBoard jumpers.
+SETTLE_ORDER = [("mic", "3V"), ("mic", "GND"), ("mic", "BCLK"), ("mic", "LRCL"), ("mic", "DOUT"), ("mic", "SEL"),
+                ("uart", "GND"), ("uart", "RX2"), ("uart", "TX2")]
+
+
+def settle_all(parts, models):
+    """Place the pack jumpers (PACK_L) one at a time, in SETTLE_ORDER, with their excess as an arch or a loop."""
+    solids = union([parts["pod_body"], parts["pod_panel"], parts["pod_switch"]] +
+                   [M for k, M in models.items() if not k.startswith("wires_")])
+    F = obstacle_field(solids)
+    guides = {(g, lab): pts for g, lab, col, pts in wire_routes()}
+    others = [_resample(round_corners(pts)[0], int(_length(round_corners(pts)[0]) / 0.8) + 2)
+              for key, pts in guides.items() if key not in SETTLE_ORDER]
+    others += [_resample(np.asarray(pts, float), int(_length(np.asarray(pts, float)) / 0.8) + 2) for _, _, _, pts in speaker_leads()]
+    joints = [(np.array(splice_end(t, top)), 3.5) for t in ("bclk", "lrclk") for top in (True, False)]
+    SETTLED.clear()
+    SLACK_SHAPE.clear()
+    dense = lambda pts: _resample(round_corners(pts)[0], int(_length(round_corners(pts)[0]) / 0.8) + 2)
+    for idx, key in enumerate(SETTLE_ORDER):
+        P0 = round_corners(guides[key])[0]
+        later = [dense(guides[k]) for k in SETTLE_ORDER[idx + 1:]]       # the paths of the wires still to come
+        O = np.concatenate(others + later)
+        if key in PACK_WIRES:
+            sc, Q, shape = place_slack(F, P0, PACK_L, O, joints)
+        else:
+            Q, shape = P0, "cut to length"
+        Q = settle_one(F, Q, O, joints)
+        SETTLED[key] = Q
+        SLACK_SHAPE[key] = shape
+        others.append(Q)
+    return F
+
+
 def wire_report():
     """Each wire: length and smallest bend radius; and every pair of wires that pass through each other
     (outside the splices, where wires join)."""
     import itertools
     rows, tubes = [], []
-    for g, lab, col, pts in wire_routes() + speaker_leads():
-        if g == "speaker":
-            P, rmin = np.asarray(pts, float), R_BEND + 1.0 - 1.0      # the pair: center radius R_BEND + 2, inner wire R_BEND + 1
+    for g, lab, col, pts, smooth in all_routes():
+        if smooth:
+            P = np.asarray(pts, float)
+            rmin = _min_radius(P) if g != "speaker" else R_BEND
         else:
             P, rmin = round_corners(pts)
         L = float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())
         rows.append(dict(group=g, wire=lab, length_mm=round(L, 1), min_bend_r=round(min(rmin, 99), 2), color=col,
                          points=np.round(P, 2).tolist()))
-        tubes.append((f"{g} {lab}", tube(pts, rounded=(g != "speaker"))))
+        tubes.append((f"{g} {lab}", tube(pts, rounded=not smooth)))
     joints = union([mcyl("y", SPLICE["y"][0] - 4.0, SPLICE["y"][1] + 3.0, SPLICE["r"] + 2.5, SPLICE[t][0], SPLICE[t][1], 16)
                     for t in ("bclk", "lrclk")])
     cross = []
@@ -1312,6 +1669,7 @@ def main(fast=False):
     from bittle_platform import build as BP
     os.makedirs(OUT, exist_ok=True)
     parts = build_all()
+    settle_all(parts, real_models())          # the pack jumpers settle among the parts (the models from the guide routes)
     models = real_models()
     robot = robot_parts()
     for d in ("print", "installed", "models"):
@@ -1351,8 +1709,14 @@ def main(fast=False):
     rows = check(parts, models, robot)
     wires, cross = wire_report()
     rows.append(("wires: pairs that pass through each other", "-", float(len(cross))))
-    rows.append((f"wires: bends under {R_BEND - 0.05:.2f} mm radius", "-", float(sum(w["min_bend_r"] < R_BEND - 0.05 for w in wires))))
-    json.dump(dict(wires=wires, crossings=cross, r_bend=R_BEND, wire_d=2 * WIRE_R), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
+    rows.append((f"wires: designed bends under {R_BEND - 0.05:.2f} mm, slack bends under {R_SLACK:.2f} mm", "-",
+                 float(sum(w["min_bend_r"] < (R_SLACK if (w["group"], w["wire"]) in SETTLED else R_BEND - 0.05) for w in wires))))
+    for w in wires:
+        k = (w["group"], w["wire"])
+        w["slack"] = SLACK_SHAPE.get(k, "")
+        w["pack"] = k in PACK_WIRES
+    json.dump(dict(wires=wires, crossings=cross, r_bend=R_BEND, r_slack=R_SLACK, wire_d=2 * WIRE_R, pack_l=PACK_L,
+                   order=[list(k) for k in SETTLE_ORDER]), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
     print("wires: longest", max(w["length_mm"] for w in wires), "mm; smallest bend", min(w["min_bend_r"] for w in wires), "mm; crossings", len(cross))
     bal = balance(parts, models)
     snap = snap_force()

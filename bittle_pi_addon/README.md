@@ -22,10 +22,10 @@ Print quality. The body walls are vertical and its floor is on the bed. The only
 | Part | Place |
 |---|---|
 | Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh | On the long edge over the robot center: ports and PiSugar controls up, GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards. |
-| Dupont jumpers | On the soldered Pi header, 12 pins (section 4). 3 of them go to the BiBoard header in the right well. |
+| Dupont jumpers | 10 cm female-female jumpers from a pack: 3 to the BiBoard, 6 to the mic (2 of them through the splices). |
 | NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end. |
 | NULLLAB 3 W 4 ohm speaker | At the rear, sound to the grille in the rear face. Ear plate 45 x 31 x 1.5 in two side grooves (ruler). |
-| HiLetgo SPH0645 I2S mic | 16.7 x 12.7 x 1.8 board at the front wall, port to the front, in two grooves. Solder the wires to the pins at its top edge. |
+| HiLetgo SPH0645 I2S mic | 12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its right edge points into the right well. |
 | Head camera cable | The Grove cable comes out under the front edge of the cover (left side) and runs up to the head. A 45 deg notch in each front bottom corner of the body gives it room. |
 | Optional cable | A notch at the base of each side wall lets a cable in from outside. |
 
@@ -39,7 +39,7 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 1. Fit the platform cover in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
 2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 4.2 N). The BiBoard header is now in the notch of the right well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
 3. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
-4. Push the mic down into the two grooves at the front wall, port to the front. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
+4. Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
 5. Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. Lay the amp cable across the floor in front of the front pegs. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
 6. Push the jumpers onto the Pi header. Push the Pi + PiSugar 2 stack down into the end grooves, over the I2S wires. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Reach into the right well and push the three Dupont plugs onto the BiBoard header (TX2, RX2, GND). Fold the slack into the right well. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9))
@@ -69,30 +69,44 @@ Pin map from the wiring blueprint (reference/g2-wiring-blueprint.html; that blue
 
 ## 5. Cable routing
 
-pod.py models every wire (1.4 mm) on its route and checks it: no wire touches a printed part or a board, no two wires pass through each other (0 found), and no bend is smaller than 2 mm radius. The drawings show the routes. The numbers are the rows of the table.
+The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires. The amp keeps its own cable, and the two splices are cut from pack jumpers. pod.py models every wire (1.4 mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each other (0 found), and no bend is smaller than 2 mm radius (1.35 mm in the slack). A pack jumper is longer than its route, so its excess is an arch or a coil (a service loop) in free space. The pages below show each module: its pins, then its wires in the case.
 
-![Top view of the routes. The right well is between the Pi header plugs and the right wall.](doc/13_routing_top.png)
+![](doc/15_wiring_0.png)
 
-![The right well from the right side: the floor lanes of the amp cable, the BiBoard wires at three heights, the mic cable above them.](doc/14_routing_side.png)
+![](doc/15_wiring_1.png)
 
-| # | From | To | mm | # | From | To | mm |
+![](doc/15_wiring_2.png)
+
+![](doc/15_wiring_3.png)
+
+| # | From | To (excess) | mm | # | From | To (excess) | mm |
 |---|---|---|---|---|---|---|---|
-| 1 | BiBoard TX2 | pin 10 | 46 | 10 | mic LRCL | LRCLK splice | 99 |
-| 2 | BiBoard RX2 | pin 8 | 54 | 11 | mic DOUT | pin 38 | 110 |
-| 3 | BiBoard GND | pin 6 | 62 | 12 | mic BCLK | BCLK splice | 62 |
-| 4 | amp G | pin 14 | 104 | 13 | mic GND | pin 9 | 60 |
-| 5 | amp V | pin 2 | 72 | 14 | mic 3V | pin 1 | 45 |
+| 1 | BiBoard TX2 | pin 10 (arch) | 98 | 10 | mic LRCL | LRCLK splice | 57 |
+| 2 | BiBoard RX2 | pin 8 (arch) | 99 | 11 | mic DOUT | pin 38 (arch) | 98 |
+| 3 | BiBoard GND | pin 6 (arch) | 99 | 12 | mic BCLK | BCLK splice | 38 |
+| 4 | amp G | pin 14 | 104 | 13 | mic GND | pin 9 (loop x2) | 97 |
+| 5 | amp V | pin 2 | 72 | 14 | mic 3V | pin 1 (arch) | 98 |
 | 6 | amp BCLK | BCLK splice | 96 | 15 | BCLK splice | pin 12 | 13 |
-| 7 | amp LRC | LRCLK splice | 111 | 16 | LRCLK splice | pin 35 | 8 |
+| 7 | amp LRC | LRCLK splice | 111 | 16 | LRCLK splice | pin 35 | 6 |
 | 8 | amp DIN | pin 40 | 107 | 17 | amp speaker + | speaker + | 38 |
-| 9 | mic SEL | pin 39 | 121 | 18 | amp speaker - | speaker - | 38 |
+| 9 | mic SEL | pin 39 (arch) | 99 | 18 | amp speaker - | speaker - | 38 |
 
-1. Mic wires: bend each wire before you solder it, so it leaves along the back face of the board. Cut them to the route length + 15 mm. Route: up the back of the mic, right over the front post, rearward down the right well; the lowest wire leaves first.
-2. Amp cable: forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the right well. From the front: DIN in the inner lane, then LRC, BCLK, and G at the wall. V goes up to pin 2 at once. Lay it before the stack goes in.
-3. Splices: the BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs. The Pi wire and the amp wire go into the bottom, the mic wire into the top.
-4. BiBoard wires: right well: along the floor to the right wall, up, rearward over the BiBoard plugs (each wire at its own height), down into them. Pin 6 (front) goes to GND (rear), so the order turns over: pin 10 runs lowest, pin 6 highest.
-5. Speaker leads: a pair: up the left side behind the amp, over the ear plate, into the top of the speaker.
-6. Jumpers are longer than the routes. Fold the slack in the right well above the floor lanes, away from the finger space over the BiBoard plugs.
+Plug the jumpers one at a time, in this order. Each wire goes to its place before the next one, so the later wires lie over the earlier ones:
+
+1. #14: mic 3V to pin 1. Put its excess in a arch as in the drawing.
+2. #13: mic GND to pin 9. Put its excess in a loop x2 as in the drawing.
+3. #12: mic BCLK to BCLK splice. Cut to length.
+4. #10: mic LRCL to LRCLK splice. Cut to length.
+5. #11: mic DOUT to pin 38. Put its excess in a arch as in the drawing.
+6. #9: mic SEL to pin 39. Put its excess in a arch as in the drawing.
+7. #3: BiBoard GND to pin 6. Put its excess in a arch as in the drawing.
+8. #2: BiBoard RX2 to pin 8. Put its excess in a arch as in the drawing.
+9. #1: BiBoard TX2 to pin 10. Put its excess in a arch as in the drawing.
+
+1. The mic has a right-angle header along its right edge. Plug the six mic jumpers onto it before the mic goes into its grooves.
+2. Amp cable: forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the right well. Lay it before the stack goes in. Its own excess (not measured) folds in the left gallery over the amp.
+3. Splices: the BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs.
+4. BiBoard wires go in last, after the body is on the robot: GND, then RX2, then TX2.
 
 ![From the top, panel off: the wires in 3D.](doc/11_wires_top.png)
 

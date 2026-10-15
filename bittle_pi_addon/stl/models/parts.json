@@ -141,17 +141,24 @@
  },
  {
   "model": "mic_sph0645",
-  "sub": "pads",
-  "label": "mic solder pads",
-  "file": "models/parts/mic_sph0645__pads.stl",
-  "color": "#d9b34a"
- },
- {
-  "model": "mic_sph0645",
   "sub": "mic",
   "label": "SPH0645 mic",
   "file": "models/parts/mic_sph0645__mic.stl",
   "color": "#c8c8c8"
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "header",
+  "label": "mic right-angle header",
+  "file": "models/parts/mic_sph0645__header.stl",
+  "color": "#1d1d1f"
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "housings",
+  "label": "Dupont housings on the mic header",
+  "file": "models/parts/mic_sph0645__housings.stl",
+  "color": "#3a3b40"
  },
  {
   "model": "speaker",
