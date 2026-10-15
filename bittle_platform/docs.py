@@ -251,22 +251,24 @@ def content():
          "For a plate of a different shape: subtract cad/keyhole_cutter.step, then add cad/detent_bumps.step. Both are in position."])
 
     h("3. Printing")
-    tbl([["Part", "Orientation", "Supports", "Cura profile"],
-         ["cover_pegs_foot (recommended)", "stand on the rear end, foot on the bed", "none: the foot is the support", "Bittle Cover - PLA 0.25, brim off. Snap off the foot after the print."],
-         ["cover_pegs (no foot)", "stand on the rear end", "tree, from the bed", "Bittle Cover - PLA 0.25 (14-line brim)"],
-         ["starter_plate and add-ons", "plate bottom on the bed", "none", "Bittle Pi Pod - PLA 0.25"],
-         ["small, detailed parts", "-", "-", "Bittle Fine - PLA 0.10"],
-         ], [38, 46, 32, 54])
-    tbl([["Setting", "0.25 profiles", "Fine 0.10"],
-         ["Layer", "0.25", "0.10 (first layer 0.25)"],
-         ["Walls / infill", "3 / 20 % gyroid", "3 / 20 % gyroid"],
-         ["Outer wall / inner wall / infill speed", "30 / 40 / 60 mm/s", "25 / 35 / 50 mm/s"],
-         ["Outer wall acceleration", "600 mm/s²", "500 mm/s²"],
-         ["Nozzle", "220 C (PLA)", "220 C (PLA)"],
-         ], [70, 50, 50])
+    p("One Cura profile prints every part: \"Bittle X\" (cura/Bittle_X.curaprofile in the repository; import it in Cura). "
+      "cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured.")
+    tbl([["Part", "Orientation", "Supports"],
+         ["cover_pegs_foot (recommended)", "stand on the rear end, foot on the bed", "none: the foot is the support. Snap it off after the print."],
+         ["cover_pegs (no foot)", "stand on the rear end", "turn on tree supports from the bed and a 14-line brim"],
+         ["starter_plate and add-ons", "plate bottom on the bed", "none"],
+         ], [50, 55, 65])
+    tbl([["Setting", "Bittle X"],
+         ["Layer", "0.20 (first layer 0.25)"],
+         ["Walls / infill", "3 / 20 % gyroid"],
+         ["Outer wall / inner wall / infill speed", "25 / 40 / 55 mm/s"],
+         ["Outer wall acceleration", "500 mm/s²"],
+         ["Supports / brim", "off / 6 lines"],
+         ["Nozzle", "220 C (PLA)"],
+         ], [80, 90])
     lst(["Material: PLA works. Use PETG for add-ons that you remove often or that get warm.",
          "Standing on its end, the cover prints the pegs with layers along their length. This makes them strong. The shaft and collar points are down, so they need no supports.",
-         "The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at 21 small teeth, each one layer tall. Twist the foot off after the print.",
+         "The cover stands on a thin strip, and its center of mass is past that strip. The foot is a 3-layer plate with 7 fins under the leaning face. It increases the first layer from 53 to about 1000 mm². The fins touch the cover only at 21 small teeth, each one layer tall at 0.20 mm layers. Twist the foot off after the print.",
          "In add-ons, keep overhangs at 45 deg or less. Use chamfers, not round edges, on the bottom side.",
          f"The fits use {I.KEY_SLOT_GAP:g} (slot), {I.KEY_HOLE_GAP:g} (drop-in hole) and {I.PEG_HEAD_Y0 - I.MOUNT_Y1:.1f} (under the heads) clearance. Calibrate your printer if the plate does not slide on."])
 

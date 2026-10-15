@@ -41,14 +41,17 @@ def content():
     img("02_addon.png", 0.5, "The add-on on the platform: the mic holes are at the front, the port windows in the panel.")
 
     h("1. Parts to print")
-    tbl([["File (stl/print/)", "Material", "Orientation", "Supports", "Cura profile", "Mass"],
-         ["pod_body.stl", "PLA", "floor on the bed", "none", "Bittle Pi Pod - PLA 0.25", f"{pod_mass('pod_body')} g"],
-         ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", "none", "Bittle Fine 0.10 for the best top", f"{pod_mass('pod_panel')} g"],
-         ["pod_switch.stl", "PLA, white", "flat side on the bed, tab up", "none", "Bittle Fine 0.10", "0.2 g"],
-         ["pod_button.stl", "PLA, white", "upside down: top on the bed", "none", "Bittle Fine 0.10", "0.1 g"],
-         ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", "none", "Bittle Fine 0.10", f"{pod_mass('pod_camera_mount')} g"],
-         ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "none: the foot is the support", "Bittle Cover - PLA 0.25", "11 g"],
-         ], [38, 22, 36, 16, 42, 14])
+    tbl([["File (stl/print/)", "Material", "Orientation", "Mass"],
+         ["pod_body.stl", "PLA", "floor on the bed", f"{pod_mass('pod_body')} g"],
+         ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", f"{pod_mass('pod_panel')} g"],
+         ["pod_switch.stl", "PLA, white", "flat side on the bed, tab up", "0.2 g"],
+         ["pod_button.stl", "PLA, white", "upside down: top on the bed", "0.1 g"],
+         ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
+         ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "11 g"],
+         ], [62, 34, 58, 16])
+    p("Print every part with the Cura profile \"Bittle X\" (../cura/Bittle_X.curaprofile; 0.20 mm layers, no supports, 6-line brim). "
+      "../cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured "
+      "(\"Bittle X - <spool>\"). No part needs supports.")
     p(f"Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. "
       "The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) "
       "are the tops of the two cable notches at the base of the side walls: 8 mm bridges. The front cable notches are 45 deg chamfers. "

@@ -7,14 +7,16 @@ Version 0.18, 2026-10-15. A sample add-on for the Bittle X platform v3.1 (../bit
 
 ## 1. Parts to print
 
-| File (stl/print/) | Material | Orientation | Supports | Cura profile | Mass |
-|---|---|---|---|---|---|
-| pod_body.stl | PLA | floor on the bed | none | Bittle Pi Pod - PLA 0.25 | 34 g |
-| pod_panel.stl | PLA, second color | upside down: top on the bed | none | Bittle Fine 0.10 for the best top | 13 g |
-| pod_switch.stl | PLA, white | flat side on the bed, tab up | none | Bittle Fine 0.10 | 0.2 g |
-| pod_button.stl | PLA, white | upside down: top on the bed | none | Bittle Fine 0.10 | 0.1 g |
-| pod_camera_mount.stl | PLA, second color | on its back end (as in the STL) | none | Bittle Fine 0.10 | 4 g |
-| cover_pegs_foot.stl (../bittle_platform) | PLA | stand on the rear end | none: the foot is the support | Bittle Cover - PLA 0.25 | 11 g |
+| File (stl/print/) | Material | Orientation | Mass |
+|---|---|---|---|
+| pod_body.stl | PLA | floor on the bed | 34 g |
+| pod_panel.stl | PLA, second color | upside down: top on the bed | 13 g |
+| pod_switch.stl | PLA, white | flat side on the bed, tab up | 0.2 g |
+| pod_button.stl | PLA, white | upside down: top on the bed | 0.1 g |
+| pod_camera_mount.stl | PLA, second color | on its back end (as in the STL) | 4 g |
+| cover_pegs_foot.stl (../bittle_platform) | PLA | stand on the rear end | 11 g |
+
+Print every part with the Cura profile "Bittle X" (../cura/Bittle_X.curaprofile; 0.20 mm layers, no supports, 6-line brim). ../cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured ("Bittle X - <spool>"). No part needs supports.
 
 Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) are the tops of the two cable notches at the base of the side walls: 8 mm bridges. The front cable notches are 45 deg chamfers. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the snap bumps have 45 deg catch faces. Its only overhang (28 mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. The camera mount has a 9.5 mm bridge at the HDMI notch, short bridges at the clip hooks, and a 45 deg chin. Keep the seam at the rear.
 

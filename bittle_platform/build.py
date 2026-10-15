@@ -366,9 +366,10 @@ def overhang_regions(M, limit_deg=45.5, bed=0.3, min_area=0.5):
 # (about 56 x 1.6 mm) and its center of mass is 2 mm past that strip, over the leaning
 # top face. The foot is a 3-layer plate with fins under that face. The fins stand
 # FOOT["gap"] off the cover and touch it only at small teeth, so they snap off.
-# Each tooth is one layer tall (tooth_h, at 0.25 mm layers) and 0.6 wide: 21 teeth, about 3 mm2 of
-# contact in total. Only the teeth hold, so the foot breaks off clean.
-FOOT = dict(t=0.75, y=(-14.0, 4.0), x=30.0, fins_x=(-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0),
+# Each tooth is 0.6 wide and 0.25 tall: 21 teeth, about 3 mm2 of contact in total. Only the teeth hold,
+# so the foot breaks off clean. With the "Bittle X" Cura profile (0.25 first layer, then 0.20) the layer
+# mid-planes are at 0.125, then 0.35 + 0.2 k: the plate (0.70) is 3 layers, each tooth exactly 1 layer.
+FOOT = dict(t=0.70, y=(-14.0, 4.0), x=30.0, fins_x=(-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0),
             fin_t=0.8, fin_h=14.0, gap=0.45, teeth_z=(1.0, 6.0, 11.0), tooth=0.6, tooth_h=0.25)
 
 
