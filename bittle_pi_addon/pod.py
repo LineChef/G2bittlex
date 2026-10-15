@@ -2024,11 +2024,12 @@ def install_checks(parts, models):
 
 # Masses (g) from the user's table (reference/signal-2026-10-15-12-23-39-844.png): the electronics and the wires.
 # The printed parts are about half solid (PRINT_FILL).
-# Exploded view: the parts leave in reverse build order. In its stage a part makes two moves, one after the other.
-# Most parts first lift straight up (the way they went in, out through the open top of the body), then move aside.
-# The wires lift first. At the same time the Dupont housings on the Pi slide off their pins (+X); then they lift.
-# Lifts grow with the stage, so a part never passes through a part that is still in place. Stage 0 leaves first.
-EXPLODE_STAGES = 8
+# Exploded view: the parts leave in about the reverse build order. In its stage a part makes two moves, one after
+# the other: it lifts straight up (the way it went in, out through the open top of the body), then moves aside.
+# A Dupont housing always stays on its wire. The Pi stack and its wire harness (the jumpers, the amp cable, the
+# splices) leave together: a housing cannot slide off a Pi pin as one rigid piece with its wire (the wire would go
+# through the right wall). Lifts grow with the stage, so a part never passes through a part still in place.
+EXPLODE_STAGES = 7
 
 
 def explode_plan(name, sub=""):
@@ -2040,26 +2041,23 @@ def explode_plan(name, sub=""):
     if name in ("panel", "pod_panel"):
         return 2, (0, 170, 0), (0, 0, 0)
     if name in ("switch", "pod_switch", "button", "pod_button"):
-        return 2, (0, 170, 0), (0, -35, 0)                       # out of the bottom of the panel
+        return 2, (0, 170, 0), (0, 0, 0)                         # they stay clicked into the panel
     if name.startswith("wires_"):
         if name == "wires_camera":
             if sub == "plug_cam":
                 return 0, (0, 250, 0), (0, 0, 0)                  # the plug in the camera socket goes with the camera
             return 2, (0, 170, 0), (0, 0, 0)                      # the Grove cable goes up with the panel (it is in its slot)
-        if name == "wires_speaker" or (name == "wires_amp" and not sub.endswith("_pi")):
-            return 5, (0, 45, 0), (-30, 0, 0)                     # the speaker lead and the amp cable go with the amp
-        if sub.endswith("_pi"):
-            return 3, (6.5, 0, 0), (0, 130, 0)                    # off the pins after the wires are out of the way
-        return 3, (0, 130, 0), (0, 0, 0)
-    side_x = dict(battery=-15, pisugar2=-5, pizero=8, sd_card=8, pi_plugs=8)
-    if name in side_x:
-        return 4, (0, 80, 0), (side_x[name], 0, 0)
+        if name == "wires_speaker":
+            return 4, (0, 45, 0), (-30, 0, 0)                     # the speaker lead goes with the amp
+        return 3, (0, 100, 0), (0, 0, 0)                         # the harness, its housings on it, with the Pi
+    if name in ("pizero", "pisugar2", "battery", "sd_card", "pi_plugs"):
+        return 3, (0, 100, 0), (0, 0, 0)                         # one block: the amp cable runs under the battery
     if name == "amp_ns4168":
-        return 5, (0, 45, 0), (-30, 0, 0)
+        return 4, (0, 45, 0), (-30, 0, 0)
     if name == "mic_sph0645":
-        return 6, (0, 45, 0), (0, 0, -25)
+        return 5, (0, 45, 0), (0, 0, -25)
     if name == "speaker":
-        return 7, (0, 45, 0), (0, 0, 30)
+        return 6, (0, 45, 0), (0, 0, 30)
     return None
 
 
