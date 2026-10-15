@@ -3,7 +3,7 @@
   [
    "cover_pegs",
    "pod_body",
-   0.19917289332237717
+   0.1991728933223772
   ],
   [
    "cover_pegs",
@@ -1303,7 +1303,7 @@
   [
    "body back 1.42mm",
    "cover_pegs",
-   4.25292093963552
+   4.252920939635521
   ],
   [
    "body back 1.42mm",
@@ -1591,6 +1591,21 @@
    0.075000000000001
   ],
   [
+   "battery moved 0.5mm left (must touch)",
+   "pod_panel",
+   59.99999999999962
+  ],
+  [
+   "battery moved 0.5mm up (must touch)",
+   "pod_panel",
+   14.960000000000253
+  ],
+  [
+   "battery moved 0.5mm down (must touch)",
+   "pod_body",
+   40.32000000000007
+  ],
+  [
    "button arm at rest",
    "button",
    0.0
@@ -1608,7 +1623,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   24.748741231603063
+   81.11039704908501
   ],
   [
    "wires uart",
@@ -1883,29 +1898,29 @@
   }
  },
  "balance": {
-  "mass_g": 115.3,
+  "mass_g": 116.5,
   "com": [
-   -0.6,
+   -0.7,
    44.0,
-   13.7
+   13.6
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 31.5,
+    "g": 32.0,
     "com": [
      -0.2,
-     37.6,
+     37.5,
      11.9
     ]
    },
    {
     "name": "pod_panel",
-    "g": 12.6,
+    "g": 13.4,
     "com": [
-     -0.9,
-     61.4,
-     9.5
+     -1.4,
+     60.8,
+     9.3
     ]
    },
    {

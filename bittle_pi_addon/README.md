@@ -9,7 +9,7 @@ Version 0.16, 2026-10-15. A sample add-on for the Bittle X platform v3.1 (../bit
 
 | File (stl/print/) | Material | Orientation | Supports | Cura profile | Mass |
 |---|---|---|---|---|---|
-| pod_body.stl | PLA | floor on the bed | none | Bittle Pi Pod - PLA 0.25 | 31 g |
+| pod_body.stl | PLA | floor on the bed | none | Bittle Pi Pod - PLA 0.25 | 32 g |
 | pod_panel.stl | PLA, second color | upside down: top on the bed | none | Bittle Fine 0.10 for the best top | 13 g |
 | pod_switch.stl | PLA | flat side on the bed, tab up | none | Bittle Fine 0.10 | 0.2 g |
 | cover_pegs_foot.stl (../bittle_platform) | PLA | stand on the rear end | none: the foot is the support | Bittle Cover - PLA 0.25 | 11 g |
@@ -29,7 +29,7 @@ Print quality. The body walls are vertical and its floor is on the bed. The only
 | Head camera cable | The Grove cable comes out under the front edge of the cover (left side) and runs up to the head. A 45 deg notch in each front bottom corner of the body gives it room. |
 | Optional cable | A notch at the base of each side wall lets a cable in from outside. |
 
-Balance. The add-on weighs about 115 g (printed parts in PLA and typical masses of the electronics, not weighed). The Pi stack, the heaviest part, is over the robot center. The speaker is at the rear, away from the mic. So the center of mass of the add-on is 13.7 mm behind the robot center and 0.6 mm left of the center line, 19 mm above the cover top. The platform spec recommends 10 mm or less: with the speaker at the front it is about 7 mm. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs about 116 g (printed parts in PLA and typical masses of the electronics, not weighed). The Pi stack, the heaviest part, is over the robot center. The speaker is at the rear, away from the mic. So the center of mass of the add-on is 13.6 mm behind the robot center and 0.7 mm left of the center line, 19 mm above the cover top. The platform spec recommends 10 mm or less: with the speaker at the front it is about 7 mm. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -82,10 +82,10 @@ The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires. 
 | # | From | To (excess) | mm | # | From | To (excess) | mm |
 |---|---|---|---|---|---|---|---|
 | 1 | BiBoard TX2 | pin 10 (arch) | 98 | 10 | mic LRCL | LRCLK splice | 57 |
-| 2 | BiBoard RX2 | pin 8 (arch) | 99 | 11 | mic DOUT | pin 38 (loop x1) | 99 |
-| 3 | BiBoard GND | pin 6 (loop x1) | 99 | 12 | mic BCLK | BCLK splice | 39 |
-| 4 | amp G | pin 14 | 103 | 13 | mic GND | pin 9 (loop x2 on a 10 mm stem) | 98 |
-| 5 | amp V | pin 2 | 72 | 14 | mic 3V | pin 1 (loop x3 on a 5 mm stem) | 96 |
+| 2 | BiBoard RX2 | pin 8 (arch) | 99 | 11 | mic DOUT | pin 38 (1-turn loop) | 99 |
+| 3 | BiBoard GND | pin 6 (1-turn loop) | 99 | 12 | mic BCLK | BCLK splice | 39 |
+| 4 | amp G | pin 14 | 103 | 13 | mic GND | pin 9 (2-turn loop on a 10 mm stem) | 98 |
+| 5 | amp V | pin 2 | 72 | 14 | mic 3V | pin 1 (3-turn loop on a 5 mm stem) | 96 |
 | 6 | amp BCLK | BCLK splice | 96 | 15 | BCLK splice | pin 12 | 14 |
 | 7 | amp LRC | LRCLK splice | 111 | 16 | LRCLK splice | pin 35 | 5 |
 | 8 | amp DIN | pin 40 | 106 | 17 | amp speaker + | speaker + | 43 |
@@ -93,13 +93,13 @@ The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires. 
 
 Plug the jumpers one at a time, in this order. Each wire goes to its place before the next one, so the later wires lie over the earlier ones:
 
-1. #14: mic 3V to pin 1. Put its excess in a loop x3 on a 5 mm stem as in the drawing.
-2. #13: mic GND to pin 9. Put its excess in a loop x2 on a 10 mm stem as in the drawing.
+1. #14: mic 3V to pin 1. Put its excess in a 3-turn loop on a 5 mm stem as in the drawing.
+2. #13: mic GND to pin 9. Put its excess in a 2-turn loop on a 10 mm stem as in the drawing.
 3. #12: mic BCLK to BCLK splice. Cut to length.
 4. #10: mic LRCL to LRCLK splice. Cut to length.
-5. #11: mic DOUT to pin 38. Put its excess in a loop x1 as in the drawing.
+5. #11: mic DOUT to pin 38. Put its excess in a 1-turn loop as in the drawing.
 6. #9: mic SEL to pin 39. Put its excess in a arch as in the drawing.
-7. #3: BiBoard GND to pin 6. Put its excess in a loop x1 as in the drawing.
+7. #3: BiBoard GND to pin 6. Put its excess in a 1-turn loop as in the drawing.
 8. #2: BiBoard RX2 to pin 8. Put its excess in a arch as in the drawing.
 9. #1: BiBoard TX2 to pin 10. Put its excess in a arch as in the drawing.
 

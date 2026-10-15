@@ -91,6 +91,12 @@ STAND = np.array([[0, 1, 0, PI_PCB_TOP_X - (FLAT_DY + 0.8)],
 # A pin-fin heatsink on the SoC of the Pi (user photo). Its size is an estimate: 14 x 14 mm, 6.5 mm high.
 HEATSINK = dict(x0=PI_PCB_TOP_X + 1.3, y=(40.0, 54.0), z=(STACK_ZF + 17.8, STACK_ZF + 31.8), base=1.5, h=6.5, n=5, pin=1.6)
 BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=(STACK_ZF + 4.5, STACK_ZF + 60.5))   # PiSugar repo batt-1200
+# Battery bay: the cell is taped to the PiSugar 2, on its edge. Blocks on the floor carry it (0.2 mm under it,
+# only where the floor is free: not over the keyholes or the amp cable). Plates from the panel stand along its
+# outer face (0.3 mm), with pads over its top edge (0.3 mm): it cannot peel off the PiSugar or jump up.
+BAT_SUPPORT = dict(x=(-5.8, -1.0), z=[(-14.0, -6.0), (6.0, 20.0), (24.0, 30.0)], gap=0.2)
+BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-23.0, -18.0), (22.5, 29.5)], pad_x=3.2, pad_t=1.8,   # pad_x: 0.3 from the switch slider
+                 pads_z=[(-1.0, 4.0)])
 PCB_X = (-2.3 + STACK_DX, 1.5 + STACK_DX)  # PiSugar PCB back face .. Pi PCB component face
 # The user's Pi has a soldered 2x20 male header with Dupont jumpers on it (photos reference/signal-*.jpeg).
 HDR_ZC = STACK_ZF + 32.5                   # header center along the board
@@ -597,10 +603,30 @@ def keyhole_bump(px, pz):
     return b3d_to_manifold(BP.detent_bump(px, pz))
 
 
+def battery_supports():
+    """Blocks on the floor under the cell."""
+    S = BAT_SUPPORT
+    return union([mbox(*S["x"], FLOOR_Y1 - 0.01, BAT["y"][0] - S["gap"], z0, z1) for z0, z1 in S["z"]])
+
+
+def battery_clamp():
+    """Plates from the panel along the outer face of the cell, with pads over its top edge; and a pad alone in the middle."""
+    C = BAT_CLAMP
+    xo = BAT["x"][0] - C["gap"]                         # outer face of the cell - gap
+    ytop = BAT["y"][1] + C["gap"]
+    out = []
+    for z0, z1 in C["z"]:
+        out.append(mbox(xo - C["t"], xo, C["y0"], PANEL_IN + 0.01, z0, z1))
+        out.append(mbox(xo - C["t"], xo + C["pad_x"], ytop, PANEL_IN + 0.01, z0, z1))
+    for z0, z1 in C["pads_z"]:
+        out.append(mbox(BAT["x"][0] + 0.8, BAT["x"][1] - 1.2, ytop, PANEL_IN + 0.01, z0, z1))
+    return union(out)
+
+
 def build_body():
     O = body_outer()
     B = O - prism_y(plan(WALL), FLOOR_Y1, SEAM + 1)
-    B += (speaker_posts() + stack_posts() + mic_posts() + amp_base()) ^ O
+    B += (speaker_posts() + stack_posts() + mic_posts() + amp_base() + battery_supports()) ^ O
     for px, pz in PEGS:
         B -= keyhole_cut(px, pz)
     for px, pz in PEGS:
@@ -720,7 +746,7 @@ def button_arm(dy=0.0):
 def build_panel(with_tabs=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
     P -= port_openings() + switch_slot() + button_cuts()
-    P += panel_forks() + side_lips() + button_arm()
+    P += panel_forks() + side_lips() + button_arm() + battery_clamp()
     if with_tabs:
         P += tabs()
     return P
@@ -1327,9 +1353,9 @@ def place_slack(F, P0, L, others, joints):
                         if Q is None:
                             continue
                         sc = _badness(F, Q, others) + 0.05 + 0.01 * h
-                        cands.append((sc, Q, f"loop x{turns}" + (f" on a {h:g} mm stem" if h else "")))
+                        cands.append((sc, Q, f"{turns}-turn loop" + (f" on a {h:g} mm stem" if h else "")))
                         if best is None or sc < best[0]:
-                            best = (sc, Q, f"loop x{turns}" + (f" on a {h:g} mm stem" if h else ""))
+                            best = (sc, Q, f"{turns}-turn loop" + (f" on a {h:g} mm stem" if h else ""))
     cands.sort(key=lambda c: c[0])
     return cands[:12] if cands else [best]
 
@@ -1602,6 +1628,10 @@ def check(parts, models, robot):
     rows.append(("switch fork moved 0.3mm (must touch)", "lever", min(vol(build_switch(d), lever) for d in (-0.3, 0.3))))
     # button: the arm stands BTN gap over the button; pressed BTN press, it pushes the button
     cap = mbox(*BTN["cap"][:2], BTN["cap"][4] - 0.7, BTN["cap"][4], *BTN["cap"][2:4])
+    cell = mbox(*BAT["x"], *BAT["y"], *BAT["z"])
+    rows.append(("battery moved 0.5mm left (must touch)", "pod_panel", vol(cell.translate([-0.5, 0, 0]), parts["pod_panel"])))
+    rows.append(("battery moved 0.5mm up (must touch)", "pod_panel", vol(cell.translate([0, 0.5, 0]), parts["pod_panel"])))
+    rows.append(("battery moved 0.5mm down (must touch)", "pod_body", vol(cell.translate([0, -0.5, 0]), parts["pod_body"])))
     rows.append(("button arm at rest", "button", vol(button_arm(), cap)))
     rows.append(("button arm pressed (must touch)", "button", vol(button_arm(-BTN["press"]), cap)))
     rows.append(("button arm pressed", "parts (not the PiSugar)", vol(button_arm(-BTN["press"]), others)))

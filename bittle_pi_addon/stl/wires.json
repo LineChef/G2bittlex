@@ -1556,7 +1556,7 @@
      -15.75
     ]
    ],
-   "slack": "loop x1",
+   "slack": "1-turn loop",
    "pack": true,
    "from": "BiBoard GND",
    "to": "pin 6",
@@ -4068,7 +4068,7 @@
      24.89
     ]
    ],
-   "slack": "loop x1",
+   "slack": "1-turn loop",
    "pack": true,
    "from": "mic DOUT",
    "to": "pin 38",
@@ -4806,7 +4806,7 @@
      -10.67
     ]
    ],
-   "slack": "loop x2 on a 10 mm stem",
+   "slack": "2-turn loop on a 10 mm stem",
    "pack": true,
    "from": "mic GND",
    "to": "pin 9",
@@ -5315,7 +5315,7 @@
      -20.83
     ]
    ],
-   "slack": "loop x3 on a 5 mm stem",
+   "slack": "3-turn loop on a 5 mm stem",
    "pack": true,
    "from": "mic 3V",
    "to": "pin 1",

@@ -217,7 +217,7 @@ const VIEWS = {
   left: [-350, 20, 5], right: [350, 20, 5], top: [0, 400, 5.01],
   build: [170, 312, -30],       // the build steps: one steep view from the right, into the open body
   buildfront: [60, 300, 190],   // the same height, from the rear: the inside of the front wall (the mic)
-  wires: [100, 175, -45],       // closer, from above the right: the right well and the Pi header (the wire steps)
+  wires: [70, 215, -40],        // closer, from high above the right: the right well and the Pi header (the wire steps)
 };
 const TARGETS = { build: [0, 42, 6], buildfront: [0, 38, -22], wires: [16, 38, 0] };
 // smooth camera moves
@@ -292,10 +292,12 @@ function place(m) {
 // ---- materials: ghost, highlight
 let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false;
 let stepGlow = new Set();      // the parts of the current build step that glow (the wire being plugged)
+let stepGhost = new Set();     // parts that go see-through in the current build step, so the wires show
 function styleAll() {
   for (const m of Object.values(parts)) {
     const id = m.userData.part.id, mat = m.material;
     let op = (id === "body" || id === "panel") ? lidOpacity : 1;
+    if (stepGhost.has(id)) op = Math.min(op, 0.18);
     const ghost = ghostOthers && selected && m !== selected;
     if (ghost) op = Math.min(op, 0.12);
     m.userData.ghost = ghost;
@@ -617,7 +619,7 @@ function showStep(i, animate = true) {
   $("bBar").style.width = ((i + 1) / steps.length * 100) + "%";
   $("bPrev").disabled = i === 0; $("bNext").textContent = i === steps.length - 1 ? "Finish" : "Next →";
   if (st.view) setView(st.view);
-  stepGlow = new Set(st.highlight || []); styleAll();
+  stepGlow = new Set(st.highlight || []); stepGhost = new Set(st.ghost || []); styleAll();
 }
 function startBuild() {
   select(null);
@@ -627,7 +629,7 @@ function startBuild() {
 }
 function endBuild() {
   $("build").style.display = "none"; $("buildBtn").classList.remove("on"); stepI = -1;
-  stepGlow = new Set(); styleAll();
+  stepGlow = new Set(); stepGhost = new Set(); styleAll();
   for (const [id, m] of Object.entries(parts)) { m.userData.tween = null; m.userData.anim.set(0, 0, 0); setVisible(id, true); place(m); }
 }
 $("buildBtn").onclick = () => stepI < 0 ? startBuild() : endBuild();
