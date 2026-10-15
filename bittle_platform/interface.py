@@ -13,7 +13,7 @@ Frame (the Petoi reference STL frame), units mm:
   Origin: on the robot center line, at the middle of the cover length.
 """
 
-VERSION = "1.2"
+VERSION = "1.3"
 
 # --------------------------------------------------------------------------
 # Stock cover (measured from the Petoi STL)
@@ -52,15 +52,18 @@ HEAD_CLEAR_Y = PEG_HEAD_Y1 + 0.5   # keep add-on material above this Y over the 
 # Keyhole, one for each peg, in the plate. The add-on drops on SLIDE forward (-Z)
 # of its locked place, then slides SLIDE rearward (+Z) to lock.
 SLIDE = 7.0
-KEY_BIG_D = 7.85                # drop-in hole, center at (px, pz + SLIDE) in add-on coordinates
-KEY_SLOT_W = 4.65               # slot from (px, pz) to (px, pz + SLIDE), round end at (px, pz)
+KEY_BIG_D = 8.4                 # drop-in hole, center at (px, pz + SLIDE) in add-on coordinates
+KEY_SLOT_W = 5.2                # slot from (px, pz) to (px, pz + SLIDE), round end at (px, pz)
 # Detent: cantilever beam on the +X side of each slot, made by a U slit (fixed only at the root).
-# The bump pushes BUMP_IN into the slot -> beam travel 0.3. Strain 1.5*d*t/a^2 = 0.9 %.
-# v1.2: the slot and the drop-in hole are 0.25 wider (4.65, 7.85; the v1.1 fit was tight).
-# bump_in 0.825 keeps the bump at the same place, so the click does not change.
-# v1.1: arm 7.6 (was 10). The root now starts 1 mm clear of the drop-in hole of the
-# keyhole in front (the old root was cut to a 0.45 mm neck). Beam 1.2 = 3 extrusion widths.
-DET = dict(beam_w=1.2, slit_w=0.8, bump_r=1.0, bump_in=0.825, bump_dz=2.7, arm=7.6)
+# The 4 bumps push the add-on to -X until the pegs touch the -X slot sides. The bump then
+# stands DET_TRAVEL into the peg path -> beam travel 0.3. Strain 1.5*d*t/a^2 = 1.1 %.
+# v1.3: slot 5.2, drop-in hole 8.4 (0.6 and 0.7 gap each side). The v1.2 tray was still too tight.
+#   bump_in follows the slot width, so the beam travel stays 0.3. Arm 7.0: the beam root
+#   stays 1 mm clear of the larger drop-in hole of the keyhole in front.
+# v1.1: arm 7.6 (was 10). Beam 1.2 = 3 extrusion widths.
+DET_TRAVEL = 0.3
+DET = dict(beam_w=1.2, slit_w=0.8, bump_r=1.0, bump_in=round(KEY_SLOT_W - PEG_SHAFT_D + DET_TRAVEL, 3),
+           bump_dz=2.7, arm=7.0)
 
 # --------------------------------------------------------------------------
 # Envelope (checked with the pod; outside this, check the robot yourself)

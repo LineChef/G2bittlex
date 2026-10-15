@@ -1,6 +1,6 @@
-# Bittle X Pi Add-on v0.12 - Build Guide
+# Bittle X Pi Add-on v0.13 - Build Guide
 
-Version 0.12, 2026-10-14. A sample add-on for the Bittle X platform v1.2 (../bittle_platform). It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. It clicks onto the platform pegs. No tools, glue, tape or supports are necessary.
+Version 0.13, 2026-10-15. A sample add-on for the Bittle X platform v1.3 (../bittle_platform). It carries a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, and an SPH0645 I2S mic. It clicks onto the platform pegs. No tools, glue, tape or supports are necessary.
 
 ![The add-on on the platform, right side: the two port bays.](doc/02_ports_right.png)
 
@@ -35,7 +35,7 @@ Print quality. Every surface of the add-on parts is at 45 deg or less from verti
 | 5 Dupont jumpers | Straight plugs on the BiBoard header (GND, +5V, TX2, RX2) in the cover slot. |
 | Petoi AI Vision Module (optional) | Stays in the head. Its Grove cable goes along the left side of the robot and through the slot in the left lid wall to the Pi. |
 
-Balance. The add-on weighs about 119 g: the printed parts in PLA and typical masses of the electronics. Its center of mass is 9.5 mm behind the robot center, -0.4 mm right of the center line and 15 mm above the cover top. The speaker at the front balances the Pi stack. The masses are not weighed: put your own values in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs about 118 g: the printed parts in PLA and typical masses of the electronics. Its center of mass is 9.5 mm behind the robot center, -0.4 mm right of the center line and 15 mm above the cover top. The speaker at the front balances the Pi stack. The masses are not weighed: put your own values in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly

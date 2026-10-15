@@ -33,7 +33,7 @@
   [
    "starter_plate at detent bump",
    "cover_pegs",
-   3.1285877066532892
+   7.263573798065893
   ],
   [
    "starter_plate at detent bump",
@@ -93,7 +93,7 @@
   [
    "starter_plate (body)",
    "keepout",
-   -1.1876795713219998e-14
+   2.8291544183333545e-15
   ],
   [
    "cover_pegs",
@@ -119,14 +119,14 @@
  },
  "mass_g_pla_solid": {
   "cover_pegs": 11.3,
-  "starter_plate": 3.1
+  "starter_plate": 3.0
  },
  "clearances": {
   "plate_to_collar": 0.31,
   "plate_to_logo": 0.41,
   "plate_top_to_head": 0.2,
-  "slot_to_shaft_each_side": 0.33,
-  "big_hole_to_head_each_side": 0.42,
+  "slot_to_shaft_each_side": 0.6,
+  "big_hole_to_head_each_side": 0.7,
   "collar_to_logo": 0.1,
   "collar_to_flat_edge": 0.57
  }

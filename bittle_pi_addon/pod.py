@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.12 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
+"""Bittle X Pi add-on rev 0.13 (was the Pi pod): stock cover + pegs, pod tray, pod lid.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -34,7 +34,7 @@ from build123d import (
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
-from bittle_platform import interface as PI          # platform v1.2: cover, pegs, keyholes
+from bittle_platform import interface as PI          # platform v1.3: cover, pegs, keyholes
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
@@ -77,7 +77,7 @@ RAIL_TOP = 29.1             # the cell rests on rails above the peg heads
 SNAPS = [(-1, -6.0, 5.0), (-1, 30.0, 5.0), (1, -16.6, 2.7), (1, 49.0, 2.8)]
 # The lid wall is straight only above Y_FLARE[1] (31), so each bump stands on a rim tab, over that height.
 SNAP_Y, SNAP_TAB_TOP = 33.0, 34.6
-# Pegs (on the cover) and keyholes (in the tray): platform interface v1.2
+# Pegs (on the cover) and keyholes (in the tray): platform interface v1.3
 PEGS = PI.PEGS
 PEG_SHAFT_D, PEG_HEAD_D = PI.PEG_SHAFT_D, PI.PEG_HEAD_D
 PEG_ROOT_Y = PI.PEG_ROOT_Y

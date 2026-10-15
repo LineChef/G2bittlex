@@ -1,4 +1,4 @@
-"""Bittle X platform v1.2: drawings, renders, interface.json, SPEC.md and the PDF.
+"""Bittle X platform v1.3: drawings, renders, interface.json, SPEC.md and the PDF.
 
 Run build.py first, then:  python docs.py
 README.md and bittle_platform_spec.pdf come from the same content list (CONTENT), so they agree.
