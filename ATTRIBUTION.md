@@ -74,3 +74,17 @@ The models of the NS4168 amp, the speaker, the SPH0645 mic, the battery,
 the BiBoard header and the Dupont plugs in `bittle_pi_addon/stl/models/`
 are boxes drawn by `pod.py` from measurements. They are CC BY 4.0 with the
 other designs.
+
+## Font
+
+`bittle_pi_addon/reference/fonts/LiberationSans-Bold.ttf` is Liberation Sans
+Bold 2.1.5 (Red Hat), under the SIL Open Font License 1.1
+(`LICENSES/OFL-1.1-Liberation.txt`). `pod.py` cuts the labels inside the
+body with it.
+
+## Logo
+
+`bittle_pi_addon/reference/logo/linechef.jpg` is the avatar of the GitHub
+account LineChef (github.com/LineChef). It is in the panel top and in the
+logo inlays (`pod_logo_white`, `pod_logo_red`) at the request of the
+project owner. The repository licenses do not cover it.

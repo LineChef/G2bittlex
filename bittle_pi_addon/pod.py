@@ -237,21 +237,21 @@ AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0
              holes=[(15.2, 2.65), (15.2, 19.3)], hole_d=4.7, ph=5.0, term_h=8.5, plug_out=3.7)
 
 # HiLetgo SPH0645 mic board, 12.45 x 16.12 (user caliper), on the right wall of the robot (-X in the design frame) near
-# the front corner, high. It stands flat on two bosses on the wall, port face to the wall (sound holes in the side
-# face). The 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V, SEL lowest) are a straight header along its front 16.12 edge:
-# the Dupont housings point inward, and the wires go straight across behind the front wall to the left well. Two
-# holes at the corners of the rear edge: an M2 screw through the upper hole goes into a heat-set insert in the upper
-# boss; a pin on the lower boss goes into the lower hole. The board is in front of the amp cable (Z -23.8 and rear),
-# and the housings go down behind the front wall lugs.
-MIC = dict(w=12.45, l=16.12, t=1.6, z0=-34.2, y0=37.6, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)   # w along Z, l along Y
-MIC_BOSS = dict(d=5.5, h=2.0, insert_d=3.2, insert_l=3.5, pin_d=1.9, pin_l=1.3, head_d=3.8, head_h=1.3)
-MIC_X = (-IN_A + MIC_BOSS["h"], -IN_A + MIC_BOSS["h"] + MIC["t"])     # PCB face to the wall and back face
+# the front corner, high, port face to the wall (sound holes in the side face). The 6 pins (SEL, LRCL, DOUT, BCLK,
+# GND, 3V, SEL lowest) are a straight header along its front 16.12 edge: the Dupont housings point inward, and the
+# wires go straight across behind the front wall to the left well. It drops in without tools: its rear edge goes
+# down a slot in a post on the wall, its bottom edge into a slotted ledge (45 deg underside), and a fork under the
+# panel comes down over its top edge. The board is in front of the amp cable (Z -23.8 and rear), and the housings
+# go down behind the front wall lugs.
+MIC = dict(w=12.45, l=16.12, t=1.6, z0=-34.2, y0=37.0, hole_d=2.5, hole_in=2.3, pin_in=1.3)   # w along Z, l along Y
+MIC_HOLD = dict(gap=2.0, clr=0.15, lip=1.2, depth=1.5)   # wall to PCB, slot clearance, back lip, slot depth on the edges
+MIC_X = (-IN_A + MIC_HOLD["gap"], -IN_A + MIC_HOLD["gap"] + MIC["t"])     # PCB face to the wall and back face
 MIC_PORT = (MIC["y0"] + MIC["l"] / 2, MIC["z0"] + MIC["w"] / 2)       # (Y, Z); port assumed at the board center (not measured)
 MIC_PIN_Z = MIC["z0"] + MIC["pin_in"]
 MIC_PIN_Y = [MIC["y0"] + (MIC["l"] - 15.24) / 2 + 1.27 + 2.54 * k for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V
 MIC_HDR_X = (MIC_X[1], MIC_X[1] + 2.5)           # header plastic on the back face
 MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
-MIC_HOLES = [(y, MIC["z0"] + MIC["w"] - MIC["hole_in"]) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # (Y, Z): screw, pin
+MIC_HOLES = [(y, MIC["z0"] + MIC["w"] - MIC["hole_in"]) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # (Y, Z): the corner holes (not used)
 LONG_L = 150.0        # the mic GND and 3V jumpers are 15 cm (their routes are 102 and 115 mm long)
 
 # Slide lid: the panel goes down 5 mm behind its place, then slides forward 5 mm. 45 deg dovetail hooks under the
@@ -641,22 +641,22 @@ def teardrop_x(x0, x1, r, y, z, n=20):
     return prism_x(pts, x0, x1)
 
 
-def mic_bosses():
-    """Two bosses on the right wall under the rear corner holes of the mic: the upper one has the M2 heat-set insert
-    (mic_insert_hole), the lower one a pin into the board hole. Teardrop sections: the body prints floor down."""
-    B = MIC_BOSS
-    (ys, zs), (yp, zp) = MIC_HOLES
-    out = [teardrop_x(-IN_A - 0.5, MIC_X[0], B["d"] / 2, y, z) - mbox(-99, 99, min(y + B["d"] / 2 + 0.5, 53.9), y + 9, z - 5, z + 5)   # under the lugs
-           for y, z in MIC_HOLES]
-    r = B["pin_d"] / 2
-    pin = teardrop_x(MIC_X[0] - 0.01, MIC_X[0] + B["pin_l"], r, yp, zp) ^ mbox(MIC_X[0] - 1, MIC_X[0] + B["pin_l"] + 1, yp - r, yp + r, zp - r, zp + r)   # the point cut off: it fits the hole
-    return union(out) + pin
-
-
-def mic_insert_hole():
-    B = MIC_BOSS
-    ys, zs = MIC_HOLES[0]
-    return mcyl("x", MIC_X[0] - B["insert_l"], MIC_X[0] + 1, B["insert_d"] / 2, ys, zs, 24)
+def mic_holder():
+    """A post on the right wall with a vertical slot for the rear edge of the mic, and a ledge with a slot for its
+    bottom edge (a 45 deg underside into the wall). The back lip of the ledge stops behind the header."""
+    H, M = MIC_HOLD, MIC
+    c, d = H["clr"], H["depth"]
+    xa, xf, xb = -IN_A - 0.5, MIC_X[0] - c, MIC_X[1] + c
+    xl = xb + H["lip"]
+    y0, y1, z0, z1 = M["y0"], M["y0"] + M["l"], M["z0"], M["z0"] + M["w"]
+    slot = mbox(xf, xb, y0 - c, 99, z0 - c, z1 + c)
+    post = mbox(xa, xl, y0 - 1.5, y1 - 0.5, z1 - d, z1 + 1.6)
+    prof = [(xa, y0 - 1.5 - (xl - xa)), (xl, y0 - 1.5), (xl, y0 + d), (xa, y0 + d)]
+    zh = MIC_PIN_Z + 1.27 + 0.3                            # behind the header: only the front lip goes forward of it
+    front = [(xa, y0 - 1.5 - (xf - xa)), (xf, y0 - 1.5), (xf, y0 + d), (xa, y0 + d)]   # the lip between the wall and the board
+    ledge = prism_zp(prof, zh, z1 + 1.6) + prism_zp(front, z0, zh + 0.01)
+    stop = prism_zp([(xa, y0 - 1.5 - (xb - xa)), (xb, y0 - 1.5), (xb, y0 + 2.0), (xa, y0 + 2.0)], ZF_IN - 0.5, z0 - c)   # in front of the bottom corner
+    return (post + ledge + stop) - slot
 
 
 def amp_base():
@@ -777,10 +777,60 @@ def battery_clamp():
     return union(out)
 
 
+# Labels and route lines inside the body (assembly aids), cut LABEL_D into the walls and the floor: they print
+# without supports (a raised label on a wall would push on the parts). Robot frame, then turned into the design frame.
+FONT = os.path.join(REF, "fonts", "LiberationSans-Bold.ttf")
+LABEL_D, LINE_W, LINE_D = 0.5, 0.8, 0.4
+
+
+def text_cut(text, size, origin, right, up, depth=LABEL_D):
+    """Text cut depth into a surface: origin on the surface, right and up along it (robot frame). It reads from the
+    room side (right x up points out of the surface, into the room)."""
+    from build123d import Align, Text, extrude
+    s = extrude(Text(text, font_size=size, font_path=FONT, align=(Align.CENTER, Align.CENTER)), amount=depth + 0.5)
+    r, u = np.asarray(right, float), np.asarray(up, float)
+    n = np.cross(r, u)
+    T = np.c_[r, u, n, np.asarray(origin, float) - n * depth]
+    return b3d_to_manifold(s).transform(T)
+
+
+def floor_line(pts_xz, w=LINE_W, d=LINE_D):
+    """A groove along a polyline on the top of the floor (design frame)."""
+    C = [mcyl("y", FLOOR_Y1 - d, FLOOR_Y1 + 0.5, w / 2, x, z, 12) for x, z in pts_xz]
+    return union([m3.Manifold.batch_hull([a, b]) for a, b in zip(C[:-1], C[1:])])
+
+
+def body_marks():
+    """Names on the walls and the floor where each part goes, the Pi header pin numbers, and route lines on the floor:
+    the amp cable lanes (the wires lie there) and the mic wire run across the front."""
+    X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
+    nX, nZ = (-1, 0, 0), (0, 0, -1)
+    S = 4.5
+    t = [text_cut("MIC →", S, (22.0, 51.0, ZF_IN), X, Y),                      # front wall: the mic is on the right wall
+         text_cut("AMP", S, (IN_A, 52.6, 10.0), Z, Y),                               # right wall, over the amp
+         text_cut("SPEAKER", S, (0.0, 53.6, ZR_IN), nX, Y),                          # rear wall, over the grille
+         text_cut("BIBOARD", S, (-IN_A, 51.0, (HDR["z0"] + HDR["z1"]) / 2), nZ, Y),   # left wall, over the BiBoard plug
+         text_cut("PIN 1", 3.5, (-IN_A, 41.0, pin_yz(1)[1]), nZ, Y),                 # left wall, in line with the header ends
+         text_cut("PIN 40", 3.5, (-IN_A, 41.0, pin_yz(40)[1]), nZ, Y),
+         text_cut("AMP", 3.5, (16.0, FLOOR_Y1, -28.0), X, nZ),                       # floor, at the start of the amp cable
+         text_cut("MIC", 3.5, (12.0, FLOOR_Y1, -33.9), X, nZ)]                       # floor, at the mic wire run
+    marks = flip_x(union(t))
+    lines = []
+    for g, lab, col, pts in wire_routes():
+        P = [p for p in pts]
+        if g == "amp":                                     # the floor parts of the amp wires
+            for a, b in zip(P[:-1], P[1:]):
+                if a[1] <= FLOOR_WIRE + 0.6 and b[1] <= FLOOR_WIRE + 0.6:
+                    lines.append(floor_line([(a[0], a[2]), (b[0], b[2])]))
+    lines.append(floor_line([(MIC_HOUSING_X[1], MIC_PIN_Z), (21.0, MIC_PIN_Z), (MIC_RIB - 0.6, -29.6)]))
+    keep = union([mbox(k[0], k[1], 0, 99, k[2], k[3]) for k in (keep_zone(px, pz) for px, pz in PEGS)])
+    return marks + (union(lines) - keep)
+
+
 def build_body():
     O = body_outer()
     B = O - body_cavity()
-    B += (speaker_posts() + stack_posts() + mic_bosses() + amp_base() + battery_supports()) ^ O
+    B += (speaker_posts() + stack_posts() + mic_holder() + amp_base() + battery_supports()) ^ O
     for px, pz in PEGS:
         B -= keyhole_cut(px, pz)
     for px, pz in PEGS:
@@ -795,8 +845,8 @@ def build_body():
     for a in [None] + list(range(0, 360, 60)):                             # mic holes around the port, in the right wall
         dz, dy = (0.0, 0.0) if a is None else (2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a)))
         holes.append(teardrop_x(-A - 0.5, -IN_A + 0.5, 0.5, MIC_PORT[0] + dy, MIC_PORT[1] + dz, n=12))
-    B -= union(holes) + mic_insert_hole()
-    return B
+    B -= union(holes)
+    return B - body_marks()
 
 
 def panel_outer():
@@ -819,6 +869,8 @@ def panel_forks():
     za, zb = SPK_ZE - G["clr"], SPK_ZE + SPK["ear_t"] + G["clr"]
     for sx in (-1, 1):
         out.append(mbox(*sorted((sx * 5.6, sx * 8.6)), SPK_Y0 + SPK["d"] - 0.5 + G["clr_y"], PANEL_IN + 0.01, zb - 2.75, zb - 0.25))   # clear of the lead path
+    yt = MIC["y0"] + MIC["l"]                              # over the top edge of the mic, behind its header
+    out.append(mbox(-IN_A + 1.7, MIC_X[1] + 0.8, yt + 0.1, PANEL_IN + 0.01, MIC_PIN_Z + 1.9, MIC["z0"] + MIC["w"] - 1.0))
     for z0 in AMP_FORKS:                                   # over the top edge of the amp board
         f = mbox(-IN_A + 0.15, AMP_X[1] + 1.55, 50.0, PANEL_IN + 0.01, z0, z0 + 2.5)
         out.append(f - mbox(-IN_A - 1, AMP_X[1] + 0.15, 0, AMP_Y0 + AMP["h"] + 0.3, z0 - 1, z0 + 3.5))
@@ -1087,9 +1139,52 @@ def camera_frame():
                   for sx in (-1, 1)])
 
 
+# Logo on the panel top (user request: the LineChef avatar, reference/logo/linechef.jpg): two inlays printed flat in
+# two colors (the white ring and M, the red ring and J), glued into a pocket in the top face. The pocket prints on
+# the bed side of the panel (its floor bridges over it). Robot frame center (x, z); the logo reads from the rear.
+LOGO = dict(file=os.path.join(REF, "logo", "linechef.jpg"), d=26.0, c=(16.2, 15.5), depth=0.8, clr=0.15, min_w=0.6)
+
+
+def logo_shapes():
+    """{'white', 'red'}: CrossSections in mm (u right, v up), centered. Traced from the image; features under
+    min_w (thin tips, the shading line in the M) are rounded away, so a 0.4 or 0.5 mm nozzle prints them."""
+    import contourpy
+    import matplotlib.image as mi
+    from scipy.ndimage import gaussian_filter
+    a = mi.imread(LOGO["file"]).astype(float)[..., :3]
+    mx, mn = a.max(2), a.min(2)
+    masks = dict(white=(mn > 90) & (mx - mn < 50), red=(a[..., 0] > 90) & (a[..., 0] - np.maximum(a[..., 1], a[..., 2]) > 45))
+    h, w = mn.shape
+    k = LOGO["d"] / max(h, w)
+    out = {}
+    for n, m in masks.items():
+        lines = contourpy.contour_generator(z=gaussian_filter(m.astype(float), 0.8)).lines(0.5)
+        polys = [np.c_[(L[:, 0] - w / 2) * k, (h / 2 - L[:, 1]) * k] for L in lines if len(L) > 3]
+        cs = m3.CrossSection(polys, m3.FillRule.EvenOdd)
+        e = LOGO["min_w"] / 2
+        out[n] = cs.offset(e).offset(-e).offset(-e).offset(e).simplify(0.02)
+    return out
+
+
+def _logo_place(cs, y0, y1):
+    """A CrossSection on the panel top between heights y0 and y1, in the design frame."""
+    cx, cz = LOGO["c"]
+    T = np.array([[1, 0, 0, cx], [0, 0, 1, y0], [0, -1, 0, cz]], float)   # u -> +X, v -> -Z (robot front up), w -> +Y
+    return flip_x(cs.extrude(y1 - y0).transform(T))
+
+
+def logo_pocket():
+    S = logo_shapes()
+    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"]), TOP - LOGO["depth"], TOP + 1)
+
+
+def build_logo(color):
+    return _logo_place(logo_shapes()[color], TOP - LOGO["depth"], TOP)
+
+
 def build_panel(with_latch=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
-    P -= port_openings() + switch_window() + button_cuts() + keycap_hole() + camera_window()
+    P -= port_openings() + switch_window() + button_cuts() + keycap_hole() + camera_window() + logo_pocket()
     P += (panel_forks() + button_arm() + battery_clamp() + camera_frame()) - lid_keepout()
     P += lid_hooks()
     if with_latch:
@@ -1485,8 +1580,8 @@ def build_models():
     add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
     amp = pcb + hdrs + p5 + p2 + term + screws + ic
     # SPH0645 mic board: PCB with the two corner holes and the port hole, mic part on the back face, straight header on
-    # the back face at the front edge with the six Dupont housings on its pins, the M2 screw head in the upper hole
-    M, B_ = MIC, MIC_BOSS
+    # the back face at the front edge with the six Dupont housings on its pins
+    M = MIC
     z0, z1, y0, y1 = M["z0"], M["z0"] + M["w"], M["y0"], M["y0"] + M["l"]
     mp = rbox("x", *MIC_X, y0, y1, z0, z1, 0.8)
     mp -= mcyl("x", MIC_X[0] - 1, MIC_X[1] + 1, 0.4, *MIC_PORT, 12)
@@ -1496,13 +1591,10 @@ def build_models():
     add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
     hb = mbox(MIC_HDR_X[0] - 0.01, MIC_HDR_X[1], min(MIC_PIN_Y) - 1.27, max(MIC_PIN_Y) + 1.27, MIC_PIN_Z - 1.27, MIC_PIN_Z + 1.27)
     add("mic_sph0645", "header", "mic header", hb, "#1d1d1f")
-    ys, zs = MIC_HOLES[0]
-    head = mcyl("x", MIC_X[1] - 0.01, MIC_X[1] + B_["head_h"], B_["head_d"] / 2, ys, zs, 20)
-    add("mic_sph0645", "screw", "M2 screw", head, "#9a9ca0")
     for k, y in enumerate(MIC_PIN_Y):
         HOUSING_MESH[("mic", k)] = rbox("x", *MIC_HOUSING_X, y - 1.25, y + 1.25, MIC_PIN_Z - 1.25, MIC_PIN_Z + 1.25, 0.25, 8)
     mh = union([HOUSING_MESH[("mic", k)] for k in range(6)])
-    mic = mp + can + hb + head + mh
+    mic = mp + can + hb + mh
     # speaker: round-edged box with the two black wings around its middle; the sound face (rear) has a grille
     z0, z1 = SPK_ZE, SPK_ZE + SPK["ear_t"]
     yc = SPK_Y0 + SPK["d"] / 2
@@ -2022,7 +2114,8 @@ def robot_parts():
 def build_all():
     from bittle_platform import build as BP
     return dict(cover_pegs=flip_x(BP.cover_with_notch() + b3d_to_manifold(build_pegs())), pod_body=build_body(), pod_panel=build_panel(),
-                pod_button=build_keycap(), pod_camera_mount=build_camera_mount())
+                pod_button=build_keycap(), pod_camera_mount=build_camera_mount(), pod_logo_white=build_logo("white"),
+                pod_logo_red=build_logo("red"))
 
 
 def wire_paths():
@@ -2094,6 +2187,8 @@ def check(parts, models, robot):
         for b, M in robot.items():
             rows.append((a, b, vol(parts[a], M)))
     for a in names:
+        if a.startswith("pod_logo_"):
+            continue                                       # a ring and a letter each: they are glued in one by one
         pcs = sorted(c.volume() for c in parts[a].decompose())
         rows.append((a, "loose_pieces", sum(pcs[:-1])))
     mn = list(models)
@@ -2131,12 +2226,8 @@ def check(parts, models, robot):
         G = union([models[n] for n in ns])
         yt_ = AMP_Y0 + AMP["h"]                            # the amp tilts in under its nubs
         P_ = placed - union([mbox(-IN_A - 1, AMP_X[0] + 1.2, yt_, yt_ + 2.5, z - 0.2, z + 4.2) for z in AMP_NUBS]) if g == "amp" else placed
-        dx_ = 1.7 if g == "mic" else 0.0                   # the mic goes down beside the boss pin, then out onto it
-        worst = max(vol(G.translate([dx_, float(dy), 0]), P_) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
+        worst = max(vol(G.translate([0, float(dy), 0]), P_) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
         rows.append((f"install {g} (max over 40 mm down)", "body + parts in", worst))
-        if g == "mic":
-            rows.append(("install mic: out onto the pin", "body + parts in",
-                         max(vol(G.translate([float(d), 0, 0]), P_) for d in (0.3, 0.8, 1.3, 1.7))))
         placed = placed + G
     # panel: straight down LID_SLIDE behind its place, then forward. The latch hook rides over the rib (checked below).
     Pc = build_panel(with_latch=False) + parts["pod_button"]
@@ -2166,6 +2257,11 @@ def check(parts, models, robot):
     rows.append(("battery moved 0.5mm up (must touch)", "pod_panel", vol(cell.translate([0, 0.5, 0]), parts["pod_panel"])))
     rows.append(("battery moved 0.5mm down (must touch)", "pod_body", vol(cell.translate([0, -0.5, 0]), parts["pod_body"])))
     rows.append(("button arm at rest", "button", vol(button_arm(), cap)))
+    pcb = mbox(*MIC_X, MIC["y0"], MIC["y0"] + MIC["l"], MIC["z0"], MIC["z0"] + MIC["w"])
+    for lab, v, P in (("lifted", (0, 0.3, 0), parts["pod_panel"]), ("moved inward", (0.3, 0, 0), parts["pod_body"]),
+                      ("moved forward", (0, 0, -0.3), parts["pod_body"]), ("moved rearward", (0, 0, 0.3), parts["pod_body"])):
+        rows.append((f"mic board {lab} 0.3mm (must touch)", "pod_panel" if P is parts["pod_panel"] else "pod_body", vol(pcb.translate(list(v)), P)))
+    rows.append(("logo inlays in the pocket", "pod_panel", vol(parts["pod_logo_white"] + parts["pod_logo_red"], parts["pod_panel"])))
     rows.append(("button cap ribs in the hole (press fit, must touch)", "pod_panel", vol(build_keycap(), parts["pod_panel"])))
     rows.append(("button cap lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_button"].translate([0, 0.3, 0]), parts["pod_panel"])))
     rows.append(("camera mount lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_camera_mount"].translate([0, 0.3, 0]), parts["pod_panel"])))
@@ -2278,7 +2374,7 @@ def explode_plan(name, sub=""):
         return 1, (0, 210, 0), (0, 0, 0)
     if name in ("panel", "pod_panel"):
         return 2, (0, 0, LID_SLIDE), (0, 170, 0)
-    if name in ("button", "pod_button"):
+    if name in ("button", "pod_button", "pod_logo_white", "pod_logo_red"):
         return 2, (0, 0, LID_SLIDE), (0, 170, 0)                         # they stay clicked into the panel
     if name.startswith("wires_"):
         if name == "wires_camera":
@@ -2291,7 +2387,7 @@ def explode_plan(name, sub=""):
     if name == "amp_ns4168":
         return 4, (0, 45, 0), (-30, 0, 0)
     if name == "mic_sph0645":
-        return 5, (2.0, 0, 0), (0, 45, 0)                         # off the boss pin, then up
+        return 5, (0, 45, 0), (0, 0, 0)                           # up out of its slots
     if name == "speaker":
         return 6, (0, 45, 0), (0, 0, 30)
     return None
@@ -2344,7 +2440,7 @@ def print_orient(name, M):
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down: the top of the base on the bed
     elif name == "pod_button":
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down, the cap top on the bed
-    elif name == "pod_panel":
+    elif name in ("pod_panel", "pod_logo_white", "pod_logo_red"):
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down, top on the bed
     else:
         raise ValueError(name)

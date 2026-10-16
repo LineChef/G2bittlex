@@ -21,6 +21,16 @@
    0.0
   ],
   [
+   "cover_pegs",
+   "pod_logo_white",
+   0.0
+  ],
+  [
+   "cover_pegs",
+   "pod_logo_red",
+   0.0
+  ],
+  [
    "pod_body",
    "pod_panel",
    -2.69918738624044e-13
@@ -36,6 +46,16 @@
    0.0
   ],
   [
+   "pod_body",
+   "pod_logo_white",
+   0.0
+  ],
+  [
+   "pod_body",
+   "pod_logo_red",
+   0.0
+  ],
+  [
    "pod_panel",
    "pod_button",
    0.0
@@ -43,11 +63,46 @@
   [
    "pod_panel",
    "pod_camera_mount",
-   7.234068550974942e-05
+   8.242003523990123e-05
+  ],
+  [
+   "pod_panel",
+   "pod_logo_white",
+   -6.2719875950842385e-15
+  ],
+  [
+   "pod_panel",
+   "pod_logo_red",
+   -9.886438011399198e-15
   ],
   [
    "pod_button",
    "pod_camera_mount",
+   0.0
+  ],
+  [
+   "pod_button",
+   "pod_logo_white",
+   0.0
+  ],
+  [
+   "pod_button",
+   "pod_logo_red",
+   0.0
+  ],
+  [
+   "pod_camera_mount",
+   "pod_logo_white",
+   0.0
+  ],
+  [
+   "pod_camera_mount",
+   "pod_logo_red",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "pod_logo_red",
    0.0
   ],
   [
@@ -198,7 +253,7 @@
   [
    "pod_body",
    "mic_sph0645",
-   2.5919695354003353e-15
+   0.0
   ],
   [
    "pod_body",
@@ -497,6 +552,186 @@
   ],
   [
    "pod_camera_mount",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "pizero",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "stack_screws",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "battery",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "sd_card",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "camera",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "biboard_plug",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "speaker",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_splice",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_speaker",
+   0.0
+  ],
+  [
+   "pod_logo_white",
+   "wires_camera",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "pizero",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "pisugar2",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "stack_screws",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "battery",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "sd_card",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "pi_plugs",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "camera",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "biboard_header",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "biboard_plug",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "speaker",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "amp_ns4168",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "mic_sph0645",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "wires_uart",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "wires_amp",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "wires_mic",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "wires_splice",
+   0.0
+  ],
+  [
+   "pod_logo_red",
+   "wires_speaker",
+   0.0
+  ],
+  [
+   "pod_logo_red",
    "wires_camera",
    0.0
   ],
@@ -2041,11 +2276,6 @@
    0.0
   ],
   [
-   "install mic: out onto the pin",
-   "body + parts in",
-   0.0
-  ],
-  [
    "install amp (max over 40 mm down)",
    "body + parts in",
    0.0
@@ -2078,7 +2308,7 @@
   [
    "panel lifted 0.3mm (must touch)",
    "pod_body",
-   7.8663304742330125
+   7.866330474233066
   ],
   [
    "panel lifted 0.3mm at drop place",
@@ -2109,6 +2339,31 @@
    "button arm at rest",
    "button",
    0.0
+  ],
+  [
+   "mic board lifted 0.3mm (must touch)",
+   "pod_panel",
+   2.639999999999925
+  ],
+  [
+   "mic board moved inward 0.3mm (must touch)",
+   "pod_body",
+   5.332500000000091
+  ],
+  [
+   "mic board moved forward 0.3mm (must touch)",
+   "pod_body",
+   0.47999999999999277
+  ],
+  [
+   "mic board moved rearward 0.3mm (must touch)",
+   "pod_body",
+   3.748799999999955
+  ],
+  [
+   "logo inlays in the pocket",
+   "pod_panel",
+   -5.247405837706566e-14
   ],
   [
    "button cap ribs in the hole (press fit, must touch)",
@@ -2163,7 +2418,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   273.9409701883068
+   273.31061526780786
   ],
   [
    "wires uart",
@@ -2548,7 +2803,7 @@
   [
    "pod_camera_base_low",
    "pod_panel",
-   5.367094791326316e-05
+   5.2390343104200966e-05
   ],
   [
    "pod_camera_cradle_low",
@@ -2758,56 +3013,8 @@
  ],
  "printing": {
   "pod_body": {
-   "overhang_mm2": 38.9,
+   "overhang_mm2": 39.9,
    "regions": [
-    {
-     "area": 9.5,
-     "flat": 1.4,
-     "x": [
-      31.6,
-      33.6
-     ],
-     "y": [
-      31.2,
-      35.3
-     ],
-     "z": [
-      22.7,
-      23.6
-     ]
-    },
-    {
-     "area": 9.5,
-     "flat": 1.4,
-     "x": [
-      31.6,
-      33.6
-     ],
-     "y": [
-      31.2,
-      35.3
-     ],
-     "z": [
-      11.2,
-      12.1
-     ]
-    },
-    {
-     "area": 8.8,
-     "flat": 2.9,
-     "x": [
-      31.6,
-      35.1
-     ],
-     "y": [
-      32.1,
-      34.4
-     ],
-     "z": [
-      26.6,
-      27.0
-     ]
-    },
     {
      "area": 4.2,
      "flat": 4.2,
@@ -2841,42 +3048,170 @@
      ]
     },
     {
-     "area": 2.1,
-     "flat": 0.3,
+     "area": 1.3,
+     "flat": 1.3,
      "x": [
-      30.3,
-      31.6
+      2.2,
+      4.6
      ],
      "y": [
-      32.5,
-      34.0
+      -45.5,
+      -44.9
      ],
      "z": [
-      13.0,
-      13.3
+      29.1,
+      29.1
      ]
     },
     {
-     "area": 0.6,
-     "flat": 0.6,
+     "area": 1.3,
+     "flat": 1.0,
      "x": [
-      -27.6,
-      -27.3
+      -10.4,
+      -7.9
      ],
      "y": [
-      20.8,
-      42.1
+      -45.5,
+      -45.0
      ],
      "z": [
-      4.0,
-      4.0
+      28.8,
+      29.1
+     ]
+    },
+    {
+     "area": 1.3,
+     "flat": 1.0,
+     "x": [
+      -34.1,
+      -33.6
+     ],
+     "y": [
+      32.2,
+      34.7
+     ],
+     "z": [
+      26.2,
+      26.5
+     ]
+    },
+    {
+     "area": 1.3,
+     "flat": 0.4,
+     "x": [
+      -34.1,
+      -33.6
+     ],
+     "y": [
+      25.7,
+      28.0
+     ],
+     "z": [
+      26.2,
+      26.6
+     ]
+    },
+    {
+     "area": 1.2,
+     "flat": 0.4,
+     "x": [
+      20.9,
+      23.2
+     ],
+     "y": [
+      45.0,
+      45.5
+     ],
+     "z": [
+      26.1,
+      26.6
+     ]
+    },
+    {
+     "area": 1.2,
+     "flat": 0.9,
+     "x": [
+      33.6,
+      34.1
+     ],
+     "y": [
+      -5.4,
+      -3.1
+     ],
+     "z": [
+      27.8,
+      28.1
      ]
     }
    ]
   },
   "pod_panel": {
-   "overhang_mm2": 13.1,
+   "overhang_mm2": 227.2,
    "regions": [
+    {
+     "area": 75.9,
+     "flat": 75.9,
+     "x": [
+      3.2,
+      19.2
+     ],
+     "y": [
+      -6.6,
+      19.1
+     ],
+     "z": [
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "area": 58.5,
+     "flat": 58.5,
+     "x": [
+      9.9,
+      19.7
+     ],
+     "y": [
+      -0.2,
+      9.7
+     ],
+     "z": [
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "area": 55.8,
+     "flat": 55.8,
+     "x": [
+      15.9,
+      28.8
+     ],
+     "y": [
+      -5.0,
+      17.5
+     ],
+     "z": [
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "area": 23.9,
+     "flat": 23.9,
+     "x": [
+      15.6,
+      21.8
+     ],
+     "y": [
+      2.7,
+      12.7
+     ],
+     "z": [
+      0.8,
+      0.8
+     ]
+    },
     {
      "area": 4.4,
      "flat": 4.4,
@@ -3048,6 +3383,14 @@
     }
    ]
   },
+  "pod_logo_white": {
+   "overhang_mm2": 0,
+   "regions": []
+  },
+  "pod_logo_red": {
+   "overhang_mm2": 0,
+   "regions": []
+  },
   "pod_camera_base_low": {
    "overhang_mm2": 22.6,
    "regions": [
@@ -3175,26 +3518,26 @@
   "mass_g": 132.9,
   "com": [
    1.3,
-   50.7,
-   2.0
+   50.6,
+   1.9
   ],
   "parts": [
    {
     "name": "pod_body",
     "g": 20.0,
     "com": [
-     0.6,
-     38.3,
-     13.3
+     0.8,
+     38.4,
+     13.1
     ]
    },
    {
     "name": "pod_panel",
     "g": 8.1,
     "com": [
-     2.0,
+     2.2,
      60.8,
-     9.2
+     8.7
     ]
    },
    {
@@ -3292,8 +3635,8 @@
     "g": 1.3,
     "com": [
      26.6,
-     45.8,
-     -30.9
+     45.1,
+     -31.0
     ]
    },
    {
@@ -3327,9 +3670,9 @@
     "name": "wires_mic",
     "g": 4.8,
     "com": [
-     -14.7,
-     45.6,
-     -17.0
+     -14.8,
+     45.7,
+     -17.9
     ]
    },
    {

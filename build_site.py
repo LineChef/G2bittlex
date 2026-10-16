@@ -21,6 +21,8 @@ MD = os.path.join(SITE, "models")
 PARTS = [
     ("panel", "Top panel (second color)", "Printed", "stl/installed/pod_panel.stl", "#e8641b", (0, 45, 0), None),
     ("button", "Button cap", "Printed", "stl/installed/pod_button.stl", "#f2f2ef", (0, 52, 0), None),
+    ("logo_white", "Logo inlay, white", "Printed", "stl/installed/pod_logo_white.stl", "#f2f2ef", (0, 52, 0), None),
+    ("logo_red", "Logo inlay, red", "Printed", "stl/installed/pod_logo_red.stl", "#d83a34", (0, 52, 0), None),
     ("camera_mount", "Camera mount", "Printed", "stl/installed/pod_camera_mount.stl", "#e8641b", (0, 70, 0), None),
     ("body", "Add-on body", "Printed", "stl/installed/pod_body.stl", "#f2f2ef", (0, 10, 0), None),
     ("cover", "Platform: cover with pegs", "Printed", "../bittle_platform/stl/installed/cover_pegs.stl", "#34363b", (0, 0, 0), None),
@@ -69,7 +71,7 @@ INFO = {
                   files=[("Print STL, with foot", PF + "cover_pegs_foot.stl"), ("Pegs STEP", PF + "pegs.step"),
                          ("Platform spec PDF", PF + "bittle_platform_spec.pdf")]),
     "body": dict(text="The body of the Pi add-on: one rounded box with a flat floor. The floor has the 4 teardrop keyholes, each with two "
-                      "spring beams that center the peg. Inside: grooves for the speaker and the Pi stack, two bosses for the mic (one for an M2 heat-set insert), and a slot bar for the amp. "
+                      "spring beams that center the peg. Inside: grooves for the speaker and the Pi stack, a post and a ledge with slots for the mic, and a slot bar for the amp. "
                       "The BiBoard header comes up through a notch in the floor, at the front of the left well. "
                       "Two nubs on the right wall hold the amp. The base has no cable holes. "
                       "It prints floor down without supports.",
@@ -89,6 +91,10 @@ INFO = {
                         "the ribs crush into the hole wall. Press it: the tongue and the arm under it press the PiSugar button.",
                    attach="Press its post into the hole in the tongue until the cap sits flat, before the panel goes on. Support the tongue from below.",
                    files=[("Print STL", AF + "pod_button.stl")]),
+    "logo_white": dict(text="The white half of the logo inlay: the left ring and the M. 0.8 mm thick, flush with the panel top.",
+                       attach="Glue it into its pocket in the panel top, behind the camera.", files=[("Print STL", AF + "pod_logo_white.stl")]),
+    "logo_red": dict(text="The red half of the logo inlay: the right ring and the J. 0.8 mm thick, flush with the panel top.",
+                     attach="Glue it into its pocket in the panel top, behind the camera.", files=[("Print STL", AF + "pod_logo_red.stl")]),
     "camera_mount": dict(text="The camera mount: a 2 mm base on the front of the panel with a chin over its front edge, two side brackets that hold "
                               "the vertical camera case, and two clip legs with barbed hooks through a window in the panel. "
                               "A hook on each bracket snaps over a top corner of the case, clear of the USB port: the camera cannot fall out when the robot falls. "
@@ -116,8 +122,8 @@ INFO = {
                     attach="Push the ends of the ear plate down into the two side grooves, body to the rear."),
     "mic": dict(text="HiLetgo SPH0645 I2S mic board, high on the right wall near the front, away from the speaker. The port faces 7 holes in the right side. "
                      "Its straight header is on its front edge: the plugs point inward, and the wires go straight across behind the front wall.",
-                attach="Plug the six jumpers onto its header. Lower it 2 mm inside the bosses, push it out onto the pin, "
-                       "and screw it to the heat-set insert with an M2 x 5 screw (1.5 mm hex key)."),
+                attach="Plug the six jumpers onto its header. Drop it into the slots in the post and the ledge on the right wall, "
+                       "port to the wall. A fork under the panel holds its top edge."),
     "header": dict(text="The 5-pin BiBoard header (TX2, RX2, GND, +5V, +5V) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
     "bb_plug": dict(text="Three straight Dupont plugs on the BiBoard header (TX2, RX2, GND), at the front of the left well. +5V is not wired.",
@@ -196,9 +202,9 @@ STEPS = [
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
-         text="Press the M2 heat-set insert into the upper boss on the right wall near the front. Plug the six jumpers onto the mic header "
-              "(15 cm on GND and 3V) and let them hang out of the top. Lower the mic 2 mm inside the bosses, port to the wall, "
-              "push it out onto the pin and screw it to the insert with an M2 x 5 screw. Each jumper shows in the step where its other end goes onto the Pi."),
+         text="Plug the six jumpers onto the mic header (15 cm on GND and 3V) and let them hang out of the top. "
+              "Drop the mic into the slots in the post and the ledge on the right wall, port to the wall, header at the front. "
+              "No tools: a fork under the panel holds its top edge. Each jumper shows in the step where its other end goes onto the Pi."),
     dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
@@ -209,10 +215,13 @@ STEPS = [
          text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the left, SD card to the rear. "
               "Then plug the wires one at a time, as the next steps show."),
 ] + WIRE_STEPS + [
-    dict(title="Button cap into the panel", view="build", show=["panel", "button"], highlight=["button"],
-         start={"panel": [0, 35, 0], "button": [0, 41, 0]}, end={"panel": [0, 35, 0], "button": [0, 35, 0]},
-         text="Before the panel goes on: press the post of the white button cap into the hole in the tongue. It stays in the panel."),
-    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 5], "button": [0, 35, 5]},
+    dict(title="Button cap and logo into the panel", view="build", show=["panel", "button", "logo_white", "logo_red"],
+         highlight=["button", "logo_white", "logo_red"],
+         start={"panel": [0, 35, 0], "button": [0, 41, 0], "logo_white": [0, 41, 0], "logo_red": [0, 41, 0]},
+         end={"panel": [0, 35, 0], "button": [0, 35, 0], "logo_white": [0, 35, 0], "logo_red": [0, 35, 0]},
+         text="Before the panel goes on: press the post of the white button cap into the hole in the tongue. "
+              "Glue the two logo inlays into the pocket in the panel top: the white ring and M at the left, the red ring and J at the right."),
+    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 5], "button": [0, 35, 5], "logo_white": [0, 35, 5], "logo_red": [0, 35, 5]},
          text="Put the panel down 5 mm behind its place, then slide it forward until the latch at the rear clicks. "
               "The PiSugar power switch is under the window beside the HDMI opening: move it with a fingernail. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue in the middle is the PiSugar button. "

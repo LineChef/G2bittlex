@@ -49,6 +49,7 @@ def content():
          ["pod_body.stl", "PLA", "floor on the bed", f"{pod_mass('pod_body')} g"],
          ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", f"{pod_mass('pod_panel')} g"],
          ["pod_button.stl", "PLA, white", "upside down: top on the bed", "0.1 g"],
+         ["pod_logo_white.stl, pod_logo_red.stl", "PLA, white and red", "top on the bed (as in the STL)", "0.1 g each"],
          ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
          ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "11 g"],
          ["Head off (optional): pod_camera_base_low.stl", "PLA, second color", "upside down (as in the STL)", f"{pod_mass('pod_camera_base_low')} g"],
@@ -72,15 +73,14 @@ def content():
           "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
          ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V."],
-         ["M2 heat-set insert, M2 x 5 socket head screw", "The insert goes into the upper mic boss on the inside of the right wall. The screw holds the mic: a 1.5 mm L hex key turns it with the stack in place."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
           "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
          ["NULLLAB 3 W 4 ohm speaker", f"At the rear, sound to the grille in the rear face. Body {pod.SPK['body_l']:g} wide, {pod.SPK['h']:g} deep. Two tapered wings ({pod.SPK['l']:g} across, "
           f"{pod.SPK['ear_t']:g} thick) at the middle of the body depth stand in two side grooves."],
-         ["HiLetgo SPH0645 I2S mic", f"{pod.MIC['w']:g} x {pod.MIC['l']:g} board, high on the right wall near the front, flat on two bosses, port to the wall (holes in the right side). "
+         ["HiLetgo SPH0645 I2S mic", f"{pod.MIC['w']:g} x {pod.MIC['l']:g} board, high on the right wall near the front, port to the wall (holes in the right side). "
           "Its straight 6-pin header is along its front edge: the plugs point inward, and the wires go straight across behind the front wall. "
-          "SEL is the lowest pin, 3V the highest. An M2 screw through the upper rear hole goes into a heat-set insert; a pin on the lower boss goes into the lower hole."],
+          "SEL is the lowest pin, 3V the highest. It drops into a slot in a post (rear edge) and a ledge (bottom edge); a fork under the panel holds its top edge. No tools."],
          ["Petoi AI Vision Module", "In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. "
           f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. "
           "Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out."],
@@ -98,22 +98,23 @@ def content():
 
     h("3. Assembly")
     st = lambda n: f" ([viewer step {n}]({VIEWER}#step={n}))"
-    p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1).")
+    p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1). "
+      "Labels are cut into the inside of the body: MIC, AMP, SPEAKER and BIBOARD where each part goes, PIN 1 and PIN 40 at the ends "
+      "of the Pi header, and grooves in the floor for the amp cable lanes and the mic wire run.")
     lst(["Fit the platform cover in place of the stock cover." + st(2),
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
-         "Press the M2 heat-set insert into the upper mic boss (inside the right wall, near the front) with a soldering iron. "
-         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Lower the mic 2 mm inside the bosses, "
-         "port to the wall, header at the front. Push it out onto the pin of the lower boss. "
-         "Put the M2 x 5 screw through the upper hole into the insert." + st(6),
+         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Drop the mic into the slots in the post and the ledge "
+         "on the right wall near the front, port to the wall, header at the front. The panel holds it later." + st(6),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
          "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
          "Lay the amp cable across the floor in front of the front pegs, into the left well." + st(7),
          "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(8),
          "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, "
          "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(21),
-         "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel." + st(22),
+         "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. "
+         "Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right." + st(22),
          f"Put the panel down {pod.LID_SLIDE:g} mm behind its place, then slide it forward until the latch clicks (about {S['slide_on_N']:g} N). "
          "The hooks under the panel go under the lugs in the walls." + st(23),
          "Push the two clip legs of the camera mount down through the window until they click. "
@@ -189,7 +190,7 @@ def content():
          f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact. "
          f"The latch tongue lifts {S['lift_mm']:g} mm over the rib: about {S['slide_on_N']:g} N to slide on, {S['lift_N']:g} N to lift, strain {S['strain_pct']:g} %. "
          "Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.",
-         "Install: the speaker and the stack each go straight down 40 mm without contact. The mic goes down 1.7 mm inside its place, then out onto the pin. "
+         "Install: the speaker and the stack each go straight down 40 mm without contact. The mic drops into its slots; the post, the ledge, a stop and the panel fork hold it on every side. "
          "The amp tilts in under its nubs. "
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
          "(small contacts of 2 to 3 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
