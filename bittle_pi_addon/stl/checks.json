@@ -12,11 +12,6 @@
   ],
   [
    "cover_pegs",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "cover_pegs",
    "pod_button",
    0.0
   ],
@@ -32,11 +27,6 @@
   ],
   [
    "pod_body",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "pod_body",
    "pod_button",
    0.0
   ],
@@ -47,28 +37,13 @@
   ],
   [
    "pod_panel",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "pod_panel",
    "pod_button",
    0.0
   ],
   [
    "pod_panel",
    "pod_camera_mount",
-   6.903140102117525e-05
-  ],
-  [
-   "pod_switch",
-   "pod_button",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "pod_camera_mount",
-   0.0
+   5.3948704641085355e-05
   ],
   [
    "pod_button",
@@ -346,96 +321,6 @@
    0.0
   ],
   [
-   "pod_switch",
-   "pizero",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "pisugar2",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "stack_screws",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "battery",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "sd_card",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "pi_plugs",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "camera",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "biboard_header",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "biboard_plug",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "speaker",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "amp_ns4168",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "mic_sph0645",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_uart",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_amp",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_mic",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_splice",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_speaker",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "wires_camera",
-   0.0
-  ],
-  [
    "pod_button",
    "pizero",
    0.0
@@ -613,7 +498,7 @@
   [
    "pod_camera_mount",
    "wires_camera",
-   0.005458804240758111
+   0.0
   ],
   [
    "pod_body",
@@ -742,71 +627,6 @@
   ],
   [
    "pod_panel",
-   "leg_rr",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "under_cover",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "shoulder_r",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "shoulder_l",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "front_plate",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "head",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "neck_mount",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "rear_plate",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "hip_servos",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "tail",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "leg_lf",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "leg_rf",
-   0.0
-  ],
-  [
-   "pod_switch",
-   "leg_lr",
-   0.0
-  ],
-  [
-   "pod_switch",
    "leg_rr",
    0.0
   ],
@@ -952,11 +772,6 @@
   ],
   [
    "pod_panel",
-   "loose_pieces",
-   0
-  ],
-  [
-   "pod_switch",
    "loose_pieces",
    0
   ],
@@ -2238,21 +2053,11 @@
   [
    "panel down, LID_SLIDE behind (max over 12 mm)",
    "body + parts",
-   1.718582520211165e-07
+   0.0
   ],
   [
    "panel slide forward (max over LID_SLIDE)",
    "body + parts",
-   3.190861824097142e-07
-  ],
-  [
-   "panel slide: slider at the lever",
-   "pod_panel (moved)",
-   0.0
-  ],
-  [
-   "panel down and slide (threaded)",
-   "Grove cable",
    0.0
   ],
   [
@@ -2276,44 +2081,9 @@
    0.0
   ],
   [
-   "switch slider -0.75mm",
-   "pod_panel",
-   0.0
-  ],
-  [
-   "switch slider -0.75mm",
-   "parts (not the PiSugar)",
-   0.0
-  ],
-  [
-   "switch slider -0.75mm",
-   "pisugar2 (not the lever)",
-   7.122989717300981e-07
-  ],
-  [
-   "switch slider +0.75mm",
-   "pod_panel",
-   0.0
-  ],
-  [
-   "switch slider +0.75mm",
-   "parts (not the PiSugar)",
-   0.0
-  ],
-  [
-   "switch slider +0.75mm",
-   "pisugar2 (not the lever)",
-   3.246887089646125e-07
-  ],
-  [
-   "switch fork at rest",
+   "switch lever over its travel, outside the window (must be 0)",
    "lever",
    0.0
-  ],
-  [
-   "switch fork moved 0.3mm (must touch)",
-   "lever",
-   0.040146340938424625
   ],
   [
    "battery moved 0.5mm left (must touch)",
@@ -2336,16 +2106,6 @@
    0.0
   ],
   [
-   "switch slider in the entry, pushed up",
-   "pod_panel",
-   0.0
-  ],
-  [
-   "switch slider moved 0.4mm down (must touch)",
-   "pod_panel",
-   0.40212499842793137
-  ],
-  [
    "button cap ribs in the hole (press fit, must touch)",
    "pod_panel",
    0.11162085629676442
@@ -2363,26 +2123,26 @@
   [
    "camera lifted 0.3mm (must touch)",
    "pod_camera_mount",
-   2.463791922672505
+   2.4637919226724994
   ],
   [
    "plug hdmi",
-   "camera and its mount",
+   "camera, its mount and its cable",
    0.0
   ],
   [
    "plug pi_usb",
-   "camera and its mount",
+   "camera, its mount and its cable",
    0.0
   ],
   [
    "plug pi_power",
-   "camera and its mount",
+   "camera, its mount and its cable",
    0.0
   ],
   [
    "plug charge",
-   "camera and its mount",
+   "camera, its mount and its cable",
    0.0
   ],
   [
@@ -2398,7 +2158,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   183.00416757925518
+   288.5603935946717
   ],
   [
    "wires uart",
@@ -2408,11 +2168,6 @@
   [
    "wires uart",
    "pod_panel",
-   0.0
-  ],
-  [
-   "wires uart",
-   "pod_switch",
    0.0
   ],
   [
@@ -2442,11 +2197,6 @@
   ],
   [
    "wires i2s",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "wires i2s",
    "pod_button",
    0.0
   ],
@@ -2468,11 +2218,6 @@
   [
    "wires mic",
    "pod_panel",
-   0.0
-  ],
-  [
-   "wires mic",
-   "pod_switch",
    0.0
   ],
   [
@@ -2502,11 +2247,6 @@
   ],
   [
    "wires speaker",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "wires speaker",
    "pod_button",
    0.0
   ],
@@ -2518,16 +2258,6 @@
   [
    "wires speaker",
    "other parts",
-   0.0
-  ],
-  [
-   "Grove plug space (max over the slide)",
-   "pod_body",
-   0.043172508214671695
-  ],
-  [
-   "camera cable space, front (robot left)",
-   "pod_body",
    0.0
   ],
   [
@@ -2552,11 +2282,6 @@
   ],
   [
    "plug hdmi",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "plug hdmi",
    "pod_button",
    0.0
   ],
@@ -2577,11 +2302,6 @@
   ],
   [
    "plug pi_usb",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "plug pi_usb",
    "pod_button",
    0.0
   ],
@@ -2602,11 +2322,6 @@
   ],
   [
    "plug pi_power",
-   "pod_switch",
-   0.0
-  ],
-  [
-   "plug pi_power",
    "pod_button",
    0.0
   ],
@@ -2623,11 +2338,6 @@
   [
    "plug charge",
    "pod_panel",
-   0.0
-  ],
-  [
-   "plug charge",
-   "pod_switch",
    0.0
   ],
   [
@@ -2826,14 +2536,14 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "pod_body",
    0.0
   ],
   [
    "pod_camera_base_low",
    "pod_panel",
-   5.225416519175662e-05
+   5.687601514673415e-05
   ],
   [
    "pod_camera_cradle_low",
@@ -2846,7 +2556,7 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "pod_panel",
    0.0
   ],
@@ -2866,7 +2576,7 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "cover_pegs",
    0.0
   ],
@@ -2886,7 +2596,7 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "under_cover",
    0.0
   ],
@@ -2906,7 +2616,7 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "parts inside",
    0.0
   ],
@@ -2936,7 +2646,7 @@
    0.0
   ],
   [
-   "Grove cable (head off)",
+   "USB cable (head off)",
    "head-off mount",
    0.0
   ],
@@ -3096,24 +2806,8 @@
    ]
   },
   "pod_panel": {
-   "overhang_mm2": 23.6,
+   "overhang_mm2": 13.1,
    "regions": [
-    {
-     "area": 7.8,
-     "flat": 7.8,
-     "x": [
-      7.4,
-      10.5
-     ],
-     "y": [
-      -33.4,
-      -30.8
-     ],
-     "z": [
-      1.6,
-      1.6
-     ]
-    },
     {
      "area": 4.4,
      "flat": 4.4,
@@ -3163,22 +2857,6 @@
      ]
     },
     {
-     "area": 2.7,
-     "flat": 2.7,
-     "x": [
-      -3.5,
-      -3.3
-     ],
-     "y": [
-      5.6,
-      19.7
-     ],
-     "z": [
-      1.6,
-      1.6
-     ]
-    },
-    {
      "area": 1.5,
      "flat": 1.5,
      "x": [
@@ -3196,81 +2874,12 @@
     }
    ]
   },
-  "pod_switch": {
-   "overhang_mm2": 6.3,
-   "regions": [
-    {
-     "area": 1.6,
-     "flat": 0.8,
-     "x": [
-      -4.7,
-      -2.8
-     ],
-     "y": [
-      -2.5,
-      -1.6
-     ],
-     "z": [
-      3.3,
-      3.7
-     ]
-    },
-    {
-     "area": 1.6,
-     "flat": 1.6,
-     "x": [
-      -2.0,
-      2.5
-     ],
-     "y": [
-      2.1,
-      2.5
-     ],
-     "z": [
-      1.4,
-      1.4
-     ]
-    },
-    {
-     "area": 1.6,
-     "flat": 1.6,
-     "x": [
-      -2.0,
-      2.5
-     ],
-     "y": [
-      2.1,
-      2.5
-     ],
-     "z": [
-      2.8,
-      2.8
-     ]
-    },
-    {
-     "area": 1.5,
-     "flat": 1.5,
-     "x": [
-      -2.0,
-      2.4
-     ],
-     "y": [
-      2.1,
-      2.5
-     ],
-     "z": [
-      4.2,
-      4.2
-     ]
-    }
-   ]
-  },
   "pod_button": {
    "overhang_mm2": 0,
    "regions": []
   },
   "pod_camera_mount": {
-   "overhang_mm2": 48.4,
+   "overhang_mm2": 37.5,
    "regions": [
     {
      "area": 25.1,
@@ -3289,27 +2898,11 @@
      ]
     },
     {
-     "area": 11.2,
-     "flat": 11.2,
-     "x": [
-      -3.7,
-      1.8
-     ],
-     "y": [
-      -24.1,
-      -21.1
-     ],
-     "z": [
-      1.6,
-      1.6
-     ]
-    },
-    {
      "area": 5.2,
      "flat": 1.7,
      "x": [
-      17.0,
-      17.7
+      -4.0,
+      -3.3
      ],
      "y": [
       -30.8,
@@ -3321,11 +2914,11 @@
      ]
     },
     {
-     "area": 4.9,
-     "flat": 1.6,
+     "area": 5.2,
+     "flat": 1.7,
      "x": [
-      -4.0,
-      -3.3
+      17.0,
+      17.7
      ],
      "y": [
       -30.8,
@@ -3510,38 +3103,29 @@
   }
  },
  "balance": {
-  "mass_g": 128.8,
+  "mass_g": 129.1,
   "com": [
-   0.6,
-   49.7,
-   1.5
+   0.7,
+   50.6,
+   1.7
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 17.3,
+    "g": 17.5,
     "com": [
-     0.5,
-     37.8,
-     11.4
+     0.3,
+     37.7,
+     11.2
     ]
    },
    {
     "name": "pod_panel",
-    "g": 6.6,
+    "g": 6.7,
     "com": [
-     1.5,
+     1.6,
      60.7,
-     9.3
-    ]
-   },
-   {
-    "name": "pod_switch",
-    "g": 0.1,
-    "com": [
-     2.2,
-     62.6,
-     21.7
+     9.2
     ]
    },
    {
@@ -3566,7 +3150,7 @@
     "name": "stack_screws",
     "g": 1.0,
     "com": [
-     -4.5,
+     -4.4,
      45.0,
      2.0
     ]
@@ -3692,9 +3276,9 @@
     "name": "wires_camera",
     "g": 2.5,
     "com": [
-     -2.8,
-     55.4,
-     -29.1
+     -0.6,
+     102.7,
+     -18.9
     ]
    },
    {

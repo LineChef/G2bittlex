@@ -16,11 +16,15 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.22"
+VERSION = "0.23"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
 CHECKS = json.load(open(os.path.join(pod.OUT, "checks.json")))
+
+
+def usb_len():
+    return next(w["length_mm"] for w in json.load(open(os.path.join(pod.OUT, "wires.json")))["wires"] if w["group"] == "camera")
 
 
 def content():
@@ -44,7 +48,6 @@ def content():
     tbl([["File (stl/print/)", "Material", "Orientation", "Mass"],
          ["pod_body.stl", "PLA", "floor on the bed", f"{pod_mass('pod_body')} g"],
          ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", f"{pod_mass('pod_panel')} g"],
-         ["pod_switch.stl", "PLA, white", "flat side on the bed, tab up", "0.2 g"],
          ["pod_button.stl", "PLA, white", "upside down: top on the bed", "0.1 g"],
          ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
          ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "11 g"],
@@ -57,9 +60,9 @@ def content():
     p(f"Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. "
       "The body walls are vertical and its floor is on the bed. The only overhangs "
       f"({pr['pod_body']['overhang_mm2']:.0f} mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). "
-      "The front cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
+      "The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
       "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. "
-      f"Its overhangs ({pr['pod_panel']['overhang_mm2']:.0f} mm²) are short bridges at the button arm and the lid hooks. The slider has a 1.7 mm bridge over the fork. "
+      f"Its overhangs ({pr['pod_panel']['overhang_mm2']:.0f} mm²) are short bridges at the button arm and the lid hooks. "
       "The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. "
       "The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.")
 
@@ -72,15 +75,15 @@ def content():
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
           "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
-         ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. The ear plate (45 x 31 x 3) is at the middle of the body depth (14.8 mm) and stands in two side grooves."],
+         ["NULLLAB 3 W 4 ohm speaker", f"At the rear, sound to the grille in the rear face. Body {pod.SPK['body_l']:g} wide, {pod.SPK['h']:g} deep. Two tapered wings ({pod.SPK['l']:g} across, "
+          f"{pod.SPK['ear_t']:g} thick) at the middle of the body depth stand in two side grooves."],
          ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its left edge points into the left well. "
           "SEL is the lowest pin, 3V the highest."],
          ["Petoi AI Vision Module", "In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. "
-          f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: its Grove plug is then clear of the PiSugar charge port and the Pi power port. "
+          f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. "
           "Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out."],
-         ["Grove cable, 10 cm", "From the socket low in the rear face of the camera, a U turn down through the notch at the rear of the camera window, "
-          "forward, across over the mic under the panel, down the front left corner, to the Grove plug on the BiBoard. "
-          "The plug comes up through the floor opening over the notch in the platform cover."],
+         ["USB cable, USB-C to micro-USB", f"From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. "
+          f"Modeled length {usb_len():.0f} mm between the plugs."],
          ], [52, 118])
 
     B = CHECKS["balance"]
@@ -97,37 +100,31 @@ def content():
     lst(["Fit the platform cover in place of the stock cover." + st(2),
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
-         "Push a 10 cm Grove cable onto the Grove plug of the BiBoard through the floor opening at the front left. "
-         "Lay it flat against the front wall in the front left corner and let the free end hang out of the top." + st(5),
-         "Push the speaker down into the two side grooves at the rear, body to the rear." + st(6),
-         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front, over the Grove cable." + st(7),
+         "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
+         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front." + st(6),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
          "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
-         "Lay the amp cable across the floor in front of the front pegs, into the left well." + st(8),
-         "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(9),
+         "Lay the amp cable across the floor in front of the front pegs, into the left well." + st(7),
+         "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(8),
          "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, "
-         "then the BiBoard ends. The viewer has one step for each wire." + st(10) + st(22),
-         "Lay the Grove cable across over the mic, under the top of the walls, toward the right side." ,
-         "Slide the switch slider into the rails under the panel from their rear end until it clicks. "
-         "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. They stay in the panel." + st(23),
-         "Move the PiSugar power switch toward the head. Push the slider fully forward. "
-         "Pass the free end of the Grove cable up through the notch at the rear of the camera window in the panel. "
+         "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(21),
+         "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel." + st(22),
          f"Put the panel down {pod.LID_SLIDE:g} mm behind its place, then slide it forward until the latch clicks (about {S['slide_on_N']:g} N). "
-         "The hooks under the panel go under the lugs in the walls. The slider fork comes down on the switch lever and stays on it." + st(24),
-         "Pass the Grove cable up through the notch at the rear of the camera mount base. Push the two clip legs down through the window until they click. "
-         "Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. "
-         "Plug the Grove cable into the socket low in its rear face." + st(25) + st(26),
+         "The hooks under the panel go under the lugs in the walls." + st(23),
+         "Push the two clip legs of the camera mount down through the window until they click. "
+         "Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top." + st(24) + st(25),
+         "Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. "
+         "The cable arches rearward over the panel." + st(26),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['lift_N']:g} N), slide the panel {pod.LID_SLIDE:g} mm rearward and lift it. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening, behind the camera. "
-      "The ribbed slider beside the HDMI opening moves the PiSugar power switch (the switch sets the end positions). "
+      "The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. "
       "The tongue in the middle of the panel is a large button: press it to press the PiSugar button.")
-    img("04_top.png", 0.42, "The top: the camera, charge and Pi power, data USB, the button tongue, the switch slider and HDMI.")
+    img("04_top.png", 0.42, "The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.")
     p("Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low clips into the "
       "camera window as the camera mount does, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low "
       "down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. "
-      "Push the camera down into the cradle until the hooks click. Its Grove plug faces the body: run the cable down and in under the front notch at the left, "
-      "to the Grove plug on the BiBoard (no cable in the panel).")
+      "Push the camera down into the cradle until the hooks click. Plug the USB cable into the top of the camera and into the Pi data USB port.")
     img("17_camera_low.png", 0.42, "Head off: the camera lower and in front of the body.")
 
     h("4. Wiring")
@@ -176,14 +173,14 @@ def content():
          "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.",
          "The mic wires go in from the lowest of the stack: SEL, LRCL, DOUT, BCLK, GND, then 3V."])
     img("11_wires_top.png", 0.36, "From the top, panel off: the wires in 3D.")
-    img("16_camera_cable.png", 0.42, "The Grove cable of the camera, panel off: down through the notch at the rear of the window, across over the mic, down to the BiBoard.")
+    img("16_camera_cable.png", 0.42, "The USB cable of the camera: from the top of the camera, over the panel, into the Pi data USB port.")
 
     h("6. Checks")
     h0, h1 = MO["head"]["free"]
     T = MO["tail"]
     lst([f"Slide: the empty body is clear of the robot at the click point, half way and at the drop-on place. "
          f"The clicks are about {K['lock_N']:g} N to lock and {K['unlock_N']:g} N to unlock (beam strain {K['strain_pct']:g} %).",
-         f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact (the slider stays on the lever). "
+         f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact. "
          f"The latch tongue lifts {S['lift_mm']:g} mm over the rib: about {S['slide_on_N']:g} N to slide on, {S['lift_N']:g} N to lift, strain {S['strain_pct']:g} %. "
          "Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.",
          "Install: the speaker, the mic and the stack each go straight down 40 mm without contact; the amp tilts in under its nubs. "
@@ -192,10 +189,10 @@ def content():
          "Camera: the case goes into the mount without contact and is clear of the port plugs. Lifted 0.3 mm, its top hits the hooks. "
          "The brackets spread 4.8 mm as the case goes in (about 0.5 % strain). "
          "The clip leg hooks catch 0.8 mm under the frame on a 10 deg barb, so a pull pushes them out; the legs bend to 1.9 % strain. "
-         "The Grove cable touches no part and no other wire. The head turns without contact with the mount.",
+         "The USB cable touches no part and no other wire. The head turns without contact with the mount and the cable.",
          "Head-off mount: the base, the cradle, the camera and its cable touch no part of the robot without its head. "
          "The cradle slides down into the grooves without contact; the pins stop it from lifting.",
-         "Switch and button: the slider moves 0.75 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
+         "Switch and button: the switch lever is under the window over its full travel. "
          "The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.",
          f"Robot: the head turns from {h0} to {h1} deg without contact. {len(MO['legs']['front']['addon'])} front and "
          f"{len(MO['legs']['rear']['addon'])} rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. "

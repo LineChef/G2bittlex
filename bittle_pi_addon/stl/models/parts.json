@@ -430,7 +430,7 @@
  {
   "model": "speaker",
   "sub": "plate",
-  "label": "speaker ear plate",
+  "label": "speaker wings",
   "file": "models/parts/speaker__plate.stl",
   "color": "#26272b",
   "explode": [
@@ -1289,90 +1289,10 @@
  },
  {
   "model": "wires_camera",
-  "sub": "scl",
-  "label": "camera wire SCL",
-  "file": "models/parts/wires_camera__scl.stl",
-  "color": "#f0c419",
-  "explode": [
-   2,
-   [
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    170,
-    0
-   ]
-  ]
- },
- {
-  "model": "wires_camera",
-  "sub": "sda",
-  "label": "camera wire SDA",
-  "file": "models/parts/wires_camera__sda.stl",
-  "color": "#f2f2ef",
-  "explode": [
-   2,
-   [
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    170,
-    0
-   ]
-  ]
- },
- {
-  "model": "wires_camera",
-  "sub": "vcc",
-  "label": "camera wire VCC",
-  "file": "models/parts/wires_camera__vcc.stl",
-  "color": "#d83a34",
-  "explode": [
-   2,
-   [
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    170,
-    0
-   ]
-  ]
- },
- {
-  "model": "wires_camera",
-  "sub": "gnd",
-  "label": "camera wire GND",
-  "file": "models/parts/wires_camera__gnd.stl",
+  "sub": "usb",
+  "label": "camera wire USB",
+  "file": "models/parts/wires_camera__usb.stl",
   "color": "#1d1d1f",
-  "explode": [
-   2,
-   [
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    170,
-    0
-   ]
-  ]
- },
- {
-  "model": "wires_camera",
-  "sub": "plug_cam",
-  "label": "Grove plug in the camera",
-  "file": "models/parts/wires_camera__plug_cam.stl",
-  "color": "#f2f2ef",
   "explode": [
    0,
    [
@@ -1389,20 +1309,40 @@
  },
  {
   "model": "wires_camera",
-  "sub": "plug_bb",
-  "label": "Grove plug on the BiBoard",
-  "file": "models/parts/wires_camera__plug_bb.stl",
-  "color": "#f2f2ef",
+  "sub": "plug_cam",
+  "label": "USB-C plug in the camera",
+  "file": "models/parts/wires_camera__plug_cam.stl",
+  "color": "#1d1d1f",
   "explode": [
-   2,
+   0,
    [
     0,
-    0,
+    250,
     0
    ],
    [
     0,
-    170,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "wires_camera",
+  "sub": "plug_pi",
+  "label": "micro-USB plug in the Pi",
+  "file": "models/parts/wires_camera__plug_pi.stl",
+  "color": "#1d1d1f",
+  "explode": [
+   0,
+   [
+    0,
+    250,
+    0
+   ],
+   [
+    0,
+    0,
     0
    ]
   ]

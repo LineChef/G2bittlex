@@ -46,7 +46,7 @@ that clicks onto the platform.
 - SPH0645 I2S microphone at the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
 - Serial link to the BiBoard: the Dupont plugs go onto the header at the front left, and all the wires stay inside
-- A slide-on top panel with openings shaped to the plugs, a large power switch slider and a large button
+- A slide-on top panel with openings shaped to the plugs, a window over the power switch and a large button
 - The Petoi AI Vision Module, vertical on a clip-on mount at the front, or lower in front of the body when the head is off
 - All printed parts print without supports
 

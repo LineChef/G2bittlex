@@ -23,7 +23,7 @@ C = dict(
     shoulder="[0.95,0.66,0.12]", plate="[0.13,0.13,0.14]", pizero="[0.16,0.55,0.28]",
     pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]", bbplug="[0.85,0.20,0.20]",
     mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
-    wires="[0.95,0.77,0.10]", switch="[0.93,0.93,0.91]", button="[0.96,0.96,0.95]", camera_mount="[0.91,0.39,0.11]",
+    wires="[0.95,0.77,0.10]", button="[0.96,0.96,0.95]", camera_mount="[0.91,0.39,0.11]",
     camera_base_low="[0.91,0.39,0.11]", camera_cradle_low="[0.93,0.93,0.91]", camera_low_pins="[0.95,0.77,0.10]",
     camera_low="[0.17,0.18,0.20]", wires_camera_low="[0.95,0.77,0.10]",
 )
@@ -36,7 +36,7 @@ for _d in DISP:
     _h = _d["color"].lstrip("#")
     C[_d["model"] + "__" + _d["sub"]] = "[" + ",".join(f"{int(_h[i:i + 2], 16) / 255:.3f}" for i in (0, 2, 4)) + "]"
 ELEC = [d["model"] + "__" + d["sub"] for d in DISP]
-PRINTED = dict(panel="pod_panel", switch="pod_switch", button="pod_button", camera_mount="pod_camera_mount")
+PRINTED = dict(panel="pod_panel", button="pod_button", camera_mount="pod_camera_mount")
 
 
 def imp(path, color, d=(0, 0, 0), mirror=None):
@@ -50,7 +50,6 @@ def files(cut=None):
         "cover": f"{STL}/installed/cover_pegs.stl",
         "body": f"{STL}/installed/pod_body.stl",
         "panel": f"{STL}/installed/pod_panel.stl",
-        "switch": f"{STL}/installed/pod_switch.stl",
         "button": f"{STL}/installed/pod_button.stl",
         "camera_mount": f"{STL}/installed/pod_camera_mount.stl",
         "camera_base_low": f"{STL}/installed/pod_camera_base_low.stl",
@@ -123,10 +122,10 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
     return png
 
 
-ALL = ["cover", "body", "panel", "switch", "button", "camera_mount", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
+ALL = ["cover", "body", "panel", "button", "camera_mount", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
 WIRES = [k for k in ELEC if k.startswith("wires_")]
 ALL += WIRES
-OPEN = [k for k in ALL if k not in ("panel", "switch", "button", "camera_mount") and not k.startswith("camera__")]
+OPEN = [k for k in ALL if k not in ("panel", "button", "camera_mount") and not k.startswith("camera__")]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {
@@ -142,7 +141,7 @@ JOBS = {
     "10_exploded": (ALL, None, True, "0,-9,185,72,0,128,960", False),
     "11_wires_top": (OPEN, None, 0, "4,-9,45,0,0,180,300", False),
     "12_wires_left": (OPEN, None, 0, "-14,-9,42,40,0,270,220", False),
-    "16_camera_cable": ([k for k in ALL if k not in ("panel", "switch", "button")], None, 0, "-18,25,48,50,0,320,200", False),
+    "16_camera_cable": (ALL, None, 0, "0,20,95,60,0,140,330", False),
     "17_camera_low": ([k for k in ALL if not k.startswith("camera__") and not k.startswith("wires_camera") and k != "camera_mount"]
                       + ["camera_base_low", "camera_cradle_low", "camera_low_pins", "camera_low", "wires_camera_low"], None, 0,
                       "0,-14,36,72,0,140,300", False),

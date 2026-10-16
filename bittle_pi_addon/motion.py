@@ -32,7 +32,7 @@ def load(rel):
 def main():
     R = RB.Robot()
     addon = (load("installed/pod_body.stl") + load("installed/pod_panel.stl") + load("installed/pod_camera_mount.stl")
-             + load("models/camera.stl"))
+             + load("models/camera.stl") + load("models/wires_camera.stl"))
     out = {}
 
     # head turn
