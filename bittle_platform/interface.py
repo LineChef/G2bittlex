@@ -1,7 +1,9 @@
 """Bittle X platform interface. All numbers for add-on design are here.
 
 The platform is the stock Petoi Bittle X back cover (Bittle_Cover_with_hole_for_Pi.stl)
-with 4 teardrop pegs on its flat top. Add-ons drop onto the pegs, slide forward, and click.
+with 4 teardrop pegs on its flat top. On the robot, the cover is turned 180 deg about Y from
+the STL: the Pi slot is at the front left (v3.2; build.py turns the cover meshes).
+Add-ons drop onto the pegs, slide forward, and click.
 To remove an add-on, slide it rearward (away from the head) and lift it.
 v3.0 is not compatible with v1.x or v2.0: reprint the cover and the add-on plate.
 
@@ -15,7 +17,7 @@ Frame (the Petoi reference STL frame), units mm:
   Origin: on the robot center line, at the middle of the cover length.
 """
 
-VERSION = "3.1"
+VERSION = "3.2"
 
 # --------------------------------------------------------------------------
 # Stock cover (measured from the Petoi STL)
@@ -25,10 +27,11 @@ COVER_TOP = 25.29               # Y of the flat top surface
 COVER_INNER_AT_PEGS = 23.89     # Y of the inner surface under the pegs
 COVER_FLAT = dict(x=(-15.37, 15.37), z=(-21.37, 21.37))   # flat area of the top
 COVER_END_Z = (-36.95, 36.95)
-LOGO = dict(x=(-9.14, 9.14), z=(-7.85, 7.80), top=25.59)  # raised Petoi logo, 0.3 high
-SLOT = dict(x0=24.25, x1=27.75, y0=19.5, z0=11.75, z1=25.75)   # Pi slot in the cover top
+LOGO = dict(x=(-9.14, 9.14), z=(-7.80, 7.85), top=25.59)  # raised Petoi logo, 0.3 high
+COVER_TURN = [[-1, 0, 0], [0, 1, 0], [0, 0, -1]]             # cover STL -> robot frame (180 deg about Y)
+SLOT = dict(x0=-27.75, x1=-24.25, y0=19.5, z0=-25.75, z1=-11.75)   # Pi slot in the cover top (front left)
 # BiBoard 5-pin female header in the slot (GND, +5V, TX2, RX2, ..). Height is a photo estimate.
-HDR = dict(x0=24.73, x1=27.27, z0=12.4, z1=25.1, top=29.1)
+HDR = dict(x0=-27.27, x1=-24.73, z0=-25.1, z1=-12.4, top=29.1)
 PLUG_TOP = 48.0                 # Y of free space for straight Dupont plugs and wires on the header
 # v3.1: notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera
 # cable) and its cable. The plug is a little inside the front edge (user photo, not measured): GROVE_PLUG is

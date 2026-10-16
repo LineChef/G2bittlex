@@ -1,7 +1,9 @@
-"""Bittle X Pi add-on rev 0.21: one-piece body with a slide-on top panel.
+"""Bittle X Pi add-on rev 0.22: one-piece body with a slide-on top panel.
 
-Frame = Petoi reference STL frame (reference/*.stl):
+Frame = the robot frame of the platform (bittle_platform/interface.py):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
+The parts are designed in a mirror of it (X turned over, see MIRROR_X); every output is in the robot frame.
+Left and right below are on the robot.
 
 Parts
   cover_pegs : the platform (bittle_platform/): Petoi cover, unchanged, plus 4 pegs.
@@ -10,19 +12,20 @@ Parts
                slide forward, click. To remove it, slide it 7 mm rearward and lift it.
                The floor is flat: it does not follow the robot, so the cover and the pegs stay in view.
                Inside, every part goes in from the top: the mic (front wall), the Pi Zero 2 W +
-               PiSugar 2 stack on its long edge (ports up, over the robot center), the speaker
-               (rear, sound to the rear grille) and the NS4168 amp (left gallery).
-               The BiBoard header comes up through a notch in the floor, in the right well.
+               PiSugar 2 stack on its long edge (ports up, over the robot center, header to the left), the
+               speaker (rear, sound to the rear grille) and the NS4168 amp (right gallery, under two nubs).
+               The BiBoard header comes up through a notch in the floor, at the front of the left well.
   pod_panel  : the top, with the soft top edge and openings shaped to the plug bodies. It goes down 5 mm
                behind its place and slides forward: hooks go under lugs in the front and side walls, and
                a latch tongue at the rear clicks over a rib. Forks under the panel hold the stack,
                the speaker and the amp down. A spring tongue over the PiSugar button is a large button.
   pod_switch : a large slider for the PiSugar power switch: a fork on the lever, a tab through the panel.
+  pod_button : the button cap on the tongue.
+  pod_camera_mount : clips into a window in the panel and holds the Petoi AI Vision Module vertical.
+  pod_camera_base_low, pod_camera_cradle_low : the head-off mount (optional): the camera lower, in front of the body.
 Order: fit the platform cover, click the empty body on, put the parts in, plug in the wires, put the
-slider and button cap into the panel, slide the panel on.
-Print: the body and the slider print flat side down, the panel prints upside down on its top. No supports.
-
-The camera (Petoi AI Vision Module) stays in the head, as Petoi designs it.
+slider and button cap into the panel, slide the panel on, clip the camera mount on.
+Print: no supports (print_orient() has the orientation of each part).
 """
 import math
 import os
@@ -38,6 +41,23 @@ from bittle_platform import interface as PI          # platform v3.1: cover, peg
 REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
+
+# Design frame: the robot frame with X turned over (a mirror). On the robot the BiBoard header is at the front left
+# (platform v3.2). In the design frame it is at the front right, so the parts keep the sides of rev 0.21. The stack,
+# the mic and the amp are turned on the robot; in the design frame that is a mirror of their models (STAND, MIC_PIN_Y,
+# the amp layout). The platform and the robot come in turned over; main() turns every output back to the robot frame.
+MIRROR_X = np.diag([-1.0, 1, 1, 1])[:3, :]
+
+
+def flip_x(M):
+    """Design frame <-> robot frame (the same mirror both ways)."""
+    return M.transform(MIRROR_X)
+
+
+def flip_tris(t):
+    m = t.copy()
+    m[:, :, 0] *= -1
+    return m[:, ::-1, :]
 
 # --------------------------------------------------------------------------
 # Parameters
@@ -77,39 +97,50 @@ def keep_zone(px, pz):
 
 # Pi Zero 2 W + PiSugar 2 (1200 mAh) stack, on its long edge: the boards are vertical (normal +X),
 # the ports and the PiSugar controls are up, the GPIO header is at the bottom with the Dupont plugs to
-# the right (+X). The SD card end is at the front. The models are first put in the flat frame of
-# rev 0.15 (FLAT_*), then turned with STAND.
+# the right (+X, the design frame). The SD card end is at the rear (rev 0.22: the stack of rev 0.21 turned
+# end for end, so the Pi header faces the BiBoard). The models are first put in the flat frame of rev 0.15
+# (FLAT_*), then turned with STAND. Places on the boards are given as distances from the SD end (sd_z).
 FLAT_GPIO_X, FLAT_Z_CSI, FLAT_DY = -16.5, -16.0, 45.0
 FLAT_Z_SD = FLAT_Z_CSI + 65.0
 # The stack sits STACK_DX right of center, so the battery is nearer the center line. The Pi plugs end at X 18.0.
 STACK_DX = 4.9
 PI_PCB_TOP_X = 1.5 + STACK_DX              # the Pi component face
 STACK_Y0 = 30.0                            # GPIO edge of the boards (2.5 over the floor)
-STACK_ZF = -29.2                           # SD end of the boards (front)
-STACK_ZR = STACK_ZF + 65.0                 # CSI end (rear); the CSI connector stands 0.9 behind it
+STACK_ZF = -30.5                           # CSI end of the boards (front); the CSI connector stands 0.9 in front of it
+STACK_ZR = STACK_ZF + 65.0                 # SD end (rear)
+ZSD = STACK_ZR
+
+
+def sd_z(a, b):
+    """The span a..b mm from the SD end of the boards, as (z0, z1)."""
+    return (ZSD - b, ZSD - a)
+
+
 STAND = np.array([[0, 1, 0, PI_PCB_TOP_X - (FLAT_DY + 0.8)],
                   [1, 0, 0, STACK_Y0 - FLAT_GPIO_X],
-                  [0, 0, -1, STACK_ZF + FLAT_Z_SD],
-                  [0, 0, 0, 1]], dtype=float)
+                  [0, 0, 1, ZSD - FLAT_Z_SD],
+                  [0, 0, 0, 1]], dtype=float)      # a mirror in the design frame: the robot frame turns it back
 # A pin-fin heatsink on the SoC of the Pi (user photo). Its size is an estimate: 14 x 14 mm, 6.5 mm high.
-HEATSINK = dict(x0=PI_PCB_TOP_X + 1.3, y=(40.0, 54.0), z=(STACK_ZF + 17.8, STACK_ZF + 31.8), base=1.5, h=6.5, n=5, pin=1.6)
-BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=(STACK_ZF + 4.5, STACK_ZF + 60.5))   # PiSugar repo batt-1200
+HEATSINK = dict(x0=PI_PCB_TOP_X + 1.3, y=(40.0, 54.0), z=sd_z(17.8, 31.8), base=1.5, h=6.5, n=5, pin=1.6)
+BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=sd_z(4.5, 60.5))   # PiSugar repo batt-1200
 # Battery bay: the cell is taped to the PiSugar 2, on its edge. Blocks on the floor carry it (0.2 mm under it,
 # only where the floor is free: not over the keyholes or the amp cable). Plates from the panel stand along its
 # outer face (0.3 mm), with pads over its top edge (0.3 mm): it cannot peel off the PiSugar or jump up.
 BAT_SUPPORT = dict(x=(-5.8, -1.0), z=[(-14.0, -6.0), (6.0, 20.0), (24.0, 30.0)], gap=0.2)
-BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-23.0, -18.0), (22.5, 29.5)], pad_x=3.2, pad_t=1.8,   # pad_x: 0.3 from the switch slider
-                 pads_z=[(-1.0, 4.0)])
+BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-24.2, -17.2), (23.3, 28.3)], pad_x=3.2, pad_t=1.8,   # pad_x: 0.3 from the switch slider
+                 pads_z=[(1.3, 6.3)])
 PCB_X = (-2.3 + STACK_DX, 1.5 + STACK_DX)  # PiSugar PCB back face .. Pi PCB component face
 # The user's Pi has a soldered 2x20 male header with Dupont jumpers on it (photos reference/signal-*.jpeg).
-HDR_ZC = STACK_ZF + 32.5                   # header center along the board
+HDR_ZC = ZSD - 32.5                        # header center along the board
 DUPONT_L = 10.0       # the Dupont housing on a jumper end (user measurement); header pins 11.64 mm long, 2.5 mm plastic
 PI_PLUGS = dict(x=(PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 0.1 + 2.5 + DUPONT_L), y=(STACK_Y0 + 0.96, STACK_Y0 + 6.04),
                 z=(HDR_ZC - 25.4, HDR_ZC + 25.4))     # header plastic 2.5 + plug housings; the model PCB face is 0.1 over PI_PCB_TOP_X
-# End posts: vertical grooves for the two PCB ends; the bottom of the groove is the stop.
-POST = dict(x=(-4.6 + STACK_DX, 5.1 + STACK_DX), top=50.0, clr=0.25, depth=2.15)
-POST_F = (STACK_ZF - 0.75, STACK_ZF + POST["depth"] + 0.1)    # front post: short in Z, the mic header is in front of it; the SD card goes through it
-POST_R = (STACK_ZR - 2.4, STACK_ZR + 2.0)                     # rear post: the CSI connector stands out 0.9
+# End posts: one vertical groove for the two PCB ends, the same depth for both boards; the bottom of the groove is
+# the stop. The M2.5 screw heads of the stack (3.5 from the board corners) have pockets.
+POST = dict(x=(-4.6 + STACK_DX, 4.85 + STACK_DX), top=50.0, clr=0.25, depth=2.15)
+POST_SD = (ZSD - POST["depth"] - 0.1, ZSD + 0.75)             # rear post: short in Z; the SD card goes through it
+POST_CSI = (STACK_ZF - 1.3, STACK_ZF + 2.4)                   # front post: the CSI connector stands out 0.9 (through it)
+SCREW = dict(d=4.6, h=1.8, clr=0.4, inset=3.5)                # M2.5 pan heads on the outer faces of the stack (estimate)
 SD = dict(x=(1.3 + STACK_DX, 3.35 + STACK_DX), y=(34.75, 55.25))                    # SD holder on the Pi component face (model) + clearance
 SD_CARD = dict(x=(1.3 + STACK_DX, 3.1 + STACK_DX), y=(39.0, 52.0), out=2.9)         # card: 11 wide, about 2.5 out of the holder (not measured)
 CSI = dict(x=(0.0 + STACK_DX, 3.05 + STACK_DX), y=(33.5, 56.5), out=1.15)           # CSI connector (model) + clearance
@@ -117,23 +148,23 @@ CSI = dict(x=(0.0 + STACK_DX, 3.05 + STACK_DX), y=(33.5, 56.5), out=1.15)       
 # Ports (from the models): PiSugar charge, button, switch; Pi power, data USB, mini-HDMI. All up.
 # The Pi power port and the PiSugar charge port are side by side: plug in one of them at a time.
 PORT_PLUGS = dict(                 # (x center, z center, x size, z size) of the plug body
-    hdmi=(3.25 + STACK_DX, STACK_ZF + 12.65, 8.5, 14.0),
-    pi_usb=(2.9 + STACK_DX, STACK_ZF + 41.6, 7.5, 11.0),
-    pi_power=(2.9 + STACK_DX, STACK_ZF + 54.1, 7.5, 11.0),
-    charge=(-3.6 + STACK_DX, STACK_ZF + 53.7, 8.0, 12.0),
+    hdmi=(3.25 + STACK_DX, ZSD - 12.65, 8.5, 14.0),
+    pi_usb=(2.9 + STACK_DX, ZSD - 41.6, 7.5, 11.0),
+    pi_power=(2.9 + STACK_DX, ZSD - 54.1, 7.5, 11.0),
+    charge=(-3.6 + STACK_DX, ZSD - 53.7, 8.0, 12.0),
 )
 PORT_TOP = 61.3                    # highest port face
 # Port openings in the panel: each one is the plug body + PORT_CLR, with round corners and a 45 deg
 # chamfer on the top edge. The Pi power and the PiSugar charge openings join.
 PORT_CLR, PORT_R, PORT_CHAMFER = 0.4, 1.0, 0.5
 # Forks under the panel over the top edge of the boards (where no port is)
-STACK_FORKS = [STACK_ZF + 25.4, STACK_ZF + 61.0]   # z0 of each fork, 2 long
+STACK_FORKS = [ZSD - 27.4, ZSD - 4.0]    # z0 of each fork, 2 long: clear of the ports while the panel slides on
 FORK = dict(len=2.0, lip=1.85, clr_y=0.1)
 # Power switch: the PiSugar slide switch lever (model: X -3.66..-2.66, Y 59.5..60.9, 1.3 long in Z) is
 # 0.9 above the board edge. A slider part rests on it: a fork goes over the lever, a 5.5 x 5 tab stands
 # 2 mm out of a slot in the panel. Lever travel about 1.5 mm (user estimate): +-0.75 from the model.
-SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=(STACK_ZF + 12.1, STACK_ZF + 13.4))
-SW = dict(zc=STACK_ZF + 12.75, travel=0.75, body_x=(-7.1, 2.8), body_y=(60.75, 61.45), body_hz=2.45, chamfer=0.4,
+SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=sd_z(12.1, 13.4))
+SW = dict(zc=ZSD - 12.75, travel=0.75, body_x=(-7.1, 2.8), body_y=(60.75, 61.45), body_hz=2.45, chamfer=0.4,
           fork_x=(0.9, 2.3), fork_y0=60.15, notch_hz=0.85,
           tab_x=(-9.9 + STACK_DX, -4.6 + STACK_DX), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.3,
           rail_t=0.45, rail_gap=0.25, rail_y0=60.35, entry=5.6, click=0.25)
@@ -141,41 +172,51 @@ SW = dict(zc=STACK_ZF + 12.75, travel=0.75, body_x=(-7.1, 2.8), body_y=(60.75, 6
 # end of the rails (no lips there), slide it forward past the click bumps. In front of its travel it has LID_SLIDE
 # more: before the lid goes on, set the switch toward the head and push the slider fully forward. The fork then
 # comes down on the lever, and the lever holds the slider while the lid slides forward.
-BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(6.5, 16.5), t=1.0, slit=0.6, cap=(-3.8 + STACK_DX, -2.8 + STACK_DX, 12.89, 14.75, 60.2),
-           arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(12.8, 14.8), gap=0.2, press=0.6)
+BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(-11.2, -1.2), t=1.0, slit=0.6, cap=(-3.8 + STACK_DX, -2.8 + STACK_DX, -9.45, -7.59, 60.2),
+           arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(-9.5, -7.5), gap=0.2, press=0.6)   # the tongue: root at z1, free end at z0
 # The button cap (white) presses into a round hole in the tongue: a cross post, its ribs 0.15 over the hole on each
 # side, crush into the hole wall (coarse enough for a 0.5 mm nozzle).
 KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.8, rib=1.0, press=0.05, post_h=0.9)   # small holes print about 0.2 under
 # Camera: the Petoi AI Vision Module in its Petoi case (reference/AiCamera250116-*.stl, 46.7 x 29.3 x 14.9) stands
-# upright on the front of the panel, lens forward over the head. It is turned 180 deg about the lens axis: its Grove
-# socket (a slot in the rear face) is then on the left, clear of the HDMI opening. (Turn the image in software.)
-# A separate mount: a base on the panel with a chin over the rounded front edge, two U brackets that hold the ends of
-# the case (outside the width of the head), and two clip legs through a window in the panel that catch under a frame.
-# A 45 deg ridge on each bracket snaps into a pocket in the end of the case (the pockets of the Petoi head mount,
-# at least 1.8 deep in the STL). It stays clear of the HDMI opening and the switch.
-CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z=-39.8,
-           base=dict(hx=25.65, z=(-35.5, -23.05), t=2.0, chin=3.0, clr=0.15, hdmi_z=-24.1),
-           brk=dict(t=1.2, clr=0.25, lip_front=0.8, lip_back=1.6, top=90.0),
-           ridge=dict(h=0.8, catch=0.3, yc=74.75, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85; the catch face is at the lower edge
-
+# vertical on the front of the panel, lens forward over the head, the USB end (native -X) at the top. It is cx right of
+# center on the robot (cx < 0 in the design frame): its Grove plug (centered on the rear face, low) is then clear of the
+# PiSugar charge port and the Pi power port behind it.
+# A separate mount: a base on the panel with a chin over the rounded front edge, two side brackets with lips at the
+# corners of the case and a hook over each top corner (clear of the USB port), and two clip legs through a window in
+# the panel that catch under a frame. The brackets spread to let the case in from the top; the hooks snap over its
+# top face. The Grove cable goes down through a notch at the rear of the window.
+CAM = dict(case_x=(-1.2, 45.55), case_y=(-24.83, 4.47), case_z=(-9.8, 5.1), front_z=-42.8, cx=-9.0,
+           top_y=(-21.6, 1.25),                          # the top (USB) end face of the case, native Y (it is narrower)
+           base=dict(x=(-25.9, 12.2), z=(-35.5, -26.2), t=2.0, chin=3.0, clr=0.15),
+           brk=dict(t=2.0, clr=0.25, lip_front=0.8, lip_back=1.35, lip_h=15.0, hook=1.5, gap=0.1),
            win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.8, hook=0.8, clr=0.05, gap=0.05, barb=10.0),
-           slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-21.4, -8.4)), mass=15.0)
+           notch=dict(x=(-10.5, -5.1), z=(-26.7, -21.6), cable_z=-27.0), mass=15.0)
+# Head-off mount: for the robot without its head. The camera stands centered, lower, in front of the body: its rear
+# face rear_z, its bottom y0. Two parts, each prints without supports: a base (pod_camera_base_low: the clip base and
+# a front plate down the front of the body, with two dovetail grooves; it prints upside down) and a cradle
+# (pod_camera_cradle_low: a floor and the side brackets with the hooks; their rear edges are dovetail tabs that slide
+# down into the grooves until the cradle sits on the top of the base; it prints on those rear edges). A 1.75 mm
+# filament pin through each side locks the cradle.
+# The Grove plug faces the body: the cable goes down and in under the front notch at the robot left, to the BiBoard.
+CAM_LOW = dict(cx=0.0, rear_z=Z0 - 10.0, y0=20.0, floor_t=2.0, plate=dict(x=19.5, y0=42.0, z=(-41.2, -38.4)),
+               tab=dict(d=1.4, w0=1.2, w1=2.0, clr=0.1), pin=dict(y=52.0, d=1.75, clr=0.1, x0=13.0))
 # The Grove socket (native x 32.4..37.3, y -19.4..-1.0 on the rear face): the plug in place, and the plug on the
 # BiBoard under the cover (platform GROVE_PLUG). Grove plug body 4.9 x 9.9, 6 mm out of the socket (estimates).
 GROVE_W, GROVE_L, GROVE_OUT = 4.9, 9.9, 6.0
 CAM_WIRE_R, CAM_PITCH = 0.55, 1.15          # Grove cable: 4 wires of 1.1 mm side by side
 
-# BiBoard 5-pin female header in the cover slot (GND, +5V, TX2, RX2, ..). Straight Dupont plugs.
-SLOT = PI.SLOT
-HDR = PI.HDR
+# BiBoard 5-pin female header in the cover slot (GND, +5V, TX2, RX2, ..), at the front right in the design frame.
+# Straight Dupont plugs.
+SLOT = dict(PI.SLOT, x0=-PI.SLOT["x1"], x1=-PI.SLOT["x0"])     # design frame (X turned over)
+HDR = dict(PI.HDR, x0=-PI.HDR["x1"], x1=-PI.HDR["x0"])
 BB_PLUG = dict(x=(HDR["x0"], HDR["x1"]), y=(HDR["top"], HDR["top"] + DUPONT_L), z=(HDR["z0"], HDR["z1"]))
 HDR_NOTCH = dict(x=(23.9, IN_A + 0.01), z=(HDR["z0"] - SLIDE - 0.8, HDR["z1"] + 0.8))   # floor notch: header + slide
 
-# Speaker: NULLLAB 3 W 4 ohm box speaker (user ruler measurements). Ear plate 45 x 31 x 1.5 (X, Y, Z),
-# body 27 x 30 x 14.3 behind it. It stands at the rear, sound face to the rear grille. The two ends of
+# Speaker: NULLLAB 3 W 4 ohm box speaker (user ruler measurements). Ear plate 45 x 31 x 3 (X, Y, Z; dry fit:
+# 3 mm), body 27 x 30 x 14.8 through it (dry fit: 14.3 was a little tight). It stands at the rear, sound face to the rear grille. The two ends of
 # the ear plate go down into vertical grooves.
-SPK = dict(l=45.0, body_l=27.0, d=31.0, h=14.3, ear_t=1.5, hole_d=4.0, hole_in=4.5)
-SPK_ZE = 44.8                              # front face of the ear plate
+SPK = dict(l=45.0, body_l=27.0, d=31.0, h=14.8, ear_t=3.0, hole_d=4.0, hole_in=4.5)
+SPK_ZE = 43.8                              # front face of the ear plate
 # The ear plate is at the middle of the body depth (user photo reference/signal-2026-10-15-113357.jpeg):
 # the body stands out (h - ear_t) / 2 in front of the ear plate and the same behind it.
 SPK_BODY_Z = (SPK_ZE + SPK["ear_t"] / 2 - SPK["h"] / 2, SPK_ZE + SPK["ear_t"] / 2 + SPK["h"] / 2)
@@ -189,8 +230,11 @@ AMP_X = (-IN_A + 0.5, -IN_A + 0.5 + AMP["t"])   # -27.3 .. -25.7
 AMP_Y0 = 28.5
 AMP_Z = (-9.0, -9.0 + AMP["l"])                  # I2S 5-pin PH2.0 at the front end, speaker 2-pin PH2.0 and the screw terminal at the rear end
 AMP_FORKS = [2.0, 12.0]                          # z0 of the panel forks over the amp top edge (2.5 long)
-# Board layout from the NULLLAB photo (u from the I2S end, v down from the top edge, mm). The PH2.0 headers are
-# side entry: the plugs go in along the board, from the ends. ph=height of the PH headers over the PCB.
+AMP_NUBS = [-5.0, 22.0]                          # z0 of the nubs on the wall over the amp top edge (4 long)
+# Board layout from the NULLLAB photo (u from the I2S end, v from the edge that the photo shows on top, mm). The PH2.0
+# headers are side entry: the plugs go in along the board, from the ends. ph=height of the PH headers over the PCB.
+# Rev 0.22: the board is upside down (that edge is at the bottom, on the bar), so the parts still face the battery
+# and the I2S end is still at the front when the robot frame turns the design frame over.
 AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0, 36.8, 0.75, 7.6), ic=(17.7, 24.0, 7.2, 13.6),
              holes=[(15.2, 2.65), (15.2, 19.3)], hole_d=4.7, ph=5.0, term_h=8.5, plug_out=3.7)
 
@@ -202,11 +246,11 @@ MIC = dict(w=12.7, l=16.7, t=1.8, y0=30.5, clr=0.1)
 # the pack jumpers (female) plug onto it. A straight header does not fit: the stack is 2 mm behind the mic.
 MIC_Z = (ZF_IN + 0.4, ZF_IN + 0.4 + MIC["t"])     # -35.6 .. -33.8
 MIC_PORT_Y = MIC["y0"] + MIC["l"] / 2            # port assumed at the board center (not measured)
-MIC_X = 2.7           # the mic is right of center: its header passes 0.2 mm right of the SD card
+MIC_X = 3.6           # the mic is right of center: its header passes the front post in a notch
 MIC_Z_BACK = MIC_Z[0] + 1.6                      # back face of the PCB
 MIC_PIN_Z = MIC_Z_BACK + 2.6                     # the bent pins run 2.6 mm off the back face
 MIC_HDR_X = (MIC_X + MIC["w"] / 2 - 1.1, MIC_X + MIC["w"] / 2 + 1.4)       # header body over the right edge
-MIC_PIN_Y = [MIC["y0"] + 3.27 + 2.54 * (5 - k) for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V (top to bottom)
+MIC_PIN_Y = [MIC["y0"] + 3.27 + 2.54 * k for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V (bottom to top: rev 0.22 turns the board)
 MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
 
 # Slide lid: the panel goes down 5 mm behind its place, then slides forward 5 mm. 45 deg dovetail hooks under the
@@ -215,9 +259,9 @@ MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
 # goes in. u = distance in from the inner face of the wall. Every spring in the panel bends along its layers.
 LID_SLIDE = 5.0
 LID = dict(L=1.5, top=0.6, gap=0.1, gap_y=0.15, bot=54.1, t=1.2, front_x=[(-19.0, -4.5), (15.2, 19.0)], front_gap=0.05,
-           hook_len=4.2, lug_len=4.4, side_z={1: [-28.0, 32.0], -1: [-28.0, -18.0, 32.0]})
-# Front: no ledge where the mic goes in, and the hooks come down clear of the Pi stack. Right: no lugs over the
-# uart wires (they go in from the top along the wall) and the BiBoard plug (FINGER).
+           hook_len=4.2, lug_len=4.4, side_z={1: [-28.4, 32.0], -1: [-28.0, -18.0, 32.0]})
+# Front: no ledge where the mic goes in, and the hooks come down clear of the Pi stack. Right (design frame): no lugs
+# over the uart wires (they go in from the top along the wall) and the BiBoard plug (FINGER).
 LID_LUG_Y = SEAM - LID["top"] - LID["L"]                 # 55.1: the 45 deg underside of a lug meets the wall here
 # The latch: a tongue in the panel top at the rear center, cut free by two slits (root at the front, the rear
 # skirt at its free end). Its hook rides over a rib on the rear wall and drops in front of it. To open, lift the
@@ -226,32 +270,28 @@ LATCH = dict(hw=4.5, slit=0.6, root_z=34.0, rib_hw=3.0, rib_d=1.2, rib_top=59.6,
              hook_hw=3.5, ramp=1.0, gap=0.05)
 # Finger notch in the rear wall under the seam: lift the rear edge of the panel here.
 NOTCH = dict(hw=7.0, h=1.5, d=1.0)
-# Cable notches at the base of the side walls (both sides, the same): for an optional cable from outside,
-# for example the Grove cable of the Petoi AI Vision Module. The blueprint has no camera wires to the Pi.
-CAM_NOTCH = dict(z=(-15.0, -7.0), y1=28.6)
-# Front cable notches: the Grove cable of the head camera comes out under the front edge of the cover
-# (left side, photo reference/signal-2026-10-15-102120.jpeg) and runs up to the head. A 45 deg chamfer
-# across each front bottom corner of the body (the same on the right) gives it room. h = height at the front face.
+# Front cable notch: the Grove cable of the head camera comes out under the front edge of the cover (robot left
+# side, the right in the design frame) and runs up to the head. A 45 deg chamfer across that front bottom corner of
+# the body gives it room. h = height at the front face. The body has no other cable holes at its base.
 FRONT_NOTCH = dict(x=(12.5, 25.5), h=6.0, z1=-26.9)    # z1: rear end of the floor opening over the Grove plug (platform v3.1)
-FRONT_CABLE = dict(x=(-24.0, -14.0), y=(FLOOR_Y0, FLOOR_Y0 + 3.5), z=(Z0 - 3.0, Z0 + 2.0))   # cable space (check)
+FRONT_CABLE = dict(x=(14.0, 24.0), y=(FLOOR_Y0, FLOOR_Y0 + 3.5), z=(Z0 - 3.0, Z0 + 2.0))   # cable space (check)
 # Grille in the rear face, mic holes in the front face
 GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6)
 
 # Wire paths (check(): no printed part and no other electronics in them). Dupont jumper wire is about 1.4 mm.
 WIRE_PATHS = {
-    "uart: Pi header to BiBoard plug": [dict(x=(18.2, IN_A - 0.05), y=(31.0, 54.0), z=(-16.5, 30.0))],
-    "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-26.3, -18.6)),
-                                        dict(x=(-25.0, -15.6), y=(27.6, 47.0), z=(-18.6, -12.2))],
-    "mic: rearward stack in the right well": [dict(x=(22.6, 25.3), y=(33.0, 47.3), z=(-30.5, 4.0)),
-                                              dict(x=(22.4, 23.9), y=(40.5, 47.3), z=(4.0, 21.0))],
+    "uart: Pi header to BiBoard plug": [dict(x=(25.4, IN_A - 0.05), y=(39.3, 49.6), z=(-19.5, 23.1)),
+                                        dict(x=(19.9, IN_A - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
+    "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
+                                        dict(x=(-24.0, -22.4), y=(27.6, 43.9), z=(-24.2, -12.1))],
+    "mic: rearward stack in the right well": [dict(x=(22.7, 24.1), y=(33.0, 47.2), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(-24.5, -18.5), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
-    "cable: right notch into the right well": [dict(x=(18.2, IN_A - 0.2), y=(FLOOR_Y1 + 0.1, 36.5), z=(-15.0, -9.0))],
 }
 WIRE_R = 0.7
 # Space for a finger tip over the BiBoard plug (panel off)
-FINGER = dict(x=(11.0, IN_A - 0.2), y=(37.0, SEAM), z=(11.0, 27.0))
+FINGER = dict(x=(11.0, IN_A - 0.2), y=(37.0, SEAM), z=(-24.0, -10.5))
 
 
 def flat_ps2():
@@ -558,18 +598,34 @@ def speaker_posts():
     return union(out)
 
 
+def screw_heads():
+    """The M2.5 screw heads at the four corners of the stack, on both outer faces."""
+    S = SCREW
+    out = []
+    for z in (STACK_ZF + S["inset"], STACK_ZR - S["inset"]):
+        for y in (STACK_Y0 + S["inset"], STACK_Y0 + 30.0 - S["inset"]):
+            out.append(mcyl("x", PCB_X[0] - S["h"], PCB_X[0] + 0.01, S["d"] / 2, y, z, 24))
+            out.append(mcyl("x", PCB_X[1] - 0.01, PCB_X[1] + S["h"], S["d"] / 2, y, z, 24))
+    return union(out)
+
+
 def stack_posts():
-    """Front and rear posts with vertical grooves for the two board ends. The groove bottom is the stop."""
+    """Front and rear posts with one vertical groove for the two board ends: the same width and depth for both
+    boards, from the top to the bottom (the stop). The Pi side is cut out for the SD holder and the CSI connector."""
     c, (x0, x1) = POST["clr"], POST["x"]
-    groove = lambda za, zb: mbox(PCB_X[0] - c, PCB_X[1] + c, STACK_Y0 - 0.15, 99, za, zb)
-    f = mbox(x0, x1, FLOOR_Y1 - 0.01, POST["top"], *POST_F)
-    f -= groove(STACK_ZF - c, POST_F[1] + 1)
-    f -= mbox(*SD["x"], *SD["y"], STACK_ZF - c, POST_F[1] + 1)
-    f -= mbox(*SD_CARD["x"], *SD_CARD["y"], STACK_ZF - SD_CARD["out"], POST_F[1] + 1)
-    r = mbox(x0, x1, FLOOR_Y1 - 0.01, POST["top"], *POST_R)
-    r -= groove(POST_R[0] - 1, STACK_ZR + c)
-    r -= mbox(*CSI["x"], *CSI["y"], POST_R[0] - 1, STACK_ZR + CSI["out"])
-    return f + r
+    xg = max(SD["x"][1], CSI["x"][1])
+    groove = lambda za, zb: mbox(PCB_X[0] - c, xg, STACK_Y0 - 0.15, 99, za, zb)
+    r = mbox(x0, x1, FLOOR_Y1 - 0.01, POST["top"], *POST_SD)
+    r -= groove(POST_SD[0] - 1, ZSD + c)
+    r -= mbox(*SD_CARD["x"], *SD_CARD["y"], POST_SD[0] - 1, ZSD + SD_CARD["out"])
+    f = mbox(x0, x1, FLOOR_Y1 - 0.01, POST["top"], *POST_CSI)
+    f -= groove(STACK_ZF - c, POST_CSI[1] + 1)
+    f -= mbox(*CSI["x"], *CSI["y"], STACK_ZF - CSI["out"], POST_CSI[1] + 1)
+    f -= mbox(MIC_HDR_X[0] - 0.3, x1 + 1, FLOOR_Y1, 99, POST_CSI[0] - 1, MIC_PIN_Z + 1.25 + 0.3)   # the mic header
+    S = SCREW                                              # the screw heads go down a channel to their place
+    ch = union([mbox(PCB_X[0] - S["h"] - S["clr"], xg + S["h"] + S["clr"], STACK_Y0 + S["inset"] - S["d"] / 2 - S["clr"], 99,
+                     z - S["d"] / 2 - S["clr"], z + S["d"] / 2 + S["clr"]) for z in (STACK_ZF + S["inset"], STACK_ZR - S["inset"])])
+    return (f + r) - (ch - mbox(PCB_X[0] - POST["clr"], xg, 0, 99, -99, 99))
 
 
 def mic_posts():
@@ -578,17 +634,29 @@ def mic_posts():
     M, c = MIC, MIC["clr"]
     hw = M["w"] / 2
     za, zb = ZF_IN - 0.5, MIC_Z[1] + c + 1.5
-    p = mbox(-hw - 2.25, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] - c, za, zb)            # base
+    p = mbox(-hw - 2.25, hw + 1.8, FLOOR_Y1 - 0.01, M["y0"] - c, za, zb)             # base
     p += mbox(-hw - 2.25, -hw + 0.5, FLOOR_Y1 - 0.01, M["y0"] + M["l"] + 0.3, za, zb)  # left post
-    p += mbox(hw - 0.5, hw + 2.25, FLOOR_Y1 - 0.01, M["y0"] + 1.4, za, zb)             # right corner post (under the header)
+    p += mbox(hw - 0.5, hw + 1.8, FLOOR_Y1 - 0.01, M["y0"] + 1.4, za, zb)              # right corner post (under the header)
     return (p - mbox(-hw - c, hw + c, M["y0"] - c, 99, ZF_IN, MIC_Z[1] + c)).translate([MIC_X, 0, 0])
 
 
 def amp_base():
-    """Bar on the floor along the left wall with a slot for the bottom edge of the amp board."""
+    """Bar on the floor along the left wall with a slot for the bottom edge of the amp board (lower under the screw
+    terminal), and two nubs on the wall over its top edge: tilt the board in, press its top edge under the nubs,
+    then set it with a dab of glue."""
     c = 0.15
     b = mbox(-IN_A - 0.5, AMP_X[1] + 1.55, FLOOR_Y1 - 0.01, 30.0, *AMP_Z)
-    return b - mbox(AMP_X[0] - c, AMP_X[1] + c, AMP_Y0 - 0.15, 31.0, AMP_Z[0] - 1, AMP_Z[1] + 1)
+    b -= mbox(AMP_X[0] - c, AMP_X[1] + c, AMP_Y0 - 0.15, 31.0, AMP_Z[0] - 1, AMP_Z[1] + 1)
+    t = AMP_L["term"]
+    b -= mbox(AMP_X[1] + c - 0.01, AMP_X[1] + 2.0, AMP_Y0 + 0.6, 31.0, AMP_Z[0] + t[0] - 0.5, AMP_Z[0] + t[1] + 0.5)
+    return b + amp_nubs()
+
+
+def amp_nubs():
+    """Nubs on the left wall over the top edge of the amp board: a flat catch, a 45 deg top (it prints from the wall)."""
+    yt = AMP_Y0 + AMP["h"]
+    prof = [(-IN_A - 0.01, yt + 0.05), (AMP_X[0] + 1.0, yt + 0.05), (AMP_X[0] + 1.0, yt + 0.45), (-IN_A - 0.01, yt + 0.45 + 1.5)]
+    return union([prism_zp(prof, z, z + 4.0) for z in AMP_NUBS])
 
 
 def _wall_prism(pts_uy, side, z0=None, z1=None):
@@ -658,13 +726,14 @@ def latch_slits():
 
 
 def keyhole_cut(px, pz):
+    """The keyhole of the robot-frame peg at (px, pz), in the design frame (at -px)."""
     from bittle_platform import build as BP
-    return b3d_to_manifold(BP.keyhole_cutter(px, pz))
+    return flip_x(b3d_to_manifold(BP.keyhole_cutter(px, pz)))
 
 
 def keyhole_bump(px, pz):
     from bittle_platform import build as BP
-    return b3d_to_manifold(BP.detent_bump(px, pz))
+    return flip_x(b3d_to_manifold(BP.detent_bump(px, pz)))
 
 
 def battery_supports():
@@ -697,14 +766,11 @@ def build_body():
         B += keyhole_bump(px, pz)
     N = HDR_NOTCH
     B -= mbox(*N["x"], FLOOR_Y0 - 1, 30.0, *N["z"])                       # the BiBoard header comes up here
-    for sx in (-1, 1):                                                     # cable notches
-        B -= mbox(*sorted((sx * (IN_A - 2.0), sx * (A + 1))), FLOOR_Y0 - 1, CAM_NOTCH["y1"], *CAM_NOTCH["z"])
     h = FRONT_NOTCH["h"]
     tri = [(FLOOR_Y0 - 1, Z0 - 1), (FLOOR_Y0 + h + 1, Z0 - 1), (FLOOR_Y0 - 1, Z0 + h + 1)]     # 45 deg face
-    for sx in (-1, 1):
-        xs = sorted((sx * FRONT_NOTCH["x"][0], sx * FRONT_NOTCH["x"][1]))
-        B -= prism_x(tri, *xs)
-        B -= mbox(*xs, FLOOR_Y0 - 1, FLOOR_Y1 + 0.01, ZF_IN - 0.5, FRONT_NOTCH["z1"])     # floor opening over the Grove plug
+    xs = FRONT_NOTCH["x"]
+    B -= prism_x(tri, *xs)
+    B -= mbox(*xs, FLOOR_Y0 - 1, FLOOR_Y1 + 0.01, ZF_IN - 0.5, FRONT_NOTCH["z1"])         # floor opening over the Grove plug
     B += lid_lugs() + latch_rib()
     nt = _cs([(NOTCH["hw"] + NOTCH["h"] * math.cos(t), SEAM + NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)]
              + [(-NOTCH["hw"] - NOTCH["h"] * math.cos(t), SEAM - NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)])
@@ -731,7 +797,7 @@ def panel_forks():
     out = []
     xa, xb = PCB_X[0] - POST["clr"], CSI["x"][1]
     for z0 in STACK_FORKS:                                 # over the top edge of the boards
-        f = mbox(xa - FORK["lip"], xb + FORK["lip"], 58.6, PANEL_IN + 0.01, z0, z0 + FORK["len"])
+        f = mbox(xa - FORK["lip"], xb + FORK["lip"], 59.0, PANEL_IN + 0.01, z0, z0 + FORK["len"])   # over the screw heads
         out.append(f - mbox(xa, xb, 0, STACK_Y0 + 30.0 + FORK["clr_y"], z0 - 1, z0 + FORK["len"] + 1))
     G = SPK_GROOVE                                         # over the ends of the speaker ear plate
     za, zb = SPK_ZE - G["clr"], SPK_ZE + SPK["ear_t"] + G["clr"]
@@ -815,11 +881,11 @@ def switch_rails():
 
 
 def button_cuts():
-    """U slit around the tongue and the thinning under it."""
+    """U slit around the tongue (root at z1, free end at z0) and the thinning under it."""
     B = BTN
     (x0, x1), (z0, z1), w = B["x"], B["z"], B["slit"]
-    u = mbox(x0 - w, x1 + w, PANEL_IN - 1, TOP + 1, z0 + 0.01, z1 + w) - mbox(x0, x1, PANEL_IN - 2, TOP + 2, z0 - 1, z1)
-    thin = mbox(x0, x1, PANEL_IN - 1, TOP - B["t"], z0 - 0.01, z1)
+    u = mbox(x0 - w, x1 + w, PANEL_IN - 1, TOP + 1, z0 - w, z1 - 0.01) - mbox(x0, x1, PANEL_IN - 2, TOP + 2, z0, z1 + 1)
+    thin = mbox(x0, x1, PANEL_IN - 1, TOP - B["t"], z0, z1 + 0.01)
     return u + thin
 
 
@@ -834,7 +900,7 @@ def button_arm(dy=0.0):
 
 def keycap_center():
     K, B = KEYCAP, BTN
-    return (B["x"][0] + B["x"][1]) / 2, B["z"][1] - 0.3 - K["l"] / 2
+    return (B["x"][0] + B["x"][1]) / 2, B["z"][0] + 0.3 + K["l"] / 2
 
 
 def keycap_hole():
@@ -864,53 +930,52 @@ def build_keycap(dz=0.0, press=True):
 
 
 # ---------- camera mount
-def cam_to_body():
-    """Native case frame -> body frame: turned 180 deg about Z (the lens axis), centered, on the base, front at front_z."""
+def cam_to_body(low=False):
+    """Native case frame -> design frame: native X down (the USB end up), native Y to -X (a mirror in the design frame:
+    the robot frame turns it back), native Z (the lens axis) along Z. Centered at cx, on the base (or the cradle of
+    the head-off mount), front at front_z."""
     C = CAM
-    return np.array([[-1, 0, 0, (C["case_x"][0] + C["case_x"][1]) / 2],
-                     [0, -1, 0, TOP + C["base"]["t"] + C["case_y"][1] + 0.05],
-                     [0, 0, 1, C["front_z"] - C["case_z"][0]], [0, 0, 0, 1]], float)
+    x0, x1, y0, y1, z0, z1 = cam_box(low)
+    tx = (x0 + x1) / 2 + (C["case_y"][0] + C["case_y"][1]) / 2
+    return np.array([[0, -1, 0, tx], [-1, 0, 0, y0 + C["case_x"][1]], [0, 0, 1, z0 - C["case_z"][0]], [0, 0, 0, 1]], float)
 
 
-def cam_box():
+def cam_box(low=False):
     """The camera case in place, as a box (x0, x1, y0, y1, z0, z1)."""
     C = CAM
-    hx = (C["case_x"][1] - C["case_x"][0]) / 2
+    hx = (C["case_y"][1] - C["case_y"][0]) / 2
+    h, d = C["case_x"][1] - C["case_x"][0], C["case_z"][1] - C["case_z"][0]
+    if low:
+        L = CAM_LOW
+        return (L["cx"] - hx, L["cx"] + hx, L["y0"], L["y0"] + h, L["rear_z"] - d, L["rear_z"])
     y0 = TOP + C["base"]["t"] + 0.05
-    return (-hx, hx, y0, y0 + C["case_y"][1] - C["case_y"][0], C["front_z"], C["front_z"] + C["case_z"][1] - C["case_z"][0])
+    return (C["cx"] - hx, C["cx"] + hx, y0, y0 + h, C["front_z"], C["front_z"] + d)
 
 
-def cam_socket():
+def cam_socket(low=False):
     """The Grove plug in the camera socket: (x0, x1, y0, y1, z0, z1). The plug goes in along +Z from the rear."""
-    T = cam_to_body()
-    xs = sorted(T[0, 0] * x + T[0, 3] for x in (32.4, 37.3))
-    yc = float(np.mean([T[1, 1] * y + T[1, 3] for y in (-19.4, -1.0)]))
-    xc = (xs[0] + xs[1]) / 2
-    z1 = cam_box()[5]
-    return (xc - GROVE_W / 2, xc + GROVE_W / 2, yc - GROVE_L / 2, yc + GROVE_L / 2, z1 - 3.0, z1 + GROVE_OUT)
+    T = cam_to_body(low)
+    ys = sorted(T[1, 0] * x + T[1, 3] for x in (32.4, 37.3))
+    xc = float(np.mean([T[0, 1] * y + T[0, 3] for y in (-19.4, -1.0)]))
+    yc = (ys[0] + ys[1]) / 2
+    z1 = cam_box(low)[5]
+    return (xc - GROVE_L / 2, xc + GROVE_L / 2, yc - GROVE_W / 2, yc + GROVE_W / 2, z1 - 3.0, z1 + GROVE_OUT)
 
 
 def bb_grove_plug():
     """The Grove plug on the BiBoard, under the cover at the front left (in the platform GROVE_PLUG space)."""
     G = PI.GROVE_PLUG
-    xc, zc = (G["x"][0] + G["x"][1]) / 2, (G["z"][0] + G["z"][1]) / 2
+    xc, zc = -(G["x"][0] + G["x"][1]) / 2, (G["z"][0] + G["z"][1]) / 2      # design frame
     return (xc - GROVE_L / 2, xc + GROVE_L / 2, G["y_top"] - 6.0, G["y_top"], zc - GROVE_W / 2, zc + GROVE_W / 2)
 
 
-def build_camera_mount():
-    """Base on the panel with a chin over its front edge, two U brackets with a snap ridge, two clip legs through
-    the window."""
-    C, Bs, Br, W, Lg, Fr, Rd = CAM, CAM["base"], CAM["brk"], CAM["win"], CAM["leg"], CAM["frame"], CAM["ridge"]
-    x0, x1, y0, y1, z0, z1 = cam_box()
-    zf, zb = z0 - Br["clr"], z1 + Br["clr"]
-    zfl = zf - Br["lip_front"]
+def _clip_base(xa, xb, zfl):
+    """Base plate on the panel from xa to xb, a chin over the rounded front edge (forward to zfl), two clip legs
+    through the window."""
+    C, Bs, Br, W, Lg, Fr = CAM, CAM["base"], CAM["brk"], CAM["win"], CAM["leg"], CAM["frame"]
     yb = TOP + Bs["t"]
-    xi = x1 + Br["clr"]                                   # inner face of a bracket
-    xo = xi + Br["t"]
-    m = prism_y(rrect_pts(-xo, xo, Bs["z"][0], Bs["z"][1], 2.0), TOP, yb)
-    xh, _, sxh, _ = PORT_PLUGS["hdmi"]                    # the rear edge steps back over the HDMI plug
-    m -= mbox(xh - sxh / 2 - 0.5, xh + sxh / 2 + 0.5, TOP - 1, yb + 1, Bs["hdmi_z"], Bs["z"][1] + 1)
-    # chin: the front of the base and the brackets follows the rounded front edge of the panel down 3 mm
+    m = prism_y(rrect_pts(xa, xb, Bs["z"][0], Bs["z"][1], 2.0), TOP, yb)
+    # chin: the front of the base follows the rounded front edge of the panel down 3 mm
     P = panel_outer()
     cl = Bs["clr"]
     Pc = union([P.translate([0, dy, dz]) for dy in (0.0, cl) for dz in (0.0, -cl)])
@@ -919,32 +984,124 @@ def build_camera_mount():
     k = 98.71 + Bs["clr"]
     yl = TOP - Bs["chin"]
     sec = [(zfl, yb), (zfl, yl), (yl - k, yl), (yb - k, yb)]                  # (z, y) section
-    chin = _cs([(z_, -y_) for z_, y_ in sec]).extrude(2 * xo).transform(np.array([[0, 0, 1, -xo], [0, -1, 0, 0], [1, 0, 0, 0]], float))
+    chin = _cs([(z_, -y_) for z_, y_ in sec]).extrude(xb - xa).transform(np.array([[0, 0, 1, xa], [0, -1, 0, 0], [1, 0, 0, 0]], float))
     m += chin - Pc
     for sx in (-1, 1):
         X = lambda a, b: sorted((sx * a, sx * b))
-        m += mbox(*X(xi, xo), TOP, Br["top"], zfl, zb + Br["lip_back"])
-        m += mbox(*X(xi - 1.6, xi), TOP, Br["top"], zb, zb + Br["lip_back"])          # back lip
-        lip = [(sx * xi, zf), (sx * xi, zfl), (sx * (xi - Br["lip_front"]), zfl)]
-        if sx < 0:
-            lip = lip[::-1]
-        pts = [(x, -z) for x, z in lip]                   # front lip, 45 deg (it prints last, the part stands on its back)
-        m += _cs(pts).extrude(Br["top"] - TOP).transform(np.array([[1, 0, 0, 0], [0, 0, 1, TOP], [0, -1, 0, 0]], float))
-        # snap ridge: 45 deg faces, into the pocket in the end of the case; the bracket flexes out to let the case by
-        h, yc, f = Rd["h"], Rd["yc"], Rd["flat"]           # steep catch face below (the case cannot lift out), 45 deg lead above
-        rd = [(sx * (xi + 0.01), yc - f / 2 - Rd["catch"]), (sx * (xi - h), yc - f / 2), (sx * (xi - h), yc + f / 2), (sx * (xi + 0.01), yc + f / 2 + h)]
-        m += prism_zp(rd if sx < 0 else rd[::-1], *Rd["z"][sx])
         xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.05 inside the window, 0.1 at front and back
         zc = (W["z"][0] + W["z"][1]) / 2
         za, zb2 = zc - Lg["w"] / 2, zc + Lg["w"] / 2
         r = W["r"] - 0.1                                  # leg corners: 0.05 clear of the window corners
         e = Lg["hook"] + Lg["clr"]                        # hook: barbed catch under the frame, 34 deg lead-in below it
         a = e * math.tan(math.radians(Lg["barb"]))       # the tip is higher than the root: a pull pushes the hook out
-        yt = Fr["y0"] - Lg["gap"] - a                     # the tip stays below the frame as the leg springs out
-        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), yt - 1.5 * e - 0.3, TOP + 0.01)
-        hk = [(sx * (xl - 0.01), yt), (sx * (xl + e), yt + a), (sx * (xl - 0.01), yt - 1.5 * e - 0.3)]
+        yt_ = Fr["y0"] - Lg["gap"] - a                    # the tip stays below the frame as the leg springs out
+        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), yt_ - 1.5 * e - 0.3, TOP + 0.01)
+        hk = [(sx * (xl - 0.01), yt_), (sx * (xl + e), yt_ + a), (sx * (xl - 0.01), yt_ - 1.5 * e - 0.3)]
         m += prism_zp(hk if sx > 0 else hk[::-1], za + W["r"], zb2 - W["r"])   # narrower: it clears the window corners
     return m
+
+
+def _case_brackets(low=False, y_floor=TOP, z_end=None):
+    """Two side brackets from y_floor: corner lips at the bottom, a hook over each top corner of the case (clear of
+    the USB port). The brackets spread to let the case in from the top; the hooks snap over its top face. The back
+    lips and the hooks go back to z_end (the end of the part on the print bed)."""
+    C, Br = CAM, CAM["brk"]
+    x0, x1, y0, y1, z0, z1 = cam_box(low)
+    zf, zb = z0 - Br["clr"], z1 + Br["clr"]
+    zfl = zf - Br["lip_front"]
+    yt = y1 + Br["gap"]                                   # underside of the hooks, over the top face of the case
+    ty = cam_to_body(low)
+    ze = zb + Br["lip_back"] if z_end is None else z_end
+    m = None
+    for sx, xi in ((-1, x0 - Br["clr"]), (1, x1 + Br["clr"])):
+        X = lambda a, b: sorted((a, b))
+        xo = xi + sx * Br["t"]
+        xe = ty[0, 1] * (C["top_y"][1] if sx < 0 else C["top_y"][0]) + ty[0, 3]   # edge of the top face
+        tip = xe - sx * Br["hook"]
+        w = mbox(*X(xi, xo), y_floor, yt + abs(xi - tip), zfl, zb + Br["lip_back"])
+        ylip = y0 + Br["lip_h"]
+        lb = zb + Br["lip_back"]                          # back lip (low part only); behind it a 45 deg end (no overhang in the print)
+        lp = [(xi, zb), (xi - sx * 1.6, zb), (xi - sx * 1.6, lb), (xi, min(lb + 1.6, ze))] if ze > lb else [(xi, zb), (xi - sx * 1.6, zb), (xi - sx * 1.6, lb), (xi, lb)]
+        w += prism_y(lp if sx < 0 else lp[::-1], y_floor, ylip)
+        lip = [(xi, zf), (xi, zfl), (xi - sx * Br["lip_front"], zfl)]
+        if sx < 0:
+            lip = lip[::-1]
+        pts = [(x, -z) for x, z in lip]                   # front lip, 45 deg (it prints last, the part stands on its back)
+        w += _cs(pts).extrude(ylip - y_floor).transform(np.array([[1, 0, 0, 0], [0, 0, 1, y_floor], [0, -1, 0, 0]], float))
+        # hook over the top corner: a flat catch over the top face, a 45 deg lead on top (the case pushes the
+        # brackets apart on the way down). It reaches Br hook over the edge of the top face.
+        hk = [(xi + sx * 0.01, yt), (tip, yt), (xi + sx * 0.01, yt + abs(xi - tip))]
+        w += prism_zp(hk if sx > 0 else hk[::-1], zf + 1.0, ze)
+        m = w if m is None else m + w
+    return m
+
+
+def build_camera_mount():
+    """Base on the panel with a chin over its front edge and two clip legs through the window, two side brackets
+    for the case. The Grove cable goes down through a notch at the rear of the base."""
+    C, Bs, Br = CAM, CAM["base"], CAM["brk"]
+    x0, x1 = cam_box()[:2]
+    xa, xb = x0 - Br["clr"] - Br["t"], x1 + Br["clr"] + Br["t"]
+    m = _clip_base(min(xa, Bs["x"][0]), max(xb, Bs["x"][1]), C["front_z"] - Br["clr"] - Br["lip_front"])
+    N = C["notch"]                                        # the Grove cable goes down through the base at the rear
+    m -= mbox(*N["x"], TOP - 1, TOP + Bs["t"] + 1, N["cable_z"] - 0.8, Bs["z"][1] + 1)
+    return m + _case_brackets()
+
+
+def _low_dovetail(clr, y):
+    """The dovetail tabs on the rear edges of the cradle walls from y[0] to y[1] (clr > 0: the grooves in the base
+    plate)."""
+    L, Br = CAM_LOW, CAM["brk"]
+    T, P = L["tab"], L["plate"]
+    x0, x1 = cam_box(True)[:2]
+    z0 = P["z"][0]
+    ya, yb = y
+    out = []
+    for xc in ((x0 - Br["clr"] - Br["t"] / 2), (x1 + Br["clr"] + Br["t"] / 2)):
+        a, b = T["w0"] / 2 + clr, T["w1"] / 2 + clr        # narrow at the wall, wide at the tip
+        pts = [(xc - a, z0 - 0.01), (xc + a, z0 - 0.01), (xc + b, z0 + T["d"] + clr), (xc - b, z0 + T["d"] + clr)]
+        out.append(prism_y(pts, ya, yb))
+    return union(out)
+
+
+def _low_pins(clr=0.0):
+    """The filament pins: along X through the plate and the tabs, from each side of the plate."""
+    L = CAM_LOW
+    P, Pn, T = L["plate"], L["pin"], L["tab"]
+    zc = P["z"][0] + T["d"] / 2
+    return union([mcyl("x", *sorted((sx * Pn["x0"], sx * (P["x"] + 1.0))), Pn["d"] / 2 + clr, Pn["y"], zc, 16) for sx in (-1, 1)])
+
+
+def build_camera_base_low():
+    """The base of the head-off mount: the clip base, a front plate down the front of the body with the two grooves
+    (closed at the bottom: the stop), the pin holes."""
+    L = CAM_LOW
+    P = L["plate"]
+    m = _clip_base(-P["x"], P["x"], P["z"][0])
+    m += mbox(-P["x"], P["x"], P["y0"], TOP - CAM["base"]["chin"] + 0.5, *P["z"])
+    T = L["tab"]
+    m -= _low_dovetail(T["clr"], (P["y0"] - 1.0, TOP + CAM["base"]["t"] + 1.0))
+    return m - _low_pins(L["pin"]["clr"])
+
+
+def build_camera_cradle_low():
+    """The cradle of the head-off mount: a floor under the case, the side brackets with the hooks, carried back to the
+    base plate; dovetail tabs on their rear edges, the pin holes. It prints on its rear edges: below and above the
+    base plate the walls and the floor go back as far as the tabs."""
+    L, Br = CAM_LOW, CAM["brk"]
+    x0, x1, y0, y1, z0, z1 = cam_box(True)
+    yf = y0 - 0.05 - L["floor_t"]
+    zr = L["plate"]["z"][0]
+    ze = zr + L["tab"]["d"]                                # the print bed
+    xa, xb = x0 - Br["clr"] - Br["t"], x1 + Br["clr"] + Br["t"]
+    ytop = cam_box(True)[3] + Br["gap"] + 5.0
+    m = _case_brackets(True, yf, ze)
+    for xi, xo in ((xa, xa + Br["t"]), (xb - Br["t"], xb)):              # the walls go back to the base plate
+        m += mbox(xi, xo, yf, ytop, z1, zr)
+        m += mbox(xi, xo, TOP + CAM["base"]["t"], ytop, zr - 0.01, ze)    # over the base: the cradle sits on it
+    m += mbox(xa, xb, yf, y0 - 0.05, z0 - Br["clr"] - Br["lip_front"], zr)   # floor (a bridge between the tabs in the print)
+    m += _low_dovetail(0.0, (yf, ytop))
+    return m - _low_pins(0.05)
 
 
 def camera_window():
@@ -953,9 +1110,10 @@ def camera_window():
 
 
 def camera_cable_slot():
-    """A slot in the panel behind the camera for its Grove cable. The plug goes through it (5.9 x 10.9)."""
-    S = CAM["slot"]
-    return prism_y(rrect_pts(*S["x"], *S["z"], 1.0), PANEL_IN - 1, TOP + 1)
+    """A notch in the panel at the rear of the window for the Grove cable, LID_SLIDE long: the cable stays in it
+    while the panel slides on."""
+    N = CAM["notch"]
+    return prism_y(rrect_pts(*N["x"], N["z"][0], N["z"][1], 1.0), PANEL_IN - 1, TOP + 1)
 
 
 def camera_frame():
@@ -1060,7 +1218,7 @@ def tube(pts, r=WIRE_R, rounded=True):
     return union([m3.Manifold.batch_hull([a, b]) for a, b in zip(S[:-1], S[1:])])
 
 
-# Pi header: 2x20, pin 1 at the SD card end (front), odd pins in the inner row, even pins at the board edge (down).
+# Pi header: 2x20, pin 1 at the SD card end (rear), odd pins in the inner row, even pins at the board edge (down).
 HDR_BASE_X = (PI_PCB_TOP_X + 0.1, PI_PCB_TOP_X + 2.6)
 HOUSING_END = HDR_BASE_X[1] + DUPONT_L             # Dupont housing on the header pins
 EXIT_X = HOUSING_END + 0.8                          # the wire leaves the housing straight for 0.8 mm
@@ -1068,26 +1226,27 @@ EXIT_X = HOUSING_END + 0.8                          # the wire leaves the housin
 
 def pin_yz(n):
     k = (n - 1) // 2
-    return STACK_Y0 + 3.5 + (1.27 if n % 2 else -1.27), HDR_ZC - 25.4 + 1.27 + 2.54 * k
+    return STACK_Y0 + 3.5 + (1.27 if n % 2 else -1.27), HDR_ZC + 25.4 - 1.27 - 2.54 * k
 
 
 def bb_pin_z(k):
-    """BiBoard header pin k, from the front: TX2, RX2, GND, +5V, +5V (wiring blueprint; the direction is not verified)."""
-    return HDR["z0"] + 1.27 + 2.54 * k
+    """BiBoard header pin k, from the rear: TX2, RX2, GND, +5V, +5V (wiring blueprint; the direction is not verified)."""
+    return HDR["z1"] - 1.27 - 2.54 * k
 
 
 BB_X = (HDR["x0"] + HDR["x1"]) / 2
-AMP_PLUG_Y = [AMP_Y0 + AMP["h"] - v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN
+AMP_PLUG_Y = [AMP_Y0 + v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN
 AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # front face of the I2S plug
 # BCLK and LRCLK: one wire from Pi pin 12 (35) to a soldered splice, then one wire to the mic and one to the amp
 # (reference/g2-wiring-blueprint.html). The splices are vertical heat-shrink sleeves in the right well:
 # the Pi wire and the amp wire go into the bottom end, the mic wire into the top end.
-SPLICE = dict(bclk=(21.2, -2.0), lrclk=(21.0, 22.0), y=(39.0, 45.0), r=1.25)
-# Lanes in the right well (X): the mic wires run rearward as a flat stack at MIC_RIB (X 24.6, then X 23.2 beside
-# the BiBoard plugs), the UART wires rise at UART_X, the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES.
-MIC_RIB, UART_X, FLOOR_WIRE = (24.6, 23.2), 27.0, FLOOR_Y1 + 0.75
-AMP_LANES = dict(DIN=22.2, LRC=23.6, BCLK=25.2, G=26.7)
-AMP_V_X = 21.9
+SPLICE = dict(bclk=(21.2, 3.0), lrclk=(21.0, -13.0), y=(39.0, 45.0), r=1.25)
+# Lanes in the right well (X): the mic wires run rearward as a flat stack at MIC_RIB, beside the BiBoard plugs; the
+# UART wires rise at UART_X; the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES, inside the floor
+# notch for the BiBoard header (X 23.9). A wire that crosses further forward takes a lane further out, so no two
+# lanes cross; DIN goes up at once.
+MIC_RIB, UART_X, FLOOR_WIRE = 23.4, 27.0, FLOOR_Y1 + 0.75
+AMP_LANES = dict(G=18.4, V=20.0, BCLK=21.6, LRC=23.2)
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
 
 
@@ -1106,75 +1265,71 @@ def splice_end(t, top):
 # Pin map: reference/g2-wiring-blueprint.html (the user's wiring blueprint).
 def wire_routes():
     W = []
-    # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Out of the housing, along the floor of the right
-    # well to the right wall, up, rearward over the BiBoard plugs, down into them. The order turns over (pin 6 is the
-    # front pin and goes to the rear plug), so each wire runs rearward at its own height.
+    # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Up out of the plugs to the right wall, rearward
+    # over the right well, down, into the housings along -X. The order turns over (the rear BiBoard pin goes to the
+    # front Pi pin), so each wire runs rearward at its own height.
     for n, k, col, lab, lvl in ((10, 0, "#f2f2ef", "TX2", 45.6), (8, 1, "#2e9b4f", "RX2", 47.2), (6, 2, "#1d1d1f", "GND", 48.8)):
         y, z = pin_yz(n)
         zb = bb_pin_z(k)
         pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
         W.append(("uart", lab, col, pts))
     # Amp: a flat cable from the I2S plug at the front end of the amp. Forward, down to the floor (the cable turns
-    # over: G is the front wire on the floor), across under the stack in front of the front pegs, then each wire
-    # runs rearward in its own lane on the floor of the right well and comes up at its pin or splice.
+    # over: DIN is the front wire on the floor), across under the stack in front of the front pegs. DIN goes up into
+    # pin 40 at once, LRC up into its splice; G, V and BCLK run rearward in their lanes on the floor of the right well.
     order = ("G", "V", "BCLK", "LRC", "DIN")
     for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#f0c419", "#e8641b", "#3a6fd8"))):
-        zf = -17.0 - 1.6 * (4 - i)
+        zf = -16.8 - 1.75 * i
         start = [(-23.2, AMP_PLUG_Y[i], AMP_PLUG_Z0), (-23.2, AMP_PLUG_Y[i], zf), (-23.2, FLOOR_WIRE, zf)]
-        if lab == "V":                                         # 5V: pin 2, at the front
-            y, z = pin_yz(2)
-            pts = start + [(AMP_V_X, FLOOR_WIRE, zf), (AMP_V_X, y, z)] + into_pin(2)
+        xr = EXIT_X + 2.2                                  # a wire comes up here and bends over into its housing
+        if lab == "DIN":
+            y, z = pin_yz(40)
+            pts = start + [(xr, FLOOR_WIRE, zf), (xr, y, z)] + into_pin(40)
+        elif lab == "LRC":
+            xl = AMP_LANES["LRC"]
+            sx, sz = SPLICE["lrclk"]
+            pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, sz - 4.5), (xl - 0.6, 32.5, sz - 2.5), (sx + 0.4, SPLICE["y"][0] - 1.8, sz - 0.6),
+                           splice_end("lrclk", False)]
+        elif lab == "BCLK":
+            xl = AMP_LANES["BCLK"]
+            sx, sz = SPLICE["bclk"]
+            pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, sz - 4.0), (xl - 0.6, SPLICE["y"][0] - 4.0, sz - 1.0),
+                           (sx + 0.6, SPLICE["y"][0] - 1.5, sz), splice_end("bclk", False)]
         else:
             xl = AMP_LANES[lab]
-            if lab in ("BCLK", "LRC"):                         # up into the bottom of the splice
-                t = "bclk" if lab == "BCLK" else "lrclk"
-                sx, sz = SPLICE[t]
-                y0 = SPLICE["y"][0]
-                zl = sz - 1.0 if lab == "LRC" else sz
-                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, zl), (xl, y0 - 4.0, zl), (sx + 0.6, y0 - 1.5, sz),
-                               splice_end(t, False)]
+            n = 14 if lab == "G" else 2
+            y, z = pin_yz(n)
+            if lab == "G":                                 # up over the V lane
+                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 8.0), (xl + 0.6, 30.4, z - 6.0), (xr, 31.3, z - 3.0), (xr, y, z)] + into_pin(n)
             else:
-                n = 14 if lab == "G" else 40
-                y, z = pin_yz(n)
-                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z), (xl, y, z)] + into_pin(n)
+                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
         W.append(("amp", lab, col, pts))
-    # Mic: pack jumpers from the housings on the mic header (they leave along +X), rearward as a flat stack in the
-    # right well (each wire at its own height: SEL at the top, 3V at the bottom). The lowest wire leaves first:
-    # 3V (pin 1), GND (pin 9), BCLK (splice), LRCL (splice), DOUT (pin 38), SEL (pin 39, to GND: left channel).
-    xa, xb = MIC_RIB
+    # Mic: pack jumpers from the housings on the mic header (they leave along +X), rearward as a flat stack at
+    # MIC_RIB (each wire at its own height: SEL at the bottom, 3V at the top). The lowest wire leaves first:
+    # SEL (pin 39, to GND: left channel), DOUT (pin 38), LRCL (splice), BCLK (splice), GND (pin 9), 3V (pin 1).
+    xa = MIC_RIB
     mz = MIC_PIN_Z
+    xin = EXIT_X + 2.0
     for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
                            (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
         y = MIC_PIN_Y[k]
         pts = [(MIC_HOUSING_X[1], y, mz), (MIC_HOUSING_X[1] + 1.2, y, mz), (xa, y, mz + 2.0)]
-        if lab == "3V":
-            yp, zp = pin_yz(1)
-            pts += [(xa, y, zp - 3.0), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(1)
-        elif lab == "GND":
-            yp, zp = pin_yz(9)
-            pts += [(xa, y, zp - 3.0), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(9)
-        elif lab == "BCLK":
-            sx, sz = SPLICE["bclk"]
-            pts += [(xa, y, sz - 5.0), (sx + 1.4, y, sz - 3.0), (sx + 1.4, SPLICE["y"][1] + 2.0, sz - 1.0), (sx, SPLICE["y"][1] + 1.2, sz),
-                    splice_end("bclk", True)]
+        if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
+            sx, sz = SPLICE[t]
+            pts += [(xa, y, sz - 5.0), (sx + 0.6, y + 2.0, sz - 3.0), (sx + 0.6, SPLICE["y"][1] + 1.6, sz - 1.0),
+                    (sx, SPLICE["y"][1] + 1.2, sz), splice_end(t, True)]
         else:
-            pts += [(xa, y, 5.0), (xb, y, 9.0)]
-            if lab == "LRCL":
-                sx, sz = SPLICE["lrclk"]
-                pts += [(xb, y, sz - 5.0), (sx + 1.2, SPLICE["y"][1] + 1.5, sz - 2.0), (sx, SPLICE["y"][1] + 1.2, sz),
-                        splice_end("lrclk", True)]
+            yp, zp = pin_yz(t)
+            if lab == "DOUT":                                   # in first, then down past SEL
+                pts += [(xa, y, zp - 3.3), (xin + 0.1, y, zp - 2.3), (xin, yp + 0.6, zp)] + into_pin(t)
             else:
-                n = 38 if lab == "DOUT" else 39
-                yp, zp = pin_yz(n)
-                pts += [(xb, y, zp - 2.0), (xb - 0.3, yp + 3.0, zp), (EXIT_X + 2.0, yp + 0.6, zp)] + into_pin(n)
+                pts += [(xa, y, zp - 3.0), (xin, yp + 0.6, zp)] + into_pin(t)
         W.append(("mic", lab, col, pts))
     # The Pi end of each splice: pin 12 (GPIO18, BCLK) and pin 35 (GPIO19, LRCLK), into the bottom of the sleeve.
-    # It runs 2.5 mm over the other housing wires (pin 14 at Y 32.2).
     for t, n, col in (("bclk", 12, "#f0c419"), ("lrclk", 35, "#e8641b")):
         y, z = pin_yz(n)
         sx, sz = SPLICE[t]
-        if t == "bclk":         # rearward along Z at Y 36.4, 4 mm over the wire of pin 14, down at X 22.2
-            pts = [splice_end(t, False), (sx, 37.6, sz), (22.2, 36.4, sz - 1.5), (22.2, 36.4, z), (22.2, y, z)] + into_pin(n)
+        if t == "bclk":         # rearward at Y 36.4, over the G wire, down at X 22.2
+            pts = [splice_end(t, False), (sx, 37.6, sz), (22.2, 36.4, sz + 1.5), (22.2, 36.4, z), (22.2, y, z)] + into_pin(n)
         else:                   # one quarter turn from the bottom of the sleeve into the housing of pin 35
             pts = [splice_end(t, False), (sx, y, z), (HOUSING_END, y, z)]
         W.append(("splice", t, col, pts))
@@ -1214,21 +1369,66 @@ def parallel_ribbon(center, n, pitch, n0):
     return [np.array(o) for o in out]
 
 
+def twisted_ribbon(center, n, pitch, normals):
+    """n wires side by side along a center line (a flat cable) that twists: normals[i] is the spread direction at
+    center point i, interpolated along the line and made normal to it."""
+    P0 = [np.asarray(p, float) for p in center]
+    C = round_corners(center, R_BEND + pitch * (n - 1) / 2)[0]
+    s0 = np.r_[0, np.cumsum([np.linalg.norm(b - a) for a, b in zip(P0[:-1], P0[1:])])]
+    # arc position of each rounded point: the nearest point on the original polyline
+    def pos(p):
+        best = (1e9, 0.0)
+        for i, (a, b) in enumerate(zip(P0[:-1], P0[1:])):
+            d = b - a
+            t = float(np.clip(np.dot(p - a, d) / max(np.dot(d, d), 1e-12), 0, 1))
+            q = a + d * t
+            best = min(best, (float(np.linalg.norm(p - q)), s0[i] + t * np.linalg.norm(d)))
+        return best[1]
+    N = np.asarray(normals, float)
+    T = np.gradient(C, axis=0)
+    T /= np.maximum(np.linalg.norm(T, axis=1)[:, None], 1e-9)
+    out = [[] for _ in range(n)]
+    for i, p in enumerate(C):
+        sp = pos(p)
+        v = np.array([np.interp(sp, s0, N[:, k]) for k in range(3)])
+        v -= np.dot(v, T[i]) * T[i]
+        v /= np.linalg.norm(v)
+        for k in range(n):
+            out[k].append(p + v * pitch * (k - (n - 1) / 2))
+    return [np.array(o) for o in out]
+
+
 def camera_cable():
-    """The Grove cable of the camera: from the plug in the camera socket (rear face, left), rearward, down through the
-    slot in the panel, forward under the panel between the amp and the battery, down the front left corner in an S fold
-    to the Grove plug on the BiBoard (through the floor opening over it)."""
+    """The Grove cable of the camera: from the plug in the camera socket (rear face, low), a U turn down to the base,
+    down through the notch at the rear of the window, forward, across over the mic (under the panel), down the front
+    right corner (design frame) beside the mic jumpers, into the Grove plug on the BiBoard (through the floor opening
+    over it)."""
     x0, x1, y0, y1, z0, z1 = cam_socket()
     xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
-    S = CAM["slot"]
-    zs = S["z"][1] - 3.6                                  # near the rear of the slot: the panel goes on LID_SLIDE behind
+    N = CAM["notch"]
+    nx, nz = (N["x"][0] + N["x"][1]) / 2, N["cable_z"]
     b = bb_grove_plug()
     xb, zb = (b[0] + b[1]) / 2, (b[4] + b[5]) / 2
-    # A 10 cm Grove cable: its excess (about 30 mm) is an S fold in the free front left corner (in front of the amp).
-    zl = -31.5
-    center = [(xc, yc, z1), (xc, yc, zs), (xc, 57.5, zs), (-16.0, 53.0, -24.0), (-25.2, 51.5, zl), (-25.2, 35.0, zl),
-              (-20.8, 35.0, zl), (-20.8, 47.0, zl), (-16.4, 47.0, zl), (-16.4, 34.0, zl), (xb, 32.5, zb), (xb, b[3], zb)]
-    W = parallel_ribbon(center, 4, CAM_PITCH, (0, 1, 0))
+    yc_, zc_ = 51.3, -33.0                                # the run across: over the mic, behind the front lid hooks
+    center = [(xc, yc, z1), (xc, yc, z1 + 2.4), (xc, 69.5, z1 + 2.4), (nx, 66.5, nz), (nx, yc_, nz), (nx, yc_, zc_),
+              (12.0, yc_, zc_), (19.0, yc_, -34.9), (21.0, yc_ - 3.0, -34.9), (21.0, 33.0, -34.9), (xb, 31.0, zb - 0.2), (xb, b[3], zb)]
+    X_, Y_ = (1, 0, 0), (0, 1, 0)                         # flat through the notch, on edge across, flat down the wall
+    W = twisted_ribbon(center, 4, CAM_PITCH, [X_, X_, X_, X_, X_, Y_, Y_, Y_, X_, X_, X_, X_])
+    cols = (("SCL", "#f0c419"), ("SDA", "#f2f2ef"), ("VCC", "#d83a34"), ("GND", "#1d1d1f"))
+    return [("camera", lab, col, w) for (lab, col), w in zip(cols, W)]
+
+
+def camera_cable_low():
+    """The Grove cable of the head-off mount: out of the plug toward the body, down, along the front face to the
+    robot left, in under the front notch, into the Grove plug on the BiBoard."""
+    x0, x1, y0, y1, z0, z1 = cam_socket(True)
+    xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
+    b = bb_grove_plug()
+    xb, zb = (b[0] + b[1]) / 2, (b[4] + b[5]) / 2
+    center = [(xc, yc, z1), (xc, yc, z1 + 1.5), (xc + 2.0, 27.8, -39.0), (13.0, 27.4, -39.0), (17.0, 28.4, -36.6),
+              (xb, 31.4, zb - 0.6), (xb, b[3], zb)]
+    X_, Y_ = (1, 0, 0), (0, 1, 0)
+    W = twisted_ribbon(center, 4, CAM_PITCH, [X_, X_, Y_, Y_, X_, X_, X_])
     cols = (("SCL", "#f0c419"), ("SDA", "#f2f2ef"), ("VCC", "#d83a34"), ("GND", "#1d1d1f"))
     return [("camera", lab, col, w) for (lab, col), w in zip(cols, W)]
 
@@ -1237,7 +1437,7 @@ def speaker_leads():
     """The speaker lead pair: from the 2-pin plug at the rear end of the amp, up the left gallery, over the ear
     plate, into the top of the speaker body."""
     zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
-    yc = AMP_Y0 + AMP["h"] - 12.05
+    yc = AMP_Y0 + 12.05
     zt = SPK_ZE + SPK["ear_t"] + 3.0                            # the leads leave the top of the rear half of the body
     center = [(-23.2, yc, zp), (-23.2, yc, 33.6), (-23.2, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, zt - 2.2),
               (-11.0, SPK_Y0 + SPK["d"] - 0.5, zt)]
@@ -1287,15 +1487,16 @@ def build_models():
     pizero = pizero + hs
     # battery: a pouch cell with round edges, a seal flap at the front end, and two leads to the PiSugar 2 (lead place estimated)
     bx, by, bz = BAT["x"], BAT["y"], BAT["z"]
-    cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0] + 2.5, bz[1], 1.6), "#b9bcc2")
+    cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0], bz[1] - 2.5, 1.6), "#b9bcc2")
     xm = (bx[0] + bx[1]) / 2
-    flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[0], bz[0] + 2.6, 0.45), "#d9b34a")
-    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[0] + 0.3), (xm + d, 34.0, bz[0] - 0.6), (-6.6 + STACK_DX, 34.5 + d, bz[0] - 0.4),
-                                                             (-5.5, 34.5 + d, bz[0] + 2.5)], 0.5), c)
-             for i, (d, c) in enumerate(((-0.7, "#d83a34"), (0.7, "#1d1d1f")))]
+    flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[1] - 2.6, bz[1], 0.45), "#d9b34a")
+    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[1] - 0.3), (xm + d, 34.0, bz[1] + 0.6), (-6.6 + STACK_DX, 34.5 + d, bz[1] + 0.4),
+                                                             (-5.5, 34.5 + d, bz[1] - 2.5)], 0.5), c)
+             for i, (d, c) in enumerate(((-0.7, "#d83a34"), (0.7, "#1d1d1f")))]   # the seal flap and the leads are at the SD end
     bat = cell + flap + union(leads)
     # microSD card: the part out of the holder (about 2.5 mm, not measured)
-    card = add("sd_card", "card", "microSD card", rbox("x", 1.85 + STACK_DX, 2.85 + STACK_DX, 39.5, 50.5, STACK_ZF - 2.5, STACK_ZF - 0.05, 0.8), "#26272b")
+    card = add("sd_card", "card", "microSD card", rbox("x", 1.85 + STACK_DX, 2.85 + STACK_DX, 39.5, 50.5, ZSD + 0.05, ZSD + 2.5, 0.8), "#26272b")
+    stack_scr = add("stack_screws", "heads", "M2.5 screw heads (size estimated)", screw_heads(), "#c8c8c8")
     # Pi header: base, the pins without a plug, a Dupont housing on each pin in use
     W = wire_routes()
     used_pins = set()
@@ -1316,7 +1517,7 @@ def build_models():
     hous = union([HOUSING_MESH[("pi", n)] for n in sorted(used_pins)])
     pi_plugs = base + pins + hous
     # BiBoard header (female, 5 pins) and three male Dupont plugs on GND, TX2, RX2
-    cov = load_stl(os.path.join(PREF, "Bittle_Cover.stl")).reshape(-1, 3)
+    cov = solid_cover_tris().reshape(-1, 3)
     m = (cov[:, 0] > HDR["x0"]) & (cov[:, 0] < HDR["x1"]) & (cov[:, 2] > HDR["z0"]) & (cov[:, 2] < HDR["z1"])
     hdr = mbox(HDR["x0"], HDR["x1"], float(cov[m, 1].min()) - 3.0, HDR["top"], HDR["z0"], HDR["z1"])
     hdr -= union([mbox(BB_X - 0.5, BB_X + 0.5, HDR["top"] - 3.0, HDR["top"] + 1, bb_pin_z(k) - 0.5, bb_pin_z(k) + 0.5) for k in range(5)])
@@ -1329,25 +1530,25 @@ def build_models():
     x0, x1 = AMP_X
     yt = AMP_Y0 + AMP["h"]
     zu = lambda u: AMP_Z[0] + u
-    yv = lambda v: yt - v
+    yv = lambda v: AMP_Y0 + v                               # upside down: v up from the bottom edge
     pcb = rbox("x", x0, x1, AMP_Y0, yt, *AMP_Z, 1.0)
     pcb -= union([mcyl("x", x0 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u)) for u, v in L["holes"]])
     add("amp_ns4168", "pcb", "NS4168 amp board", pcb, "#1d1d1f")
     rings = union([mcyl("x", x1 - 0.01, x1 + 0.05, L["hole_d"] / 2 + 1.0, yv(v), zu(u)) - mcyl("x", x1 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u))
                    for u, v in L["holes"]])
     add("amp_ns4168", "rings", "amp hole rings", rings, "#e8e8e8")
-    ph = lambda r: mbox(x1, x1 + L["ph"], yv(r[3]), yv(r[2]), zu(r[0]), zu(r[1]))
+    ph = lambda r: mbox(x1, x1 + L["ph"], yv(r[2]), yv(r[3]), zu(r[0]), zu(r[1]))
     hdrs = ph(L["ph5"]) + ph(L["ph2"])
     add("amp_ns4168", "headers", "amp PH2.0 headers", hdrs, "#efe6d2")
-    p5 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph5"][3]) + 0.5, yv(L["ph5"][2]) - 0.5, AMP_PLUG_Z0, zu(L["ph5"][0]) + 0.01)
-    p2 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph2"][3]) + 0.5, yv(L["ph2"][2]) - 0.5, zu(L["ph2"][1]) - 0.01, zu(L["ph2"][1]) + L["plug_out"])
+    p5 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph5"][2]) + 0.5, yv(L["ph5"][3]) - 0.5, AMP_PLUG_Z0, zu(L["ph5"][0]) + 0.01)
+    p2 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph2"][2]) + 0.5, yv(L["ph2"][3]) - 0.5, zu(L["ph2"][1]) - 0.01, zu(L["ph2"][1]) + L["plug_out"])
     add("amp_ns4168", "plugs", "amp PH2.0 plugs", p5 + p2, "#fbf6ea")
     t = L["term"]
-    term = mbox(x1, x1 + L["term_h"], yv(t[3]), yv(t[2]), zu(t[0]), zu(t[1]))
+    term = mbox(x1, x1 + L["term_h"], yv(t[2]), yv(t[3]), zu(t[0]), zu(t[1]))
     add("amp_ns4168", "terminal", "amp screw terminal", term, "#2f6fd6")
     screws = union([mcyl("x", x1 + L["term_h"] - 0.01, x1 + L["term_h"] + 0.3, 1.2, yv(v), zu(32.9)) for v in (2.3, 5.9)])
     add("amp_ns4168", "screws", "terminal screws", screws, "#c8c8c8")
-    ic = mbox(x1, x1 + 1.5, yv(L["ic"][3]), yv(L["ic"][2]), zu(L["ic"][0]), zu(L["ic"][1]))
+    ic = mbox(x1, x1 + 1.5, yv(L["ic"][2]), yv(L["ic"][3]), zu(L["ic"][0]), zu(L["ic"][1]))
     add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
     amp = pcb + hdrs + p5 + p2 + term + screws + ic
     # SPH0645 mic board (Adafruit 3421 size): PCB, mic part on the back face, port hole, right-angle header at the
@@ -1359,7 +1560,7 @@ def build_models():
     add("mic_sph0645", "pcb", "SPH0645 mic board", mp, "#22303f")
     can = mbox(MIC_X - 1.75, MIC_X + 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, pcb_z[1] - 0.01, pcb_z[1] + 1.0)
     add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
-    hb = mbox(*MIC_HDR_X, MIC_PIN_Y[-1] - 1.27, MIC_PIN_Y[0] + 1.27, pcb_z[1] - 0.01, MIC_PIN_Z + 1.25)
+    hb = mbox(*MIC_HDR_X, min(MIC_PIN_Y) - 1.27, max(MIC_PIN_Y) + 1.27, pcb_z[1] - 0.01, MIC_PIN_Z + 1.25)
     add("mic_sph0645", "header", "mic right-angle header", hb, "#1d1d1f")
     for k, y in enumerate(MIC_PIN_Y):
         HOUSING_MESH[("mic", k)] = rbox("x", *MIC_HOUSING_X, y - 1.25, y + 1.25, MIC_PIN_Z - 1.25, MIC_PIN_Z + 1.25, 0.25, 8)
@@ -1381,7 +1582,7 @@ def build_models():
     spk = plate + body + mesh
     cam = union([stl_manifold(f, cam_to_body(), ref=os.path.join(os.path.dirname(ROOT), "reference")) for f in ("AiCamera250116-down.stl", "AiCamera250116-up.stl")])
     add("camera", "case", "Petoi AI Vision Module in its case", cam, "#2b2d33")
-    models = dict(pizero=pizero, pisugar2=pisugar, battery=bat, sd_card=card, pi_plugs=pi_plugs, camera=cam,
+    models = dict(pizero=pizero, pisugar2=pisugar, stack_screws=stack_scr, battery=bat, sd_card=card, pi_plugs=pi_plugs, camera=cam,
                   biboard_header=hdr, biboard_plug=bb, speaker=spk, amp_ns4168=amp, mic_sph0645=mic)
     # wires
     groups = {}
@@ -1584,6 +1785,8 @@ def _loop(P, i, u, R, turns, pitch=1.7, h=0.0):
 
 
 TIDY_X = 16.0         # neat wiring: the slack of the right-well wires stays right of this X (over the Pi plugs)
+TIDY = dict(uart=(24.6, 0.3))   # the BiBoard jumpers keep their slack by the right wall, out of the mic lane
+CUR_TIDY = [TIDY_X, 0.004]
 
 
 LIFT = {}             # set by settle_all: "F" = parts without the panel, "tree" = the wires already in
@@ -1613,7 +1816,7 @@ def _badness(F, P, tree, ne=8):
     Q = P[ne:-ne]
     if not len(Q):
         return 0.0
-    untidy = 0.004 * float(np.clip(TIDY_X - Q[:, 0], 0, None).sum()) + _lift_bad(Q[8:-8] if len(Q) > 20 else Q)
+    untidy = CUR_TIDY[1] * float(np.clip(CUR_TIDY[0] - Q[:, 0], 0, None).sum()) + _lift_bad(Q[8:-8] if len(Q) > 20 else Q)
     d, _ = _field_at(F, Q)
     bad = 20.0 * float(np.clip(WIRE_R + SETTLE["clear"] - d, 0, None).sum()) + untidy      # parts: a hard limit
     if tree is not None:
@@ -1753,18 +1956,23 @@ def all_routes():
     return out
 
 
-# The order the jumpers go in, one at a time (the guide follows it): the BiBoard jumpers first (low, while the
-# right well is empty), then the mic jumpers over them.
+# The order the jumpers go in, one at a time (the guide follows it): the BiBoard jumpers first (low at the Pi
+# header, while the right well is empty; their BiBoard ends are plugged last), then the mic jumpers over them,
+# the lowest wire of the mic stack first.
 SETTLE_ORDER = [("uart", "TX2"), ("uart", "RX2"), ("uart", "GND"),
-                ("mic", "3V"), ("mic", "GND"), ("mic", "BCLK"), ("mic", "DOUT"), ("mic", "LRCL"), ("mic", "SEL")]
+                ("mic", "SEL"), ("mic", "LRCL"), ("mic", "DOUT"), ("mic", "BCLK"), ("mic", "GND"), ("mic", "3V")]
 # (where two wires cross at two heights, the lower one goes in first)
 
 
 def settle_all(parts, models):
     """Place the pack jumpers (PACK_L) one at a time, in SETTLE_ORDER, with their excess as an arch or a loop."""
-    rigid = union([parts["pod_body"]] + [M for k, M in models.items() if not k.startswith("wires_")])
+    H = HEATSINK                                           # the pin fins as a block: no wire between the pins
+    fins = mbox(H["x0"], H["x0"] + H["h"], *H["y"], *H["z"])
+    rigid = union([parts["pod_body"], fins] + [M for k, M in models.items() if not k.startswith("wires_")])
     slider = union([build_switch(dz) for dz in (-SW["travel"], 0.0, SW["travel"])])        # the slider over its travel
-    F = obstacle_field(rigid + parts["pod_panel"] + slider)
+    lid = union([parts["pod_panel"].translate([0, 0, float(dz)]) for dz in np.arange(0.0, LID_SLIDE + 0.01, 1.25)])
+    ceiling = mbox(-A - 1, A + 1, PANEL_IN - 0.2, 70.0, Z0 - 1, Z1 + 1)          # no slack up into the port openings
+    F = obstacle_field(rigid + lid + slider + ceiling)     # the panel over its slide
     LIFT.clear()
     LIFT["F"] = obstacle_field(rigid)                      # when the wires go in, the panel is not on yet
     guides = {(g, lab): pts for g, lab, col, pts in wire_routes()}
@@ -1785,6 +1993,7 @@ def settle_all(parts, models):
         LIFT["later"] = _T(np.concatenate(later)) if later else None
         from scipy.spatial import cKDTree
         tree = cKDTree(O)
+        CUR_TIDY[:] = TIDY.get(key[0], (TIDY_X, 0.004))
         if key in PACK_WIRES:
             best = None
             for sc, Q0, shape0 in place_slack(F, P0, PACK_L, O, joints):   # the first shape that is clean after the clean-up,
@@ -1832,12 +2041,13 @@ def real_models():
     return build_models()[0]
 
 
-STACK = ("pizero", "pisugar2", "battery", "sd_card", "pi_plugs")
+STACK = ("pizero", "pisugar2", "stack_screws", "battery", "sd_card", "pi_plugs")
 
 
 def solid_cover_tris():
-    """Stock cover without the Pi slot: its top surface has no hole."""
-    return load_stl(os.path.join(PREF, "Bittle_Cover.stl"))
+    """Stock cover without the Pi slot: its top surface has no hole. Design frame."""
+    from bittle_platform import build as BP
+    return flip_tris(BP.ref_tris("Bittle_Cover.stl"))
 
 
 def under_cover():
@@ -1863,12 +2073,12 @@ def robot_parts():
         out[n] = R.parts[n]
     for k in ("lf", "rf", "lr", "rr"):
         out[f"leg_{k}"] = R.parts[f"thigh_{k}"] + R.parts[f"shank_{k}"]
-    return out
+    return {k: flip_x(M) for k, M in out.items()}       # design frame
 
 
 def build_all():
     from bittle_platform import build as BP
-    return dict(cover_pegs=BP.cover_with_notch() + b3d_to_manifold(build_pegs()), pod_body=build_body(), pod_panel=build_panel(),
+    return dict(cover_pegs=flip_x(BP.cover_with_notch() + b3d_to_manifold(build_pegs())), pod_body=build_body(), pod_panel=build_panel(),
                 pod_switch=build_switch(), pod_button=build_keycap(), pod_camera_mount=build_camera_mount())
 
 
@@ -1878,11 +2088,48 @@ def wire_paths():
 
 # Endpoints of each wire path: these models may be in it.
 PATH_ENDS = {"uart": ("pi_plugs", "biboard_plug", "biboard_header"), "i2s": ("pi_plugs", "amp_ns4168"),
-             "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker"), "cable": ("pi_plugs",)}
+             "mic": ("mic_sph0645",), "speaker": ("amp_ns4168", "speaker")}
 # Each wire group starts and ends in these parts.
 WIRE_ENDS = {"wires_uart": ("pi_plugs", "biboard_plug"), "wires_amp": ("pi_plugs", "amp_ns4168"),
              "wires_mic": ("pi_plugs", "mic_sph0645"), "wires_splice": ("pi_plugs",), "wires_speaker": ("speaker", "amp_ns4168"),
              "wires_camera": ("camera",)}
+
+
+def low_mount_models():
+    """The head-off mount (base, cradle, pins), its camera and its Grove cable (design frame)."""
+    cam = union([stl_manifold(f, cam_to_body(True), ref=os.path.join(os.path.dirname(ROOT), "reference"))
+                 for f in ("AiCamera250116-down.stl", "AiCamera250116-up.stl")])
+    cable = union([tube(w, r=CAM_WIRE_R, rounded=False) for _, _, _, w in camera_cable_low()]) + mbox(*cam_socket(True))
+    return build_camera_base_low(), build_camera_cradle_low(), _low_pins(), cam, cable
+
+
+def check_low(parts, models, robot, low):
+    """The head-off mount on the robot without its head."""
+    Bs, Cr, pins, cam, cable = low
+    vol = lambda a, b: (a ^ b).volume()
+    rows = []
+    U = under_cover()
+    inside = union([X for k, X in models.items() if k not in ("camera", "wires_camera")])
+    for n, X in (("pod_body", parts["pod_body"]), ("pod_panel", parts["pod_panel"]), ("cover_pegs", parts["cover_pegs"]), ("under_cover", U),
+                 ("parts inside", inside)):
+        for a, Y in (("pod_camera_base_low", Bs), ("pod_camera_cradle_low", Cr), ("camera (head off)", cam), ("Grove cable (head off)", cable)):
+            rows.append((a, n, vol(Y, X)))
+    for a, b, A_, B_ in (("pod_camera_base_low", "pod_camera_cradle_low", Bs, Cr), ("pod_camera_base_low", "camera (head off)", Bs, cam),
+                         ("pod_camera_cradle_low", "camera (head off)", Cr, cam), ("pins", "pod_camera_base_low", pins, Bs),
+                         ("pins", "pod_camera_cradle_low", pins, Cr), ("Grove cable (head off)", "head-off mount", cable, Bs + Cr)):
+        rows.append((a, b, vol(A_, B_)))
+    for n, X in robot.items():
+        if n != "head":
+            rows.append(("head-off mount + camera + cable", n, vol(Bs + Cr + cam + cable, X)))
+    for n, M in (("pod_camera_base_low", Bs), ("pod_camera_cradle_low", Cr)):
+        rows.append((n, "loose_pieces", sum(sorted(c.volume() for c in M.decompose())[:-1])))
+    rows.append(("camera (head off) lifted 0.3mm (must touch)", "pod_camera_cradle_low", vol(cam.translate([0, 0.3, 0]), Cr)))
+    rows.append(("cradle lifted 0.3mm (must touch)", "pins", vol(Cr.translate([0, 0.3, 0]), pins)))
+    rows.append(("cradle lowered 0.3mm (must touch)", "pod_camera_base_low", vol(Cr.translate([0, -0.3, 0]), Bs)))
+    rows.append(("cradle slid down from 20 mm up (no pins)", "pod_camera_base_low",
+                 max(vol(Cr.translate([0, float(dy), 0]), Bs) for dy in (0.5, 2.0, 5.0, 10.0, 15.0, 20.0))))
+    rows.append(("pod_camera_base_low lifted 0.3mm (must touch)", "pod_panel", vol(Bs.translate([0, 0.3, 0]), parts["pod_panel"])))
+    return rows
 
 
 def check(parts, models, robot):
@@ -1910,6 +2157,8 @@ def check(parts, models, robot):
         for b in mn[i + 1:]:
             if a == "biboard_header" and b == "biboard_plug":
                 continue
+            if "stack_screws" in (a, b) and {a, b} & {"pizero", "pisugar2"}:
+                continue                                   # the screws hold the boards together
             if a.startswith("wires_") and b.startswith("wires_"):
                 continue                                   # wires may touch other wires
             w, o = (a, b) if a.startswith("wires_") else (b, a)
@@ -1936,7 +2185,9 @@ def check(parts, models, robot):
     placed = parts["pod_body"] + parts["cover_pegs"] + models["biboard_header"]
     for g, ns in groups:
         G = union([models[n] for n in ns])
-        worst = max(vol(G.translate([0, float(dy), 0]), placed) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
+        yt_ = AMP_Y0 + AMP["h"]                            # the amp tilts in under its nubs
+        P_ = placed - union([mbox(-IN_A - 1, AMP_X[0] + 1.2, yt_, yt_ + 2.5, z - 0.2, z + 4.2) for z in AMP_NUBS]) if g == "amp" else placed
+        worst = max(vol(G.translate([0, float(dy), 0]), P_) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
         rows.append((f"install {g} (max over 40 mm down)", "body + parts in", worst))
         placed = placed + G
     # panel: straight down LID_SLIDE behind its place, then forward. The slider is at the front of its range, so
@@ -2006,11 +2257,11 @@ def check(parts, models, robot):
         others = union([M for m, M in models.items() if m not in PATH_ENDS[key] and not m.startswith("wires_")])
         rows.append((f"wires {key}", "other parts", vol(W, others)))
     G = PI.GROVE_PLUG
-    plug = mbox(*G["x"], 10.0, G["y_top"], *G["z"])
+    plug = mbox(-G["x"][1], -G["x"][0], 10.0, G["y_top"], *G["z"])
     rows.append(("Grove plug space (max over the slide)", "pod_body",
                  max(vol(parts["pod_body"].translate([0, 0, s_]), plug) for s_ in (0.0, 1.0, 2.0, 3.5, 5.0, SLIDE))))
     C = mbox(*FRONT_CABLE["x"], *FRONT_CABLE["y"], *FRONT_CABLE["z"])
-    rows.append(("camera cable space, front left", "pod_body", vol(C, parts["pod_body"])))
+    rows.append(("camera cable space, front (robot left)", "pod_body", vol(C, parts["pod_body"])))
     F = mbox(*FINGER["x"], *FINGER["y"], *FINGER["z"])
     rows.append(("finger over the BiBoard plug", "pod_body", vol(F, parts["pod_body"])))
     rows.append(("finger over the BiBoard plug", "other parts", vol(F, union([M for m, M in models.items()
@@ -2029,7 +2280,8 @@ INSTALL = [("part", "speaker"), ("part", "mic_sph0645"), ("part", "amp_ns4168"),
            ("lay", [("speaker", "+"), ("speaker", "-")]),
            ("stack", None),
            ("plug", ("amp", "G")), ("plug", ("amp", "V")), ("plug", ("amp", "DIN")),
-           ("wire", ("splice", "bclk")), ("wire", ("splice", "lrclk"))] + [("wire", k) for k in SETTLE_ORDER]
+           ("wire", ("splice", "bclk")), ("wire", ("splice", "lrclk"))] + [("wire", k) for k in SETTLE_ORDER] + \
+          [("plug_dev", k) for k in SETTLE_ORDER if k[0] == "uart"]
 
 
 def install_checks(parts, models):
@@ -2039,7 +2291,7 @@ def install_checks(parts, models):
     rows = []
     vol = lambda a, b: (a ^ b).volume()
     routes = {(g, lab): (np.asarray(pts, float) if sm else round_corners(pts)[0]) for g, lab, col, pts, sm in all_routes()}
-    stack_parts = union([models[n] for n in ("pizero", "pisugar2", "battery", "sd_card")])
+    stack_parts = union([models[n] for n in ("pizero", "pisugar2", "stack_screws", "battery", "sd_card")])
     hdr = mbox(*HDR_BASE_X, PI_PLUGS["y"][0], PI_PLUGS["y"][1], *PI_PLUGS["z"])
     mic_board = models["mic_sph0645"] - union([HOUSING_MESH[("mic", k)] for k in range(6)])
     rigid = [parts["pod_body"], models["biboard_header"]]
@@ -2060,8 +2312,10 @@ def install_checks(parts, models):
         rows.append((f"lay {name} (lifted 40 mm)", "parts and wires already in",
                      max(vol(T.translate([0, dy, 0]), now) for dy in (0.5, 2.0, 5.0, 10.0, 20.0, 40.0))))
         wires.append(T)
-    def push(key):
+    def push(key, ends=("pi", "dev")):
         for end, hk in wire_housings(*key):
+            if end not in ends:
+                continue
             rows.append((f"push on {key[0]} {key[1]} housing ({end}, 6 mm)", "parts already in", vol(housing_slide(hk), union(rigid))))
             rigid.append(HOUSING_MESH[hk])
     for kind, key in INSTALL:
@@ -2075,7 +2329,9 @@ def install_checks(parts, models):
             push(key)
         elif kind == "wire":
             lay([key])
-            push(key)
+            push(key, ("pi",) if key[0] == "uart" else ("pi", "dev"))
+        elif kind == "plug_dev":
+            push(key, ("dev",))
     return rows
 
 
@@ -2107,7 +2363,7 @@ def explode_plan(name, sub=""):
         if name == "wires_speaker":
             return 4, (0, 45, 0), (-30, 0, 0)                     # the speaker lead goes with the amp
         return 3, (0, 100, 0), (0, 0, 0)                         # the harness, its housings on it, with the Pi
-    if name in ("pizero", "pisugar2", "battery", "sd_card", "pi_plugs"):
+    if name in ("pizero", "pisugar2", "stack_screws", "battery", "sd_card", "pi_plugs"):
         return 3, (0, 100, 0), (0, 0, 0)                         # one block: the amp cable runs under the battery
     if name == "amp_ns4168":
         return 4, (0, 45, 0), (-30, 0, 0)
@@ -2118,7 +2374,15 @@ def explode_plan(name, sub=""):
     return None
 
 
-MASS_G = dict(pizero=10.0, pisugar2=10.0, battery=23.5, sd_card=0.4, pi_plugs=5.0, speaker=14.0, amp_ns4168=5.0,
+def explode_robot(name, sub=""):
+    """explode_plan in the robot frame (the moves along X turn over)."""
+    e = explode_plan(name, sub)
+    if e is None:
+        return None
+    return e[0], (-e[1][0], e[1][1], e[1][2]), (-e[2][0], e[2][1], e[2][2])
+
+
+MASS_G = dict(stack_screws=1.0, pizero=10.0, pisugar2=10.0, battery=23.5, sd_card=0.4, pi_plugs=5.0, speaker=14.0, amp_ns4168=5.0,
               mic_sph0645=1.3, camera=CAM["mass"], wires_uart=2.4, wires_amp=4.0, wires_mic=4.8, wires_speaker=1.0, wires_camera=2.5,
               wires_splice=0.5, biboard_plug=0.5)
 PRINT_FILL = 0.5
@@ -2134,7 +2398,7 @@ def centroid(M):
 
 
 def balance(parts, models):
-    """Mass and center of mass of the add-on (printed parts + electronics), robot frame.
+    """Mass and center of mass of the add-on (printed parts + electronics), design frame (main() turns X over).
     The robot center is X 0, Z 0: the cover and the shoulder plates are symmetric about it."""
     rows = []
     for n in ("pod_body", "pod_panel", "pod_switch", "pod_button", "pod_camera_mount"):
@@ -2153,8 +2417,10 @@ def print_orient(name, M):
         R = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)        # floor down
     elif name == "pod_switch":
         R = np.eye(3)                                                  # on its front end: every feature is a prism along Z
-    elif name == "pod_camera_mount":
+    elif name in ("pod_camera_mount", "pod_camera_cradle_low"):
         R = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, -1]], float)       # on its back end: prisms along Z, the front lips last
+    elif name == "pod_camera_base_low":
+        R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down: the top of the base on the bed
     elif name == "pod_button":
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down, the cap top on the bed
     elif name == "pod_panel":
@@ -2178,7 +2444,7 @@ def export_assembly(path, models):
         shoulder_left=(stl_manifold("Bittle_SideShoulder.stl", ref=PREF).transform(mirror_x), "#f2a71c"),
         front_plate=(stl_manifold("Bittle_FrontPlate.stl", ref=PREF), "#26272b"),
         rear_plate_mirror=(stl_manifold("Bittle_FrontPlate.stl", ref=PREF).transform(mirror_z), "#26272b"),
-        cover=(stl_manifold(COVER_STL, ref=PREF), "#26272b"),
+        cover=(mesh_to_manifold(BP.ref_tris(COVER_STL)), "#26272b"),
         pod_body=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_body.stl"))), "#e9e9e6"),
         pod_panel=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_panel.stl"))), "#e8641b"),
         pod_switch=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_switch.stl"))), "#e9e9e6"),
@@ -2224,11 +2490,11 @@ def main(fast=False):
             if os.path.exists(p):
                 os.unlink(p)
     printing = {}
-    for n, M in parts.items():
-        save_stl(M, os.path.join(OUT, "installed", f"{n}.stl"))
+    for n, M in parts.items():                     # every output is in the robot frame
+        save_stl(flip_x(M), os.path.join(OUT, "installed", f"{n}.stl"))
         if n == "cover_pegs":
             continue            # a platform part: bittle_platform/stl/print/cover_pegs.stl
-        P = print_orient(n, M)
+        P = print_orient(n, flip_x(M))
         save_stl(P, os.path.join(OUT, "print", f"{n}.stl"))
         regs = BP.overhang_regions(P)
         printing[n] = dict(overhang_mm2=round(sum(r["area"] for r in regs), 1), regions=regs[:8])
@@ -2239,21 +2505,39 @@ def main(fast=False):
         if f.endswith(".stl"):
             os.unlink(os.path.join(OUT, "models", f))
     for n, M in models.items():
-        save_stl(M, os.path.join(OUT, "models", f"{n}.stl"))
+        save_stl(flip_x(M), os.path.join(OUT, "models", f"{n}.stl"))
     os.makedirs(os.path.join(OUT, "models", "parts"), exist_ok=True)
     for f in os.listdir(os.path.join(OUT, "models", "parts")):
         os.unlink(os.path.join(OUT, "models", "parts", f))
     disp = []
     for key, sub, label, M, col in build_models()[1]:
         f = f"{key}__{sub}.stl"
-        save_stl(M, os.path.join(OUT, "models", "parts", f))
-        disp.append(dict(model=key, sub=sub, label=label, file=f"models/parts/{f}", color=col, explode=explode_plan(key, sub)))
+        save_stl(flip_x(M), os.path.join(OUT, "models", "parts", f))
+        disp.append(dict(model=key, sub=sub, label=label, file=f"models/parts/{f}", color=col, explode=explode_robot(key, sub)))
     json.dump(disp, open(os.path.join(OUT, "models", "parts.json"), "w"), indent=1)       # display: colored sub-parts
-    json.dump(dict(stages=EXPLODE_STAGES, parts={n: explode_plan(n) for n in parts}),
+    json.dump(dict(stages=EXPLODE_STAGES, parts={n: explode_robot(n) for n in parts}),
               open(os.path.join(OUT, "explode.json"), "w"), indent=1)
-    save_stl(union(list(wire_paths().values())), os.path.join(OUT, "models", "wire_paths.stl"))      # display only
+    save_stl(flip_x(union(list(wire_paths().values()))), os.path.join(OUT, "models", "wire_paths.stl"))      # display only
     rows = check(parts, models, robot)
     rows += install_checks(parts, models)
+    low = low_mount_models()                       # the head-off camera mount: two separate parts
+    rows += check_low(parts, models, robot, low)
+    for n, M in (("pod_camera_base_low", low[0]), ("pod_camera_cradle_low", low[1])):
+        save_stl(flip_x(M), os.path.join(OUT, "installed", f"{n}.stl"))
+        P = print_orient(n, flip_x(M))
+        save_stl(P, os.path.join(OUT, "print", f"{n}.stl"))
+        regs = BP.overhang_regions(P)
+        printing[n] = dict(overhang_mm2=round(sum(r["area"] for r in regs), 1), regions=regs[:8])
+        print(f"{n:11s} vol {M.volume():8.0f} mm3  ~{M.volume() * PLA_G_MM3:5.1f} g PLA (solid)   overhang {printing[n]['overhang_mm2']:6.1f} mm2")
+        for r_ in regs[:8]:
+            print(f"     {r_['area']:6.1f} mm2  flat {r_['flat']:5.1f}  at print z {r_['z'][0]:.1f}..{r_['z'][1]:.1f}  x {r_['x'][0]:.1f}..{r_['x'][1]:.1f}  y {r_['y'][0]:.1f}..{r_['y'][1]:.1f}")
+    for f in ("pod_camera_mount_low.stl",):
+        for d in ("print", "installed"):
+            if os.path.exists(os.path.join(OUT, d, f)):
+                os.unlink(os.path.join(OUT, d, f))
+    save_stl(flip_x(low[2]), os.path.join(OUT, "models", "camera_low_pins.stl"))
+    save_stl(flip_x(low[3]), os.path.join(OUT, "models", "camera_low.stl"))
+    save_stl(flip_x(low[4]), os.path.join(OUT, "models", "wires_camera_low.stl"))
     wires, cross = wire_report()
     rows.append(("wires: pairs that pass through each other", "-", float(len(cross))))
     rows.append((f"wires: designed bends under {R_BEND - 0.05:.2f} mm, slack bends under {R_SLACK:.2f} mm", "-",
@@ -2265,10 +2549,14 @@ def main(fast=False):
         w["from"], w["to"] = WIRE_FROM[k], WIRE_TO[k]
         w["id"] = "wires_" + k[0] + "__" + wire_sub(k[1])
         w["housings"] = [w["id"] + "_" + end for end, _ in wire_housings(*k)]
+        w["points"] = [[-p_[0], p_[1], p_[2]] for p_ in w["points"]]          # robot frame
     json.dump(dict(wires=wires, crossings=cross, r_bend=R_BEND, r_slack=R_SLACK, wire_d=2 * WIRE_R, pack_l=PACK_L,
                    order=[list(k) for k in SETTLE_ORDER]), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
     print("wires: longest", max(w["length_mm"] for w in wires), "mm; smallest bend", min(w["min_bend_r"] for w in wires), "mm; crossings", len(cross))
     bal = balance(parts, models)
+    bal["com"][0] = -bal["com"][0]                                          # robot frame
+    for b_ in bal["parts"]:
+        b_["com"][0] = -b_["com"][0]
     snap = latch_force()
     clicks = BP.detent_force()
     print(f"balance: {bal['mass_g']} g, center of mass x {bal['com'][0]} y {bal['com'][1]} z {bal['com'][2]}")
@@ -2289,8 +2577,10 @@ def main(fast=False):
         if os.path.exists(p):
             os.unlink(p)
     for n in ("pod_body", "pod_panel", "pod_switch", "pod_button", "pod_camera_mount"):
-        export_step(mesh_solid(parts[n], 0.02), os.path.join(ROOT, "cad", f"{n}.step"))
-    export_assembly(os.path.join(ROOT, "cad", "assembly.step"), models)
+        export_step(mesh_solid(flip_x(parts[n]), 0.02), os.path.join(ROOT, "cad", f"{n}.step"))
+    for n, M in (("pod_camera_base_low", low[0]), ("pod_camera_cradle_low", low[1])):
+        export_step(mesh_solid(flip_x(M), 0.02), os.path.join(ROOT, "cad", f"{n}.step"))
+    export_assembly(os.path.join(ROOT, "cad", "assembly.step"), {n: flip_x(M) for n, M in models.items()})
 
 
 if __name__ == "__main__":

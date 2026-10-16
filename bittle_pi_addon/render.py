@@ -24,6 +24,8 @@ C = dict(
     pisugar="[0.86,0.40,0.62]", battery="[0.30,0.48,0.85]", hdr="[0.05,0.05,0.05]", bbplug="[0.85,0.20,0.20]",
     mic="[0.85,0.2,0.2]", amp="[0.10,0.35,0.55]", plugs="[0.85,0.20,0.20]", spk="[0.45,0.30,0.70]",
     wires="[0.95,0.77,0.10]", switch="[0.93,0.93,0.91]", button="[0.96,0.96,0.95]", camera_mount="[0.91,0.39,0.11]",
+    camera_base_low="[0.91,0.39,0.11]", camera_cradle_low="[0.93,0.93,0.91]", camera_low_pins="[0.95,0.77,0.10]",
+    camera_low="[0.17,0.18,0.20]", wires_camera_low="[0.95,0.77,0.10]",
 )
 
 
@@ -51,6 +53,11 @@ def files(cut=None):
         "switch": f"{STL}/installed/pod_switch.stl",
         "button": f"{STL}/installed/pod_button.stl",
         "camera_mount": f"{STL}/installed/pod_camera_mount.stl",
+        "camera_base_low": f"{STL}/installed/pod_camera_base_low.stl",
+        "camera_cradle_low": f"{STL}/installed/pod_camera_cradle_low.stl",
+        "camera_low_pins": f"{STL}/models/camera_low_pins.stl",
+        "camera_low": f"{STL}/models/camera_low.stl",
+        "wires_camera_low": f"{STL}/models/wires_camera_low.stl",
         "shoulder": f"{REF}/Bittle_SideShoulder.stl",
         "plate": f"{REF}/Bittle_FrontPlate.stl",
     }
@@ -88,7 +95,7 @@ def scene(show, cut=None, explode=False, robot=True):
             continue
         d = (0, 0, 0)
         if explode:
-            plan = pod.explode_plan(PRINTED.get(k, k.split("__")[0]), k.split("__")[-1])
+            plan = pod.explode_robot(PRINTED.get(k, k.split("__")[0]), k.split("__")[-1])
             if plan:
                 d = tuple(a + b for a, b in zip(plan[1], plan[2]))
         s += imp(path, C[k], d)
@@ -134,8 +141,11 @@ JOBS = {
     "09_wires": (OPEN, None, 0, "0,-9,40,60,0,140,300", False),
     "10_exploded": (ALL, None, True, "0,-9,185,72,0,128,960", False),
     "11_wires_top": (OPEN, None, 0, "4,-9,45,0,0,180,300", False),
-    "12_wires_right": (OPEN, None, 0, "14,-9,42,40,0,90,220", False),
+    "12_wires_left": (OPEN, None, 0, "-14,-9,42,40,0,270,220", False),
     "16_camera_cable": ([k for k in ALL if k not in ("panel", "switch", "button")], None, 0, "-18,25,48,50,0,320,200", False),
+    "17_camera_low": ([k for k in ALL if not k.startswith("camera__") and not k.startswith("wires_camera") and k != "camera_mount"]
+                      + ["camera_base_low", "camera_cradle_low", "camera_low_pins", "camera_low", "wires_camera_low"], None, 0,
+                      "0,-14,36,72,0,140,300", False),
 }
 
 

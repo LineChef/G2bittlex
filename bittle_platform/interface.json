@@ -7,6 +7,7 @@
  "COVER_INNER_AT_PEGS": 23.89,
  "COVER_STL": "Bittle_Cover_with_hole_for_Pi.stl",
  "COVER_TOP": 25.29,
+ "COVER_TURN": [[-1, 0, 0], [0, 1, 0], [0, 0, -1]],
  "DET": {
   "beam_w": 1.2,
   "slit_w": 0.8,
@@ -35,10 +36,10 @@
   "z": [-37.0, -27.0]
  },
  "HDR": {
-  "x0": 24.73,
-  "x1": 27.27,
-  "z0": 12.4,
-  "z1": 25.1,
+  "x0": -27.27,
+  "x1": -24.73,
+  "z0": -25.1,
+  "z1": -12.4,
   "top": 29.1
  },
  "HEAD_CLEAR_Y": 29.5,
@@ -50,7 +51,7 @@
  "KEY_SLOT_W": 4.7,
  "LOGO": {
   "x": [-9.14, 9.14],
-  "z": [-7.85, 7.8],
+  "z": [-7.8, 7.85],
   "top": 25.59
  },
  "MOUNT_T": 1.5,
@@ -69,14 +70,14 @@
  "PLUG_TOP": 48.0,
  "SLIDE": 7.0,
  "SLOT": {
-  "x0": 24.25,
-  "x1": 27.75,
+  "x0": -27.75,
+  "x1": -24.25,
   "y0": 19.5,
-  "z0": 11.75,
-  "z1": 25.75
+  "z0": -25.75,
+  "z1": -11.75
  },
  "TIP_DEG": 45.0,
- "VERSION": "3.1",
+ "VERSION": "3.2",
  "frame": "X lateral (+X robot right), Y up, Z length (-Z head end); mm; origin on the center line at the middle of the cover",
  "fit_sequence": "place 7 mm rearward (+Z) of the locked place, lower onto the pegs, slide 7 mm forward (-Z) until the detents click; remove: slide 7 mm rearward and lift",
  "keyholes": [
@@ -111,7 +112,7 @@
   "plate_top_to_head": 0.3,
   "slot_to_shaft_each_side": 0.35,
   "big_hole_to_head_each_side": 0.45,
-  "collar_to_logo": 0.8,
+  "collar_to_logo": 0.09,
   "collar_to_flat_edge": 0.57
  },
  "checks": {
@@ -238,10 +239,10 @@
    ]
   ],
   "overhang_mm2": {
-   "cover_pegs": 177.877,
+   "cover_pegs": 176.505,
    "starter_plate": 0.0,
-   "cover_pegs_foot": 199.603,
-   "cover_stock": 198.615
+   "cover_pegs_foot": 201.189,
+   "cover_stock": 197.244
   },
   "mass_g_pla_solid": {
    "cover_pegs": 11.1,
@@ -253,7 +254,7 @@
    "plate_top_to_head": 0.3,
    "slot_to_shaft_each_side": 0.35,
    "big_hole_to_head_each_side": 0.45,
-   "collar_to_logo": 0.8,
+   "collar_to_logo": 0.09,
    "collar_to_flat_edge": 0.57
   },
   "detent": {

@@ -16,7 +16,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.21"
+VERSION = "0.22"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -37,7 +37,7 @@ def content():
     p(f"Version {VERSION}, {DATE}. A sample add-on for the Bittle X platform v{PI.VERSION} (../bittle_platform). "
       "It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
       "The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
-      "No tools, glue, tape or supports are necessary.")
+      "No tools or supports are necessary; a dab of glue sets the amp.")
     img("02_addon.png", 0.5, "The add-on on the platform: the mic holes are at the front, the port windows in the panel.")
 
     h("1. Parts to print")
@@ -48,34 +48,39 @@ def content():
          ["pod_button.stl", "PLA, white", "upside down: top on the bed", "0.1 g"],
          ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
          ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "11 g"],
+         ["Head off (optional): pod_camera_base_low.stl", "PLA, second color", "upside down (as in the STL)", f"{pod_mass('pod_camera_base_low')} g"],
+         ["Head off (optional): pod_camera_cradle_low.stl", "PLA, white", "on its rear edges (as in the STL)", f"{pod_mass('pod_camera_cradle_low')} g"],
          ], [62, 34, 58, 16])
     p("Print every part with the Cura profile \"Bittle X\" (../cura/Bittle_X.curaprofile; 0.20 mm layers, no supports, 6-line brim). "
       "../cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured "
       "(\"Bittle X - <spool>\"). No part needs supports.")
     p(f"Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. "
-      "The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) "
-      "are the tops of the two cable notches at the base of the side walls: 8 mm bridges. The front cable notches are 45 deg chamfers. "
-      "The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
+      "The body walls are vertical and its floor is on the bed. The only overhangs "
+      f"({pr['pod_body']['overhang_mm2']:.0f} mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). "
+      "The front cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
       "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. "
-      f"Its only overhang ({pr['pod_panel']['overhang_mm2']:.0f} mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. "
-      "The camera mount has a 9.5 mm bridge at the HDMI notch, short bridges at the clip hooks, and a 45 deg chin. Keep the seam at the rear.")
+      f"Its overhangs ({pr['pod_panel']['overhang_mm2']:.0f} mm²) are short bridges at the button arm and the lid hooks. The slider has a 1.7 mm bridge over the fork. "
+      "The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. "
+      "The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.")
 
     h("2. Electronics")
     tbl([["Part", "Place"],
-         ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm right of the center line so the battery is near it: ports and PiSugar controls up, "
-          "GPIO header down to the right, SD card to the front. Two end posts with grooves hold the boards. The pin-fin heatsink on the SoC points into the right well (14 x 14 x 6.5 mm, estimated)."],
+         ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
+          "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
+          "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
          ["Dupont jumpers", "10 cm female-female jumpers from a pack: 3 to the BiBoard, 6 to the mic (2 of them through the splices)."],
-         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the left wall, parts to the inside, in a slot bar on the floor. "
+         ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
+          "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
-         ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. The ear plate (45 x 31 x 1.5, ruler) is at the middle of the body depth and stands in two side grooves."],
-         ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its right edge points into the right well."],
-         ["Petoi AI Vision Module", "In its Petoi case, upright on the camera mount at the front of the panel, lens forward over the head. "
-          "It is upside down, so that its Grove socket is on the left, clear of the HDMI opening: turn the image 180 deg in software. "
-          "Two U brackets hold the ends of the case; a ridge on each snaps into the pocket in the end of the case. The ridges have a steep lower face: the case cannot lift out."],
-         ["Grove cable, 10 cm", "From the socket in the rear face of the camera, down through a slot in the panel, forward under the panel "
-          "between the amp and the battery, down the front left corner in an S fold, to the Grove plug on the BiBoard. "
+         ["NULLLAB 3 W 4 ohm speaker", "At the rear, sound to the grille in the rear face. The ear plate (45 x 31 x 3) is at the middle of the body depth (14.8 mm) and stands in two side grooves."],
+         ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its left edge points into the left well. "
+          "SEL is the lowest pin, 3V the highest."],
+         ["Petoi AI Vision Module", "In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. "
+          f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: its Grove plug is then clear of the PiSugar charge port and the Pi power port. "
+          "Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out."],
+         ["Grove cable, 10 cm", "From the socket low in the rear face of the camera, a U turn down through the notch at the rear of the camera window, "
+          "forward, across over the mic under the panel, down the front left corner, to the Grove plug on the BiBoard. "
           "The plug comes up through the floor opening over the notch in the platform cover."],
-         ["Optional cable", "A notch at the base of each side wall lets a cable in from outside."],
          ], [52, 118])
 
     B = CHECKS["balance"]
@@ -83,8 +88,7 @@ def content():
     p(f"Balance. The add-on weighs {B['mass_g']:.0f} g with the camera (weighed parts; printed parts at 50 % fill). "
       f"Its center of mass is {z:.1f} mm behind the robot center and {abs(x):.1f} mm {'left' if x < 0 else 'right'} of the center line, "
       f"{y - PI.COVER_TOP:.0f} mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint "
-      "of the front and rear paws (110 mm apart), and on the center line. Standing, the robot tips only past these angles: "
-      "31 deg nose down, 27 deg nose up and 19 deg to the side. The side is the limit: keep heavy parts low. "
+      "of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. "
       "Put your own masses in MASS_G in pod.py and run pod.py again.")
 
     h("3. Assembly")
@@ -92,30 +96,39 @@ def content():
     p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1).")
     lst(["Fit the platform cover in place of the stock cover." + st(2),
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
-         f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch of the right well." + st(3) + st(4),
+         f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
          "Push a 10 cm Grove cable onto the Grove plug of the BiBoard through the floor opening at the front left. "
-         "Lay its excess as an S fold in the front left corner and let the free end hang out of the top." + st(5),
+         "Lay it flat against the front wall in the front left corner and let the free end hang out of the top." + st(5),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(6),
-         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front." + st(7),
-         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Push the amp down into the slot along the left wall, parts to the inside. "
-         "Lay the amp cable across the floor in front of the front pegs, into the right well." + st(8),
+         "Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front, over the Grove cable." + st(7),
+         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
+         "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
+         "Lay the amp cable across the floor in front of the front pegs, into the left well." + st(8),
          "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(9),
-         "Plug the wires one at a time, in the order of section 5: the BiBoard jumpers, the amp cable, the splices, then the mic jumpers. "
-         "The viewer has one step for each wire." + st(10) + st(22),
+         "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, "
+         "then the BiBoard ends. The viewer has one step for each wire." + st(10) + st(22),
+         "Lay the Grove cable across over the mic, under the top of the walls, toward the right side." ,
          "Slide the switch slider into the rails under the panel from their rear end until it clicks. "
          "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. They stay in the panel." + st(23),
          "Move the PiSugar power switch toward the head. Push the slider fully forward. "
-         "Pass the free end of the Grove cable up through the slot at the front left of the panel. "
+         "Pass the free end of the Grove cable up through the notch at the rear of the camera window in the panel. "
          f"Put the panel down {pod.LID_SLIDE:g} mm behind its place, then slide it forward until the latch clicks (about {S['slide_on_N']:g} N). "
          "The hooks under the panel go under the lugs in the walls. The slider fork comes down on the switch lever and stays on it." + st(24),
-         "Push the two clip legs of the camera mount down through the window in the front of the panel until they click. "
-         "Push the camera case down into the brackets until it clicks, lens forward. Plug the Grove cable into the socket in its rear face." + st(25) + st(26),
+         "Pass the Grove cable up through the notch at the rear of the camera mount base. Push the two clip legs down through the window until they click. "
+         "Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. "
+         "Plug the Grove cable into the socket low in its rear face." + st(25) + st(26),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['lift_N']:g} N), slide the panel {pod.LID_SLIDE:g} mm rearward and lift it. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
-    p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. "
+    p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening, behind the camera. "
       "The ribbed slider beside the HDMI opening moves the PiSugar power switch (the switch sets the end positions). "
-      "The tongue near the front of the panel is a large button: press it to press the PiSugar button.")
-    img("04_top.png", 0.42, "The top: HDMI, the switch slider, data USB, charge and Pi power, and the button tongue.")
+      "The tongue in the middle of the panel is a large button: press it to press the PiSugar button.")
+    img("04_top.png", 0.42, "The top: the camera, charge and Pi power, data USB, the button tongue, the switch slider and HDMI.")
+    p("Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low clips into the "
+      "camera window as the camera mount does, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low "
+      "down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. "
+      "Push the camera down into the cradle until the hooks click. Its Grove plug faces the body: run the cable down and in under the front notch at the left, "
+      "to the Grove plug on the BiBoard (no cable in the panel).")
+    img("17_camera_low.png", 0.42, "Head off: the camera lower and in front of the body.")
 
     h("4. Wiring")
     tbl([["Board pin", "Pi pin", "Signal"],
@@ -156,13 +169,14 @@ def content():
     p("Plug the jumpers one at a time, in this order. Each wire goes to its place before the next one, so the later wires lie over the earlier ones:")
     lst([f"#{num[k]}: {WIRE_FROM[k]} to {WIRE_TO[k]}" + (f". Put its excess in a {[w for w in ws if (w['group'], w['wire']) == k][0]['slack']} as in the drawing."
                                                           if k in {(w['group'], w['wire']) for w in pack} else ". Cut to length.")
-         for k in order])
-    lst(["The mic has a right-angle header along its right edge. Plug the six mic jumpers onto it before the mic goes into its grooves.",
-         "Amp cable: " + ROUTE["amp"] + ". Lay it before the stack goes in. Its own excess (not measured) folds in the left gallery over the amp.",
-         "Splices: the BCLK splice stands in front of the BiBoard notch, the LRCLK splice beside the BiBoard plugs.",
-         "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. The wires after them lie over them."])
+         for k in order] + ["Last, push the BiBoard ends of #%d, #%d and #%d onto the BiBoard header." % tuple(num[k] for k in order if k[0] == "uart")])
+    lst(["The mic has a right-angle header along its left edge. Plug the six mic jumpers onto it before the mic goes into its grooves.",
+         "Amp cable: " + ROUTE["amp"] + ". Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.",
+         "Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.",
+         "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.",
+         "The mic wires go in from the lowest of the stack: SEL, LRCL, DOUT, BCLK, GND, then 3V."])
     img("11_wires_top.png", 0.36, "From the top, panel off: the wires in 3D.")
-    img("16_camera_cable.png", 0.42, "The Grove cable of the camera, panel off: down through the panel slot, then an S fold to the BiBoard.")
+    img("16_camera_cable.png", 0.42, "The Grove cable of the camera, panel off: down through the notch at the rear of the window, across over the mic, down to the BiBoard.")
 
     h("6. Checks")
     h0, h1 = MO["head"]["free"]
@@ -172,26 +186,29 @@ def content():
          f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact (the slider stays on the lever). "
          f"The latch tongue lifts {S['lift_mm']:g} mm over the rib: about {S['slide_on_N']:g} N to slide on, {S['lift_N']:g} N to lift, strain {S['strain_pct']:g} %. "
          "Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.",
-         "Install: the speaker, the mic, the amp and the stack each go straight down 40 mm without contact. "
+         "Install: the speaker, the mic and the stack each go straight down 40 mm without contact; the amp tilts in under its nubs. "
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
-         "(small contacts of 1 to 2 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
-         "Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 0.3 mm, it hits the ridges. "
-         "The ridges need 0.8 mm of bracket flex (about 6 N each, 0.6 % strain), and their steep lower face keeps the case in when the robot falls. "
+         "(small contacts of 2 to 3 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
+         "Camera: the case goes into the mount without contact and is clear of the port plugs. Lifted 0.3 mm, its top hits the hooks. "
+         "The brackets spread 4.8 mm as the case goes in (about 0.5 % strain). "
          "The clip leg hooks catch 0.8 mm under the frame on a 10 deg barb, so a pull pushes them out; the legs bend to 1.9 % strain. "
          "The Grove cable touches no part and no other wire. The head turns without contact with the mount.",
+         "Head-off mount: the base, the cradle, the camera and its cable touch no part of the robot without its head. "
+         "The cradle slides down into the grooves without contact; the pins stop it from lifting.",
          "Switch and button: the slider moves 0.75 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
          "The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.",
          f"Robot: the head turns from {h0} to {h1} deg without contact. {len(MO['legs']['front']['addon'])} front and "
          f"{len(MO['legs']['rear']['addon'])} rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. "
          f"The Petoi tail is {T['gap']:g} mm under the add-on, and {T['drop_on_gap']:g} mm at the drop-on place."])
     p("Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. "
-      "The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. The heatsink size is estimated. "
+      "The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. "
+      "The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. The camera hooks catch the top of the case of the STL. "
       "To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.")
 
     h("7. Files and license")
     tbl([["File", "Content"],
          ["stl/print/", "the parts in print orientation"],
-         ["cad/pod_body.step, cad/pod_panel.step", "the parts as STEP (from the mesh)"],
+         ["cad/*.step", "the parts as STEP (from the mesh)"],
          ["cad/assembly_step.zip", "one STEP file with the robot, the platform and the add-on in place, with named and colored parts"],
          ["stl/installed/, stl/models/", "the parts and the electronics in the robot frame"],
          ["pod.py, motion.py, render.py, docs.py", "dimensions, build and checks; robot motion; pictures; this guide"],
@@ -204,11 +221,12 @@ def content():
 
 
 WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
-ROUTE = dict(uart="right well: along the floor to the right wall, up, rearward over the BiBoard plugs (each wire at its own height), down into them",
-             amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the right well",
-             mic="from the mic header into the right well, rearward as a flat stack; the lowest wire leaves first",
-             splice="short wire in the right well, up into the bottom of the splice sleeve",
-             speaker="a pair: up the left side behind the amp, over the ear plate, into the top of the speaker")
+MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
+ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
+             amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
+             mic="from the mic header into the left well, rearward as a flat stack beside the BiBoard plugs; the lowest wire leaves first",
+             splice="short wire in the left well, up into the bottom of the splice sleeve",
+             speaker="a pair: up the right side behind the amp, over the ear plate, into the top of the speaker")
 
 
 def routing_figures():
@@ -219,23 +237,24 @@ def routing_figures():
     from matplotlib.patches import Rectangle, Circle
     W = json.load(open(os.path.join(pod.OUT, "wires.json")))["wires"]
     def parts(a, view):
-        boxes = [("battery", pod.BAT["x"], pod.BAT["z"], pod.BAT["y"], "#4a78d8"),
-                 ("Pi + PiSugar", pod.PCB_X, (pod.STACK_ZF, pod.STACK_ZR), (pod.STACK_Y0, 60.0), "#2e9b4f"),
-                 ("Pi header plugs", (pod.HDR_BASE_X[0], pod.HOUSING_END), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"], "#555"),
-                 ("BiBoard plugs", pod.BB_PLUG["x"], (pod.bb_pin_z(0) - 1.25, pod.bb_pin_z(2) + 1.25), pod.BB_PLUG["y"], "#d83a34"),
-                 ("amp", (pod.AMP_X[0], pod.AMP_X[1] + 10.0), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"]), "#1f5f8f"),
-                 ("mic", (-pod.MIC["w"] / 2, pod.MIC["w"] / 2), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"]), "#d83a34"),
+        boxes = [("battery", MX(pod.BAT["x"]), pod.BAT["z"], pod.BAT["y"], "#4a78d8"),
+                 ("Pi + PiSugar", MX(pod.PCB_X), (pod.STACK_ZF, pod.STACK_ZR), (pod.STACK_Y0, 60.0), "#2e9b4f"),
+                 ("Pi header plugs", MX((pod.HDR_BASE_X[0], pod.HOUSING_END)), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"], "#555"),
+                 ("BiBoard plugs", MX(pod.BB_PLUG["x"]), sorted((pod.bb_pin_z(0) + 1.25, pod.bb_pin_z(2) - 1.25)), pod.BB_PLUG["y"], "#d83a34"),
+                 ("amp", MX((pod.AMP_X[0], pod.AMP_X[1] + 10.0)), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"]), "#1f5f8f"),
+                 ("mic", MX((pod.MIC_X - pod.MIC["w"] / 2, pod.MIC_X + pod.MIC["w"] / 2)), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"]), "#d83a34"),
                  ("speaker", (-pod.SPK["l"] / 2, pod.SPK["l"] / 2), (pod.SPK_ZE, pod.SPK_ZE + pod.SPK["ear_t"] + pod.SPK["h"]),
                   (pod.SPK_Y0, pod.SPK_Y0 + pod.SPK["d"]), "#7a52b8")]
         for name, xr, zr, yr, col in boxes:
             if view == "top":
                 a.add_patch(Rectangle((zr[0], xr[0]), zr[1] - zr[0], xr[1] - xr[0], fc=col, alpha=0.18, ec=col, lw=0.6))
                 a.text((zr[0] + zr[1]) / 2, (xr[0] + xr[1]) / 2, name, ha="center", va="center", fontsize=6, color=col, alpha=0.9)
-            elif xr[1] > 15:
+            elif xr[0] < -15:
                 a.add_patch(Rectangle((zr[0], yr[0]), zr[1] - zr[0], yr[1] - yr[0], fc=col, alpha=0.15, ec=col, lw=0.6))
                 a.text((zr[0] + zr[1]) / 2, yr[1] - 1.2, name, ha="center", va="top", fontsize=6, color=col)
         for t in ("bclk", "lrclk"):
             x, z = pod.SPLICE[t]
+            x = -x
             if view == "top":
                 a.add_patch(Circle((z, x), pod.SPLICE["r"], fc="#222", alpha=0.6))
             else:
@@ -251,12 +270,12 @@ def routing_figures():
             a.axhline(pod.FLOOR_Y1, color="0.4", lw=0.8); a.axhline(pod.PANEL_IN, color="0.4", lw=0.8, ls="--")
             a.text(-37, pod.PANEL_IN - 1.5, "panel underside", fontsize=6, color="0.4")
             a.set_xlabel("Z (mm), front at the left"); a.set_ylabel("Y (mm), up")
-            a.set_title("Right well, seen from the right side (wires with X > 17)", fontsize=8)
+            a.set_title("Left well, seen from the left side (wires with X < -17)", fontsize=8)
         parts(a, view)
         for i, w in enumerate(W, 1):
             P = np.array(w["points"])
             if view == "side":
-                keep = P[:, 0] > 17.0
+                keep = P[:, 0] < -17.0
                 if not keep.any():
                     continue
                 P = np.where(keep[:, None], P, np.nan)
@@ -280,7 +299,7 @@ MODULES = [
      "TX and RX cross. The +5V pins are not wired: the PiSugar 2 powers the Pi."),
     ("Amp: I2S and power", ("amp", "splice"), "amp I2S plug", [("G", 14), ("V", 2), ("BCLK", "bclk"), ("LRC", "lrclk"), ("DIN", 40)],
      "BCLK and LRC go to the splices: one wire from Pi pin 12 (35) feeds the amp and the mic."),
-    ("Mic", ("mic", "splice"), "mic pins", [("SEL", 39), ("LRCL", "lrclk"), ("DOUT", 38), ("BCLK", "bclk"), ("GND", 9), ("3V", 1)],
+    ("Mic", ("mic", "splice"), "mic pins", [("3V", 1), ("GND", 9), ("BCLK", "bclk"), ("DOUT", 38), ("LRCL", "lrclk"), ("SEL", 39)],
      "SEL to GND sets the left channel. BCLK and LRCL go to the splices."),
     ("Speaker", ("speaker",), "amp speaker plug", [("+", "spk+"), ("-", "spk-")],
      "A two-wire lead from the 2-pin plug at the rear end of the amp to the speaker."),
@@ -356,7 +375,7 @@ def module_figure(mod, path):
         n_odd = sum(1 for _, t in pins if t is not None and (SPLICE_PIN[t] if isinstance(t, str) else t) % 2)
         ycap = Y_ODD + 2.4 + 0.6 * n_odd
         a.text(X0 - 1.3, ycap + 1.0, "Pi Zero 2 W header, as it stands in the case", fontsize=7, color=ink, fontweight="medium")
-        a.text(X0 - 1.3, ycap, "pin 1 at the SD card end (front), even row at the board edge (down)", fontsize=6, color=mute)
+        a.text(X0 - 1.3, ycap, "pin 1 at the SD card end (rear), even row at the board edge (down)", fontsize=6, color=mute)
     # connector
     a.add_patch(FancyBboxPatch((-13.8, cy[-1] - 1.0), 8.2, cy[0] - cy[-1] + 2.0, boxstyle="round,pad=0,rounding_size=0.6",
                                fc="#f4f5f7", ec=line, lw=0.8, zorder=1))
@@ -396,7 +415,7 @@ def module_figure(mod, path):
     # ---- route views
     mineW = [w for w in W if w["group"] in groups]
     allP = np.concatenate([np.array(w["points"]) for w in mineW])
-    side_x = (lambda P: P[:, 0] > 17.0) if g0 != "speaker" else (lambda P: P[:, 0] < -9.0)
+    side_x = (lambda P: P[:, 0] < -17.0) if g0 != "speaker" else (lambda P: P[:, 0] > 9.0)
     for ci, view in enumerate(("top", "side")):
         b = fig.add_subplot(gs[1, ci])
         b.set_xticks([]); b.set_yticks([])
@@ -408,7 +427,7 @@ def module_figure(mod, path):
             b.set_title("From the top, panel off (front at the left)", loc="left", color=ink, fontsize=7.4)
         else:
             b.add_patch(Rectangle((pod.ZF_IN, pod.FLOOR_Y1), pod.ZR_IN - pod.ZF_IN, pod.PANEL_IN - pod.FLOOR_Y1, fc="#fafbfc", ec="#b3b8c0", lw=0.9, zorder=0))
-            b.set_title(("Right well, seen from the right" if g0 != "speaker" else "Left side, seen from the left") + " (front at the left)",
+            b.set_title(("Left well, seen from the left" if g0 != "speaker" else "Right side, seen from the right") + " (front at the left)",
                         loc="left", color=ink, fontsize=7.4)
         _parts(b, view, left=(g0 == "speaker"))
         for w in W:
@@ -443,16 +462,17 @@ def module_figure(mod, path):
 def _parts(a, view, left=False):
     """Light silhouettes of the parts, for the route views (side views: the parts on that side)."""
     from matplotlib.patches import FancyBboxPatch
-    boxes = [("battery", pod.BAT["x"], pod.BAT["z"], pod.BAT["y"]),
-             ("Pi + PiSugar", pod.PCB_X, (pod.STACK_ZF, pod.STACK_ZR), (pod.STACK_Y0, 60.0)),
-             ("Pi header", (pod.HDR_BASE_X[0], pod.HOUSING_END), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"]),
-             ("BiBoard", pod.BB_PLUG["x"], (pod.bb_pin_z(0) - 1.25, pod.bb_pin_z(2) + 1.25), pod.BB_PLUG["y"]),
-             ("amp", (pod.AMP_X[0], pod.AMP_X[1] + 10.0), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"])),
-             ("mic", (-pod.MIC["w"] / 2, pod.MIC["w"] / 2), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"])),
+    boxes = [("battery", MX(pod.BAT["x"]), pod.BAT["z"], pod.BAT["y"]),
+             ("Pi + PiSugar", MX(pod.PCB_X), (pod.STACK_ZF, pod.STACK_ZR), (pod.STACK_Y0, 60.0)),
+             ("Pi header", MX((pod.HDR_BASE_X[0], pod.HOUSING_END)), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"]),
+             ("BiBoard", MX(pod.BB_PLUG["x"]), sorted((pod.bb_pin_z(0) + 1.25, pod.bb_pin_z(2) - 1.25)), pod.BB_PLUG["y"]),
+             ("amp", MX((pod.AMP_X[0], pod.AMP_X[1] + 10.0)), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"])),
+             ("mic", MX((pod.MIC_X - pod.MIC["w"] / 2, pod.MIC_X + pod.MIC["w"] / 2)), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"])),
              ("speaker", (-pod.SPK["l"] / 2, pod.SPK["l"] / 2), (pod.SPK_ZE, pod.SPK_ZE + pod.SPK["ear_t"] + pod.SPK["h"]),
               (pod.SPK_Y0, pod.SPK_Y0 + pod.SPK["d"]))]
     for t in ("bclk", "lrclk"):
         x, z = pod.SPLICE[t]
+        x = -x
         r, (y0, y1) = pod.SPLICE["r"], pod.SPLICE["y"]
         rect = (z - r, x - r, 2 * r, 2 * r) if view == "top" else (z - r, y0, 2 * r, y1 - y0)
         if view == "top" or not left:
@@ -461,7 +481,7 @@ def _parts(a, view, left=False):
     for name, xr, zr, yr in boxes:
         if view == "top":
             r = (zr[0], xr[0], zr[1] - zr[0], xr[1] - xr[0])
-        elif (xr[0] < -9 if left else xr[1] > 15):
+        elif (xr[1] > 9 if left else xr[0] < -15):
             r = (zr[0], yr[0], zr[1] - zr[0], yr[1] - yr[0])
         else:
             continue

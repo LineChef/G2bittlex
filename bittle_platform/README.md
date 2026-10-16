@@ -1,8 +1,8 @@
-# Bittle X Platform v3.1 - Interface Specification
+# Bittle X Platform v3.2 - Interface Specification
 
-Version 3.1, 2026-10-15. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm forward, and it clicks. To remove it, slide it 7 mm rearward and lift it. It comes off closed: the head is not in the way. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
+Version 3.2, 2026-10-16. The platform is the stock Petoi Bittle X back cover with 4 teardrop pegs on its top. An add-on has a plate with 4 keyholes. Put it on the pegs, slide it 7 mm forward, and it clicks. To remove it, slide it 7 mm rearward and lift it. It comes off closed: the head is not in the way. The keyholes have the shape of the pegs, so the add-on goes on in one direction only. No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.
 
-Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Version 3.1 adds a notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera cable). The pegs and the keyholes are the same as in 3.0. Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).
+Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. Version 3.1 adds a notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera cable). Version 3.2 turns the cover model 180 deg to match the robot: the Pi slot (the BiBoard header) is at the front left, and the notch is on the front left, as on the robot. Reprint the cover: the pegs and the keyholes are the same as in 3.0. Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).
 
 ![The platform (dark) with the starter plate (yellow).](doc/r2_starter.png)
 
@@ -19,7 +19,7 @@ Version 3.0 is not compatible with earlier versions: the pegs have a new shape a
 | Fit | put the add-on on 7 mm behind its place, then slide it 7 mm forward until it clicks. Remove: slide it rearward and lift |
 | Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the rear end only). Bumps R1.5 at 1.25 in front of the peg, 0.28 into the shaft path. They push the shaft point into the V stop, which centers it. |
 | Click force | about 3.2 N to slide on and 3.2 N to slide off (all 8 beams, PLA estimate); beam strain 0.9 % |
-| Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
+| Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X -27.27..-24.73, Z -25.1..-12.4, top Y 29.1) |
 | Size | the pod fits in Z -37.8..56.2, \|X\| <= 29.6; outside that, check the legs and the head |
 
 ![Left: keyhole and click beams in the add-on plate (top view, locked). Right: the peg and the plate (side section).](doc/keyhole.png)

@@ -1,4 +1,4 @@
-"""Bittle X platform v3.1: drawings, renders, interface.json, SPEC.md and the PDF.
+"""Bittle X platform v3.2: drawings, renders, interface.json, SPEC.md and the PDF.
 
 Run build.py first, then:  python docs.py
 README.md and bittle_platform_spec.pdf come from the same content list (CONTENT), so they agree.
@@ -221,7 +221,9 @@ def content():
       "No tools, glue or tape are necessary. interface.json has all the numbers in machine-readable form.")
     p("Version 3.0 is not compatible with earlier versions: the pegs have a new shape and place, and the slide goes the other way. "
       "Version 3.1 adds a notch in the front edge of the cover, left side, for the Grove plug on the BiBoard (the head camera cable). "
-      "The pegs and the keyholes are the same as in 3.0. Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).")
+      "Version 3.2 turns the cover model 180 deg to match the robot: the Pi slot (the BiBoard header) is at the front left, and the notch is on the "
+      "front left, as on the robot. Reprint the cover: the pegs and the keyholes are the same as in 3.0. "
+      "Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).")
     img("r2_starter.png", 0.6, "The platform (dark) with the starter plate (yellow).")
 
     h("1. Key numbers")

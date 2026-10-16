@@ -45,9 +45,10 @@ that clicks onto the platform.
 - NS4168 I2S amp and a 3 W speaker at the rear, sound out of the rear grille
 - SPH0645 I2S microphone at the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
-- Serial link to the BiBoard: the Dupont plug goes onto the header inside the right wall, and all the wires stay inside
+- Serial link to the BiBoard: the Dupont plugs go onto the header at the front left, and all the wires stay inside
 - A slide-on top panel with openings shaped to the plugs, a large power switch slider and a large button
-- 3 printed parts, all without supports
+- The Petoi AI Vision Module, vertical on a clip-on mount at the front, or lower in front of the body when the head is off
+- All printed parts print without supports
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_open.png)
 

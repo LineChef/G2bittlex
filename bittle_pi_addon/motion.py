@@ -58,7 +58,7 @@ def main():
             + R.parts["rear_plate"] + R.parts["neck_mount"])
     for n, rp in pod.robot_parts().items():
         if n in ("shoulder_r", "shoulder_l", "front_plate"):
-            body += rp
+            body += pod.flip_x(rp)                     # robot_parts() is in the design frame
     legs = {}
     for end in ("front", "rear"):
         grid = {}

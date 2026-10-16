@@ -1,4 +1,4 @@
-"""Bittle X platform v3.0: build the parts, the keep-out volumes, the checks and the CAD files.
+"""Bittle X platform v3.2: build the parts, the keep-out volumes, the checks and the CAD files.
 
 Run:  python build.py          (then: python docs.py for interface.json, SPEC.md and the PDF)
 Needs: build123d, manifold3d, numpy. Frame and numbers: interface.py.
@@ -251,7 +251,10 @@ def header_keepout():
 # Meshes of the robot
 # --------------------------------------------------------------------------
 def ref_tris(name):
-    return MU.load_stl(os.path.join(REF, name))
+    t = MU.load_stl(os.path.join(REF, name))
+    if name.startswith("Bittle_Cover"):                   # the cover is turned on the robot (interface.py)
+        t = t @ np.array(I.COVER_TURN, float).T
+    return t
 
 
 def mirror_tris(t, axis):

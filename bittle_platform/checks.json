@@ -122,10 +122,10 @@
   ]
  ],
  "overhang_mm2": {
-  "cover_pegs": 177.87701416015625,
+  "cover_pegs": 176.5054473876953,
   "starter_plate": 0.0,
-  "cover_pegs_foot": 199.60328674316406,
-  "cover_stock": 198.61520385742188
+  "cover_pegs_foot": 201.1893768310547,
+  "cover_stock": 197.24368286132812
  },
  "mass_g_pla_solid": {
   "cover_pegs": 11.1,
@@ -137,7 +137,7 @@
   "plate_top_to_head": 0.3,
   "slot_to_shaft_each_side": 0.35,
   "big_hole_to_head_each_side": 0.45,
-  "collar_to_logo": 0.8,
+  "collar_to_logo": 0.09,
   "collar_to_flat_edge": 0.57
  },
  "detent": {

@@ -222,12 +222,12 @@ addEventListener("resize", resize);
 const VIEWS = {
   iso: [-230, 170, -230], front: [0, 20, -330], rear: [0, 20, 340],
   left: [-350, 20, 5], right: [350, 20, 5], top: [0, 400, 5.01],
-  build: [170, 312, -30],       // the build steps: one steep view from the right, into the open body
-  buildfront: [60, 300, 190],   // the same height, from the rear: the inside of the front wall (the mic)
-  wires: [70, 215, -40],        // closer, from high above the right: the right well and the Pi header (the wire steps)
+  build: [-170, 312, -30],      // the build steps: one steep view from the left, into the open body
+  buildfront: [-60, 300, 190],  // the same height, from the rear: the inside of the front wall (the mic)
+  wires: [-70, 215, -40],       // closer, from high above the left: the left well and the Pi header (the wire steps)
   exploded: [-330, 300, -420],  // far enough back for the full height of the exploded view
 };
-const TARGETS = { exploded: [0, 160, 0], build: [0, 42, 6], buildfront: [0, 38, -22], wires: [16, 38, 0] };
+const TARGETS = { exploded: [0, 160, 0], build: [0, 42, 6], buildfront: [0, 38, -22], wires: [-16, 38, 0] };
 // smooth camera moves
 let camAnim = null;
 function flyTo(pos, target, ms = 600) {
