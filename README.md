@@ -43,7 +43,7 @@ that clicks onto the platform.
 
 - Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh), on its long edge over the robot center, ports up
 - NS4168 I2S amp and a 3 W speaker at the rear, sound out of the rear grille
-- SPH0645 I2S microphone at the front, away from the speaker
+- SPH0645 I2S microphone on the right side near the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
 - Serial link to the BiBoard: the Dupont plugs go onto the header at the front left, and all the wires stay inside
 - A slide-on top panel with openings shaped to the plugs, a window over the power switch and a large button

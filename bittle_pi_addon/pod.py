@@ -236,25 +236,23 @@ AMP_NUBS = [-5.0, 22.0]                          # z0 of the nubs on the wall ov
 AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0, 36.8, 0.75, 7.6), ic=(17.7, 24.0, 7.2, 13.6),
              holes=[(15.2, 2.65), (15.2, 19.3)], hole_d=4.7, ph=5.0, term_h=8.5, plug_out=3.7)
 
-# HiLetgo SPH0645 mic board, 12.45 x 16.12 (user caliper), in the front corner on the PiSugar side (robot right, -X
-# in the design frame), high. It stands flat on two bosses on the front wall, port face to the front (sound holes in
-# the front face). The 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V, SEL lowest) are a straight header along its outer
-# 16.12 edge: the Dupont housings point rearward, along the side wall. Two holes at the corners of the inner edge:
-# an M2 screw through the upper hole goes into a heat-set insert in the upper boss; a pin on the lower boss goes
-# into the lower hole. The housing column stands 0.7 outside the amp cable (AMP_CABLE_X): the screw is clear of the
-# battery for the screwdriver. The mic wires go up over the amp cable (MIC_CROSS_Y).
-MIC = dict(w=12.45, l=16.12, t=1.6, x0=-IN_A_LOW + 0.4, y0=37.6, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)
+# HiLetgo SPH0645 mic board, 12.45 x 16.12 (user caliper), on the right wall of the robot (-X in the design frame) near
+# the front corner, high. It stands flat on two bosses on the wall, port face to the wall (sound holes in the side
+# face). The 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V, SEL lowest) are a straight header along its front 16.12 edge:
+# the Dupont housings point inward, and the wires go straight across behind the front wall to the left well. Two
+# holes at the corners of the rear edge: an M2 screw through the upper hole goes into a heat-set insert in the upper
+# boss; a pin on the lower boss goes into the lower hole. The board is in front of the amp cable (Z -23.8 and rear),
+# and the housings go down behind the front wall lugs.
+MIC = dict(w=12.45, l=16.12, t=1.6, z0=-34.2, y0=37.6, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)   # w along Z, l along Y
 MIC_BOSS = dict(d=5.5, h=2.0, insert_d=3.2, insert_l=3.5, pin_d=1.9, pin_l=1.3, head_d=3.8, head_h=1.3)
-MIC_Z = (ZF_IN + MIC_BOSS["h"], ZF_IN + MIC_BOSS["h"] + MIC["t"])     # PCB front and back faces
-MIC_X = MIC["x0"] + MIC["w"] / 2                  # board center
-MIC_PORT_Y = MIC["y0"] + MIC["l"] / 2            # port assumed at the board center (not measured)
-MIC_PIN_X = MIC["x0"] + MIC["pin_in"]
+MIC_X = (-IN_A + MIC_BOSS["h"], -IN_A + MIC_BOSS["h"] + MIC["t"])     # PCB face to the wall and back face
+MIC_PORT = (MIC["y0"] + MIC["l"] / 2, MIC["z0"] + MIC["w"] / 2)       # (Y, Z); port assumed at the board center (not measured)
+MIC_PIN_Z = MIC["z0"] + MIC["pin_in"]
 MIC_PIN_Y = [MIC["y0"] + (MIC["l"] - 15.24) / 2 + 1.27 + 2.54 * k for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V
-MIC_HDR_Z = (MIC_Z[1], MIC_Z[1] + 2.5)           # header plastic on the back face
-MIC_HOUSING_Z = (MIC_HDR_Z[1], MIC_HDR_Z[1] + DUPONT_L)
-MIC_CROSS_Y = [44.9 + 1.5 * k for k in range(6)]  # the mic wires over the amp cable (its top wire is at Y 43.1)
-MIC_HOLES = [(MIC["x0"] + MIC["w"] - MIC["hole_in"], y) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # screw, pin
-LONG_L = 150.0        # the mic DOUT, GND and 3V jumpers are 15 cm (their routes are 98 to 143 mm long)
+MIC_HDR_X = (MIC_X[1], MIC_X[1] + 2.5)           # header plastic on the back face
+MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
+MIC_HOLES = [(y, MIC["z0"] + MIC["w"] - MIC["hole_in"]) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # (Y, Z): screw, pin
+LONG_L = 150.0        # the mic GND and 3V jumpers are 15 cm (their routes are 102 and 115 mm long)
 
 # Slide lid: the panel goes down 5 mm behind its place, then slides forward 5 mm. 45 deg dovetail hooks under the
 # panel go under lugs on the inner faces of the walls: the full straight width of the front wall, and 4.4 long lugs
@@ -284,9 +282,8 @@ WIRE_PATHS = {
                                         dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
     "i2s: under the stack to the amp": [dict(x=(AMP_CABLE_X + 0.8, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
                                         dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 0.8), y=(27.6, 43.9), z=(-24.2, -12.1))],
-    "mic: U turn, across the front, rearward in the right well": [dict(x=(MIC["x0"] + 5.9, MIC["x0"] + 7.5), y=(44.3, 53.0), z=(-29.0, -16.5)),
-                                                                   dict(x=(-3.0, 21.0), y=(44.3, 53.0), z=(-34.0, -32.6)),
-                                                                   dict(x=(22.7, 24.1), y=(44.3, 53.0), z=(-29.5, 24.0))],
+    "mic: across the front, rearward in the right well": [dict(x=(MIC_HOUSING_X[1] + 0.5, 21.0), y=(38.2, 53.0), z=(MIC_PIN_Z - 0.7, MIC_PIN_Z + 0.7)),
+                                                           dict(x=(22.7, 24.1), y=(38.2, 53.0), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
@@ -637,22 +634,29 @@ def stack_posts():
     return (f + r) - (ch - mbox(PCB_X[0] - POST["clr"], xg, 0, 99, -99, 99))
 
 
+def teardrop_x(x0, x1, r, y, z, n=20):
+    """Hole or boss along X: round, with a 45 deg point on top. It prints without a bridge in a vertical wall."""
+    pts = [(y + r * math.sin(a), z + r * math.cos(a)) for a in np.linspace(math.radians(45), math.radians(-225), n)]
+    pts.append((y + r * math.sqrt(2), z))
+    return prism_x(pts, x0, x1)
+
+
 def mic_bosses():
-    """Two bosses on the front wall under the inner corner holes of the mic: the upper one has the M2 heat-set insert
+    """Two bosses on the right wall under the rear corner holes of the mic: the upper one has the M2 heat-set insert
     (mic_insert_hole), the lower one a pin into the board hole. Teardrop sections: the body prints floor down."""
     B = MIC_BOSS
-    (xs, ys), (xp, yp) = MIC_HOLES
-    out = [teardrop_z(ZF_IN - 0.5, MIC_Z[0], B["d"] / 2, x, y) - mbox(x - 5, x + 5, min(y + B["d"] / 2 + 0.5, 53.9), y + 9, -99, 99)   # top under the panel hooks
-           for x, y in MIC_HOLES]
+    (ys, zs), (yp, zp) = MIC_HOLES
+    out = [teardrop_x(-IN_A - 0.5, MIC_X[0], B["d"] / 2, y, z) - mbox(-99, 99, min(y + B["d"] / 2 + 0.5, 53.9), y + 9, z - 5, z + 5)   # under the lugs
+           for y, z in MIC_HOLES]
     r = B["pin_d"] / 2
-    pin = teardrop_z(MIC_Z[0] - 0.01, MIC_Z[0] + B["pin_l"], r, xp, yp) ^ mbox(xp - r, xp + r, yp - r, yp + r, MIC_Z[0] - 1, MIC_Z[0] + B["pin_l"] + 1)   # the point cut off: it fits the hole
+    pin = teardrop_x(MIC_X[0] - 0.01, MIC_X[0] + B["pin_l"], r, yp, zp) ^ mbox(MIC_X[0] - 1, MIC_X[0] + B["pin_l"] + 1, yp - r, yp + r, zp - r, zp + r)   # the point cut off: it fits the hole
     return union(out) + pin
 
 
 def mic_insert_hole():
     B = MIC_BOSS
-    xs, ys = MIC_HOLES[0]
-    return mcyl("z", MIC_Z[0] - B["insert_l"], MIC_Z[0] + 1, B["insert_d"] / 2, xs, ys, 24)
+    ys, zs = MIC_HOLES[0]
+    return mcyl("x", MIC_X[0] - B["insert_l"], MIC_X[0] + 1, B["insert_d"] / 2, ys, zs, 24)
 
 
 def amp_base():
@@ -788,9 +792,9 @@ def build_body():
              + [(-NOTCH["hw"] - NOTCH["h"] * math.cos(t), SEAM - NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)])
     B -= nt.extrude(NOTCH["d"] + 1).translate([0, 0, Z1 - NOTCH["d"]])   # finger notch
     holes = [teardrop_z(ZR_IN - 0.5, Z1 + 0.5, GRILLE["d"] / 2, x, y) for x in GRILLE["x"] for y in GRILLE["y"]]
-    for a in [None] + list(range(0, 360, 60)):                             # mic holes around the port
-        dx, dy = (0.0, 0.0) if a is None else (2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a)))
-        holes.append(teardrop_z(Z0 - 0.5, ZF_IN + 0.5, 0.5, MIC_X + dx, MIC_PORT_Y + dy, n=12))
+    for a in [None] + list(range(0, 360, 60)):                             # mic holes around the port, in the right wall
+        dz, dy = (0.0, 0.0) if a is None else (2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a)))
+        holes.append(teardrop_x(-A - 0.5, -IN_A + 0.5, 0.5, MIC_PORT[0] + dy, MIC_PORT[1] + dz, n=12))
     B -= union(holes) + mic_insert_hole()
     return B
 
@@ -1205,7 +1209,7 @@ SPLICE = dict(bclk=(21.2, 3.0), lrclk=(21.0, -13.0), y=(39.0, 45.0), r=1.25)
 MIC_RIB, UART_X, FLOOR_WIRE = 23.4, 27.0, FLOOR_Y1 + 0.75
 AMP_LANES = dict(G=18.4, V=20.0, BCLK=21.6, LRC=23.2)
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
-LONG_WIRES = {("mic", "DOUT"), ("mic", "GND"), ("mic", "3V")}     # LONG_L
+LONG_WIRES = {("mic", "GND"), ("mic", "3V")}     # LONG_L
 
 
 def pack_len(key):
@@ -1266,19 +1270,17 @@ def wire_routes():
             else:
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
         W.append(("amp", lab, col, pts))
-    # Mic: jumpers (DOUT, GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
-    # pin (SEL at the bottom, 3V at the top): up over the amp cable (MIC_CROSS_Y), a U turn inward, forward between the
-    # amp and the battery, across in front of the stack (behind the front wall), then rearward as a flat stack at MIC_RIB.
+    # Mic: jumpers (GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
+    # pin (SEL at the bottom, 3V at the top): straight inward out of the housings, across behind the front wall in front
+    # of the stack, then rearward as a flat stack at MIC_RIB.
     # SEL (pin 39, to GND: left channel), DOUT (pin 38), LRCL (splice), BCLK (splice), GND (pin 9), 3V (pin 1).
     xa = MIC_RIB
     xin = EXIT_X + 2.0
-    zh = MIC_HOUSING_Z[1]
-    xu = MIC["x0"] + 6.7                                   # the forward run, inside the housing column
+    xh = MIC_HOUSING_X[1]
     for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
                            (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
-        yh, y = MIC_PIN_Y[k], MIC_CROSS_Y[k]
-        pts = [(MIC_PIN_X, yh, zh), (MIC_PIN_X, yh, zh + 1.2), (MIC_PIN_X, y, zh + 5.5), (xu, y, zh + 5.5), (xu, y, -29.6),
-               (-7.5, y, -29.6), (-4.0, y, -33.3), (21.0, y, -33.3), (xa, y, -29.2)]
+        y = MIC_PIN_Y[k]
+        pts = [(xh, y, MIC_PIN_Z), (xh + 1.2, y, MIC_PIN_Z), (21.0, y, MIC_PIN_Z), (xa, y, -29.2)]
         if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
             sx, sz = SPLICE[t]
             pts += [(xa, y, sz - 5.0), (sx + 0.6, y + 2.0, sz - 3.0), (sx + 0.6, SPLICE["y"][1] + 1.6, sz - 1.0),
@@ -1483,22 +1485,22 @@ def build_models():
     add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
     amp = pcb + hdrs + p5 + p2 + term + screws + ic
     # SPH0645 mic board: PCB with the two corner holes and the port hole, mic part on the back face, straight header on
-    # the back face at the outer edge with the six Dupont housings on its pins, the M2 screw head in the upper hole
+    # the back face at the front edge with the six Dupont housings on its pins, the M2 screw head in the upper hole
     M, B_ = MIC, MIC_BOSS
-    x0, x1, y0, y1 = M["x0"], M["x0"] + M["w"], M["y0"], M["y0"] + M["l"]
-    mp = rbox("z", x0, x1, y0, y1, *MIC_Z, 0.8)
-    mp -= mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, 0.4, MIC_X, MIC_PORT_Y, 12)
-    mp -= union([mcyl("z", MIC_Z[0] - 1, MIC_Z[1] + 1, M["hole_d"] / 2, x, y, 16) for x, y in MIC_HOLES])
+    z0, z1, y0, y1 = M["z0"], M["z0"] + M["w"], M["y0"], M["y0"] + M["l"]
+    mp = rbox("x", *MIC_X, y0, y1, z0, z1, 0.8)
+    mp -= mcyl("x", MIC_X[0] - 1, MIC_X[1] + 1, 0.4, *MIC_PORT, 12)
+    mp -= union([mcyl("x", MIC_X[0] - 1, MIC_X[1] + 1, M["hole_d"] / 2, y, z, 16) for y, z in MIC_HOLES])
     add("mic_sph0645", "pcb", "SPH0645 mic board", mp, "#22303f")
-    can = mbox(MIC_X - 1.75, MIC_X + 1.75, MIC_PORT_Y - 1.33, MIC_PORT_Y + 1.33, MIC_Z[1] - 0.01, MIC_Z[1] + 1.0)
+    can = mbox(MIC_X[1] - 0.01, MIC_X[1] + 1.0, MIC_PORT[0] - 1.33, MIC_PORT[0] + 1.33, MIC_PORT[1] - 1.75, MIC_PORT[1] + 1.75)
     add("mic_sph0645", "mic", "SPH0645 mic", can, "#c8c8c8")
-    hb = mbox(MIC_PIN_X - 1.27, MIC_PIN_X + 1.27, min(MIC_PIN_Y) - 1.27, max(MIC_PIN_Y) + 1.27, MIC_HDR_Z[0] - 0.01, MIC_HDR_Z[1])
+    hb = mbox(MIC_HDR_X[0] - 0.01, MIC_HDR_X[1], min(MIC_PIN_Y) - 1.27, max(MIC_PIN_Y) + 1.27, MIC_PIN_Z - 1.27, MIC_PIN_Z + 1.27)
     add("mic_sph0645", "header", "mic header", hb, "#1d1d1f")
-    xs, ys = MIC_HOLES[0]
-    head = mcyl("z", MIC_Z[1] - 0.01, MIC_Z[1] + B_["head_h"], B_["head_d"] / 2, xs, ys, 20)
+    ys, zs = MIC_HOLES[0]
+    head = mcyl("x", MIC_X[1] - 0.01, MIC_X[1] + B_["head_h"], B_["head_d"] / 2, ys, zs, 20)
     add("mic_sph0645", "screw", "M2 screw", head, "#9a9ca0")
     for k, y in enumerate(MIC_PIN_Y):
-        HOUSING_MESH[("mic", k)] = rbox("z", MIC_PIN_X - 1.25, MIC_PIN_X + 1.25, y - 1.25, y + 1.25, *MIC_HOUSING_Z, 0.25, 8)
+        HOUSING_MESH[("mic", k)] = rbox("x", *MIC_HOUSING_X, y - 1.25, y + 1.25, MIC_PIN_Z - 1.25, MIC_PIN_Z + 1.25, 0.25, 8)
     mh = union([HOUSING_MESH[("mic", k)] for k in range(6)])
     mic = mp + can + hb + head + mh
     # speaker: round-edged box with the two black wings around its middle; the sound face (rear) has a grille
@@ -2129,12 +2131,12 @@ def check(parts, models, robot):
         G = union([models[n] for n in ns])
         yt_ = AMP_Y0 + AMP["h"]                            # the amp tilts in under its nubs
         P_ = placed - union([mbox(-IN_A - 1, AMP_X[0] + 1.2, yt_, yt_ + 2.5, z - 0.2, z + 4.2) for z in AMP_NUBS]) if g == "amp" else placed
-        dz_ = 1.7 if g == "mic" else 0.0                   # the mic goes down behind the boss pin, then forward onto it
-        worst = max(vol(G.translate([0, float(dy), dz_]), P_) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
+        dx_ = 1.7 if g == "mic" else 0.0                   # the mic goes down beside the boss pin, then out onto it
+        worst = max(vol(G.translate([dx_, float(dy), 0]), P_) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
         rows.append((f"install {g} (max over 40 mm down)", "body + parts in", worst))
         if g == "mic":
-            rows.append(("install mic: forward onto the pin", "body + parts in",
-                         max(vol(G.translate([0, 0, float(d)]), P_) for d in (0.3, 0.8, 1.3, 1.7))))
+            rows.append(("install mic: out onto the pin", "body + parts in",
+                         max(vol(G.translate([float(d), 0, 0]), P_) for d in (0.3, 0.8, 1.3, 1.7))))
         placed = placed + G
     # panel: straight down LID_SLIDE behind its place, then forward. The latch hook rides over the rib (checked below).
     Pc = build_panel(with_latch=False) + parts["pod_button"]
@@ -2224,7 +2226,7 @@ def install_checks(parts, models):
         keep = (s_ > cut) & (s_ < s_[-1] - cut)
         return tube(P[keep], rounded=False) if keep.sum() > 1 else None
     def housing_slide(hk):
-        d = {"pi": (1, 0, 0), "mic": (0, 0, 1), "bb": (0, 1, 0)}[hk[0]]
+        d = {"pi": (1, 0, 0), "mic": (1, 0, 0), "bb": (0, 1, 0)}[hk[0]]
         H = HOUSING_MESH[hk]
         return union([H.translate([d[0] * t, d[1] * t, d[2] * t]) for t in (1.0, 3.0, 6.0)])
     def lay(keys):
@@ -2289,7 +2291,7 @@ def explode_plan(name, sub=""):
     if name == "amp_ns4168":
         return 4, (0, 45, 0), (-30, 0, 0)
     if name == "mic_sph0645":
-        return 5, (0, 0, 2.0), (0, 45, 0)                         # off the boss pin, then up
+        return 5, (2.0, 0, 0), (0, 45, 0)                         # off the boss pin, then up
     if name == "speaker":
         return 6, (0, 45, 0), (0, 0, 30)
     return None

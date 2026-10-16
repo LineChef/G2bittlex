@@ -42,7 +42,7 @@ def content():
       "It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
       "The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
       "No tools or supports are necessary; a dab of glue sets the amp.")
-    img("02_addon.png", 0.5, "The add-on on the platform: the mic holes are at the front, the port windows in the panel.")
+    img("02_addon.png", 0.5, "The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.")
 
     h("1. Parts to print")
     tbl([["File (stl/print/)", "Material", "Orientation", "Mass"],
@@ -71,16 +71,16 @@ def content():
          ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
           "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
-         ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic DOUT, GND and 3V."],
-         ["M2 heat-set insert and M2 x 5 screw", "The insert goes into the upper mic boss on the inside of the front wall. The screw holds the mic."],
+         ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V."],
+         ["M2 heat-set insert, M2 x 5 socket head screw", "The insert goes into the upper mic boss on the inside of the right wall. The screw holds the mic: a 1.5 mm L hex key turns it with the stack in place."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
           "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
          ["NULLLAB 3 W 4 ohm speaker", f"At the rear, sound to the grille in the rear face. Body {pod.SPK['body_l']:g} wide, {pod.SPK['h']:g} deep. Two tapered wings ({pod.SPK['l']:g} across, "
           f"{pod.SPK['ear_t']:g} thick) at the middle of the body depth stand in two side grooves."],
-         ["HiLetgo SPH0645 I2S mic", f"{pod.MIC['w']:g} x {pod.MIC['l']:g} board, high in the front right corner, flat on two bosses on the front wall, port to the front. "
-          "Its straight 6-pin header is along the edge next to the right wall: the plugs point rearward. SEL is the lowest pin, 3V the highest. "
-          "An M2 screw through the upper inner hole goes into a heat-set insert; a pin on the lower boss goes into the lower hole."],
+         ["HiLetgo SPH0645 I2S mic", f"{pod.MIC['w']:g} x {pod.MIC['l']:g} board, high on the right wall near the front, flat on two bosses, port to the wall (holes in the right side). "
+          "Its straight 6-pin header is along its front edge: the plugs point inward, and the wires go straight across behind the front wall. "
+          "SEL is the lowest pin, 3V the highest. An M2 screw through the upper rear hole goes into a heat-set insert; a pin on the lower boss goes into the lower hole."],
          ["Petoi AI Vision Module", "In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. "
           f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. "
           "Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out."],
@@ -103,9 +103,9 @@ def content():
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
-         "Press the M2 heat-set insert into the upper mic boss (front right corner, inside the front wall) with a soldering iron. "
-         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on DOUT, GND and 3V. Lower the mic into the front right corner 2 mm behind the bosses, "
-         "port to the front, header next to the right wall. Push it forward onto the pin of the lower boss. "
+         "Press the M2 heat-set insert into the upper mic boss (inside the right wall, near the front) with a soldering iron. "
+         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Lower the mic 2 mm inside the bosses, "
+         "port to the wall, header at the front. Push it out onto the pin of the lower boss. "
          "Put the M2 x 5 screw through the upper hole into the insert." + st(6),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
          "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
@@ -148,7 +148,7 @@ def content():
     WR = json.load(open(os.path.join(pod.OUT, "wires.json")))
     ws = WR["wires"]
     pack = [w for w in ws if w.get("pack")]
-    p(f"The BiBoard and mic wires are female-female jumpers from a pack of {WR['pack_l'] / 10:g} cm wires; the mic DOUT, GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
+    p(f"The BiBoard and mic wires are female-female jumpers from a pack of {WR['pack_l'] / 10:g} cm wires; the mic GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
       "and the two splices are cut from pack jumpers. pod.py models every wire "
       f"({WR['wire_d']:g} mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each "
       f"other ({len(WR['crossings'])} found), and no bend is smaller than {WR['r_bend']:g} mm radius ({WR['r_slack']:g} mm in the slack). "
@@ -172,7 +172,7 @@ def content():
     lst([f"#{num[k]}: {WIRE_FROM[k]} to {WIRE_TO[k]}" + (f". Put its excess in a {[w for w in ws if (w['group'], w['wire']) == k][0]['slack']} as in the drawing."
                                                           if k in {(w['group'], w['wire']) for w in pack} else ". Cut to length.")
          for k in order] + ["Last, push the BiBoard ends of #%d, #%d and #%d onto the BiBoard header." % tuple(num[k] for k in order if k[0] == "uart")])
-    lst(["The mic has a straight header along its edge next to the right wall. Plug the six mic jumpers onto it before the mic goes in. "
+    lst(["The mic has a straight header along its front edge. Plug the six mic jumpers onto it before the mic goes in. "
          "Mic wires: " + ROUTE["mic"] + ".",
          "Amp cable: " + ROUTE["amp"] + ". Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.",
          "Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.",
@@ -189,7 +189,7 @@ def content():
          f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact. "
          f"The latch tongue lifts {S['lift_mm']:g} mm over the rib: about {S['slide_on_N']:g} N to slide on, {S['lift_N']:g} N to lift, strain {S['strain_pct']:g} %. "
          "Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.",
-         "Install: the speaker and the stack each go straight down 40 mm without contact. The mic goes down 1.7 mm behind its place, then forward onto the pin. "
+         "Install: the speaker and the stack each go straight down 40 mm without contact. The mic goes down 1.7 mm inside its place, then out onto the pin. "
          "The amp tilts in under its nubs. "
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
          "(small contacts of 2 to 3 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
@@ -228,8 +228,8 @@ WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
 ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
              amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
-             mic="rearward out of the mic plugs, up over the amp cable, a U turn inward, forward in front of the battery, across behind the front wall in front of the stack, "
-                 "then rearward as a flat stack in the left well beside the BiBoard plugs; the wires keep their order (SEL lowest)",
+             mic="straight inward out of the mic plugs, across behind the front wall in front of the stack, "
+                 "then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin",
              splice="short wire in the left well, up into the bottom of the splice sleeve",
              speaker="a pair: up the right side behind the amp, over the ear plate, into the top of the speaker")
 
@@ -247,7 +247,7 @@ def routing_figures():
                  ("Pi header plugs", MX((pod.HDR_BASE_X[0], pod.HOUSING_END)), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"], "#555"),
                  ("BiBoard plugs", MX(pod.BB_PLUG["x"]), sorted((pod.bb_pin_z(0) + 1.25, pod.bb_pin_z(2) - 1.25)), pod.BB_PLUG["y"], "#d83a34"),
                  ("amp", MX((pod.AMP_X[0], pod.AMP_X[1] + 10.0)), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"]), "#1f5f8f"),
-                 ("mic", MX((pod.MIC_X - pod.MIC["w"] / 2, pod.MIC_X + pod.MIC["w"] / 2)), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"]), "#d83a34"),
+                 ("mic", MX(pod.MIC_X), (pod.MIC["z0"], pod.MIC["z0"] + pod.MIC["w"]), (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"]), "#d83a34"),
                  ("speaker", (-pod.SPK["l"] / 2, pod.SPK["l"] / 2), (pod.SPK_ZE, pod.SPK_ZE + pod.SPK["ear_t"] + pod.SPK["h"]),
                   (pod.SPK_Y0, pod.SPK_Y0 + pod.SPK["d"]), "#7a52b8")]
         for name, xr, zr, yr, col in boxes:
@@ -472,7 +472,7 @@ def _parts(a, view, left=False):
              ("Pi header", MX((pod.HDR_BASE_X[0], pod.HOUSING_END)), pod.PI_PLUGS["z"], pod.PI_PLUGS["y"]),
              ("BiBoard", MX(pod.BB_PLUG["x"]), sorted((pod.bb_pin_z(0) + 1.25, pod.bb_pin_z(2) - 1.25)), pod.BB_PLUG["y"]),
              ("amp", MX((pod.AMP_X[0], pod.AMP_X[1] + 10.0)), pod.AMP_Z, (pod.AMP_Y0, pod.AMP_Y0 + pod.AMP["h"])),
-             ("mic", MX((pod.MIC_X - pod.MIC["w"] / 2, pod.MIC_X + pod.MIC["w"] / 2)), pod.MIC_Z, (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"])),
+             ("mic", MX(pod.MIC_X), (pod.MIC["z0"], pod.MIC["z0"] + pod.MIC["w"]), (pod.MIC["y0"], pod.MIC["y0"] + pod.MIC["l"])),
              ("speaker", (-pod.SPK["l"] / 2, pod.SPK["l"] / 2), (pod.SPK_ZE, pod.SPK_ZE + pod.SPK["ear_t"] + pod.SPK["h"]),
               (pod.SPK_Y0, pod.SPK_Y0 + pod.SPK["d"]))]
     for t in ("bclk", "lrclk"):

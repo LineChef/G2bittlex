@@ -114,10 +114,10 @@ INFO = {
                        "Forks under the panel also hold its top edge."),
     "speaker": dict(text="NULLLAB 3 W 4 ohm speaker at the rear, with a 3 mm ear plate. The sound goes out of the grille in the rear face.",
                     attach="Push the ends of the ear plate down into the two side grooves, body to the rear."),
-    "mic": dict(text="HiLetgo SPH0645 I2S mic board, high in the front right corner, away from the speaker. The port faces 7 holes in the front face. "
-                     "Its straight header is next to the right wall: the plugs point rearward.",
-                attach="Plug the six jumpers onto its header. Lower it 2 mm behind the bosses, push it forward onto the pin, "
-                       "and screw it to the heat-set insert with an M2 x 5 screw."),
+    "mic": dict(text="HiLetgo SPH0645 I2S mic board, high on the right wall near the front, away from the speaker. The port faces 7 holes in the right side. "
+                     "Its straight header is on its front edge: the plugs point inward, and the wires go straight across behind the front wall.",
+                attach="Plug the six jumpers onto its header. Lower it 2 mm inside the bosses, push it out onto the pin, "
+                       "and screw it to the heat-set insert with an M2 x 5 screw (1.5 mm hex key)."),
     "header": dict(text="The 5-pin BiBoard header (TX2, RX2, GND, +5V, +5V) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
     "bb_plug": dict(text="Three straight Dupont plugs on the BiBoard header (TX2, RX2, GND), at the front of the left well. +5V is not wired.",
@@ -196,9 +196,9 @@ STEPS = [
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
-         text="Press the M2 heat-set insert into the upper boss in the front right corner. Plug the six jumpers onto the mic header "
-              "(15 cm on DOUT, GND and 3V) and let them hang out of the top. Lower the mic 2 mm behind the bosses, port to the front, "
-              "push it forward onto the pin and screw it to the insert with an M2 x 5 screw. Each jumper shows in the step where its other end goes onto the Pi."),
+         text="Press the M2 heat-set insert into the upper boss on the right wall near the front. Plug the six jumpers onto the mic header "
+              "(15 cm on GND and 3V) and let them hang out of the top. Lower the mic 2 mm inside the bosses, port to the wall, "
+              "push it out onto the pin and screw it to the insert with an M2 x 5 screw. Each jumper shows in the step where its other end goes onto the Pi."),
     dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
