@@ -125,7 +125,7 @@ def render(name, scad, cam, size=(1400, 1000), ortho=False):
 ALL = ["cover", "body", "panel", "button", "camera_mount", "shoulder", "plate"] + [k for k in ELEC if not k.startswith("wires_")]
 WIRES = [k for k in ELEC if k.startswith("wires_")]
 ALL += WIRES
-OPEN = [k for k in ALL if k not in ("panel", "button", "camera_mount") and not k.startswith("camera__")]
+OPEN = [k for k in ALL if k not in ("panel", "button", "camera_mount") and not k.startswith(("camera__", "wires_camera"))]
 ROBOT = ["cover", "shoulder", "plate"]
 
 JOBS = {

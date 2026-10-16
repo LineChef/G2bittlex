@@ -377,13 +377,13 @@
    5,
    [
     0,
-    45,
-    0
+    0,
+    2.0
    ],
    [
     0,
-    0,
-    -25
+    45,
+    0
    ]
   ]
  },
@@ -397,33 +397,53 @@
    5,
    [
     0,
-    45,
-    0
+    0,
+    2.0
    ],
    [
     0,
-    0,
-    -25
+    45,
+    0
    ]
   ]
  },
  {
   "model": "mic_sph0645",
   "sub": "header",
-  "label": "mic right-angle header",
+  "label": "mic header",
   "file": "models/parts/mic_sph0645__header.stl",
   "color": "#1d1d1f",
   "explode": [
    5,
    [
     0,
-    45,
-    0
+    0,
+    2.0
    ],
    [
     0,
+    45,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "mic_sph0645",
+  "sub": "screw",
+  "label": "M2 screw",
+  "file": "models/parts/mic_sph0645__screw.stl",
+  "color": "#9a9ca0",
+  "explode": [
+   5,
+   [
     0,
-    -25
+    0,
+    2.0
+   ],
+   [
+    0,
+    45,
+    0
    ]
   ]
  },

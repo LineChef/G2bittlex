@@ -69,7 +69,7 @@ INFO = {
                   files=[("Print STL, with foot", PF + "cover_pegs_foot.stl"), ("Pegs STEP", PF + "pegs.step"),
                          ("Platform spec PDF", PF + "bittle_platform_spec.pdf")]),
     "body": dict(text="The body of the Pi add-on: one rounded box with a flat floor. The floor has the 4 teardrop keyholes, each with two "
-                      "spring beams that center the peg. Inside: grooves for the speaker, the Pi stack and the mic, and a slot bar for the amp. "
+                      "spring beams that center the peg. Inside: grooves for the speaker and the Pi stack, two bosses for the mic (one for an M2 heat-set insert), and a slot bar for the amp. "
                       "The BiBoard header comes up through a notch in the floor, at the front of the left well. "
                       "Two nubs on the right wall hold the amp. The base has no cable holes. "
                       "It prints floor down without supports.",
@@ -114,9 +114,10 @@ INFO = {
                        "Forks under the panel also hold its top edge."),
     "speaker": dict(text="NULLLAB 3 W 4 ohm speaker at the rear, with a 3 mm ear plate. The sound goes out of the grille in the rear face.",
                     attach="Push the ends of the ear plate down into the two side grooves, body to the rear."),
-    "mic": dict(text="SPH0645 I2S mic board at the front wall, away from the speaker. The port faces 7 holes in the front face. "
-                     "A right-angle header along its left edge points into the left well.",
-                attach="Plug the six jumpers onto its header, then push it down into its groove and slot, port to the front."),
+    "mic": dict(text="HiLetgo SPH0645 I2S mic board, high in the front right corner, away from the speaker. The port faces 7 holes in the front face. "
+                     "Its straight header is next to the right wall: the plugs point rearward.",
+                attach="Plug the six jumpers onto its header. Lower it 2 mm behind the bosses, push it forward onto the pin, "
+                       "and screw it to the heat-set insert with an M2 x 5 screw."),
     "header": dict(text="The 5-pin BiBoard header (TX2, RX2, GND, +5V, +5V) in the Pi slot of the cover. The height is an estimate.",
                    attach="It is part of the robot."),
     "bb_plug": dict(text="Three straight Dupont plugs on the BiBoard header (TX2, RX2, GND), at the front of the left well. +5V is not wired.",
@@ -156,7 +157,7 @@ def _wire_step(key, title=None, text=""):
     new = [w["id"]] + list(w["housings"])
     under = key[0] == "amp"                             # the amp cable runs under the stack: the stack goes see-through
     if w.get("pack"):
-        text = text or f"Plug a 10 cm jumper from {w['from']} to the Pi {w['to']}. Lay its excess in {('an' if w['slack'][0] in 'aeiou' else 'a')} {w['slack']} as shown."
+        text = text or f"Plug a {w.get('len_cm', 10):g} cm jumper from {w['from']} to the Pi {w['to']}. Lay its excess in {('an' if w['slack'][0] in 'aeiou' else 'a')} {w['slack']} as shown."
     return dict(title=title or f"{w['from']} \u2192 {'Pi ' if w['to'].startswith('pin') else ''}{w['to']}", view="build" if under else "wires",
                 show=new, highlight=new, ghost=["body", "panel"] + (STACK[:4] if under else []), start={k: [0, 22, 0] for k in new},
                 text=(text or f"Plug {w['from']} onto the Pi {w['to']}.") + f" (Wire {i} in the route table of the guide.)")
@@ -195,8 +196,9 @@ STEPS = [
     dict(title="Speaker", view="build", show=["speaker"], start={"speaker": [0, 40, 0]},
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
-         text="Plug the six 10 cm jumpers onto the mic header and let them hang out of the top. Then push the mic down into its groove "
-              "at the front wall, port to the front. Each jumper shows in the step where its other end goes onto the Pi."),
+         text="Press the M2 heat-set insert into the upper boss in the front right corner. Plug the six jumpers onto the mic header "
+              "(15 cm on GND and 3V) and let them hang out of the top. Lower the mic 2 mm behind the bosses, port to the front, "
+              "push it forward onto the pin and screw it to the insert with an M2 x 5 screw. Each jumper shows in the step where its other end goes onto the Pi."),
     dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
