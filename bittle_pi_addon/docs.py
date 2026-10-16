@@ -71,7 +71,7 @@ def content():
          ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
           "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
-         ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V."],
+         ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic DOUT, GND and 3V."],
          ["M2 heat-set insert and M2 x 5 screw", "The insert goes into the upper mic boss on the inside of the front wall. The screw holds the mic."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
           "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
@@ -104,7 +104,7 @@ def content():
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
          "Press the M2 heat-set insert into the upper mic boss (front right corner, inside the front wall) with a soldering iron. "
-         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Lower the mic into the front right corner 2 mm behind the bosses, "
+         "Plug the six mic jumpers onto the mic header: 15 cm jumpers on DOUT, GND and 3V. Lower the mic into the front right corner 2 mm behind the bosses, "
          "port to the front, header next to the right wall. Push it forward onto the pin of the lower boss. "
          "Put the M2 x 5 screw through the upper hole into the insert." + st(6),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
@@ -148,7 +148,7 @@ def content():
     WR = json.load(open(os.path.join(pod.OUT, "wires.json")))
     ws = WR["wires"]
     pack = [w for w in ws if w.get("pack")]
-    p(f"The BiBoard and mic wires are female-female jumpers from a pack of {WR['pack_l'] / 10:g} cm wires; the mic GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
+    p(f"The BiBoard and mic wires are female-female jumpers from a pack of {WR['pack_l'] / 10:g} cm wires; the mic DOUT, GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
       "and the two splices are cut from pack jumpers. pod.py models every wire "
       f"({WR['wire_d']:g} mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each "
       f"other ({len(WR['crossings'])} found), and no bend is smaller than {WR['r_bend']:g} mm radius ({WR['r_slack']:g} mm in the slack). "
@@ -228,8 +228,8 @@ WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
 ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
              amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
-             mic="rearward out of the mic plugs, a U turn inward, forward in front of the battery, across behind the front wall in front of the stack, "
-                 "then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin",
+             mic="rearward out of the mic plugs, up over the amp cable, a U turn inward, forward in front of the battery, across behind the front wall in front of the stack, "
+                 "then rearward as a flat stack in the left well beside the BiBoard plugs; the wires keep their order (SEL lowest)",
              splice="short wire in the left well, up into the bottom of the splice sleeve",
              speaker="a pair: up the right side behind the amp, over the ear plate, into the top of the speaker")
 

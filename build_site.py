@@ -197,7 +197,7 @@ STEPS = [
          text="Push the speaker down into the two side grooves at the rear, body to the rear (to the grille)."),
     dict(title="Mic", view="buildfront", show=["mic"], start={"mic": [0, 40, 0]},
          text="Press the M2 heat-set insert into the upper boss in the front right corner. Plug the six jumpers onto the mic header "
-              "(15 cm on GND and 3V) and let them hang out of the top. Lower the mic 2 mm behind the bosses, port to the front, "
+              "(15 cm on DOUT, GND and 3V) and let them hang out of the top. Lower the mic 2 mm behind the bosses, port to the front, "
               "push it forward onto the pin and screw it to the insert with an M2 x 5 screw. Each jumper shows in the step where its other end goes onto the Pi."),
     dict(title="Amp", view="build", show=["amp", "wires_speaker__pos", "wires_speaker__neg"],
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},

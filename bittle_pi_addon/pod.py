@@ -241,8 +241,9 @@ AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0
 # the front face). The 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V, SEL lowest) are a straight header along its outer
 # 16.12 edge: the Dupont housings point rearward, along the side wall. Two holes at the corners of the inner edge:
 # an M2 screw through the upper hole goes into a heat-set insert in the upper boss; a pin on the lower boss goes
-# into the lower hole. The housing column stands 0.8 inside the amp cable (AMP_CABLE_X).
-MIC = dict(w=12.45, l=16.12, t=1.6, x0=-IN_A_LOW + 5.9, y0=36.3, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)
+# into the lower hole. The housing column stands 0.7 outside the amp cable (AMP_CABLE_X): the screw is clear of the
+# battery for the screwdriver. The mic wires go up over the amp cable (MIC_CROSS_Y).
+MIC = dict(w=12.45, l=16.12, t=1.6, x0=-IN_A_LOW + 0.4, y0=37.6, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)
 MIC_BOSS = dict(d=5.5, h=2.0, insert_d=3.2, insert_l=3.5, pin_d=1.9, pin_l=1.3, head_d=3.8, head_h=1.3)
 MIC_Z = (ZF_IN + MIC_BOSS["h"], ZF_IN + MIC_BOSS["h"] + MIC["t"])     # PCB front and back faces
 MIC_X = MIC["x0"] + MIC["w"] / 2                  # board center
@@ -251,8 +252,9 @@ MIC_PIN_X = MIC["x0"] + MIC["pin_in"]
 MIC_PIN_Y = [MIC["y0"] + (MIC["l"] - 15.24) / 2 + 1.27 + 2.54 * k for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V
 MIC_HDR_Z = (MIC_Z[1], MIC_Z[1] + 2.5)           # header plastic on the back face
 MIC_HOUSING_Z = (MIC_HDR_Z[1], MIC_HDR_Z[1] + DUPONT_L)
+MIC_CROSS_Y = [44.9 + 1.5 * k for k in range(6)]  # the mic wires over the amp cable (its top wire is at Y 43.1)
 MIC_HOLES = [(MIC["x0"] + MIC["w"] - MIC["hole_in"], y) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # screw, pin
-LONG_L = 150.0        # the mic GND and 3V jumpers are 15 cm (their routes are 121 and 133 mm long)
+LONG_L = 150.0        # the mic DOUT, GND and 3V jumpers are 15 cm (their routes are 98 to 143 mm long)
 
 # Slide lid: the panel goes down 5 mm behind its place, then slides forward 5 mm. 45 deg dovetail hooks under the
 # panel go under lugs on the inner faces of the walls: the full straight width of the front wall, and 4.4 long lugs
@@ -282,9 +284,9 @@ WIRE_PATHS = {
                                         dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
     "i2s: under the stack to the amp": [dict(x=(AMP_CABLE_X + 0.8, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
                                         dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 0.8), y=(27.6, 43.9), z=(-24.2, -12.1))],
-    "mic: U turn, across the front, rearward in the right well": [dict(x=(MIC["x0"] + 5.9, MIC["x0"] + 7.5), y=(37.4, 51.4), z=(-29.0, -16.5)),
-                                                                   dict(x=(-3.0, 21.0), y=(37.4, 51.4), z=(-34.0, -32.6)),
-                                                                   dict(x=(22.7, 24.1), y=(37.4, 51.4), z=(-29.5, 24.0))],
+    "mic: U turn, across the front, rearward in the right well": [dict(x=(MIC["x0"] + 5.9, MIC["x0"] + 7.5), y=(44.3, 53.0), z=(-29.0, -16.5)),
+                                                                   dict(x=(-3.0, 21.0), y=(44.3, 53.0), z=(-34.0, -32.6)),
+                                                                   dict(x=(22.7, 24.1), y=(44.3, 53.0), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
@@ -640,7 +642,7 @@ def mic_bosses():
     (mic_insert_hole), the lower one a pin into the board hole. Teardrop sections: the body prints floor down."""
     B = MIC_BOSS
     (xs, ys), (xp, yp) = MIC_HOLES
-    out = [teardrop_z(ZF_IN - 0.5, MIC_Z[0], B["d"] / 2, x, y) - mbox(x - 5, x + 5, y + B["d"] / 2 + 0.5, y + 9, -99, 99)   # top under the panel hooks
+    out = [teardrop_z(ZF_IN - 0.5, MIC_Z[0], B["d"] / 2, x, y) - mbox(x - 5, x + 5, min(y + B["d"] / 2 + 0.5, 53.9), y + 9, -99, 99)   # top under the panel hooks
            for x, y in MIC_HOLES]
     r = B["pin_d"] / 2
     pin = teardrop_z(MIC_Z[0] - 0.01, MIC_Z[0] + B["pin_l"], r, xp, yp) ^ mbox(xp - r, xp + r, yp - r, yp + r, MIC_Z[0] - 1, MIC_Z[0] + B["pin_l"] + 1)   # the point cut off: it fits the hole
@@ -1203,7 +1205,7 @@ SPLICE = dict(bclk=(21.2, 3.0), lrclk=(21.0, -13.0), y=(39.0, 45.0), r=1.25)
 MIC_RIB, UART_X, FLOOR_WIRE = 23.4, 27.0, FLOOR_Y1 + 0.75
 AMP_LANES = dict(G=18.4, V=20.0, BCLK=21.6, LRC=23.2)
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
-LONG_WIRES = {("mic", "GND"), ("mic", "3V")}         # LONG_L
+LONG_WIRES = {("mic", "DOUT"), ("mic", "GND"), ("mic", "3V")}     # LONG_L
 
 
 def pack_len(key):
@@ -1264,9 +1266,9 @@ def wire_routes():
             else:
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
         W.append(("amp", lab, col, pts))
-    # Mic: jumpers (GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
-    # pin (SEL at the bottom, 3V at the top): a U turn inward, forward between the housings and the battery, across
-    # in front of the stack (behind the front wall), then rearward as a flat stack at MIC_RIB in the right well.
+    # Mic: jumpers (DOUT, GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
+    # pin (SEL at the bottom, 3V at the top): up over the amp cable (MIC_CROSS_Y), a U turn inward, forward between the
+    # amp and the battery, across in front of the stack (behind the front wall), then rearward as a flat stack at MIC_RIB.
     # SEL (pin 39, to GND: left channel), DOUT (pin 38), LRCL (splice), BCLK (splice), GND (pin 9), 3V (pin 1).
     xa = MIC_RIB
     xin = EXIT_X + 2.0
@@ -1274,8 +1276,8 @@ def wire_routes():
     xu = MIC["x0"] + 6.7                                   # the forward run, inside the housing column
     for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
                            (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
-        y = MIC_PIN_Y[k]
-        pts = [(MIC_PIN_X, y, zh), (MIC_PIN_X, y, zh + 1.2), (MIC_PIN_X, y, zh + 4.2), (xu, y, zh + 4.2), (xu, y, -29.6),
+        yh, y = MIC_PIN_Y[k], MIC_CROSS_Y[k]
+        pts = [(MIC_PIN_X, yh, zh), (MIC_PIN_X, yh, zh + 1.2), (MIC_PIN_X, y, zh + 5.5), (xu, y, zh + 5.5), (xu, y, -29.6),
                (-7.5, y, -29.6), (-4.0, y, -33.3), (21.0, y, -33.3), (xa, y, -29.2)]
         if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
             sx, sz = SPLICE[t]
