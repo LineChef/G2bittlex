@@ -46,7 +46,7 @@ that clicks onto the platform.
 - SPH0645 I2S microphone at the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
 - Serial link to the BiBoard: the Dupont plug goes onto the header inside the right wall, and all the wires stay inside
-- A snap-in top panel with openings shaped to the plugs, a large power switch slider and a large button
+- A slide-on top panel with openings shaped to the plugs, a large power switch slider and a large button
 - 3 printed parts, all without supports
 
 ![Inside the Pi add-on](bittle_pi_addon/doc/06_open.png)

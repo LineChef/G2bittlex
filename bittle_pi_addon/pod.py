@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.19: one-piece body with a snap-in top panel.
+"""Bittle X Pi add-on rev 0.20: one-piece body with a slide-on top panel.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -13,12 +13,13 @@ Parts
                PiSugar 2 stack on its long edge (ports up, over the robot center), the speaker
                (rear, sound to the rear grille) and the NS4168 amp (left gallery).
                The BiBoard header comes up through a notch in the floor, in the right well.
-  pod_panel  : the top, with the soft top edge and openings shaped to the plug bodies. Four spring tabs
-               click into pockets in the front and rear walls. Forks under the panel hold the stack,
+  pod_panel  : the top, with the soft top edge and openings shaped to the plug bodies. It goes down 5 mm
+               behind its place and slides forward: hooks go under lugs in the front and side walls, and
+               a latch tongue at the rear clicks over a rib. Forks under the panel hold the stack,
                the speaker and the amp down. A spring tongue over the PiSugar button is a large button.
   pod_switch : a large slider for the PiSugar power switch: a fork on the lever, a tab through the panel.
 Order: fit the platform cover, click the empty body on, put the parts in, plug in the wires, put the
-slider on the switch lever, click the panel on.
+slider and button cap into the panel, slide the panel on.
 Print: the body and the slider print flat side down, the panel prints upside down on its top. No supports.
 
 The camera (Petoi AI Vision Module) stays in the head, as Petoi designs it.
@@ -130,18 +131,21 @@ STACK_FORKS = [STACK_ZF + 25.4, STACK_ZF + 61.0]   # z0 of each fork, 2 long
 FORK = dict(len=2.0, lip=1.85, clr_y=0.1)
 # Power switch: the PiSugar slide switch lever (model: X -3.66..-2.66, Y 59.5..60.9, 1.3 long in Z) is
 # 0.9 above the board edge. A slider part rests on it: a fork goes over the lever, a 5.5 x 5 tab stands
-# 2 mm out of a slot in the panel. The lever travel is not measured: the slot gives +-2.0.
+# 2 mm out of a slot in the panel. Lever travel about 1.5 mm (user estimate): +-0.75 from the model.
 SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=(STACK_ZF + 12.1, STACK_ZF + 13.4))
-SW = dict(zc=STACK_ZF + 12.75, travel=2.0, body_x=(-7.1, 2.8), body_y=(60.75, 61.45), body_hz=2.45, chamfer=0.4,
+SW = dict(zc=STACK_ZF + 12.75, travel=0.75, body_x=(-7.1, 2.8), body_y=(60.75, 61.45), body_hz=2.45, chamfer=0.4,
           fork_x=(0.9, 2.3), fork_y0=60.15, notch_hz=0.85,
           tab_x=(-9.9 + STACK_DX, -4.6 + STACK_DX), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.1,
           rail_t=0.45, rail_gap=0.15, rail_y0=60.35, entry=5.6, click=0.25)
 # The slider clicks into the panel: its body rides in two dovetail rails under the panel. Put it in at the rear
-# end of the rails (no lips there), slide it forward past the click bumps; the switch lever keeps it in its travel.
+# end of the rails (no lips there), slide it forward past the click bumps. In front of its travel it has LID_SLIDE
+# more: before the lid goes on, set the switch toward the head and push the slider fully forward. The fork then
+# comes down on the lever, and the lever holds the slider while the lid slides forward.
 BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(6.5, 16.5), t=1.0, slit=0.6, cap=(-3.8 + STACK_DX, -2.8 + STACK_DX, 12.89, 14.75, 60.2),
            arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(12.8, 14.8), gap=0.2, press=0.6)
-# The button cap (white) slides onto the free end of the tongue along a 45 deg dovetail and clicks over a bump.
-KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, key_w=2.0, key_d=0.4, clr=0.1, bump=0.15)
+# The button cap (white) presses into a round hole in the tongue: a cross post, its ribs 0.15 over the hole on each
+# side, crush into the hole wall (coarse enough for a 0.5 mm nozzle).
+KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.6, rib=1.0, press=0.15, post_h=0.9)
 # Camera: the Petoi AI Vision Module in its Petoi case (reference/AiCamera250116-*.stl, 46.7 x 29.3 x 14.9) stands
 # upright on the front of the panel, lens forward over the head. It is turned 180 deg about the lens axis: its Grove
 # socket (a slot in the rear face) is then on the left, clear of the HDMI opening. (Turn the image in software.)
@@ -152,10 +156,10 @@ KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, key_w=2.0, key_d=0.4, clr=0.1, bump=0.
 CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z=-39.8,
            base=dict(hx=25.65, z=(-35.5, -23.05), t=2.0, chin=3.0, clr=0.15, hdmi_z=-24.1),
            brk=dict(t=1.2, clr=0.25, lip_front=0.8, lip_back=1.6, top=90.0),
-           ridge=dict(h=0.5, yc=80.0, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85
+           ridge=dict(h=0.8, catch=0.3, yc=74.75, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85; the catch face is at the lower edge
 
-           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.8, hook=0.5, clr=0.05, gap=0.05),
-           slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-19.4, -8.4)), mass=15.0)
+           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.8, w=5.8, hook=0.8, clr=0.05, gap=0.05),
+           slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-21.4, -8.4)), mass=15.0)
 # The Grove socket (native x 32.4..37.3, y -19.4..-1.0 on the rear face): the plug in place, and the plug on the
 # BiBoard under the cover (platform GROVE_PLUG). Grove plug body 4.9 x 9.9, 6 mm out of the socket (estimates).
 GROVE_W, GROVE_L, GROVE_OUT = 4.9, 9.9, 6.0
@@ -205,13 +209,21 @@ MIC_HDR_X = (MIC_X + MIC["w"] / 2 - 1.1, MIC_X + MIC["w"] / 2 + 1.4)       # hea
 MIC_PIN_Y = [MIC["y0"] + 3.27 + 2.54 * (5 - k) for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V (top to bottom)
 MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
 
-# Panel snaps: four spring tabs, two on the front wall and two on the rear wall. Each tab hangs from
-# the panel and has a bump that clicks into a pocket in the wall. The catch face is 45 deg (the print
-# limit), the lead face 30 deg from vertical. snap_force() gives the forces.
-TAB = dict(x=17.5, b=4.0, t=0.9, y_end=52.6, e=0.6, y_catch=55.2, flat=0.3, catch=45.0, lead=30.0, gap=0.15)
-# Side lips under the panel: they locate the panel in X on the side walls.
-LIPS_Z = [(-26.0, -16.0), (18.0, 26.0)]
-LIP = dict(t=1.2, y0=54.2, gap=0.15)
+# Slide lid: the panel goes down 5 mm behind its place, then slides forward 5 mm. 45 deg dovetail hooks under the
+# panel go under lugs on the inner faces of the walls: the full straight width of the front wall, and 4.4 long lugs
+# at a 10 mm pitch along the side walls (the hooks go down in the gaps). The left wall has no lugs where the amp
+# goes in. u = distance in from the inner face of the wall. Every spring in the panel bends along its layers.
+LID_SLIDE = 5.0
+LID = dict(L=1.5, top=0.6, gap=0.1, gap_y=0.15, bot=54.1, t=1.2, front_x=[(-19.0, -4.5), (15.2, 19.0)], front_gap=0.05,
+           hook_len=4.2, lug_len=4.4, side_z={1: [-28.0, 32.0], -1: [-28.0, -18.0, 32.0]})
+# Front: no ledge where the mic goes in, and the hooks come down clear of the Pi stack. Right: no lugs over the
+# uart wires (they go in from the top along the wall) and the BiBoard plug (FINGER).
+LID_LUG_Y = SEAM - LID["top"] - LID["L"]                 # 55.1: the 45 deg underside of a lug meets the wall here
+# The latch: a tongue in the panel top at the rear center, cut free by two slits (root at the front, the rear
+# skirt at its free end). Its hook rides over a rib on the rear wall and drops in front of it. To open, lift the
+# rear edge at the finger notch and slide the panel rearward. The hook is over the speaker.
+LATCH = dict(hw=4.5, slit=0.6, root_z=34.0, rib_hw=3.0, rib_d=1.2, rib_top=59.6, hook_bot=58.9, hook_d=2.0,
+             hook_hw=3.5, ramp=1.0, gap=0.05)
 # Finger notch in the rear wall under the seam: lift the rear edge of the panel here.
 NOTCH = dict(hw=7.0, h=1.5, d=1.0)
 # Cable notches at the base of the side walls (both sides, the same): for an optional cable from outside,
@@ -579,41 +591,70 @@ def amp_base():
     return b - mbox(AMP_X[0] - c, AMP_X[1] + c, AMP_Y0 - 0.15, 31.0, AMP_Z[0] - 1, AMP_Z[1] + 1)
 
 
-def bump_cs(e, grow=0.0):
-    """Snap bump profile (u, y) on a tab face: u = out of the tab into the wall pocket."""
-    T = TAB
-    yt = T["y_catch"]
-    y1 = yt - e / math.tan(math.radians(T["catch"]))
-    y2 = y1 - T["flat"]
-    y3 = y2 - e / math.tan(math.radians(T["lead"]))
-    cs = _cs([(-0.3, yt), (0.0, yt), (e, y1), (e, y2), (0.0, y3), (-0.3, y3)])
-    return cs.offset(grow, m3.JoinType.Round) if grow else cs
+def _wall_prism(pts_uy, side, z0=None, z1=None):
+    """A (u, y) profile on the inner face of a wall: side +-1 = the right or left wall (along Z from z0 to z1),
+    side 0 = the front wall (along X over the LID front_x segments)."""
+    if side:
+        return prism_zp([(side * (IN_A - u), y) for u, y in pts_uy], z0, z1)
+    return union([prism_x([(y, ZF_IN + u) for u, y in pts_uy], x0, x1) for x0, x1 in LID["front_x"]])
 
 
-def tab_bump(sz, x, e, grow=0.0, w=None):
-    """The bump profile on the tab face of the front (sz -1) or rear (sz +1) wall, along X over the width w."""
-    w = TAB["b"] if w is None else w
-    zf = (ZR_IN - TAB["gap"]) if sz > 0 else (ZF_IN + TAB["gap"])     # tab outer face
-    pts = [(y, zf + sz * u) for u, y in np.asarray(bump_cs(e, grow).to_polygons()[0])]
-    return prism_x(pts, x - w / 2, x + w / 2)
-
-
-def tabs():
-    """The four spring tabs of the panel, with their bumps."""
-    T = TAB
-    out = []
-    for sz in (-1, 1):
-        zf = (ZR_IN - T["gap"]) if sz > 0 else (ZF_IN + T["gap"])
-        for sx in (-1, 1):
-            x = sx * T["x"]
-            out.append(mbox(x - T["b"] / 2, x + T["b"] / 2, T["y_end"], PANEL_IN + 0.01, *sorted((zf, zf - sz * T["t"]))))
-            out.append(tab_bump(sz, x, T["e"]))
+def lid_lugs():
+    """The lugs of the body: a 45 deg underside, a vertical face, the top at the seam."""
+    L, y = LID["L"], LID_LUG_Y
+    prof = [(-0.02, y), (L, y + L), (L, SEAM), (-0.02, SEAM)]
+    out = [_wall_prism(prof, 0)]
+    for sx, zs in LID["side_z"].items():
+        out += [_wall_prism(prof, sx, z, z + LID["lug_len"]) for z in zs]
     return union(out)
 
 
-def pockets():
-    """Pockets in the front and rear walls for the tab bumps (0.15 clearance, 45 deg roof)."""
-    return union([tab_bump(sz, sx * TAB["x"], TAB["e"], grow=0.15, w=TAB["b"] + 1.0) for sz in (-1, 1) for sx in (-1, 1)])
+def lid_hooks():
+    """The hooks of the panel: a stem down from the panel, a 45 deg hook out under the lug (gap_y under it)."""
+    L, g, t, gy, bot = LID["L"], LID["gap"], LID["t"], LID["gap_y"], LID["bot"]
+    def prof(tip):
+        y = lambda u: LID_LUG_Y + u - gy                  # the hook top: parallel to the lug underside
+        return [(tip, bot), (L + g + t, bot), (L + g + t, PANEL_IN + 0.01), (L + g, PANEL_IN + 0.01), (L + g, y(L + g)), (tip, y(tip))]
+    out = [_wall_prism(prof(LID["front_gap"]), 0)]      # the front hook tip is the forward stop
+    d = (LID["lug_len"] - LID["hook_len"]) / 2
+    for sx, zs in LID["side_z"].items():
+        out += [_wall_prism(prof(g), sx, z + d, z + d + LID["hook_len"]) for z in zs]
+    return union(out)
+
+
+def lid_keepout():
+    """Space near the walls that the other parts under the panel stay out of: the lugs pass through it."""
+    u = LID["L"] + LID["gap"]
+    y0, y1 = LID["bot"] - 0.1, SEAM + 0.05
+    out = [mbox(-A - 1, A + 1, y0, y1, Z0 - 1, ZF_IN + u)]
+    for sx in (-1, 1):
+        out.append(mbox(*sorted((sx * (IN_A - u), sx * (A + 1))), y0, y1, Z0 - 1, Z1 + 1))
+    return union(out)
+
+
+def latch_rib():
+    """The rib on the rear wall: a 45 deg underside, the catch face to the front, the top over the seam."""
+    C = LATCH
+    zf = ZR_IN - C["rib_d"]
+    prof = [(SEAM - 2.2, ZR_IN + 0.02), (SEAM - 2.2 + C["rib_d"], zf), (C["rib_top"], zf), (C["rib_top"], ZR_IN - 0.1),
+            (SEAM, ZR_IN - 0.1), (SEAM, ZR_IN + 0.02)]
+    return prism_x(prof, -C["rib_hw"], C["rib_hw"])
+
+
+def latch_hook(dy=0.0):
+    """The hook under the latch tongue: the catch face to the rear (on the rib), a 45 deg ramp at the front."""
+    C = LATCH
+    zr = ZR_IN - C["rib_d"] - C["gap"]
+    zf = zr - C["hook_d"]
+    b, r = C["hook_bot"], C["ramp"]
+    prof = [(PANEL_IN + 0.01, zr), (b, zr), (b, zf + r), (b + r, zf), (PANEL_IN + 0.01, zf)]
+    return prism_x(prof, -C["hook_hw"], C["hook_hw"]).translate([0, dy, 0])
+
+
+def latch_slits():
+    """Two slits through the panel top and the rear skirt: they free the latch tongue."""
+    C = LATCH
+    return union([mbox(*sorted((sx * C["hw"], sx * (C["hw"] + C["slit"]))), SEAM - 1, TOP + 1, C["root_z"], Z1 + 1) for sx in (-1, 1)])
 
 
 def keyhole_cut(px, pz):
@@ -664,7 +705,7 @@ def build_body():
         xs = sorted((sx * FRONT_NOTCH["x"][0], sx * FRONT_NOTCH["x"][1]))
         B -= prism_x(tri, *xs)
         B -= mbox(*xs, FLOOR_Y0 - 1, FLOOR_Y1 + 0.01, ZF_IN - 0.5, FRONT_NOTCH["z1"])     # floor opening over the Grove plug
-    B -= pockets()
+    B += lid_lugs() + latch_rib()
     nt = _cs([(NOTCH["hw"] + NOTCH["h"] * math.cos(t), SEAM + NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)]
              + [(-NOTCH["hw"] - NOTCH["h"] * math.cos(t), SEAM - NOTCH["h"] * math.sin(t)) for t in np.linspace(-math.pi / 2, math.pi / 2, 16)])
     B -= nt.extrude(NOTCH["d"] + 1).translate([0, 0, Z1 - NOTCH["d"]])   # finger notch
@@ -695,19 +736,11 @@ def panel_forks():
     G = SPK_GROOVE                                         # over the ends of the speaker ear plate
     za, zb = SPK_ZE - G["clr"], SPK_ZE + SPK["ear_t"] + G["clr"]
     for sx in (-1, 1):
-        f = mbox(*sorted((sx * 15.5, sx * 18.5)), 58.0, PANEL_IN + 0.01, za - G["lip"], zb + G["lip"])
+        f = mbox(*sorted((sx * 15.5, sx * 18.5)), 58.0, PANEL_IN + 0.01, za, zb + G["lip"])      # no front lip: the panel slides on
         out.append(f - mbox(*sorted((sx * 15.0, sx * 19.0)), 0, SPK_Y0 + SPK["d"] + G["clr_y"], za, zb))
     for z0 in AMP_FORKS:                                   # over the top edge of the amp board
         f = mbox(-IN_A + 0.15, AMP_X[1] + 1.55, 50.0, PANEL_IN + 0.01, z0, z0 + 2.5)
         out.append(f - mbox(-IN_A - 1, AMP_X[1] + 0.15, 0, AMP_Y0 + AMP["h"] + 0.3, z0 - 1, z0 + 3.5))
-    return union(out)
-
-
-def side_lips():
-    out = []
-    for sx in (-1, 1):
-        for z0, z1 in LIPS_Z:
-            out.append(mbox(*sorted((sx * (IN_A - LIP["gap"] - LIP["t"]), sx * (IN_A - LIP["gap"]))), LIP["y0"], PANEL_IN + 0.01, z0, z1))
     return union(out)
 
 
@@ -727,7 +760,7 @@ def port_openings():
 def switch_slot():
     S = SW
     c = S["slot_clr"]
-    return prism_y(rrect_pts(S["tab_x"][0] - c, S["tab_x"][1] + c, S["zc"] - S["tab_hz"] - S["travel"] - c,
+    return prism_y(rrect_pts(S["tab_x"][0] - c, S["tab_x"][1] + c, S["zc"] - S["tab_hz"] - S["travel"] - LID_SLIDE - c,
                              S["zc"] + S["tab_hz"] + S["travel"] + S["entry"] + c, 1.0), PANEL_IN - 1, TOP + 1)
 
 
@@ -745,6 +778,10 @@ def build_switch(dz=0.0):
     b = prism_zp([(x0 + c, y0), (x1 - c, y0), (x1, y0 + c), (x1, y1), (x0, y1), (x0, y0 + c)], zc - S["body_hz"], zc + S["body_hz"])
     f = mbox(*S["fork_x"], S["fork_y0"], y0 + 0.01, zc - S["body_hz"], zc + S["body_hz"])
     notch = mbox(S["fork_x"][0] - 0.2, S["fork_x"][1] + 0.2, S["fork_y0"] - 1, y0 + 0.3, zc - S["notch_hz"], zc + S["notch_hz"])   # over the lever
+    e, ya = 0.4, S["fork_y0"]                             # 45 deg lead-in on the tines: the fork finds the lever
+    for sz in (-1, 1):
+        w = [(ya - 0.01, zc + sz * (S["notch_hz"] + e)), (ya - 0.01, zc + sz * (S["notch_hz"] - 0.01)), (ya + e + 0.01, zc + sz * (S["notch_hz"] - 0.01))]
+        notch += prism_x(w if sz > 0 else w[::-1], S["fork_x"][0] - 0.2, S["fork_x"][1] + 0.2)
     b = (b + f) - notch
     t = prism_y(rrect_pts(S["tab_x"][0], S["tab_x"][1], zc - S["tab_hz"], zc + S["tab_hz"], 1.0), y1 - 0.01,
                 S["tab_top"] - S["tab_chamfer"])
@@ -763,7 +800,7 @@ def switch_rails():
     S = SW
     (x0, x1), (y0, y1), c = S["body_x"], S["body_y"], S["chamfer"]
     g, t, ya = S["rail_gap"], S["rail_t"], S["rail_y0"]
-    za = S["zc"] - S["body_hz"] - S["travel"] - 0.3
+    za = S["zc"] - S["body_hz"] - S["travel"] - LID_SLIDE - 0.3
     zb = S["zc"] + S["body_hz"] + S["travel"] + 0.3
     out = []
     for xw, sx in ((x0 - g, -1), (x1 + g, 1)):            # wall faces: 0.15 outside the body
@@ -795,37 +832,35 @@ def button_arm(dy=0.0):
     return (v + h).translate([0, dy, 0])
 
 
-def keycap_groove():
-    """45 deg dovetail groove along Z in the top of the tongue, open at its free end."""
+def keycap_center():
     K, B = KEYCAP, BTN
-    xc = (B["x"][0] + B["x"][1]) / 2
-    z1 = B["z"][1]
-    w, d = K["key_w"] + 2 * K["clr"], K["key_d"]
-    pts = [(xc - w / 2, TOP + 0.01), (xc + w / 2, TOP + 0.01), (xc + w / 2 + d, TOP - d), (xc - w / 2 - d, TOP - d)]
-    return prism_zp(pts, z1 - K["l"] - 0.6, z1 + 1.0)
+    return (B["x"][0] + B["x"][1]) / 2, B["z"][1] - 0.3 - K["l"] / 2
 
 
-def keycap_bump():
-    """Click bump on the floor of the groove near its open end."""
-    K, B = KEYCAP, BTN
-    xc = (B["x"][0] + B["x"][1]) / 2
-    z1 = B["z"][1]
-    return mbox(xc - 0.8, xc + 0.8, TOP - K["key_d"] - 0.01, TOP - K["key_d"] + K["bump"], z1 - 0.25, z1)      # just past the end of the key
+def keycap_hole():
+    """Round hole through the tongue for the post of the cap."""
+    xc, zc = keycap_center()
+    pts = [(xc + KEYCAP["post_d"] / 2 * math.cos(t), zc + KEYCAP["post_d"] / 2 * math.sin(t)) for t in np.linspace(0, 2 * math.pi, 40, endpoint=False)]
+    return prism_y(pts, PANEL_IN - 1, TOP + 1)
 
 
-def build_keycap(dz=0.0):
-    """The white button cap on the tongue, its dovetail key in the groove."""
-    K, B = KEYCAP, BTN
-    xc = (B["x"][0] + B["x"][1]) / 2
-    z1 = B["z"][1] - 0.3
-    z0 = z1 - K["l"]
+def build_keycap(dz=0.0, press=True):
+    """The white button cap on the tongue, its cross post in the hole (press: the ribs are over the hole size)."""
+    K = KEYCAP
+    xc, zc = keycap_center()
+    z0, z1 = zc - K["l"] / 2, zc + K["l"] / 2
     cap = prism_y(rrect_pts(xc - K["w"] / 2, xc + K["w"] / 2, z0, z1, K["r"]), TOP + 0.02, TOP + K["h"] - 0.5)
     top = prism_y(rrect_pts(xc - K["w"] / 2 + 0.5, xc + K["w"] / 2 - 0.5, z0 + 0.5, z1 - 0.5, K["r"] - 0.3), TOP + K["h"] - 0.01, TOP + K["h"])
     cap = m3.Manifold.batch_hull([cap, top])
-    w, d = K["key_w"], K["key_d"]
-    key = prism_zp([(xc - w / 2, TOP + 0.03), (xc + w / 2, TOP + 0.03), (xc + w / 2 + d - 0.05, TOP - d + 0.05), (xc - w / 2 - d + 0.05, TOP - d + 0.05)],
-                   z0 + 0.3, z1)
-    return (cap + key).translate([0, 0, dz])
+    e = K["post_d"] / 2 + (K["press"] if press else 0.0)
+    y0 = TOP - K["post_h"]
+    post = mbox(xc - e, xc + e, y0, TOP + 0.03, zc - K["rib"] / 2, zc + K["rib"] / 2) + mbox(xc - K["rib"] / 2, xc + K["rib"] / 2, y0, TOP + 0.03, zc - e, zc + e)
+    post = post ^ prism_y([(xc + e * math.cos(t), zc + e * math.sin(t)) for t in np.linspace(0, 2 * math.pi, 40, endpoint=False)], y0 - 1, TOP + 1)
+    lead = K["press"] + 0.35                               # 45 deg lead-in: the rib ends start inside the hole
+    post = post - (mbox(xc - e - 1, xc + e + 1, y0 - 1, y0 + lead, zc - e - 1, zc + e + 1)
+                   - m3.Manifold.batch_hull([prism_y(rrect_pts(xc - e + lead, xc + e - lead, zc - e + lead, zc + e - lead, 0.01), y0 - 0.01, y0),
+                                             prism_y(rrect_pts(xc - e, xc + e, zc - e, zc + e, 0.01), y0 + lead, y0 + lead + 0.01)]))
+    return (cap + post).translate([0, 0, dz])
 
 
 # ---------- camera mount
@@ -896,8 +931,8 @@ def build_camera_mount():
         pts = [(x, -z) for x, z in lip]                   # front lip, 45 deg (it prints last, the part stands on its back)
         m += _cs(pts).extrude(Br["top"] - TOP).transform(np.array([[1, 0, 0, 0], [0, 0, 1, TOP], [0, -1, 0, 0]], float))
         # snap ridge: 45 deg faces, into the pocket in the end of the case; the bracket flexes out to let the case by
-        h, yc, f = Rd["h"], Rd["yc"], Rd["flat"]
-        rd = [(sx * (xi + 0.01), yc - f / 2 - h), (sx * (xi - h), yc - f / 2), (sx * (xi - h), yc + f / 2), (sx * (xi + 0.01), yc + f / 2 + h)]
+        h, yc, f = Rd["h"], Rd["yc"], Rd["flat"]           # steep catch face below (the case cannot lift out), 45 deg lead above
+        rd = [(sx * (xi + 0.01), yc - f / 2 - Rd["catch"]), (sx * (xi - h), yc - f / 2), (sx * (xi - h), yc + f / 2), (sx * (xi + 0.01), yc + f / 2 + h)]
         m += prism_zp(rd if sx < 0 else rd[::-1], *Rd["z"][sx])
         xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.05 inside the window, 0.1 at front and back
         zc = (W["z"][0] + W["z"][1]) / 2
@@ -929,29 +964,27 @@ def camera_frame():
     return union([mbox(*sorted((sx * W["hx"], sx * (W["hx"] + Fr["t"]))), Fr["y0"], PANEL_IN + 0.01, *W["z"]) for sx in (-1, 1)])
 
 
-def build_panel(with_tabs=True):
+def build_panel(with_latch=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
-    P -= port_openings() + switch_slot() + button_cuts() + keycap_groove() + camera_window() + camera_cable_slot()
-    P += panel_forks() + side_lips() + button_arm() + battery_clamp() + switch_rails() + keycap_bump() + camera_frame()
-    if with_tabs:
-        P += tabs()
-    return P
+    P -= port_openings() + switch_slot() + button_cuts() + keycap_hole() + camera_window() + camera_cable_slot()
+    P += (panel_forks() + button_arm() + battery_clamp() + switch_rails() + camera_frame()) - lid_keepout()
+    P += lid_hooks()
+    if with_latch:
+        P += latch_hook()
+    return P - latch_slits()
 
 
-def snap_force():
-    """Panel tabs: cantilever k = 3EI/L^3, wedge faces with friction. Forces in N."""
-    T, mu = TAB, PI.MU_PLA
-    y_crest = T["y_catch"] - T["e"] / math.tan(math.radians(T["catch"])) - T["flat"] / 2
-    L = PANEL_IN - y_crest
-    k = 3 * PI.E_PLA * (T["b"] * T["t"] ** 3 / 12) / L ** 3
-    d = T["e"] - T["gap"]                                 # the tab bends this much as the bump passes the wall face
+def latch_force():
+    """Latch tongue: a cantilever in the panel top (k = 3EI/L^3) from its root to the hook. Forces in N."""
+    C = LATCH
+    L = (ZR_IN - C["rib_d"] - C["gap"] - C["hook_d"] / 2) - C["root_z"]
+    b, t = 2 * C["hw"], PANEL_T
+    k = 3 * PI.E_PLA * (b * t ** 3 / 12) / L ** 3
+    d = C["rib_top"] - C["hook_bot"] + 0.1                 # the tongue lifts this much as the hook passes the rib
     F = k * d
-    phi = math.atan(mu)
-    push = F * math.tan(math.radians(T["lead"]) + phi)
-    pull = F * math.tan(math.radians(T["catch"]) + phi)
-    return dict(tab_k_N_per_mm=round(k, 2), tab_travel=round(d, 2), push_one_tab_N=round(push, 1), pull_one_tab_N=round(pull, 1),
-                close_N=round(4 * push, 1), open_one_end_N=round(2 * pull, 1),
-                strain_pct=round(100 * 1.5 * T["t"] * d / L ** 2, 2))
+    phi = math.atan(PI.MU_PLA)
+    return dict(tongue_k_N_per_mm=round(k, 2), lift_mm=round(d, 2), lift_N=round(F, 1),
+                slide_on_N=round(F * math.tan(math.radians(45) + phi), 1), strain_pct=round(100 * 1.5 * t * d / L ** 2, 2))
 
 
 # --------------------------------------------------------------------------
@@ -1184,12 +1217,12 @@ def camera_cable():
     x0, x1, y0, y1, z0, z1 = cam_socket()
     xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
     S = CAM["slot"]
-    zs = (S["z"][0] + S["z"][1]) / 2
+    zs = S["z"][1] - 3.6                                  # near the rear of the slot: the panel goes on LID_SLIDE behind
     b = bb_grove_plug()
     xb, zb = (b[0] + b[1]) / 2, (b[4] + b[5]) / 2
     # A 10 cm Grove cable: its excess (about 30 mm) is an S fold in the free front left corner (in front of the amp).
     zl = -31.5
-    center = [(xc, yc, z1), (xc, yc, zs), (xc, 57.5, zs), (-16.0, 56.0, -27.0), (-25.2, 54.0, zl), (-25.2, 35.0, zl),
+    center = [(xc, yc, z1), (xc, yc, zs), (xc, 57.5, zs), (-16.0, 53.0, -24.0), (-25.2, 51.5, zl), (-25.2, 35.0, zl),
               (-20.8, 35.0, zl), (-20.8, 47.0, zl), (-16.4, 47.0, zl), (-16.4, 34.0, zl), (xb, 32.5, zb), (xb, b[3], zb)]
     W = parallel_ribbon(center, 4, CAM_PITCH, (0, 1, 0))
     cols = (("SCL", "#f0c419"), ("SDA", "#f2f2ef"), ("VCC", "#d83a34"), ("GND", "#1d1d1f"))
@@ -1854,7 +1887,8 @@ def check(parts, models, robot):
     names = list(parts)
     for i, a in enumerate(names):
         for b in names[i + 1:]:
-            rows.append((a, b, vol(parts[a], parts[b])))
+            pa, pb = (build_keycap(press=False) if n == "pod_button" else parts[n] for n in (a, b))   # the press fit ribs: checked below
+            rows.append((a, b, vol(pa, pb)))
     for a in names:
         for b, M in models.items():
             rows.append((a, b, vol(parts[a], M)))
@@ -1901,13 +1935,30 @@ def check(parts, models, robot):
         worst = max(vol(G.translate([0, float(dy), 0]), placed) for dy in [0.5, 1, 2, 3, 5] + list(range(8, 41, 4)))
         rows.append((f"install {g} (max over 40 mm down)", "body + parts in", worst))
         placed = placed + G
-    # panel: straight down over the last 12 mm without the tabs; the tabs flex into the wall (snap_force())
-    Pc = build_panel(with_tabs=False)
+    # panel: straight down LID_SLIDE behind its place, then forward. The slider is at the front of its range, so
+    # the lever holds it (it stays at the lever). The latch hook rides over the rib (checked below).
+    Pc = build_panel(with_latch=False) + parts["pod_button"]
     inside = union([models[n] for n in models if n not in ("biboard_header",)])
-    Pc = Pc + parts["pod_switch"] + parts["pod_button"]          # the slider and the cap are in the panel when it goes on
+    slider = build_switch(-SW["travel"])                   # at the lever (switch toward the head) all the time
     inside_nc = union([M for k, M in models.items() if k not in ("biboard_header", "camera", "wires_camera")])   # the Grove cable goes through its slot
-    rows.append(("panel close (max over 12 mm down)", "body + parts",
-                 max(vol(Pc.translate([0, float(dy), 0]), parts["pod_body"] + inside_nc) for dy in (0.2, 0.5, 1, 2, 4, 6, 8, 12))))
+    lever = mbox(*SW_LEVER["x"], *SW_LEVER["y"], *SW_LEVER["z"])
+    fixed = parts["pod_body"] + (inside_nc - lever) + lever.translate([0, 0, -SW["travel"]])   # the switch toward the head
+    rows.append(("panel down, LID_SLIDE behind (max over 12 mm)", "body + parts",
+                 max(vol(Pc.translate([0, float(dy), LID_SLIDE]) + slider.translate([0, float(dy), 0]), fixed) for dy in (0.2, 0.5, 1, 2, 4, 6, 8, 12))))
+    rows.append(("panel slide forward (max over LID_SLIDE)", "body + parts",
+                 max(vol(Pc.translate([0, 0, float(dz)]) + slider, fixed) for dz in np.arange(0.25, LID_SLIDE + 0.01, 0.25))))
+    rows.append(("panel slide: slider at the lever", "pod_panel (moved)",
+                 max(vol(slider, Pc.translate([0, 0, float(dz)])) for dz in np.arange(0.0, LID_SLIDE + 0.01, 0.5))))
+    cable = models["wires_camera"] ^ mbox(-A, A, 0.0, TOP + 0.5, Z0, Z1)    # in the slot; it hangs free over the panel
+    rows.append(("panel down and slide (threaded)", "Grove cable",
+                 max([vol(Pc.translate([0, float(dy), LID_SLIDE]), cable) for dy in (0.2, 1, 4)] +
+                     [vol(Pc.translate([0, 0, float(dz)]), cable) for dz in np.arange(0.0, LID_SLIDE + 0.01, 0.5)])))
+    rib = latch_rib()
+    rows.append(("latch hook, panel slid back 0.3mm (must touch)", "rib", vol(latch_hook().translate([0, 0, 0.3]), rib)))
+    rows.append(("latch hook lifted 0.8mm, slide", "body", max(vol(latch_hook(0.8).translate([0, 0, float(dz)]), parts["pod_body"])
+                                                               for dz in np.arange(0.0, LID_SLIDE + 0.01, 0.25))))
+    rows.append(("panel lifted 0.3mm (must touch)", "pod_body", vol(parts["pod_panel"].translate([0, 0.3, 0]), parts["pod_body"])))
+    rows.append(("panel lifted 0.3mm at drop place", "pod_body", vol(parts["pod_panel"].translate([0, 0.3, LID_SLIDE]) - latch_hook().translate([0, 0.3, LID_SLIDE]), parts["pod_body"])))
     # switch: the slider moves +-travel in the slot; the fork pushes the lever
     lever = mbox(*SW_LEVER["x"], *SW_LEVER["y"], *SW_LEVER["z"])
     others = union([M for m, M in models.items() if m != "pisugar2"])
@@ -1930,9 +1981,10 @@ def check(parts, models, robot):
     rows.append(("switch slider in the entry, pushed up", "pod_panel",
                  max(vol(build_switch(S_["travel"] + S_["entry"] - 0.2).translate([0, -dy, 0]), parts["pod_panel"]) for dy in (0.0, 0.3, 0.8, 2.0))))
     rows.append(("switch slider moved 0.4mm down (must touch)", "pod_panel", vol(build_switch().translate([0, -0.6, 0]), parts["pod_panel"])))
-    rows.append(("button cap slid 0.3mm off (must touch)", "pod_panel", vol(build_keycap(0.3), parts["pod_panel"])))
+    rows.append(("button cap ribs in the hole (press fit, must touch)", "pod_panel", vol(build_keycap(), parts["pod_panel"])))
     rows.append(("button cap lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_button"].translate([0, 0.3, 0]), parts["pod_panel"])))
     rows.append(("camera mount lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_camera_mount"].translate([0, 0.3, 0]), parts["pod_panel"])))
+    rows.append(("camera lifted 0.3mm (must touch)", "pod_camera_mount", vol(models["camera"].translate([0, 0.3, 0]), parts["pod_camera_mount"])))
     for n, (xc, zc_, sx, sz) in PORT_PLUGS.items():
         B = mbox(xc - sx / 2, xc + sx / 2, PORT_TOP + 0.2, 95.0, zc_ - sz / 2, zc_ + sz / 2)
         rows.append((f"plug {n}", "camera and its mount", vol(B, parts["pod_camera_mount"] + models["camera"])))
@@ -2040,14 +2092,14 @@ def explode_plan(name, sub=""):
     if name in ("camera_mount", "pod_camera_mount"):
         return 1, (0, 210, 0), (0, 0, 0)
     if name in ("panel", "pod_panel"):
-        return 2, (0, 170, 0), (0, 0, 0)
+        return 2, (0, 0, LID_SLIDE), (0, 170, 0)
     if name in ("switch", "pod_switch", "button", "pod_button"):
-        return 2, (0, 170, 0), (0, 0, 0)                         # they stay clicked into the panel
+        return 2, (0, 0, LID_SLIDE), (0, 170, 0)                         # they stay clicked into the panel
     if name.startswith("wires_"):
         if name == "wires_camera":
             if sub == "plug_cam":
                 return 0, (0, 250, 0), (0, 0, 0)                  # the plug in the camera socket goes with the camera
-            return 2, (0, 170, 0), (0, 0, 0)                      # the Grove cable goes up with the panel (it is in its slot)
+            return 2, (0, 0, 0), (0, 170, 0)                      # the Grove cable goes up with the panel (it is in its slot)
         if name == "wires_speaker":
             return 4, (0, 45, 0), (-30, 0, 0)                     # the speaker lead goes with the amp
         return 3, (0, 100, 0), (0, 0, 0)                         # the harness, its housings on it, with the Pi
@@ -2213,10 +2265,10 @@ def main(fast=False):
                    order=[list(k) for k in SETTLE_ORDER]), open(os.path.join(OUT, "wires.json"), "w"), indent=1)
     print("wires: longest", max(w["length_mm"] for w in wires), "mm; smallest bend", min(w["min_bend_r"] for w in wires), "mm; crossings", len(cross))
     bal = balance(parts, models)
-    snap = snap_force()
+    snap = latch_force()
     clicks = BP.detent_force()
     print(f"balance: {bal['mass_g']} g, center of mass x {bal['com'][0]} y {bal['com'][1]} z {bal['com'][2]}")
-    print("panel snaps:", snap)
+    print("panel latch:", snap)
     print("platform clicks:", clicks)
     print("checks (mm^3, >0.05 shown):")
     for a, b, v in rows:

@@ -78,23 +78,25 @@ INFO = {
                  files=[("Print STL", AF + "pod_body.stl"), ("STEP (mesh)", AF + "pod_body.step")]),
     "panel": dict(text="The top panel, in a second color. It has the soft top edge and openings shaped to each plug body. "
                        "A spring tongue over the PiSugar button is a large button. "
-                       "Four spring tabs click into pockets in the front and rear walls. Forks under it hold the Pi stack, the speaker and the amp down. "
+                       "It slides on: hooks under it go under lugs in the front and side walls, and a latch tongue at the rear clicks over a rib. "
+                       "Forks under it hold the Pi stack, the speaker and the amp down. "
                        "It prints upside down on its top without supports.",
-                  attach="Push it straight down until the 4 tabs click (about 9 N). It fits one way only. "
-                         "To open, lift the rear edge at the finger notch (about 8 N), then the front.",
+                  attach="Put it down 5 mm behind its place, then slide it forward until the latch clicks (about 6 N). "
+                         "To open, lift the rear edge at the finger notch (about 3 N), slide it 5 mm rearward and lift it.",
                   files=[("Print STL", AF + "pod_panel.stl"), ("STEP (mesh)", AF + "pod_panel.step"),
                          ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
     "switch": dict(text="A large slider for the small PiSugar 2 power switch. Its tab stands 2 mm out of a slot in the panel. "
-                        "Its body rides in two dovetail rails under the panel; a fork goes over the switch lever. 2 mm of travel each way: the switch sets the end positions.",
-                   attach="Put it into the rails at their rear end (no lips there) and slide it forward until it clicks, before the panel goes on.",
+                        "Its body rides in two dovetail rails under the panel; a fork goes over the switch lever. The switch sets the end positions.",
+                   attach="Put it into the rails at their rear end (no lips there) and slide it forward until it clicks, before the panel goes on. "
+                          "Before you close the panel, move the PiSugar switch toward the head and push the slider fully forward.",
                    files=[("Print STL", AF + "pod_switch.stl")]),
-    "button": dict(text="The white button cap for the PiSugar button. It slides onto the spring tongue in the panel along a 45 deg dovetail "
-                        "and clicks over a small bump. Press it: the tongue and the arm under it press the PiSugar button.",
-                   attach="Slide it onto the tongue from the slit end until it clicks, before the panel goes on.",
+    "button": dict(text="The white button cap for the PiSugar button. Its cross post presses into a round hole in the spring tongue: "
+                        "the ribs crush into the hole wall. Press it: the tongue and the arm under it press the PiSugar button.",
+                   attach="Press its post into the hole in the tongue until the cap sits flat, before the panel goes on. Support the tongue from below.",
                    files=[("Print STL", AF + "pod_button.stl")]),
     "camera_mount": dict(text="The camera mount: a 2 mm base on the front of the panel with a chin over its front edge, two U brackets that hold "
                               "the ends of the camera case (outside the width of the head), and two clip legs through a window in the panel. "
-                              "A 45 deg ridge on each bracket snaps into the pocket in each end of the case. It stays clear of the HDMI opening and the switch.",
+                              "A ridge on each bracket snaps into the pocket in each end of the case; its steep lower face keeps the camera in when the robot falls. It stays clear of the HDMI opening and the switch.",
                          attach="Push its two clip legs down through the window in the panel until they click. Then push the camera case down into the brackets until it clicks.",
                          files=[("Print STL", AF + "pod_camera_mount.stl")]),
     "camera": dict(text="The Petoi AI Vision Module in its Petoi case, upright on the front of the add-on, lens forward over the head (15 g). "
@@ -207,14 +209,16 @@ STEPS = [
               "Then plug the wires one at a time, as the next steps show."),
 ] + WIRE_STEPS + [
     dict(title="Slider and button into the panel", view="build", show=["panel", "switch", "button"], highlight=["switch", "button"],
-         start={"panel": [0, 35, 0], "switch": [0, 47, 8], "button": [0, 47, 6]}, end={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
+         start={"panel": [0, 35, 0], "switch": [0, 47, 8], "button": [0, 41, 0]}, end={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
          text="Before the panel goes on: slide the switch slider into the rails under the panel from their rear end until it clicks, "
-              "and slide the white button cap onto the tongue until it clicks. They stay in the panel."),
-    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 0], "switch": [0, 35, 0], "button": [0, 35, 0]},
-         text="Pass the free end of the Grove cable up through the slot at the front left of the panel. "
-              "Then push the panel straight down until the 4 tabs click. The slider tab comes up through its slot. The forks under the panel hold "
+              "and press the post of the white button cap into the hole in the tongue. They stay in the panel."),
+    dict(title="Panel", view="build", show=["panel"], start={"panel": [0, 35, 5], "switch": [0, 35, 0], "button": [0, 35, 5]},
+         text="Move the PiSugar power switch toward the head and push the slider fully forward. "
+              "Pass the free end of the Grove cable up through the slot at the front left of the panel. "
+              "Put the panel down 5 mm behind its place, then slide it forward until the latch at the rear clicks. "
+              "The slider fork comes down on the switch lever and stays on it. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue near the front is the PiSugar button. "
-              "To open, lift the rear edge at the finger notch."),
+              "To open, lift the rear edge at the finger notch and slide the panel rearward."),
     dict(title="Camera mount", view="iso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
          text="Push the two clip legs of the camera mount down through the window in the front of the panel until they click."),
     dict(title="Camera", view="iso", show=["camera", "wires_camera__plug_cam"], highlight=["camera", "wires_camera__plug_cam"],
@@ -247,7 +251,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.19 on Platform v3.1",
+        title="Bittle X Pi Add-on v0.20 on Platform v3.1",
         explode_stages=EXPLODE["stages"],
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
@@ -284,10 +288,10 @@ PACKAGES = [
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.19", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.19.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.20", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.20.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_addon.png", img2="doc/06_open.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
-              "and an SPH0645 mic, in a rounded box with a snap-in top panel and a large power switch. Three printed parts, all without supports.",
+              "and an SPH0645 mic, in a rounded box with a slide-on top panel and a large power switch. Three printed parts, all without supports.",
          extra=[]),
 ]
 

@@ -16,7 +16,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.19"
+VERSION = "0.20"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -36,7 +36,7 @@ def content():
 
     p(f"Version {VERSION}, {DATE}. A sample add-on for the Bittle X platform v{PI.VERSION} (../bittle_platform). "
       "It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
-      "The case is one rounded box (the body) and a snap-in top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
+      "The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
       "No tools, glue, tape or supports are necessary.")
     img("02_addon.png", 0.5, "The add-on on the platform: the mic holes are at the front, the port windows in the panel.")
 
@@ -56,7 +56,7 @@ def content():
       "The body walls are vertical and its floor is on the bed. The only overhangs ({pr['pod_body']['overhang_mm2']:.0f} mm² in total) "
       "are the tops of the two cable notches at the base of the side walls: 8 mm bridges. The front cable notches are 45 deg chamfers. "
       "The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
-      "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the snap bumps have 45 deg catch faces. "
+      "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. "
       f"Its only overhang ({pr['pod_panel']['overhang_mm2']:.0f} mm²) is the 2 mm bridge of the button arm. The slider has a 1.7 mm bridge over the fork. "
       "The camera mount has a 9.5 mm bridge at the HDMI notch, short bridges at the clip hooks, and a 45 deg chin. Keep the seam at the rear.")
 
@@ -71,7 +71,7 @@ def content():
          ["HiLetgo SPH0645 I2S mic", "12.7 x 16.7 x 1.8 board at the front wall, port to the front. A 6-pin right-angle header along its right edge points into the right well."],
          ["Petoi AI Vision Module", "In its Petoi case, upright on the camera mount at the front of the panel, lens forward over the head. "
           "It is upside down, so that its Grove socket is on the left, clear of the HDMI opening: turn the image 180 deg in software. "
-          "Two U brackets hold the ends of the case; a ridge on each snaps into the pocket in the end of the case."],
+          "Two U brackets hold the ends of the case; a ridge on each snaps into the pocket in the end of the case. The ridges have a steep lower face: the case cannot lift out."],
          ["Grove cable, 10 cm", "From the socket in the rear face of the camera, down through a slot in the panel, forward under the panel "
           "between the amp and the battery, down the front left corner in an S fold, to the Grove plug on the BiBoard. "
           "The plug comes up through the floor opening over the notch in the platform cover."],
@@ -103,16 +103,17 @@ def content():
          "Plug the wires one at a time, in the order of section 5: the BiBoard jumpers, the amp cable, the splices, then the mic jumpers. "
          "The viewer has one step for each wire." + st(10) + st(22),
          "Slide the switch slider into the rails under the panel from their rear end until it clicks. "
-         "Slide the white button cap onto the panel tongue until it clicks. They stay in the panel." + st(23),
+         "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. They stay in the panel." + st(23),
+         "Move the PiSugar power switch toward the head. Push the slider fully forward. "
          "Pass the free end of the Grove cable up through the slot at the front left of the panel. "
-         f"Then push the panel straight down until the 4 tabs click (about {S['close_N']:g} N). It fits one way only. "
-         "The slider fork goes over the switch lever and the button cap comes over the PiSugar button." + st(24),
+         f"Put the panel down {pod.LID_SLIDE:g} mm behind its place, then slide it forward until the latch clicks (about {S['slide_on_N']:g} N). "
+         "The hooks under the panel go under the lugs in the walls. The slider fork comes down on the switch lever and stays on it." + st(24),
          "Push the two clip legs of the camera mount down through the window in the front of the panel until they click. "
          "Push the camera case down into the brackets until it clicks, lens forward. Plug the Grove cable into the socket in its rear face." + st(25) + st(26),
-         f"Open: lift the rear edge of the panel at the finger notch (about {S['open_one_end_N']:g} N), then the front. "
+         f"Open: lift the rear edge of the panel at the finger notch (about {S['lift_N']:g} N), slide the panel {pod.LID_SLIDE:g} mm rearward and lift it. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. "
-      "The ribbed slider beside the HDMI opening moves the PiSugar power switch (2 mm of slot travel each way; the switch sets the end positions). "
+      "The ribbed slider beside the HDMI opening moves the PiSugar power switch (the switch sets the end positions). "
       "The tongue near the front of the panel is a large button: press it to press the PiSugar button.")
     img("04_top.png", 0.42, "The top: HDMI, the switch slider, data USB, charge and Pi power, and the button tongue.")
 
@@ -168,15 +169,17 @@ def content():
     T = MO["tail"]
     lst([f"Slide: the empty body is clear of the robot at the click point, half way and at the drop-on place. "
          f"The clicks are about {K['lock_N']:g} N to lock and {K['unlock_N']:g} N to unlock (beam strain {K['strain_pct']:g} %).",
-         f"Panel tabs: {S['close_N']:g} N to close (4 tabs, 30 deg lead), {S['open_one_end_N']:g} N to open one end (2 tabs, 45 deg catch), "
-         f"tab strain {S['strain_pct']:g} %. Turned 180 deg, the panel does not go down.",
-         "Install: the speaker, the mic, the amp and the stack each go straight down 40 mm without contact. The panel goes down without contact. "
+         f"Panel: it goes down {pod.LID_SLIDE:g} mm behind its place and slides forward without contact (the slider stays on the lever). "
+         f"The latch tongue lifts {S['lift_mm']:g} mm over the rib: about {S['slide_on_N']:g} N to slide on, {S['lift_N']:g} N to lift, strain {S['strain_pct']:g} %. "
+         "Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.",
+         "Install: the speaker, the mic, the amp and the stack each go straight down 40 mm without contact. "
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
          "(small contacts of 1 to 2 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
-         "Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 8 mm, it hits the ridges. "
-         "The ridges need 0.5 mm of bracket flex (about 4 N each, 0.4 % strain); the clip legs bend to 1.3 % strain. "
+         "Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 0.3 mm, it hits the ridges. "
+         "The ridges need 0.8 mm of bracket flex (about 6 N each, 0.6 % strain), and their steep lower face keeps the case in when the robot falls. "
+         "The clip leg hooks catch 0.8 mm under the frame; the legs bend to 1.8 % strain. "
          "The Grove cable touches no part and no other wire. The head turns without contact with the mount.",
-         "Switch and button: the slider moves 2 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
+         "Switch and button: the slider moves 0.75 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
          "The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.",
          f"Robot: the head turns from {h0} to {h1} deg without contact. {len(MO['legs']['front']['addon'])} front and "
          f"{len(MO['legs']['rear']['addon'])} rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. "
