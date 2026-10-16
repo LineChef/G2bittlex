@@ -135,8 +135,8 @@ FORK = dict(len=2.0, lip=1.85, clr_y=0.1)
 SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=(STACK_ZF + 12.1, STACK_ZF + 13.4))
 SW = dict(zc=STACK_ZF + 12.75, travel=0.75, body_x=(-7.1, 2.8), body_y=(60.75, 61.45), body_hz=2.45, chamfer=0.4,
           fork_x=(0.9, 2.3), fork_y0=60.15, notch_hz=0.85,
-          tab_x=(-9.9 + STACK_DX, -4.6 + STACK_DX), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.1,
-          rail_t=0.45, rail_gap=0.15, rail_y0=60.35, entry=5.6, click=0.25)
+          tab_x=(-9.9 + STACK_DX, -4.6 + STACK_DX), tab_hz=2.5, tab_top=TOP + 2.0, tab_chamfer=0.8, slot_clr=0.3,
+          rail_t=0.45, rail_gap=0.25, rail_y0=60.35, entry=5.6, click=0.25)
 # The slider clicks into the panel: its body rides in two dovetail rails under the panel. Put it in at the rear
 # end of the rails (no lips there), slide it forward past the click bumps. In front of its travel it has LID_SLIDE
 # more: before the lid goes on, set the switch toward the head and push the slider fully forward. The fork then
@@ -803,9 +803,9 @@ def switch_rails():
     za = S["zc"] - S["body_hz"] - S["travel"] - LID_SLIDE - 0.3
     zb = S["zc"] + S["body_hz"] + S["travel"] + 0.3
     out = []
-    for xw, sx in ((x0 - g, -1), (x1 + g, 1)):            # wall faces: 0.15 outside the body
+    for xw, sx in ((x0 - g, -1), (x1 + g, 1)):            # wall faces: 0.25 outside the body
         out.append(mbox(*sorted((xw, xw + sx * t)), ya, PANEL_IN + 0.01, za, zb + S["entry"]))
-        tip = xw - sx * (c + 0.1)                         # the lip reaches 0.25 under the 45 deg body edge
+        tip = xw - sx * (c + 0.2)                         # the lip reaches 0.35 under the 45 deg body edge
         xq = xw + sx * 0.02                               # 0.02 into the wall: one piece
         lip = [(xq, ya), (tip, ya), (xq, ya + abs(tip - xq))]
         out.append(prism_zp(lip if sx > 0 else lip[::-1], za, zb))
