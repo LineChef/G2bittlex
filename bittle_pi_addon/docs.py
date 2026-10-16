@@ -16,7 +16,7 @@ import pod                                   # noqa: E402
 from bittle_platform import docs as PD       # noqa: E402  (writers shared with the platform)
 from bittle_platform import interface as PI  # noqa: E402
 
-VERSION = "0.20"
+VERSION = "0.21"
 DATE = datetime.date.today().isoformat()
 TITLE = f"Bittle X Pi Add-on v{VERSION} - Build Guide"
 VIEWER = "https://beetlebugorg.github.io/bittlex/viewer/"
@@ -177,7 +177,7 @@ def content():
          "(small contacts of 1 to 2 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
          "Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 0.3 mm, it hits the ridges. "
          "The ridges need 0.8 mm of bracket flex (about 6 N each, 0.6 % strain), and their steep lower face keeps the case in when the robot falls. "
-         "The clip leg hooks catch 0.8 mm under the frame; the legs bend to 1.8 % strain. "
+         "The clip leg hooks catch 0.8 mm under the frame on a 10 deg barb, so a pull pushes them out; the legs bend to 1.9 % strain. "
          "The Grove cable touches no part and no other wire. The head turns without contact with the mount.",
          "Switch and button: the slider moves 0.75 mm each way without contact, and its fork pushes the lever after 0.3 mm. "
          "The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.",

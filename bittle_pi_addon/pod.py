@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.20: one-piece body with a slide-on top panel.
+"""Bittle X Pi add-on rev 0.21: one-piece body with a slide-on top panel.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -145,7 +145,7 @@ BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(6.5, 16.5), t=1.0, slit=0.6
            arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(12.8, 14.8), gap=0.2, press=0.6)
 # The button cap (white) presses into a round hole in the tongue: a cross post, its ribs 0.15 over the hole on each
 # side, crush into the hole wall (coarse enough for a 0.5 mm nozzle).
-KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.6, rib=1.0, press=0.15, post_h=0.9)
+KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.8, rib=1.0, press=0.05, post_h=0.9)   # small holes print about 0.2 under
 # Camera: the Petoi AI Vision Module in its Petoi case (reference/AiCamera250116-*.stl, 46.7 x 29.3 x 14.9) stands
 # upright on the front of the panel, lens forward over the head. It is turned 180 deg about the lens axis: its Grove
 # socket (a slot in the rear face) is then on the left, clear of the HDMI opening. (Turn the image in software.)
@@ -158,7 +158,7 @@ CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z
            brk=dict(t=1.2, clr=0.25, lip_front=0.8, lip_back=1.6, top=90.0),
            ridge=dict(h=0.8, catch=0.3, yc=74.75, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85; the catch face is at the lower edge
 
-           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.8, w=5.8, hook=0.8, clr=0.05, gap=0.05),
+           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.8, hook=0.8, clr=0.05, gap=0.05, barb=10.0),
            slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-21.4, -8.4)), mass=15.0)
 # The Grove socket (native x 32.4..37.3, y -19.4..-1.0 on the rear face): the plug in place, and the plug on the
 # BiBoard under the cover (platform GROVE_PLUG). Grove plug body 4.9 x 9.9, 6 mm out of the socket (estimates).
@@ -938,10 +938,11 @@ def build_camera_mount():
         zc = (W["z"][0] + W["z"][1]) / 2
         za, zb2 = zc - Lg["w"] / 2, zc + Lg["w"] / 2
         r = W["r"] - 0.1                                  # leg corners: 0.05 clear of the window corners
-        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), Fr["y0"] - 1.6, TOP + 0.01)
-        e = Lg["hook"] + Lg["clr"]                        # hook: flat catch under the frame, 34 deg lead-in below it
-        yt = Fr["y0"] - Lg["gap"]
-        hk = [(sx * (xl - 0.01), yt), (sx * (xl + e), yt), (sx * (xl - 0.01), yt - 1.5 * e - 0.3)]
+        e = Lg["hook"] + Lg["clr"]                        # hook: barbed catch under the frame, 34 deg lead-in below it
+        a = e * math.tan(math.radians(Lg["barb"]))       # the tip is higher than the root: a pull pushes the hook out
+        yt = Fr["y0"] - Lg["gap"] - a                     # the tip stays below the frame as the leg springs out
+        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), yt - 1.5 * e - 0.3, TOP + 0.01)
+        hk = [(sx * (xl - 0.01), yt), (sx * (xl + e), yt + a), (sx * (xl - 0.01), yt - 1.5 * e - 0.3)]
         m += prism_zp(hk if sx > 0 else hk[::-1], za + W["r"], zb2 - W["r"])   # narrower: it clears the window corners
     return m
 
@@ -961,7 +962,10 @@ def camera_frame():
     """Two walls under the panel at the sides of the window: the clip hooks catch under them. (No front or back
     wall: the top edge of the stack is under the back of the window.)"""
     W, Fr = CAM["win"], CAM["frame"]
-    return union([mbox(*sorted((sx * W["hx"], sx * (W["hx"] + Fr["t"]))), Fr["y0"], PANEL_IN + 0.01, *W["z"]) for sx in (-1, 1)])
+    a = Fr["t"] * math.tan(math.radians(CAM["leg"]["barb"]))   # the underside rises to the outside, as the hook barb
+    return union([prism_zp([(sx * W["hx"], Fr["y0"]), (sx * (W["hx"] + Fr["t"]), Fr["y0"] + a),
+                            (sx * (W["hx"] + Fr["t"]), PANEL_IN + 0.01), (sx * W["hx"], PANEL_IN + 0.01)], *W["z"])
+                  for sx in (-1, 1)])
 
 
 def build_panel(with_latch=True):
