@@ -66,13 +66,16 @@ COVER_END_Z = 36.95
 HUG_GAP = 0.4
 
 # Body: a squircle plan (|x/a|^n corners), the same outline from the floor to the top.
-A = 29.6                    # half width: the BiBoard plug (X to 27.27) is inside the right wall
+A = 35.6                    # half width: as wide as the robot cover shell (X +-35.62)
+A_LOW = 29.6                # half width at the floor: the rear legs clear the bottom edges when they swing back
+STEP_Y = (30.0, 36.0)       # a 45 deg chamfer from A_LOW out to A (it prints floor down without supports)
 Z0, Z1 = -37.8, 56.2        # front and rear faces
 R_PLAN, NEXP = 13.0, 5.0    # plan corner size and squircle exponent
 # 2.0 mm: with the Cura offsets of the body profile (xy 0.144, holes 0.292) the slicer sees 1.996 mm, 4 full lines
 # of 0.5 mm. At 1.8 mm it saw 3.57 lines and changed between 3 and 4 lines along the wall.
 WALL = 2.0
-IN_A, ZF_IN, ZR_IN = A - WALL, Z0 + WALL, Z1 - WALL     # inner faces: 27.6, -35.8, 54.2
+IN_A, ZF_IN, ZR_IN = A - WALL, Z0 + WALL, Z1 - WALL     # inner faces: 33.6, -35.8, 54.2
+IN_A_LOW = A_LOW - WALL                                 # 27.6: the inner face below the chamfer
 FLOOR_Y0, FLOOR_Y1 = PI.MOUNT_Y0, PI.MOUNT_Y1          # the floor is the platform mount plate
 SEAM = 57.2                 # top of the body walls = bottom of the panel
 TOP = 63.2                  # panel top: 0.3 over the highest port
@@ -203,7 +206,7 @@ USB_R, USB_BEND = 1.75, 8.0
 SLOT = dict(PI.SLOT, x0=-PI.SLOT["x1"], x1=-PI.SLOT["x0"])     # design frame (X turned over)
 HDR = dict(PI.HDR, x0=-PI.HDR["x1"], x1=-PI.HDR["x0"])
 BB_PLUG = dict(x=(HDR["x0"], HDR["x1"]), y=(HDR["top"], HDR["top"] + DUPONT_L), z=(HDR["z0"], HDR["z1"]))
-HDR_NOTCH = dict(x=(23.9, IN_A + 0.01), z=(HDR["z0"] - SLIDE - 0.8, HDR["z1"] + 0.8))   # floor notch: header + slide
+HDR_NOTCH = dict(x=(23.9, IN_A_LOW + 0.01), z=(HDR["z0"] - SLIDE - 0.8, HDR["z1"] + 0.8))   # floor notch: header + slide
 
 # Speaker: NULLLAB 3 W 4 ohm box speaker (user caliper measurements). Body 27.9 x 30 x 15.2 (X, Y, Z; caliper 15.15).
 # Two wings, 3.0 thick, 44.0 across: each one tapers from wing_h high at the body to a round end (wing_r) around its
@@ -220,7 +223,8 @@ SPK_GROOVE = dict(x_in=20.75, clr=0.25, lip=1.5, top=56.5, clr_y=0.4)
 # NS4168 amp board (38.4 x 22.4 x 1.6) on edge in the left gallery, along Z. The PCB is 0.5 from the
 # left wall, the parts face the battery (+X). The bottom edge stands in a slot in a bar on the floor.
 AMP = dict(t=1.6, l=38.4, h=22.4, comp=10.0)
-AMP_X = (-IN_A + 0.5, -IN_A + 0.5 + AMP["t"])   # -27.3 .. -25.7
+AMP_X = (-IN_A_LOW + 0.5, -IN_A_LOW + 0.5 + AMP["t"])   # -27.1 .. -25.5, on the floor below the chamfer
+AMP_CABLE_X = AMP_X[1] + 2.5                    # the amp cable and the speaker lead leave the plugs here
 AMP_Y0 = 28.5
 AMP_Z = (-9.0, -9.0 + AMP["l"])                  # I2S 5-pin PH2.0 at the front end, speaker 2-pin PH2.0 and the screw terminal at the rear end
 AMP_FORKS = [2.0, 12.0]                          # z0 of the panel forks over the amp top edge (2.5 long)
@@ -237,8 +241,8 @@ AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0
 # the front face). The 6 pins (SEL, LRCL, DOUT, BCLK, GND, 3V, SEL lowest) are a straight header along its outer
 # 16.12 edge: the Dupont housings point rearward, along the side wall. Two holes at the corners of the inner edge:
 # an M2 screw through the upper hole goes into a heat-set insert in the upper boss; a pin on the lower boss goes
-# into the lower hole. The housing column stands 0.4 inside the amp cable (X -23.2).
-MIC = dict(w=12.45, l=16.12, t=1.6, x0=-21.7, y0=36.3, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)
+# into the lower hole. The housing column stands 0.8 inside the amp cable (AMP_CABLE_X).
+MIC = dict(w=12.45, l=16.12, t=1.6, x0=-IN_A_LOW + 5.9, y0=36.3, clr=0.1, hole_d=2.5, hole_in=2.3, pin_in=1.3)
 MIC_BOSS = dict(d=5.5, h=2.0, insert_d=3.2, insert_l=3.5, pin_d=1.9, pin_l=1.3, head_d=3.8, head_h=1.3)
 MIC_Z = (ZF_IN + MIC_BOSS["h"], ZF_IN + MIC_BOSS["h"] + MIC["t"])     # PCB front and back faces
 MIC_X = MIC["x0"] + MIC["w"] / 2                  # board center
@@ -274,14 +278,14 @@ GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6
 
 # Wire paths (check(): no printed part and no other electronics in them). Dupont jumper wire is about 1.4 mm.
 WIRE_PATHS = {
-    "uart: Pi header to BiBoard plug": [dict(x=(25.4, IN_A - 0.05), y=(39.3, 49.6), z=(-19.5, 23.1)),
-                                        dict(x=(19.9, IN_A - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
-    "i2s: under the stack to the amp": [dict(x=(-15.4, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
-                                        dict(x=(-24.0, -22.4), y=(27.6, 43.9), z=(-24.2, -12.1))],
-    "mic: U turn, across the front, rearward in the right well": [dict(x=(-15.8, -14.2), y=(37.4, 51.4), z=(-29.0, -16.5)),
+    "uart: Pi header to BiBoard plug": [dict(x=(25.4, IN_A_LOW - 0.05), y=(39.3, 49.6), z=(-19.5, 23.1)),
+                                        dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
+    "i2s: under the stack to the amp": [dict(x=(AMP_CABLE_X + 0.8, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
+                                        dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 0.8), y=(27.6, 43.9), z=(-24.2, -12.1))],
+    "mic: U turn, across the front, rearward in the right well": [dict(x=(MIC["x0"] + 5.9, MIC["x0"] + 7.5), y=(37.4, 51.4), z=(-29.0, -16.5)),
                                                                    dict(x=(-3.0, 21.0), y=(37.4, 51.4), z=(-34.0, -32.6)),
                                                                    dict(x=(22.7, 24.1), y=(37.4, 51.4), z=(-29.5, 24.0))],
-    "speaker: amp rear end to the speaker": [dict(x=(-24.5, -18.5), y=(33.5, 52.0), z=(31.6, 36.2)),
+    "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
                                              dict(x=(-21.0, -11.0), y=(52.0, 61.0), z=(33.0, 36.2)),
                                              dict(x=(-14.0, -6.0), y=(59.0, 61.0), z=(36.2, 44.0))],
 }
@@ -512,10 +516,10 @@ def union(ms):
     return m3.Manifold.batch_boolean(ms, m3.OpType.Add) if ms else m3.Manifold()
 
 
-def plan(inset, n=64):
-    """Closed plan outline (x, z) of the body, moved inset along the normal from the outer face.
+def plan(inset, n=64, a=None):
+    """Closed plan outline (x, z) of the body (half width a), moved inset along the normal from the outer face.
     Counterclockwise seen from +Y. The same points for every inset: lofts between plans are clean."""
-    a, z0, z1, r = A, Z0, Z1, R_PLAN
+    a, z0, z1, r = a or A, Z0, Z1, R_PLAN
     pts = []
     for cx, cz, q in ((a - r, z1 - r, 0), (-(a - r), z1 - r, 1), (-(a - r), z0 + r, 2), (a - r, z0 + r, 3)):
         for t in np.linspace(0, math.pi / 2, n, endpoint=False):
@@ -579,7 +583,15 @@ def build_pegs():
 
 
 def body_outer():
-    return prism_y(plan(0.0), FLOOR_Y0, SEAM)
+    """A_LOW wide at the floor, a 45 deg chamfer out to A between STEP_Y, A wide to the seam."""
+    return loft_rings([(FLOOR_Y0, plan(0.0, a=A_LOW)), (STEP_Y[0], plan(0.0, a=A_LOW)), (STEP_Y[1], plan(0.0)), (SEAM, plan(0.0))])
+
+
+def body_cavity():
+    """The inside of the body: the outer form moved in WALL (the 45 deg face moves up WALL * (sqrt 2 - 1))."""
+    k = WALL * (math.sqrt(2) - 1)
+    return loft_rings([(FLOOR_Y1, plan(WALL, a=A_LOW)), (STEP_Y[0] + k, plan(WALL, a=A_LOW)), (STEP_Y[1] + k, plan(WALL)),
+                       (SEAM + 1, plan(WALL))])
 
 
 def speaker_posts():
@@ -654,9 +666,11 @@ def amp_base():
 
 
 def amp_nubs():
-    """Nubs on the left wall over the top edge of the amp board: a flat catch, a 45 deg top (it prints from the wall)."""
+    """Two posts behind the amp board (up from the chamfer) with a nub over its top edge: a flat catch, a 45 deg top."""
     yt = AMP_Y0 + AMP["h"]
-    prof = [(-IN_A - 0.01, yt + 0.05), (AMP_X[0] + 1.0, yt + 0.05), (AMP_X[0] + 1.0, yt + 0.45), (-IN_A - 0.01, yt + 0.45 + 1.5)]
+    xb = AMP_X[0] - 1.6                                    # the back face of the posts
+    prof = [(xb, FLOOR_Y1), (AMP_X[0] - 0.05, FLOOR_Y1), (AMP_X[0] - 0.05, yt + 0.05), (AMP_X[0] + 1.0, yt + 0.05),
+            (AMP_X[0] + 1.0, yt + 0.45), (xb, yt + 0.45 + 1.05 + 1.6)]
     return union([prism_zp(prof, z, z + 4.0) for z in AMP_NUBS])
 
 
@@ -759,7 +773,7 @@ def battery_clamp():
 
 def build_body():
     O = body_outer()
-    B = O - prism_y(plan(WALL), FLOOR_Y1, SEAM + 1)
+    B = O - body_cavity()
     B += (speaker_posts() + stack_posts() + mic_bosses() + amp_base() + battery_supports()) ^ O
     for px, pz in PEGS:
         B -= keyhole_cut(px, pz)
@@ -1225,7 +1239,8 @@ def wire_routes():
     order = ("G", "V", "BCLK", "LRC", "DIN")
     for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#f0c419", "#e8641b", "#3a6fd8"))):
         zf = -16.8 - 1.75 * i
-        start = [(-23.2, AMP_PLUG_Y[i], AMP_PLUG_Z0), (-23.2, AMP_PLUG_Y[i], zf), (-23.2, FLOOR_WIRE, zf)]
+        xc = AMP_CABLE_X
+        start = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0), (xc, AMP_PLUG_Y[i], zf), (xc, FLOOR_WIRE, zf)]
         xr = EXIT_X + 2.2                                  # a wire comes up here and bends over into its housing
         if lab == "DIN":
             y, z = pin_yz(40)
@@ -1256,10 +1271,11 @@ def wire_routes():
     xa = MIC_RIB
     xin = EXIT_X + 2.0
     zh = MIC_HOUSING_Z[1]
+    xu = MIC["x0"] + 6.7                                   # the forward run, inside the housing column
     for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
                            (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
         y = MIC_PIN_Y[k]
-        pts = [(MIC_PIN_X, y, zh), (MIC_PIN_X, y, zh + 1.2), (MIC_PIN_X, y, zh + 4.2), (-15.0, y, zh + 4.2), (-15.0, y, -29.6),
+        pts = [(MIC_PIN_X, y, zh), (MIC_PIN_X, y, zh + 1.2), (MIC_PIN_X, y, zh + 4.2), (xu, y, zh + 4.2), (xu, y, -29.6),
                (-7.5, y, -29.6), (-4.0, y, -33.3), (21.0, y, -33.3), (xa, y, -29.2)]
         if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
             sx, sz = SPLICE[t]
@@ -1352,7 +1368,7 @@ def speaker_leads():
     zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
     yc = AMP_Y0 + 12.05
     zt = SPK_ZE + SPK["ear_t"] + 3.0                            # the leads leave the top of the rear half of the body
-    center = [(-23.2, yc, zp), (-23.2, yc, 33.6), (-23.2, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, zt - 2.2),
+    center = [(AMP_CABLE_X, yc, zp), (AMP_CABLE_X, yc, 33.6), (AMP_CABLE_X, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, zt - 2.2),
               (-11.0, SPK_Y0 + SPK["d"] - 0.5, zt)]
     a, b = parallel_pair(center, 2.0, (0, 1, 0))
     return [("speaker", "+", "#d83a34", a), ("speaker", "-", "#1d1d1f", b)]
@@ -1540,7 +1556,7 @@ def obstacle_field(solids):
     from matplotlib.path import Path
     from scipy.ndimage import distance_transform_edt
     h = GRID_H
-    xs, ys, zs = np.arange(-28.6, 28.61, h), np.arange(27.0, 62.61, h), np.arange(-36.6, 55.11, h)
+    xs, ys, zs = np.arange(-IN_A - 1.0, IN_A + 1.01, h), np.arange(27.0, 62.61, h), np.arange(-36.6, 55.11, h)
     occ = np.zeros((len(xs), len(ys), len(zs)), bool)
     X, Y = np.meshgrid(xs, ys, indexing="ij")
     pts = np.c_[X.ravel(), Y.ravel()]

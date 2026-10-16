@@ -23,7 +23,7 @@
   [
    "pod_body",
    "pod_panel",
-   0.0
+   -2.69918738624044e-13
   ],
   [
    "pod_body",
@@ -43,7 +43,7 @@
   [
    "pod_panel",
    "pod_camera_mount",
-   5.3948704641085355e-05
+   7.234068550974942e-05
   ],
   [
    "pod_button",
@@ -198,7 +198,7 @@
   [
    "pod_body",
    "mic_sph0645",
-   8.248718548486966e-15
+   3.613537420676938e-15
   ],
   [
    "pod_body",
@@ -2063,7 +2063,7 @@
   [
    "panel slide forward (max over LID_SLIDE)",
    "body + parts",
-   0.0
+   1.1064664809379288e-12
   ],
   [
    "latch hook, panel slid back 0.3mm (must touch)",
@@ -2078,7 +2078,7 @@
   [
    "panel lifted 0.3mm (must touch)",
    "pod_body",
-   7.866330474232924
+   7.866330474233067
   ],
   [
    "panel lifted 0.3mm at drop place",
@@ -2123,7 +2123,7 @@
   [
    "camera mount lifted 0.3mm (must touch)",
    "pod_panel",
-   0.811806338662797
+   0.8118063386627827
   ],
   [
    "camera lifted 0.3mm (must touch)",
@@ -2163,7 +2163,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   277.1615713187312
+   273.9409990060656
   ],
   [
    "wires uart",
@@ -2423,7 +2423,7 @@
   [
    "lay uart GND (lifted 40 mm)",
    "parts and wires already in",
-   2.0893798609476817
+   0.0
   ],
   [
    "push on uart GND housing (pi, 6 mm)",
@@ -2433,7 +2433,7 @@
   [
    "lay mic SEL (lifted 40 mm)",
    "parts and wires already in",
-   1.4043956704357334
+   1.4043956724699558
   ],
   [
    "push on mic SEL housing (pi, 6 mm)",
@@ -2548,7 +2548,7 @@
   [
    "pod_camera_base_low",
    "pod_panel",
-   5.687601514673415e-05
+   5.367094791326316e-05
   ],
   [
    "pod_camera_cradle_low",
@@ -2743,7 +2743,7 @@
   [
    "pod_camera_base_low lifted 0.3mm (must touch)",
    "pod_panel",
-   0.811806338662797
+   0.8118063386627827
   ],
   [
    "wires: pairs that pass through each other",
@@ -2758,7 +2758,7 @@
  ],
  "printing": {
   "pod_body": {
-   "overhang_mm2": 42.5,
+   "overhang_mm2": 38.9,
    "regions": [
     {
      "area": 9.5,
@@ -2809,11 +2809,11 @@
      ]
     },
     {
-     "area": 6.0,
-     "flat": 6.0,
+     "area": 4.2,
+     "flat": 4.2,
      "x": [
       26.1,
-      27.6
+      27.1
      ],
      "y": [
       10.2,
@@ -2825,11 +2825,11 @@
      ]
     },
     {
-     "area": 6.0,
-     "flat": 6.0,
+     "area": 4.2,
+     "flat": 4.2,
      "x": [
       26.1,
-      27.6
+      27.1
      ],
      "y": [
       -16.8,
@@ -2897,8 +2897,8 @@
      "area": 3.6,
      "flat": 3.6,
      "x": [
-      26.0,
-      27.5
+      32.0,
+      33.5
      ],
      "y": [
       -7.2,
@@ -2913,8 +2913,8 @@
      "area": 3.6,
      "flat": 3.6,
      "x": [
-      26.0,
-      27.5
+      32.0,
+      33.5
      ],
      "y": [
       2.8,
@@ -2948,13 +2948,13 @@
    "regions": []
   },
   "pod_camera_mount": {
-   "overhang_mm2": 37.5,
+   "overhang_mm2": 40.0,
    "regions": [
     {
-     "area": 25.1,
+     "area": 27.6,
      "flat": 0.0,
      "x": [
-      -16.4,
+      -19.0,
       19.0
      ],
      "y": [
@@ -2962,7 +2962,7 @@
       -24.1
      ],
      "z": [
-      10.5,
+      10.6,
       11.0
      ]
     },
@@ -3172,28 +3172,28 @@
   }
  },
  "balance": {
-  "mass_g": 128.9,
+  "mass_g": 132.9,
   "com": [
    1.4,
-   50.7,
-   1.4
+   50.6,
+   1.9
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 17.4,
+    "g": 20.0,
     "com": [
-     0.3,
-     37.7,
-     11.5
+     0.5,
+     38.3,
+     13.2
     ]
    },
    {
     "name": "pod_panel",
-    "g": 6.7,
+    "g": 8.1,
     "com": [
-     1.6,
-     60.7,
+     2.0,
+     60.8,
      9.2
     ]
    },
@@ -3309,16 +3309,16 @@
     "name": "wires_uart",
     "g": 2.4,
     "com": [
-     -26.1,
-     44.8,
-     4.3
+     -27.2,
+     43.5,
+     3.2
     ]
    },
    {
     "name": "wires_amp",
     "g": 4.0,
     "com": [
-     -0.9,
+     -1.0,
      30.5,
      -14.6
     ]
@@ -3327,16 +3327,16 @@
     "name": "wires_mic",
     "g": 4.8,
     "com": [
-     -8.1,
-     44.6,
-     -20.1
+     -8.7,
+     44.4,
+     -21.3
     ]
    },
    {
     "name": "wires_speaker",
     "g": 1.0,
     "com": [
-     17.9,
+     17.8,
      54.0,
      37.1
     ]
