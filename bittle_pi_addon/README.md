@@ -1,6 +1,6 @@
-# Bittle X Pi Add-on v0.18 - Build Guide
+# Bittle X Pi Add-on v0.19 - Build Guide
 
-Version 0.18, 2026-10-15. A sample add-on for the Bittle X platform v3.1 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a snap-in top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools, glue, tape or supports are necessary.
+Version 0.19, 2026-10-15. A sample add-on for the Bittle X platform v3.1 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a snap-in top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools, glue, tape or supports are necessary.
 
 ![The add-on on the platform: the mic holes are at the front, the port windows in the panel.](doc/02_addon.png)
 
@@ -42,7 +42,7 @@ Balance. The add-on weighs 126 g with the camera (weighed parts; printed parts a
 The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bittlex/viewer/#step=1](https://beetlebugorg.github.io/bittlex/viewer/#step=1).
 
 1. Fit the platform cover in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
-2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 4.2 N). The BiBoard header is now in the notch of the right well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
+2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 3.2 N). The BiBoard header is now in the notch of the right well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
 3. Push a 10 cm Grove cable onto the Grove plug of the BiBoard through the floor opening at the front left. Lay its excess as an S fold in the front left corner and let the free end hang out of the top. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
 4. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
 5. Plug the six mic jumpers onto the mic header. Push the mic down into its grooves at the front wall, port to the front. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
@@ -124,10 +124,10 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 
 ## 6. Checks
 
-1. Slide: the empty body is clear of the robot at the click point, half way and at the drop-on place. The clicks are about 4.2 N to lock and 4.2 N to unlock (beam strain 1.12 %).
+1. Slide: the empty body is clear of the robot at the click point, half way and at the drop-on place. The clicks are about 3.2 N to lock and 3.2 N to unlock (beam strain 0.9 %).
 2. Panel tabs: 9.1 N to close (4 tabs, 30 deg lead), 8 N to open one end (2 tabs, 45 deg catch), tab strain 1.19 %. Turned 180 deg, the panel does not go down.
 3. Install: the speaker, the mic, the amp and the stack each go straight down 40 mm without contact. The panel goes down without contact. Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place (small contacts of 1 to 2 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.
-4. Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 8 mm, it hits the ridges. The ridges need 0.5 mm of bracket flex (about 4 N each, 0.4 % strain); the clip legs bend to 1.5 % strain. The Grove cable touches no part and no other wire. The head turns without contact with the mount.
+4. Camera: the case goes into the mount without contact and is clear of the HDMI plug. Lifted 8 mm, it hits the ridges. The ridges need 0.5 mm of bracket flex (about 4 N each, 0.4 % strain); the clip legs bend to 1.3 % strain. The Grove cable touches no part and no other wire. The head turns without contact with the mount.
 5. Switch and button: the slider moves 2 mm each way without contact, and its fork pushes the lever after 0.3 mm. The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.
 6. Robot: the head turns from -85 to 85 deg without contact. 6 front and 22 rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. The Petoi tail is 3.2 mm under the add-on, and 0.05 mm at the drop-on place.
 

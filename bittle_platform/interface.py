@@ -86,8 +86,8 @@ KEY_LEAD = 0.4                  # 45 deg chamfer on the top and bottom edges of 
 # (fixed only at the root, behind the peg). Each beam has a round bump at its free end, in front of the peg.
 # The bumps push the shaft into the V stop: the add-on does not rattle.
 # Shaft between the bumps: beam travel = travel. With a 1.2 x 1.5 beam, arm 7.0, PLA (E 2400):
-# about 4 N peak to slide the add-on on or off (all 8 beams), strain 1.1 % (build.py: detent_force()).
-DET = dict(beam_w=1.2, slit_w=0.8, arm=7.5, bump_r=1.5, travel=0.35, preload=0.05, free_end=1.2)
+# about 3.2 N peak to slide the add-on on or off (all 8 beams), strain 0.9 % (build.py: detent_force()).
+DET = dict(beam_w=1.2, slit_w=0.8, arm=7.5, bump_r=1.5, travel=0.28, preload=0.05, free_end=1.2)
 E_PLA = 2400.0                  # MPa, for the detent force estimate
 MU_PLA = 0.3                    # PLA on PLA friction, for the detent force estimate
 

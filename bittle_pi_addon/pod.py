@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.18: one-piece body with a snap-in top panel.
+"""Bittle X Pi add-on rev 0.19: one-piece body with a snap-in top panel.
 
 Frame = Petoi reference STL frame (reference/*.stl):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -154,7 +154,7 @@ CAM = dict(case_x=(-1.2, 45.5), case_y=(-24.8, 4.5), case_z=(-9.8, 5.1), front_z
            brk=dict(t=1.2, clr=0.25, lip_front=0.8, lip_back=1.6, top=90.0),
            ridge=dict(h=0.5, yc=80.0, flat=1.0, z={1: (-29.5, -25.5), -1: (-35.0, -30.0)}),   # pockets: X+ z -30..-25, X- z -37..-28, y 74..85
 
-           win=dict(hx=11.0, z=(-32.6, -26.6)), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.0, hook=0.5, clr=0.15),
+           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.8, hook=0.5, clr=0.05, gap=0.05),
            slot=dict(x=(-12.7 - 3.0, -12.7 + 3.0), z=(-19.4, -8.4)), mass=15.0)
 # The Grove socket (native x 32.4..37.3, y -19.4..-1.0 on the rear face): the plug in place, and the plug on the
 # BiBoard under the cover (platform GROVE_PLUG). Grove plug body 4.9 x 9.9, 6 mm out of the socket (estimates).
@@ -899,20 +899,21 @@ def build_camera_mount():
         h, yc, f = Rd["h"], Rd["yc"], Rd["flat"]
         rd = [(sx * (xi + 0.01), yc - f / 2 - h), (sx * (xi - h), yc - f / 2), (sx * (xi - h), yc + f / 2), (sx * (xi + 0.01), yc + f / 2 + h)]
         m += prism_zp(rd if sx < 0 else rd[::-1], *Rd["z"][sx])
-        xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.15 inside the window
+        xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.05 inside the window, 0.1 at front and back
         zc = (W["z"][0] + W["z"][1]) / 2
         za, zb2 = zc - Lg["w"] / 2, zc + Lg["w"] / 2
-        m += mbox(*X(xl, xl - Lg["t"]), Fr["y0"] - 1.6, TOP + 0.01, za, zb2)
+        r = W["r"] - 0.1                                  # leg corners: 0.05 clear of the window corners
+        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), Fr["y0"] - 1.6, TOP + 0.01)
         e = Lg["hook"] + Lg["clr"]                        # hook: flat catch under the frame, 34 deg lead-in below it
-        yt = Fr["y0"] - 0.1
+        yt = Fr["y0"] - Lg["gap"]
         hk = [(sx * (xl - 0.01), yt), (sx * (xl + e), yt), (sx * (xl - 0.01), yt - 1.5 * e - 0.3)]
-        m += prism_zp(hk if sx > 0 else hk[::-1], za, zb2)
+        m += prism_zp(hk if sx > 0 else hk[::-1], za + W["r"], zb2 - W["r"])   # narrower: it clears the window corners
     return m
 
 
 def camera_window():
     W = CAM["win"]
-    return prism_y(rrect_pts(-W["hx"], W["hx"], *W["z"], 1.0), PANEL_IN - 1, TOP + 1)
+    return prism_y(rrect_pts(-W["hx"], W["hx"], *W["z"], W["r"]), PANEL_IN - 1, TOP + 1)
 
 
 def camera_cable_slot():

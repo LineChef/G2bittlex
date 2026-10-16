@@ -17,8 +17,8 @@ Version 3.0 is not compatible with earlier versions: the pegs have a new shape a
 | Add-on plate | bottom at Y 26, 1.5 thick at the keyholes |
 | Keyhole | drop-in hole 7 mm in front of the peg = the head teardrop + 0.45; slot 4.7 wide back to a V stop at the peg; 0.4 lead-in chamfers top and bottom |
 | Fit | put the add-on on 7 mm behind its place, then slide it 7 mm forward until it clicks. Remove: slide it rearward and lift |
-| Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the rear end only). Bumps R1.5 at 1.42 in front of the peg, 0.35 into the shaft path. They push the shaft point into the V stop, which centers it. |
-| Click force | about 4.2 N to slide on and 4.2 N to slide off (all 8 beams, PLA estimate); beam strain 1.12 % |
+| Click (detent) | two 1.2 wide spring beams, one on each side of each slot, freed by 0.8 U slits (fixed at the rear end only). Bumps R1.5 at 1.25 in front of the peg, 0.28 into the shaft path. They push the shaft point into the V stop, which centers it. |
+| Click force | about 3.2 N to slide on and 3.2 N to slide off (all 8 beams, PLA estimate); beam strain 0.9 % |
 | Keep clear | the peg heads as they slide; the BiBoard header in the cover slot (X 24.73..27.27, Z 12.4..25.1, top Y 29.1) |
 | Size | the pod fits in Z -37.8..56.2, \|X\| <= 29.6; outside that, check the legs and the head |
 

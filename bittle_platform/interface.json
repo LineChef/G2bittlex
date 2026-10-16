@@ -12,7 +12,7 @@
   "slit_w": 0.8,
   "arm": 7.5,
   "bump_r": 1.5,
-  "travel": 0.35,
+  "travel": 0.28,
   "preload": 0.05,
   "free_end": 1.2
  },
@@ -84,25 +84,25 @@
    "peg": [12.0, -5.5],
    "slot": [[12.0, -12.5], [12.0, -5.5]],
    "drop_in_center": [12.0, -12.5],
-   "bump_centers": [[15.15, -6.918], [8.85, -6.918]]
+   "bump_centers": [[15.22, -6.748], [8.78, -6.748]]
   },
   {
    "peg": [12.0, 14.5],
    "slot": [[12.0, 7.5], [12.0, 14.5]],
    "drop_in_center": [12.0, 7.5],
-   "bump_centers": [[15.15, 13.082], [8.85, 13.082]]
+   "bump_centers": [[15.22, 13.252], [8.78, 13.252]]
   },
   {
    "peg": [-12.0, -5.5],
    "slot": [[-12.0, -12.5], [-12.0, -5.5]],
    "drop_in_center": [-12.0, -12.5],
-   "bump_centers": [[-8.85, -6.918], [-15.15, -6.918]]
+   "bump_centers": [[-8.78, -6.748], [-15.22, -6.748]]
   },
   {
    "peg": [-12.0, 14.5],
    "slot": [[-12.0, 7.5], [-12.0, 14.5]],
    "drop_in_center": [-12.0, 7.5],
-   "bump_centers": [[-8.85, 13.082], [-15.15, 13.082]]
+   "bump_centers": [[-8.78, 13.252], [-15.22, 13.252]]
   }
  ],
  "clearances": {
@@ -119,7 +119,7 @@
    [
     "starter_plate locked",
     "cover_pegs",
-    0.199
+    0.206
    ],
    [
     "starter_plate locked",
@@ -149,7 +149,7 @@
    [
     "starter_plate at detent bump",
     "cover_pegs",
-    4.253
+    3.051
    ],
    [
     "starter_plate at detent bump",
@@ -214,7 +214,7 @@
    [
     "starter_plate turned 180 (min, Z +-12)",
     "peg heads",
-    10.071
+    10.53
    ],
    [
     "starter_plate drop-on (lowered)",
@@ -245,7 +245,7 @@
   },
   "mass_g_pla_solid": {
    "cover_pegs": 11.1,
-   "starter_plate": 3.6
+   "starter_plate": 3.5
   },
   "clearances": {
    "plate_to_collar": 0.31,
@@ -257,11 +257,11 @@
    "collar_to_flat_edge": 0.57
   },
   "detent": {
-   "lock_N": 4.2,
-   "unlock_N": 4.2,
+   "lock_N": 3.2,
+   "unlock_N": 3.2,
    "hold_N": 1.47,
-   "beam_travel": 0.35,
-   "strain_pct": 1.12,
+   "beam_travel": 0.28,
+   "strain_pct": 0.9,
    "k_N_per_mm": 3.69
   }
  }
