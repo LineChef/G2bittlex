@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on: README.md and bittle_pi_addon_guide.pdf from one content list.
+"""Bittle X Pi add-on: README.md and the wiring figures. guide.py makes the PDF guide.
 
 Run pod.py and render.py first, then:  python docs.py
 """
@@ -61,7 +61,7 @@ def content():
     p(f"Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. "
       "The body walls are vertical and its floor is on the bed. The only overhangs "
       f"({pr['pod_body']['overhang_mm2']:.0f} mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). "
-      "The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
+      "The front-left cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. "
       "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. "
       f"Its overhangs ({pr['pod_panel']['overhang_mm2']:.0f} mm²) are short bridges at the button arm and the lid hooks. "
       "The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. "
@@ -508,8 +508,8 @@ def main():
     PD.DATE = DATE
     X = content()
     PD.write_md(X, os.path.join(HERE, "README.md"))
-    PD.FOOTER = f"Bittle X Pi Add-on v{VERSION}"
-    PD.write_pdf(X, os.path.join(HERE, "bittle_pi_addon_guide.pdf"))
+    import guide
+    guide.main()
     print("docs ready")
 
 

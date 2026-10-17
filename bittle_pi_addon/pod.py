@@ -271,8 +271,11 @@ LATCH = dict(hw=4.5, slit=0.6, root_z=34.0, rib_hw=3.0, rib_d=1.2, rib_top=59.6,
              hook_hw=3.5, ramp=1.0, gap=0.05)
 # Finger notch in the rear wall under the seam: lift the rear edge of the panel here.
 NOTCH = dict(hw=7.0, h=1.5, d=1.0)
-# The body has no cable holes at its base. The camera uses USB, so nothing plugs into the BiBoard Grove socket: the
-# floor is closed over the platform GROVE_PLUG space.
+# Front-left notch, over the notch in the cover (platform GROVE_NOTCH): a 45 deg chamfer across the front bottom edge
+# of the body and an opening in the floor over the BiBoard Grove socket (platform GROVE_PLUG), so a Grove cable can
+# come out under the front edge. h = height at the front face. The body has no other cable hole at its base.
+FRONT_NOTCH = dict(x=(12.5, 25.5), h=6.0, z1=-26.9)    # z1: rear end of the floor opening over the Grove plug
+FRONT_CABLE = dict(x=(14.0, 24.0), y=(FLOOR_Y0, FLOOR_Y0 + 3.5), z=(Z0 - 3.0, Z0 + 2.0))   # cable space (check)
 # Grille in the rear face, mic holes in the front face
 GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6)
 
@@ -282,7 +285,8 @@ WIRE_PATHS = {
                                         dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
     "i2s: across the front to the amp": [dict(x=(AMP_CABLE_X - 0.7, AMP_CABLE_X + 0.7), y=(27.6, 45.0), z=(-24.5, -12.1)),
                                          dict(x=(AMP_CABLE_X - 0.7, AMP_CABLE_X + 0.7), y=(27.6, 37.0), z=(ZF_IN + 1.6, -24.5)),
-                                         dict(x=(AMP_CABLE_X + 0.7, 22.9), y=(27.6, 37.0), z=(ZF_IN + 1.6, ZF_IN + 3.0))],
+                                         dict(x=(AMP_CABLE_X + 0.7, 11.7), y=(27.6, 37.0), z=(ZF_IN + 1.6, ZF_IN + 3.0)),
+                                         dict(x=(11.7, 22.9), y=(27.6, 37.0), z=(-26.7, -25.3))],
     "mic: across the front, rearward in the right well": [dict(x=(MIC_HOUSING_X[1] + 0.5, 21.0), y=(38.2, 53.0), z=(MIC_PIN_Z - 0.7, MIC_PIN_Z + 0.7)),
                                                            dict(x=(22.7, 24.1), y=(38.2, 53.0), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
@@ -844,6 +848,10 @@ def build_body():
         dz, dy = (0.0, 0.0) if a is None else (2.2 * math.cos(math.radians(a)), 2.2 * math.sin(math.radians(a)))
         holes.append(teardrop_x(-A - 0.5, -IN_A + 0.5, 0.5, MIC_PORT[0] + dy, MIC_PORT[1] + dz, n=12))
     B -= union(holes)
+    h = FRONT_NOTCH["h"]
+    tri = [(FLOOR_Y0 - 1, Z0 - 1), (FLOOR_Y0 + h + 1, Z0 - 1), (FLOOR_Y0 - 1, Z0 + h + 1)]     # 45 deg face
+    B -= prism_x(tri, *FRONT_NOTCH["x"])
+    B -= mbox(*FRONT_NOTCH["x"], FLOOR_Y0 - 1, FLOOR_Y1 + 0.01, ZF_IN - 0.5, FRONT_NOTCH["z1"])     # floor opening over the Grove plug
     return B - body_marks()
 
 
@@ -1300,7 +1308,8 @@ SPLICE = dict(bclk=(21.2, 3.0), lrclk=(21.0, -13.0), y=(39.0, 45.0), r=1.25)
 # notch for the BiBoard header (X 23.9). A wire that crosses further forward takes a lane further out, so no two
 # lanes cross; DIN goes up at once.
 MIC_RIB, UART_X, FLOOR_WIRE = 23.4, 27.0, FLOOR_Y1 + 0.75
-AMP_DROP, AMP_FRONT_Z, AMP_RUN_X = 8.0, ZF_IN + 2.3, 23.6   # the amp ribbon: step down, the run behind the front wall, the run in the left well
+AMP_DROP, AMP_FRONT_Z, AMP_RUN_X = 8.0, ZF_IN + 2.3, 23.6
+AMP_JOG = (11.0, -26.0)      # the ribbon turns rearward here (past the front post) and runs behind the Grove plug space   # the amp ribbon: step down, the run behind the front wall, the run in the left well
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
 LONG_WIRES = {("mic", "GND"), ("mic", "3V")}     # LONG_L
 
@@ -1335,7 +1344,8 @@ def wire_routes():
         W.append(("uart", lab, col, pts))
     # Amp: a flat cable (bonded wires, user photo) from the I2S plug at the front end of the amp, on edge all the way
     # (G at the top, 2.0 apart): it steps down AMP_DROP in a gentle S, runs forward to the front wall, across behind the
-    # front wall under the mic plugs and wires, and rearward along the left well (AMP_RUN_X). No twist: every turn
+    # front wall under the mic plugs and wires, rearward past the front post (AMP_JOG), across behind the Grove plug
+    # space, and rearward along the left well (AMP_RUN_X). No twist: every turn
     # bends it across its face. In the left well each wire turns inward at its own height (DIN at the front, V at the
     # rear) and goes up or down into its pin or splice.
     order = ("G", "V", "BCLK", "LRC", "DIN")
@@ -1344,13 +1354,18 @@ def wire_routes():
         y0 = AMP_PLUG_Y[i]
         y = y0 - AMP_DROP
         pts = [(xc, y0, AMP_PLUG_Z0), (xc, y0, AMP_PLUG_Z0 - 2.0), (xc, y, AMP_PLUG_Z0 - 12.0), (xc, y, AMP_FRONT_Z),
-               (AMP_RUN_X, y, AMP_FRONT_Z)]
+               (AMP_JOG[0], y, AMP_FRONT_Z), (AMP_JOG[0], y, AMP_JOG[1])]
+        if lab == "DIN":                                    # the bottom wire turns rearward first, inside the others
+            yp, zp = pin_yz(40)
+            W.append(("amp", lab, col, pts + [(xp, y, AMP_JOG[1]), (xp, yp, zp)] + into_pin(40)))
+            continue
+        pts.append((AMP_RUN_X, y, AMP_JOG[1]))
         if lab == "LRC" or lab == "BCLK":                   # up into the bottom of its splice sleeve
             t = "lrclk" if lab == "LRC" else "bclk"
             sx, sz = SPLICE[t]
             pts += [(AMP_RUN_X, y, sz - 5.0), (sx, y, sz - 2.5), (sx, SPLICE["y"][0] - 1.5, sz - 0.5), splice_end(t, False)]
         else:
-            n = {"DIN": 40, "G": 14, "V": 2}[lab]
+            n = {"G": 14, "V": 2}[lab]
             yp, zp = pin_yz(n)
             pts += [(AMP_RUN_X, y, zp - 5.0), (xp, y, zp - 2.5), (xp, yp, zp)] + into_pin(n)
         W.append(("amp", lab, col, pts))
@@ -2271,6 +2286,13 @@ def check(parts, models, robot):
             rows.append((f"wires {key}", b, vol(W, parts[b])))
         others = union([M for m, M in models.items() if m not in PATH_ENDS[key] and not m.startswith("wires_")])
         rows.append((f"wires {key}", "other parts", vol(W, others)))
+    G = PI.GROVE_PLUG
+    plug = mbox(-G["x"][1], -G["x"][0], 10.0, G["y_top"], *G["z"])
+    rows.append(("Grove plug space (max over the slide)", "pod_body",
+                 max(vol(parts["pod_body"].translate([0, 0, s_]), plug) for s_ in (0.0, 1.0, 2.0, 3.5, 5.0, SLIDE))))
+    rows.append(("Grove plug space", "wires", vol(plug, union([M for m, M in models.items() if m.startswith("wires_")]))))
+    C = mbox(*FRONT_CABLE["x"], *FRONT_CABLE["y"], *FRONT_CABLE["z"])
+    rows.append(("Grove cable space, front (robot left)", "pod_body", vol(C, parts["pod_body"])))
     F = mbox(*FINGER["x"], *FINGER["y"], *FINGER["z"])
     rows.append(("finger over the BiBoard plug", "pod_body", vol(F, parts["pod_body"])))
     rows.append(("finger over the BiBoard plug", "other parts", vol(F, union([M for m, M in models.items()

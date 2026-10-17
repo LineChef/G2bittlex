@@ -73,7 +73,7 @@ INFO = {
     "body": dict(text="The body of the Pi add-on: one rounded box with a flat floor. The floor has the 4 teardrop keyholes, each with two "
                       "spring beams that center the peg. Inside: grooves for the speaker and the Pi stack, a post and a ledge with slots for the mic, and a slot bar for the amp. "
                       "The BiBoard header comes up through a notch in the floor, at the front of the left well. "
-                      "Two nubs on the right wall hold the amp. The base has no cable holes. "
+                      "Two nubs on the right wall hold the amp. The only cable hole at the base is the notch at the front left, over the notch in the cover. "
                       "It prints floor down without supports.",
                  attach="Click it on empty: put it on the pegs 7 mm behind its place, grille to the rear, then slide it 7 mm forward until it clicks. "
                         "To remove it, unplug the BiBoard plug, then slide it 7 mm rearward and lift it.",

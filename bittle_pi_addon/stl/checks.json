@@ -2418,7 +2418,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   273.3419257415266
+   273.3419235906737
   ],
   [
    "wires uart",
@@ -2518,6 +2518,21 @@
   [
    "wires speaker",
    "other parts",
+   0.0
+  ],
+  [
+   "Grove plug space (max over the slide)",
+   "pod_body",
+   0.0431721982690018
+  ],
+  [
+   "Grove plug space",
+   "wires",
+   0.0
+  ],
+  [
+   "Grove cable space, front (robot left)",
+   "pod_body",
    0.0
   ],
   [
@@ -3515,20 +3530,20 @@
   }
  },
  "balance": {
-  "mass_g": 133.0,
+  "mass_g": 132.8,
   "com": [
-   1.2,
-   50.7,
-   1.5
+   1.3,
+   50.8,
+   1.6
   ],
   "parts": [
    {
     "name": "pod_body",
-    "g": 20.1,
+    "g": 19.9,
     "com": [
-     0.8,
-     38.3,
-     13.0
+     1.0,
+     38.4,
+     13.4
     ]
    },
    {
@@ -3661,9 +3676,9 @@
     "name": "wires_amp",
     "g": 4.0,
     "com": [
-     -3.4,
-     33.4,
-     -22.7
+     -2.3,
+     33.5,
+     -21.8
     ]
    },
    {

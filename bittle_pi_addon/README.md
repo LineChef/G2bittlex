@@ -20,7 +20,7 @@ Version 0.23, 2026-10-16. A sample add-on for the Bittle X platform v3.2 (../bit
 
 Print every part with the Cura profile "Bittle X" (../cura/Bittle_X.curaprofile; 0.20 mm layers, no supports, 6-line brim). ../cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured ("Bittle X - <spool>"). No part needs supports.
 
-Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. The body walls are vertical and its floor is on the bed. The only overhangs (40 mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. Its overhangs (227 mm²) are short bridges at the button arm and the lid hooks. The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.
+Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. The body walls are vertical and its floor is on the bed. The only overhangs (40 mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). The front-left cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. Its overhangs (227 mm²) are short bridges at the button arm and the lid hooks. The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.
 
 
 ## 2. Electronics
@@ -35,7 +35,7 @@ Print quality. The body and panel walls are 2.0 mm: with the offsets of the body
 | Petoi AI Vision Module | In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. It stands 9 mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out. |
 | USB cable, USB-C to micro-USB | From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. Modeled length 113 mm between the plugs. |
 
-Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 1.5 mm behind the robot center and 1.2 mm right of the center line, 25 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 1.6 mm behind the robot center and 1.3 mm right of the center line, 26 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -96,11 +96,11 @@ The BiBoard wires are female-to-male jumpers (the male end goes into the BiBoard
 | 1 | BiBoard TX2 | pin 10 (2-turn loop) | 100 | 11 | mic DOUT | pin 38 (1-turn loop on a 5 mm stem) | 97 |
 | 2 | BiBoard RX2 | pin 8 (arch) | 98 | 12 | mic BCLK | BCLK splice | 76 |
 | 3 | BiBoard GND | pin 6 (1-turn loop) | 99 | 13 | mic GND | pin 9 (2-turn loop) | 149 |
-| 4 | amp G | pin 14 | 118 | 14 | mic 3V | pin 1 (1-turn loop on a 5 mm stem) | 148 |
-| 5 | amp V | pin 2 | 132 | 15 | BCLK splice | pin 12 | 16 |
-| 6 | amp BCLK | BCLK splice | 111 | 16 | LRCLK splice | pin 35 | 7 |
-| 7 | amp LRC | LRCLK splice | 97 | 17 | amp speaker + | speaker + | 43 |
-| 8 | amp DIN | pin 40 | 85 | 18 | amp speaker - | speaker - | 44 |
+| 4 | amp G | pin 14 | 116 | 14 | mic 3V | pin 1 (1-turn loop on a 5 mm stem) | 148 |
+| 5 | amp V | pin 2 | 130 | 15 | BCLK splice | pin 12 | 16 |
+| 6 | amp BCLK | BCLK splice | 109 | 16 | LRCLK splice | pin 35 | 7 |
+| 7 | amp LRC | LRCLK splice | 95 | 17 | amp speaker + | speaker + | 43 |
+| 8 | amp DIN | pin 40 | 81 | 18 | amp speaker - | speaker - | 44 |
 | 9 | mic SEL | pin 39 (1-turn loop) | 100 | 19 | camera USB-C | Pi data USB | 113 |
 | 10 | mic LRCL | LRCLK splice | 62 |  |  |  |  |
 
