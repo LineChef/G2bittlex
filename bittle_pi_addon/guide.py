@@ -170,7 +170,7 @@ def build_steps():
          note="The other wires are not shown here, for a clear view into the front-left corner.")
     step("Button cap and logo", ["panel", "button", "logo_white", "logo_red"], "panel",
          ["Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat.",
-          "Glue the two logo inlays into the pocket in the panel top: the white ring and M at the left, the red ring and J at the right."],
+          "Glue the two logo inlays into the pocket in the front right corner of the panel top: the white ring and M at the left, the red ring and J at the right."],
          lift={k: (0, 30, 0) for k in ("panel", "button", "logo_white", "logo_red")}, only=["body"])
     step("Panel", ["panel"], "iso",
          [f"Put the panel down {pod.LID_SLIDE:g} mm behind its place.",
@@ -178,7 +178,10 @@ def build_steps():
           "The PiSugar power switch is under the window beside the HDMI opening. Move it with a fingernail."],
          check="To open: lift the rear edge at the finger notch and slide the panel rearward.")
     step("Camera mount", ["camera_mount"], "camera",
-         ["Push the two clip legs of the camera mount down through the window at the front of the panel until they click."])
+         [f"Turn the camera mount {abs(pod.TW['twist']):g} deg counterclockwise (seen from above). Put it down into the round socket: the lugs go down through the keyways.",
+          f"Turn it {abs(pod.TW['twist']):g} deg clockwise until it clicks and stops.",
+          "To point the lens to the rear, turn the mount end for end first. It locks the same way."],
+         check="To remove: turn it counterclockwise and lift it.")
     step("Camera and USB cable", CAMERA, "camera",
          ["Push the camera case down between the brackets, lens forward, USB port up, until the hooks click over its top.",
           "Plug the USB-C end into the top of the camera and the micro-USB end into the Pi data USB port."])
@@ -444,6 +447,7 @@ def print_parts(n):
             ("pod_button", "Button cap", "PLA, white", "upside down: top on the bed"),
             ("pod_logo_white", "Logo inlay, white", "PLA, white", "top on the bed"), ("pod_logo_red", "Logo inlay, red", "PLA, red", "top on the bed"),
             ("pod_camera_mount", "Camera mount", "PLA, second color", "on its back end (as in the STL)")]
+    # the panel: the 3MF has a support blocker over the logo pocket
     tr = "".join(f"<tr><td><b>{t}</b><br><span class='muted'>stl/print/{f}.stl</span></td><td>{m}</td><td>{o}</td>"
                  f"<td class='n'>{docs.pod_mass(f) if f in ('pod_body', 'pod_panel', 'pod_camera_mount') else '< 1'} g</td></tr>"
                  for f, t, m, o in rows)
@@ -455,7 +459,8 @@ def print_parts(n):
             f'<table><tr><th>Part</th><th>Material</th><th>On the bed</th><th>Mass</th></tr>{tr}{opt}</table>'
             f'<h3>Settings</h3><div class="grid2"><p>0.2 mm layers, 0.25 mm first layer. Walls 2 mm: 4 lines of 0.5 mm. '
             f'Small holes print about 0.2 mm under size: the fits allow for it.</p>'
-            f'<p>The panel prints top down: its logo pocket and its openings are on the bed. The body prints floor down: '
+            f'<p>The panel prints top down: its logo pocket and its openings are on the bed. Slice stl/print/pod_panel.3mf: '
+            f'it has a support blocker over the logo pocket. The body prints floor down: '
             f'its labels and its route grooves face up.</p></div>'
             f'<h3>Hardware</h3><table><tr><th>Item</th><th>Count</th><th>Use</th></tr>'
             f'<tr><td>Female-to-male Dupont jumper, 10 cm</td><td class="n">3</td><td>BiBoard serial link</td></tr>'

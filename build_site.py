@@ -85,26 +85,27 @@ INFO = {
                        "It prints upside down on its top without supports.",
                   attach="Put it down 5 mm behind its place, then slide it forward until the latch clicks (about 6 N). "
                          "To open, lift the rear edge at the finger notch (about 3 N), slide it 5 mm rearward and lift it.",
-                  files=[("Print STL", AF + "pod_panel.stl"), ("STEP (mesh)", AF + "pod_panel.step"),
+                  files=[("Print 3MF (Cura)", AF + "pod_panel.3mf"), ("Print STL", AF + "pod_panel.stl"), ("STEP (mesh)", AF + "pod_panel.step"),
                          ("Build guide PDF", AF + "bittle_pi_addon_guide.pdf")]),
     "button": dict(text="The white button cap for the PiSugar button. Its cross post presses into a round hole in the spring tongue: "
                         "the ribs crush into the hole wall. Press it: the tongue and the arm under it press the PiSugar button.",
                    attach="Press its post into the hole in the tongue until the cap sits flat, before the panel goes on. Support the tongue from below.",
                    files=[("Print STL", AF + "pod_button.stl")]),
     "logo_white": dict(text="The white half of the logo inlay: the left ring and the M. 0.8 mm thick, flush with the panel top.",
-                       attach="Glue it into its pocket in the panel top, behind the camera.", files=[("Print STL", AF + "pod_logo_white.stl")]),
+                       attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_white.stl")]),
     "logo_red": dict(text="The red half of the logo inlay: the right ring and the J. 0.8 mm thick, flush with the panel top.",
-                     attach="Glue it into its pocket in the panel top, behind the camera.", files=[("Print STL", AF + "pod_logo_red.stl")]),
-    "camera_mount": dict(text="The camera mount: a 2 mm base on the front of the panel with a chin over its front edge, two side brackets that hold "
-                              "the vertical camera case, and two clip legs with barbed hooks through a window in the panel. "
+                     attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_red.stl")]),
+    "camera_mount": dict(text="The camera mount: a twist lock in a round socket in the panel, right of center, and two side brackets that hold "
+                              "the vertical camera case. Two lugs go under the panel top, and a spring tab in the panel clicks a bump into a notch in each lug. "
+                              "It locks the same way with the lens to the rear. "
                               "A hook on each bracket snaps over a top corner of the case, clear of the USB port: the camera cannot fall out when the robot falls. "
                               "For the robot without its head, the two head-off parts hold the camera lower, in front of the body.",
-                         attach="Push the two clip legs down through the window until they click. "
+                         attach="Turn it 40 deg counterclockwise, put it down into the socket, then turn it 40 deg clockwise until it clicks. "
                                 "Then push the camera case down between the brackets until the hooks click over its top.",
                          files=[("Print STL", AF + "pod_camera_mount.stl"), ("Head off: base STL", AF + "pod_camera_base_low.stl"),
                                 ("Head off: cradle STL", AF + "pod_camera_cradle_low.stl")]),
-    "camera": dict(text="The Petoi AI Vision Module in its Petoi case, vertical on the front of the add-on, lens forward over the head, USB port at the top (15 g). "
-                        "It stands 9 mm right of the center line, clear of the charge port behind it. "
+    "camera": dict(text="The Petoi AI Vision Module in its Petoi case, vertical on the add-on, lens forward over the head, USB port at the top (15 g). "
+                        "It stands 18 mm right of the center line, on the twist mount. "
                         "A USB cable goes from the USB-C port in its top to the Pi data USB port.",
                    attach="Push it down between the brackets of the camera mount until the hooks click over its top, lens forward. Then plug in the USB cable."),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on its long edge: ports up, GPIO header down to the left (toward the BiBoard), SD card to the rear. Model: PiSugar (GPL-3.0).",
@@ -231,7 +232,8 @@ STEPS = [
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue in the middle is the PiSugar button. "
               "To open, lift the rear edge at the finger notch and slide the panel rearward."),
     dict(title="Camera mount", view="iso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
-         text="Push the two clip legs of the camera mount down through the window in the front of the panel until they click."),
+         text="Turn the camera mount 40 deg counterclockwise (seen from above) and put it down into the round socket in the panel: the lugs go down through the keyways. "
+              "Turn it 40 deg clockwise until it clicks and stops. To point the lens to the rear, turn the mount end for end first."),
     dict(title="Camera", view="iso", show=["camera"], highlight=["camera"], start={"camera": [0, 40, 0]},
          text="Push the camera case down between the two brackets, lens forward and USB port up, until the hooks click over its top."),
     dict(title="USB cable", view="iso", show=CAM_CABLE, highlight=CAM_CABLE, start={k: [0, 30, 0] for k in CAM_CABLE},
@@ -263,7 +265,7 @@ def main():
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
     E = pi["ENVELOPE"]
     meta = dict(
-        title="Bittle X Pi Add-on v0.23 on Platform v3.2",
+        title="Bittle X Pi Add-on v0.24 on Platform v3.2",
         explode_stages=EXPLODE["stages"],
         envelope=dict(width=2 * E["half_w_low"], length=round(E["z"][1] - E["z"][0], 1), top=E["top"],
                       above_cover=round(E["top"] - pi["COVER_TOP"], 1)),
@@ -300,7 +302,7 @@ PACKAGES = [
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
-    dict(key="addon", name="Bittle X Pi Add-on v0.23", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.23.zip",
+    dict(key="addon", name="Bittle X Pi Add-on v0.24", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.24.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/02_addon.png", img2="doc/06_open.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "an SPH0645 mic and the Petoi AI Vision Module, in a rounded box with a slide-on top panel. "
@@ -368,7 +370,7 @@ def build_home():
         put(P["pdf"], "Specification (PDF)" if P["key"] == "platform" else "Build guide (PDF)", "primary")
         put(P["zip"], "Full package (zip)", "primary")
         for f in sorted(os.listdir(os.path.join(src, "stl", "print"))):
-            put(os.path.join("stl", "print", f), f"Print: {f[:-4]}")
+            put(os.path.join("stl", "print", f), f"Print: {f[:-4]}" + (" (Cura 3MF, support blocker over the logo)" if f.endswith(".3mf") else ""))
         for f in sorted(os.listdir(os.path.join(src, "cad"))):
             if f == "assembly_step.zip":
                 put(os.path.join("cad", f), "CAD: full assembly (STEP, zipped)", "primary")

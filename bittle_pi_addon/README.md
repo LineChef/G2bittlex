@@ -1,6 +1,6 @@
-# Bittle X Pi Add-on v0.23 - Build Guide
+# Bittle X Pi Add-on v0.24 - Build Guide
 
-Version 0.23, 2026-10-16. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
+Version 0.24, 2026-10-17. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
 
 ![The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.](doc/02_addon.png)
 
@@ -10,17 +10,17 @@ Version 0.23, 2026-10-16. A sample add-on for the Bittle X platform v3.2 (../bit
 | File (stl/print/) | Material | Orientation | Mass |
 |---|---|---|---|
 | pod_body.stl | PLA | floor on the bed | 40 g |
-| pod_panel.stl | PLA, second color | upside down: top on the bed | 16 g |
+| pod_panel.stl | PLA, second color | upside down: top on the bed | 15 g |
 | pod_button.stl | PLA, white | upside down: top on the bed | 0.1 g |
 | pod_logo_white.stl, pod_logo_red.stl | PLA, white and red | top on the bed (as in the STL) | 0.1 g each |
-| pod_camera_mount.stl | PLA, second color | on its back end (as in the STL) | 8 g |
+| pod_camera_mount.stl | PLA, second color | on its back end (as in the STL) | 10 g |
 | cover_pegs_foot.stl (../bittle_platform) | PLA | stand on the rear end | 11 g |
-| Head off (optional): pod_camera_base_low.stl | PLA, second color | upside down (as in the STL) | 4 g |
+| Head off (optional): pod_camera_base_low.stl | PLA, second color | upside down (as in the STL) | 11 g |
 | Head off (optional): pod_camera_cradle_low.stl | PLA, white | on its rear edges (as in the STL) | 9 g |
 
 Print every part with the Cura profile "Bittle X" (../cura/Bittle_X.curaprofile; 0.20 mm layers, no supports, 6-line brim). ../cura/install_profiles.py installs it, and a copy with the size compensation of each spool that the tolerance app measured ("Bittle X - <spool>"). No part needs supports.
 
-Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. The body walls are vertical and its floor is on the bed. The only overhangs (40 mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). The front-left cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. Its overhangs (227 mm²) are short bridges at the button arm and the lid hooks. The camera mount has short bridges at the clip hooks and a 45 deg chin; the hooks over the case are 45 deg wedges. The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.
+Print quality. The body and panel walls are 2.0 mm: with the offsets of the body profile, Cura slices 4 full lines of 0.5 mm. The body walls are vertical and its floor is on the bed. The only overhangs (40 mm² in total) are the flat undersides of the two amp nubs (1.5 x 4 mm). The front-left cable notch is a 45 deg chamfer. The grille holes and the mic holes are teardrops (round, with a 45 deg point on top), so they print without bridges. The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. Its overhangs (233 mm²) are short bridges at the button arm and the lid hooks. For the panel, open stl/print/pod_panel.3mf in Cura and not the STL: it has a support blocker over the logo pocket. The camera mount prints on its back end. The rear edges of its pedestal, its seat ring and its lugs are 45 deg, and the hooks over the case are 45 deg wedges. The head-off base prints on its side: its dovetail grooves have 1.4 mm ledges. The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.
 
 
 ## 2. Electronics
@@ -32,10 +32,10 @@ Print quality. The body and panel walls are 2.0 mm: with the offsets of the body
 | NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, upright with its screw terminal at the top. Two nubs hold its top edge. Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end. |
 | NULLLAB 3 W 4 ohm speaker | At the rear, sound to the grille in the rear face. Body 27.9 wide, 15.2 deep. Two tapered wings (44 across, 3 thick) at the middle of the body depth stand in two side grooves. |
 | HiLetgo SPH0645 I2S mic | 12.45 x 16.12 board, high on the right wall near the front, port to the wall (holes in the right side). Its straight 6-pin header is along its front edge: the plugs point inward, and the wires go straight across behind the front wall. 3V is the lowest pin, SEL the highest. It drops into a slot in a post (rear edge) and a ledge (bottom edge); a fork under the panel holds its top edge. No tools. |
-| Petoi AI Vision Module | In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. It stands 9 mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out. |
-| USB cable, USB-C to micro-USB | From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. Modeled length 113 mm between the plugs. |
+| Petoi AI Vision Module | In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. It stands 18 mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out. |
+| USB cable, USB-C to micro-USB | From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. Modeled length 115 mm between the plugs. |
 
-Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 1.6 mm behind the robot center and 1.3 mm right of the center line, 26 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 8.9 mm behind the robot center and 2.7 mm right of the center line, 26 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -49,17 +49,17 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 5. Plug the flat amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Let the amp cable hang out of the top. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
 6. Push the Pi + PiSugar 2 stack down into the end grooves. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Plug the wires one at a time, in the order of section 5: the splices, the Pi ends of the BiBoard jumpers, the amp cable, the mic jumpers, then the BiBoard ends. The viewer has one step for each wire. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9)) ([viewer step 19](https://beetlebugorg.github.io/bittlex/viewer/#step=19))
-8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right. ([viewer step 20](https://beetlebugorg.github.io/bittlex/viewer/#step=20))
+8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the front right corner of the panel top: the white ring and M at the left, the red ring and J at the right. ([viewer step 20](https://beetlebugorg.github.io/bittlex/viewer/#step=20))
 9. Put the panel down 5 mm behind its place, then slide it forward until the latch clicks (about 5.7 N). The hooks under the panel go under the lugs in the walls. ([viewer step 21](https://beetlebugorg.github.io/bittlex/viewer/#step=21))
-10. Push the two clip legs of the camera mount down through the window until they click. Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. ([viewer step 22](https://beetlebugorg.github.io/bittlex/viewer/#step=22)) ([viewer step 23](https://beetlebugorg.github.io/bittlex/viewer/#step=23))
+10. Turn the camera mount 40 deg counterclockwise (seen from above) from its place. Put it down into the round socket in the panel: the two lugs go down through the keyways. Turn it 40 deg clockwise until it clicks and stops. To point the lens to the rear, turn the mount end for end first: it locks the same way. Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. ([viewer step 22](https://beetlebugorg.github.io/bittlex/viewer/#step=22)) ([viewer step 23](https://beetlebugorg.github.io/bittlex/viewer/#step=23))
 11. Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. The cable arches rearward over the panel. ([viewer step 24](https://beetlebugorg.github.io/bittlex/viewer/#step=24))
 12. Open: lift the rear edge of the panel at the finger notch (about 3.1 N), slide the panel 5 mm rearward and lift it. Remove: open the panel, pull the BiBoard plugs off, slide the body 7 mm rearward and lift it.
 
-On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening, behind the camera. The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. The tongue in the middle of the panel is a large button: press it to press the PiSugar button.
+On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. The tongue in the middle of the panel is a large button: press it to press the PiSugar button.
 
 ![The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.](doc/04_top.png)
 
-Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low clips into the camera window as the camera mount does, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. Push the camera down into the cradle until the hooks click. Plug the USB cable into the top of the camera and into the Pi data USB port.
+Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low turns into the camera socket as the camera mount does. Its arm goes forward on the panel, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. Push the camera down into the cradle until the hooks click. Plug the USB cable into the top of the camera and into the Pi data USB port.
 
 ![Head off: the camera lower and in front of the body.](doc/17_camera_low.png)
 
@@ -101,7 +101,7 @@ The BiBoard wires are female-to-male jumpers (the male end goes into the BiBoard
 | 6 | amp BCLK | BCLK splice | 109 | 16 | LRCLK splice | pin 35 | 7 |
 | 7 | amp LRC | LRCLK splice | 95 | 17 | amp speaker + | speaker + | 43 |
 | 8 | amp DIN | pin 40 | 81 | 18 | amp speaker - | speaker - | 44 |
-| 9 | mic SEL | pin 39 (1-turn loop) | 100 | 19 | camera USB-C | Pi data USB | 113 |
+| 9 | mic SEL | pin 39 (1-turn loop) | 100 | 19 | camera USB-C | Pi data USB | 115 |
 | 10 | mic LRCL | LRCLK splice | 62 |  |  |  |  |
 
 Plug the jumpers one at a time, in this order. Each wire goes to its place before the next one, so the later wires lie over the earlier ones:
@@ -133,10 +133,10 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 1. Slide: the empty body is clear of the robot at the click point, half way and at the drop-on place. The clicks are about 3.2 N to lock and 3.2 N to unlock (beam strain 0.9 %).
 2. Panel: it goes down 5 mm behind its place and slides forward without contact. The latch tongue lifts 0.8 mm over the rib: about 5.7 N to slide on, 3.1 N to lift, strain 0.6 %. Lifted 0.3 mm, the hooks touch the lugs. Turned 180 deg, the panel does not go down.
 3. Install: the speaker and the stack each go straight down 40 mm without contact. The mic drops into its slots; the post, the ledge, a stop and the panel fork hold it on every side. The amp tilts in under its nubs. Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place (small contacts of 2 to 3 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.
-4. Camera: the case goes into the mount without contact and is clear of the port plugs. Lifted 0.3 mm, its top hits the hooks. The brackets spread 4.8 mm as the case goes in (about 0.5 % strain). The clip leg hooks catch 0.8 mm under the frame on a 10 deg barb, so a pull pushes them out; the legs bend to 1.9 % strain. The USB cable touches no part and no other wire. The head turns without contact with the mount and the cable.
+4. Camera: the case goes into the mount without contact and is clear of the port plugs. Lifted 0.3 mm, its top hits the hooks. The brackets spread 4.8 mm as the case goes in (about 0.5 % strain). The mount goes down through the keyways and turns 40 deg to the lock without contact, except the two bumps on the panel tabs. Near the end of the turn the bumps ride 0.55 mm up onto the lugs (about 1.4 N each, 1.1 % strain in the tabs), then drop into the notches. In the notches each tab keeps 0.2 mm of preload (about 0.5 N) on its lug, so the seat ring stays firm on the panel. Lifted 0.3 mm, the lugs hit the panel. Turned 2 deg past the lock, the lugs hit the stops. Turned 180 deg (lens to the rear), the mount fits the same way. The USB cable touches no part and no other wire. The head turns without contact with the mount and the cable.
 5. Head-off mount: the base, the cradle, the camera and its cable touch no part of the robot without its head. The cradle slides down into the grooves without contact; the pins stop it from lifting.
 6. Switch and button: the switch lever is under the window over its full travel. The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.
-7. Robot: the head turns from -85 to 85 deg without contact. 18 front and 36 rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. The Petoi tail is 3.2 mm under the add-on, and 0.05 mm at the drop-on place.
+7. Robot: the head turns from -85 to 85 deg without contact. 17 front and 36 rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. The Petoi tail is 3.2 mm under the add-on, and 0.05 mm at the drop-on place.
 
 Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. The camera hooks catch the top of the case of the STL. To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.
 

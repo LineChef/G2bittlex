@@ -1,4 +1,4 @@
-"""Bittle X Pi add-on rev 0.23: one-piece body with a slide-on top panel.
+"""Bittle X Pi add-on rev 0.24: one-piece body with a slide-on top panel.
 
 Frame = the robot frame of the platform (bittle_platform/interface.py):
   X = lateral (+X = robot right), Y = up, Z = length (-Z = head end). mm.
@@ -20,10 +20,11 @@ Parts
                a latch tongue at the rear clicks over a rib. Forks under the panel hold the stack,
                the speaker and the amp down. A spring tongue over the PiSugar button is a large button.
   pod_button : the button cap on the tongue.
-  pod_camera_mount : clips into a window in the panel and holds the Petoi AI Vision Module vertical.
+  pod_camera_mount : turns into a round socket in the panel (a twist lock, lens forward or to the rear) and holds the
+               Petoi AI Vision Module vertical.
   pod_camera_base_low, pod_camera_cradle_low : the head-off mount (optional): the camera lower, in front of the body.
 Order: fit the platform cover, click the empty body on, put the parts in, plug in the wires, put the
-button cap into the panel, slide the panel on, clip the camera mount on.
+button cap into the panel, slide the panel on, turn the camera mount into its socket.
 Print: no supports (print_orient() has the orientation of each part).
 """
 import math
@@ -173,28 +174,39 @@ BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(-11.2, -1.2), t=1.0, slit=0
 # side, crush into the hole wall (coarse enough for a 0.5 mm nozzle).
 KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.8, rib=1.0, press=0.05, post_h=0.9)   # small holes print about 0.2 under
 # Camera: the Petoi AI Vision Module in its Petoi case (reference/AiCamera250116-*.stl, 46.7 x 29.3 x 14.9) stands
-# vertical on the front of the panel, lens forward over the head, the USB end (native -X) at the top. It is cx right of
-# center on the robot (cx < 0 in the design frame): it is then clear of the PiSugar charge port and the Pi power port
-# behind it.
-# A separate mount: a base on the panel with a chin over the rounded front edge, two side brackets with lips at the
-# corners of the case and a hook over each top corner (clear of the USB port), and two clip legs through a window in
-# the panel that catch under a frame. The brackets spread to let the case in from the top; the hooks snap over its
-# top face. A USB cable goes from the USB-C port in the top face of the case to the Pi data USB port, over the panel.
-CAM = dict(case_x=(-1.2, 45.55), case_y=(-24.83, 4.47), case_z=(-9.8, 5.1), front_z=-42.8, cx=-9.0,
+# vertical on the panel, lens forward over the head, the USB end (native -X) at the top. It stands on the twist mount
+# (TW, below): cx and front_z come from the socket center.
+# The mount has two side brackets with lips at the corners of the case and a hook over each top corner (clear of the
+# USB port). The brackets spread to let the case in from the top; the hooks snap over its top face. A USB cable goes
+# from the USB-C port in the top face of the case to the Pi data USB port, over the panel.
+CAM = dict(case_x=(-1.2, 45.55), case_y=(-24.83, 4.47), case_z=(-9.8, 5.1),
            top_y=(-21.6, 1.25),                          # the top (USB) end face of the case, native Y (it is narrower)
-           base=dict(x=(-25.9, 12.2), z=(-35.5, -26.2), t=2.0, chin=3.0, clr=0.15),
+           base=dict(chin=3.0, clr=0.15),
            brk=dict(t=2.0, clr=0.25, lip_front=0.8, lip_back=1.35, lip_h=15.0, hook=1.5, gap=0.1),
-           win=dict(hx=11.0, z=(-32.6, -26.6), r=0.5), frame=dict(t=1.2, y0=57.2), leg=dict(t=0.9, w=5.8, hook=0.8, clr=0.05, gap=0.05, barb=10.0),
            usb=(-10.15, -1.6), mass=15.0)                # usb: center of the USB-C port in the top face (native Y, Z; case model)
 # Head-off mount: for the robot without its head. The camera stands centered, lower, in front of the body: its rear
-# face rear_z, its bottom y0. Two parts, each prints without supports: a base (pod_camera_base_low: the clip base and
-# a front plate down the front of the body, with two dovetail grooves; it prints upside down) and a cradle
+# face rear_z, its bottom y0. Two parts, each prints without supports: a base (pod_camera_base_low: the twist pedestal,
+# an arm on the panel to the front edge (left of the button, to arm_x1), a chin and a front plate down the front of
+# the body, with two dovetail grooves; it prints on its side) and a cradle
 # (pod_camera_cradle_low: a floor and the side brackets with the hooks; their rear edges are dovetail tabs that slide
 # down into the grooves until the cradle sits on the top of the base; it prints on those rear edges). A 1.75 mm
 # filament pin through each side locks the cradle.
 # Its USB cable goes up from the top of the case, over the panel, to the Pi data USB port.
-CAM_LOW = dict(cx=0.0, rear_z=Z0 - 10.0, y0=20.0, floor_t=2.0, plate=dict(x=19.5, y0=42.0, z=(-41.2, -38.4)),
+CAM_LOW = dict(cx=0.0, rear_z=Z0 - 10.0, y0=20.0, floor_t=2.0, plate=dict(x=19.5, y0=42.0, z=(-41.2, -38.4)), arm_x1=-6.0,
                tab=dict(d=1.4, w0=1.2, w1=2.0, clr=0.1), pin=dict(y=52.0, d=1.75, clr=0.1, x0=13.0))
+# Twist mount (rev 0.24): the camera mount locks into a round socket in the panel top, at the old logo place, as far
+# toward the center as the port openings allow. The pedestal goes down through the hole; two lugs pass down through
+# the keyways, then the mount turns `twist` deg back to the lock: the lugs go under the panel top, a stop under the
+# panel ends the turn, and a bump on a spring tab in the panel top drops into a notch in the top of each lug. The tab
+# presses the lug down, so the seat ring sits firm on the panel. The lock is the same with the mount turned 180 deg
+# (lens to the rear). The panel prints top down, so the tabs bend in their layers. The mount prints on its back end:
+# the pedestal, the seat and the lugs have 45 deg rear edges.
+TW = dict(c=(-18.0, 13.0), r_hole=10.55, r_neck=10.2, r_lug=14.0, lug_c=15.0, lug_t=1.2, gap=0.15, clr=0.3, twist=-40.0,
+          ramp=0.5, notch=0.35, preload=0.2, stop_clr=0.15, seat_r=12.2, lift=0.7, base_t=2.0, base_hx=16.9, base_hw=12.5, base_r=3.0,
+          tab=dict(r0=12.6, r1=14.66, free=1.2, root=9.5, slit=0.6, t=1.2), bump=dict(r=(12.65, 13.9), tip=0.2))
+LOW_TOP = TOP + TW["lift"] + TW["base_t"]     # top of the twist base (both mounts)
+CAM["cx"] = TW["c"][0]
+CAM["front_z"] = TW["c"][1] - (CAM["case_z"][1] - CAM["case_z"][0]) / 2
 # USB cable (estimates): USB-C plug body 12.0 x 6.5, 18 long over the case; micro-USB plug body 7.5 x 11 (the Pi
 # data USB opening), 18 long over the port; cable 3.5 thick, bends R 8 or more.
 USB_C = dict(w=12.0, t=6.5, l=18.0)
@@ -227,7 +239,8 @@ AMP_X = (-IN_A_LOW + 0.5, -IN_A_LOW + 0.5 + AMP["t"])   # -27.1 .. -25.5, on the
 AMP_CABLE_X = AMP_X[1] + 2.5                    # the amp cable and the speaker lead leave the plugs here
 AMP_Y0 = 28.5
 AMP_Z = (-9.0, -9.0 + AMP["l"])                  # I2S 5-pin PH2.0 at the front end, speaker 2-pin PH2.0 and the screw terminal at the rear end
-AMP_FORKS = [2.0, 12.0]                          # z0 of the panel forks over the amp top edge (2.5 long)
+AMP_FORKS = [0.0]                                # z0 of the panel fork over the amp top edge (2.5 long); the camera socket is over the rest
+                                                 # of the amp and the screw terminal is at its rear end (the nubs hold both ends)
 AMP_NUBS = [-5.0, 22.0]                          # z0 of the nubs on the wall over the amp top edge (4 long)
 # Board layout from the NULLLAB photo (u from the I2S end, v from the edge that the photo shows on top, mm). The PH2.0
 # headers are side entry: the plugs go in along the board, from the ends. ph=height of the PH headers over the PCB.
@@ -977,7 +990,7 @@ def cam_box(low=False):
     if low:
         L = CAM_LOW
         return (L["cx"] - hx, L["cx"] + hx, L["y0"], L["y0"] + h, L["rear_z"] - d, L["rear_z"])
-    y0 = TOP + C["base"]["t"] + 0.05
+    y0 = LOW_TOP + 0.05
     return (C["cx"] - hx, C["cx"] + hx, y0, y0 + h, C["front_z"], C["front_z"] + d)
 
 
@@ -997,39 +1010,22 @@ def pi_usb_plug():
     return (xc - sx / 2, xc + sx / 2, PORT_TOP + 0.2, PORT_TOP + 0.2 + USB_MICRO_L, zc - sz / 2, zc + sz / 2)
 
 
-def _clip_base(xa, xb, zfl):
-    """Base plate on the panel from xa to xb, a chin over the rounded front edge (forward to zfl), two clip legs
-    through the window."""
-    C, Bs, Br, W, Lg, Fr = CAM, CAM["base"], CAM["brk"], CAM["win"], CAM["leg"], CAM["frame"]
-    yb = TOP + Bs["t"]
-    m = prism_y(rrect_pts(xa, xb, Bs["z"][0], Bs["z"][1], 2.0), TOP, yb)
-    # chin: the front of the base follows the rounded front edge of the panel down 3 mm
+def _chin(xa, xb, zfl, yb):
+    """A chin from the top yb over the rounded front edge of the panel (forward to zfl), from xa to xb."""
+    Bs = CAM["base"]
     P = panel_outer()
     cl = Bs["clr"]
     Pc = union([P.translate([0, dy, dz]) for dy in (0.0, cl) for dz in (0.0, -cl)])
-    # Its underside is a 45 deg plane over the round (no overhang in the print, front up): y >= z + k, k = the
-    # largest y - z of the panel top edge (98.71 at the center line) + clr.
+    # Its underside is a 45 deg plane over the round: y >= z + k, k = the largest y - z of the panel top edge (98.71 at
+    # the center line) + clr.
     k = 98.71 + Bs["clr"]
     yl = TOP - Bs["chin"]
     sec = [(zfl, yb), (zfl, yl), (yl - k, yl), (yb - k, yb)]                  # (z, y) section
     chin = _cs([(z_, -y_) for z_, y_ in sec]).extrude(xb - xa).transform(np.array([[0, 0, 1, xa], [0, -1, 0, 0], [1, 0, 0, 0]], float))
-    m += chin - Pc
-    for sx in (-1, 1):
-        X = lambda a, b: sorted((sx * a, sx * b))
-        xl = W["hx"] - Lg["clr"]                          # clip leg: outer face 0.05 inside the window, 0.1 at front and back
-        zc = (W["z"][0] + W["z"][1]) / 2
-        za, zb2 = zc - Lg["w"] / 2, zc + Lg["w"] / 2
-        r = W["r"] - 0.1                                  # leg corners: 0.05 clear of the window corners
-        e = Lg["hook"] + Lg["clr"]                        # hook: barbed catch under the frame, 34 deg lead-in below it
-        a = e * math.tan(math.radians(Lg["barb"]))       # the tip is higher than the root: a pull pushes the hook out
-        yt_ = Fr["y0"] - Lg["gap"] - a                    # the tip stays below the frame as the leg springs out
-        m += prism_y(rrect_pts(*X(xl, xl - Lg["t"]), za, zb2, r), yt_ - 1.5 * e - 0.3, TOP + 0.01)
-        hk = [(sx * (xl - 0.01), yt_), (sx * (xl + e), yt_ + a), (sx * (xl - 0.01), yt_ - 1.5 * e - 0.3)]
-        m += prism_zp(hk if sx > 0 else hk[::-1], za + W["r"], zb2 - W["r"])   # narrower: it clears the window corners
-    return m
+    return chin - Pc
 
 
-def _case_brackets(low=False, y_floor=TOP, z_end=None):
+def _case_brackets(low=False, y_floor=TOP, z_end=None, walls_to_end=False):
     """Two side brackets from y_floor: corner lips at the bottom, a hook over each top corner of the case (clear of
     the USB port). The brackets spread to let the case in from the top; the hooks snap over its top face. The back
     lips and the hooks go back to z_end (the end of the part on the print bed)."""
@@ -1046,7 +1042,7 @@ def _case_brackets(low=False, y_floor=TOP, z_end=None):
         xo = xi + sx * Br["t"]
         xe = ty[0, 1] * (C["top_y"][1] if sx < 0 else C["top_y"][0]) + ty[0, 3]   # edge of the top face
         tip = xe - sx * Br["hook"]
-        w = mbox(*X(xi, xo), y_floor, yt + abs(xi - tip), zfl, zb + Br["lip_back"])
+        w = mbox(*X(xi, xo), y_floor, yt + abs(xi - tip), zfl, ze if walls_to_end else zb + Br["lip_back"])
         ylip = y0 + Br["lip_h"]
         lb = zb + Br["lip_back"]                          # back lip (low part only); behind it a 45 deg end (no overhang in the print)
         lp = [(xi, zb), (xi - sx * 1.6, zb), (xi - sx * 1.6, lb), (xi, min(lb + 1.6, ze))] if ze > lb else [(xi, zb), (xi - sx * 1.6, zb), (xi - sx * 1.6, lb), (xi, lb)]
@@ -1064,14 +1060,131 @@ def _case_brackets(low=False, y_floor=TOP, z_end=None):
     return m
 
 
+def tw_cs(pts_uw):
+    """Polygon in the mount frame (u = X - center, w = Z - center) as a CrossSection for tw_place."""
+    p = np.array([(u, -w) for u, w in pts_uw], float)
+    if np.sum(p[:, 0] * np.roll(p[:, 1], -1) - np.roll(p[:, 0], -1) * p[:, 1]) < 0:
+        p = p[::-1]                                                     # counterclockwise
+    return _cs(p)
+
+
+def tw_place(cs, y0, y1, rot=0.0):
+    """A tw_cs CrossSection turned rot deg (from +Z toward +X) about the twist axis, extruded from y0 up to y1."""
+    xc, zc = TW["c"]
+    return cs.rotate(rot).extrude(y1 - y0).transform(np.array([[1, 0, 0, xc], [0, 0, 1, y0], [0, -1, 0, zc]], float))
+
+
+def tw_turn(M, deg):
+    """Turn a solid deg (from +Z toward +X) about the twist axis."""
+    xc, zc = TW["c"]
+    return M.translate([-xc, 0, -zc]).rotate([0, deg, 0]).translate([xc, 0, zc])
+
+
+def _vdisc(r):
+    """A disc with its rear (+Z) part cut to a 45 deg V, the point on the circle: it prints on its back end."""
+    R = 40.0
+    return m3.CrossSection.circle(r, 96) ^ tw_cs([(-R, -R), (R, -R), (R, r - R), (0.0, r), (-R, r - R)])
+
+
+def tw_lug_cs(grow=0.0):
+    """The lug on the +X side of the pedestal: out to r_lug, both sides 45 deg (it prints on its back end).
+    grow > 0: the outline grown that much (keyways and the space it sweeps)."""
+    T = TW
+    c = T["lug_c"]
+    cs = m3.CrossSection.circle(T["r_lug"], 96) ^ tw_cs([(7.0, c - 7.0), (7.0, -(c - 7.0)), (c, 0.0)])
+    return cs.offset(grow) if grow else cs
+
+
+def tw_y():
+    """(bottom, top) of the lugs."""
+    yt = PANEL_IN - TW["gap"]
+    return yt - TW["lug_t"], yt
+
+
+def tw_core(v_rot=0.0):
+    """The pedestal, the seat ring and the two lugs. v_rot: the side of the 45 deg V on the pedestal and the seat (the
+    lowest side in the print), 0 = rear (+Z), 270 = -X."""
+    T = TW
+    yl0, yl1 = tw_y()
+    yb = TOP + T["lift"]
+    m = tw_place(_vdisc(T["r_neck"]).rotate(v_rot), yl0, TOP + 0.01)    # pedestal
+    m += tw_place(_vdisc(T["seat_r"]).rotate(v_rot), TOP, yb + 0.01)    # seat ring on the panel top
+    ch = T["ramp"]                                                     # the top edges of the lugs: 45 deg ramps for the bumps
+    lug = m3.Manifold.batch_hull([tw_place(tw_lug_cs(), yl0, yl1 - ch), tw_place(tw_lug_cs(-ch), yl1 - 0.01, yl1)])
+    B = T["bump"]
+    d = T["notch"]
+    v = d + B["tip"] / 2 + 0.1
+    notch = prism_x([(yl1 + 0.01, -v), (yl1 + 0.01, v), (yl1 - d, B["tip"] / 2 + 0.1), (yl1 - d, -B["tip"] / 2 - 0.1)],
+                    T["c"][0] + B["r"][0] - 0.5, T["c"][0] + T["r_lug"] + 1.0).translate([0, 0, T["c"][1]])
+    lug -= notch
+    return m + lug + tw_turn(lug, 180.0)
+
+
 def build_camera_mount():
-    """Base on the panel with a chin over its front edge and two clip legs through the window, two side brackets
-    for the case."""
-    C, Bs, Br = CAM, CAM["base"], CAM["brk"]
-    x0, x1 = cam_box()[:2]
-    xa, xb = x0 - Br["clr"] - Br["t"], x1 + Br["clr"] + Br["t"]
-    m = _clip_base(min(xa, Bs["x"][0]), max(xb, Bs["x"][1]), C["front_z"] - Br["clr"] - Br["lip_front"])
-    return m + _case_brackets()
+    """The twist mount: a pedestal through the round hole in the panel with two lugs under the panel top, a seat ring
+    on the panel, the base 0.7 over the panel, two side brackets for the case. The lock is the same when the mount
+    is turned 180 deg (lens to the rear)."""
+    T = TW
+    yb = TOP + T["lift"]
+    hx, hw = T["base_hx"], T["base_hw"]
+    base = tw_cs(rrect_pts(-hx, hx, -hw, hw, T["base_r"])) + tw_cs([(-hx, 0.0), (hx, 0.0), (hx, hw), (-hx, hw)])   # square rear corners: on the bed
+    m = tw_core() + tw_place(base, yb, yb + T["base_t"])
+    return m + _case_brackets(y_floor=yb + 0.01, z_end=T["c"][1] + hw, walls_to_end=True)   # the walls go back to the bed
+
+
+def tw_tab(sign=1.0):
+    """The spring tab of the +X lug (in the panel top, along Z): (tab, slits) as (u0, u1, w0, w1) boxes. The lug comes
+    from the keyway side to the bump at w = 0; the tab root is on the far side."""
+    t = TW["tab"]
+    s = t["slit"]
+    a, b = -t["free"], t["root"]
+    boxes = [(t["r0"], t["r1"], a, b), (t["r0"] - s, t["r0"], a - s, b), (t["r1"], t["r1"] + s, a - s, b), (t["r0"] - s, t["r1"] + s, a - s, a)]
+    if TW["twist"] < 0:                                              # the keyway is on the +Z side: mirror in w
+        boxes = [(u0, u1, -w1, -w0) for u0, u1, w0, w1 in boxes]
+    return boxes[0], boxes[1:]
+
+
+def _tw_box(u0, u1, w0, w1, y0, y1):
+    return tw_place(tw_cs([(u0, w0), (u1, w0), (u1, w1), (u0, w1)]), y0, y1)
+
+
+def tw_socket_cuts():
+    """The holes in the panel: the round hole, two keyways, the U slits of the two tabs, the thinning under the tabs."""
+    T = TW
+    out = [tw_place(m3.CrossSection.circle(T["r_hole"], 96), PANEL_IN - 1, TOP + 1)]
+    k = tw_lug_cs(T["clr"])
+    out.append(tw_place(k + k.rotate(180.0), PANEL_IN - 1, TOP + 1, T["twist"]))
+    tab, slits = tw_tab()
+    one = union([_tw_box(*b, PANEL_IN - 1, TOP + 1) for b in slits] + [_tw_box(*tab, PANEL_IN - 1, TOP - T["tab"]["t"])])
+    out += [one, tw_turn(one, 180.0)]
+    return union(out)
+
+
+def tw_socket_parts(which="all"):
+    """Under the panel: the bump on each tab, a stop at the end of the turn for each lug. which: all, bumps, stops."""
+    T, B = TW, TW["bump"]
+    yl0, yl1 = tw_y()
+    ytip = yl1 - T["notch"] - T["preload"]
+    ytab = TOP - T["tab"]["t"]
+    h = ytab - ytip
+    bump = prism_x([(ytab + 0.01, -(h + B["tip"] / 2)), (ytab + 0.01, h + B["tip"] / 2), (ytip, B["tip"] / 2), (ytip, -B["tip"] / 2)],
+                   T["c"][0] + B["r"][0], T["c"][0] + B["r"][1]).translate([0, 0, T["c"][1]])
+    c = T["lug_c"] + T["stop_clr"]
+    ring = m3.CrossSection.circle(T["tab"]["r0"] - T["tab"]["slit"], 96) - m3.CrossSection.circle(T["r_hole"], 96)
+    k = 1.0 if T["twist"] > 0 else -1.0                              # the stop is on the far side from the keyway
+    stop = tw_place(ring ^ tw_cs([(c - 8.0, 8.0 * k), (20.0, 8.0 * k), (20.0, (c - 20.0) * k)]), yl0 - 0.3, PANEL_IN + 0.01)
+    one = dict(all=bump + stop, bumps=bump, stops=stop)[which]
+    return one + tw_turn(one, 180.0)
+
+
+def tw_keepout():
+    """The space the pedestal and the lugs pass through under the panel top, from the drop-in to the lock."""
+    T = TW
+    yl0 = tw_y()[0]
+    cs = m3.CrossSection.circle(T["r_neck"] + T["clr"], 96)
+    for a in np.linspace(0.0, T["twist"], 21):
+        cs += tw_lug_cs(T["clr"]).rotate(float(a)) + tw_lug_cs(T["clr"]).rotate(float(a) + 180.0)
+    return tw_place(cs, yl0 - 0.4, PANEL_IN + 0.01)
 
 
 def _low_dovetail(clr, y):
@@ -1099,14 +1212,23 @@ def _low_pins(clr=0.0):
 
 
 def build_camera_base_low():
-    """The base of the head-off mount: the clip base, a front plate down the front of the body with the two grooves
-    (closed at the bottom: the stop), the pin holes."""
-    L = CAM_LOW
+    """The base of the head-off mount: the twist pedestal and lugs, a plate 0.7 over the panel from the socket to the
+    front edge (left of the button), a chin over the front edge, a front plate down the front of the body with the
+    two grooves (closed at the bottom: the stop), the pin holes. It prints on its -X side: the lug on that side is on
+    the bed, and the V of the pedestal points down."""
+    L, T = CAM_LOW, TW
     P = L["plate"]
-    m = _clip_base(-P["x"], P["x"], P["z"][0])
-    m += mbox(-P["x"], P["x"], P["y0"], TOP - CAM["base"]["chin"] + 0.5, *P["z"])
-    T = L["tab"]
-    m -= _low_dovetail(T["clr"], (P["y0"] - 1.0, TOP + CAM["base"]["t"] + 1.0))
+    yb, yt = TOP + T["lift"], LOW_TOP
+    xc, zc = T["c"]
+    xbed = xc - T["r_lug"] + 0.05
+    hw = T["base_hw"]
+    m = tw_core(270.0)
+    m += prism_y(rrect_pts(xbed - 2.0, xc + T["base_hx"], zc - hw, zc + hw, T["base_r"]), yb, yt)      # over the socket
+    m += prism_y(rrect_pts(xbed - 2.0, L["arm_x1"], ZF_IN, zc, T["base_r"]), yb, yt)                     # the arm to the front
+    m += _chin(xbed, P["x"], P["z"][0], yt)
+    m += mbox(xbed, P["x"], P["y0"], TOP - CAM["base"]["chin"] + 0.5, *P["z"])          # to the bed on the -X side
+    m -= _low_dovetail(L["tab"]["clr"], (P["y0"] - 1.0, yt + 1.0))
+    m = m ^ mbox(xbed, 100, -100, 200, -200, 200)                       # the bed side flat
     return m - _low_pins(L["pin"]["clr"])
 
 
@@ -1124,31 +1246,18 @@ def build_camera_cradle_low():
     m = _case_brackets(True, yf, ze)
     for xi, xo in ((xa, xa + Br["t"]), (xb - Br["t"], xb)):              # the walls go back to the base plate
         m += mbox(xi, xo, yf, ytop, z1, zr)
-        m += mbox(xi, xo, TOP + CAM["base"]["t"], ytop, zr - 0.01, ze)    # over the base: the cradle sits on it
+        m += mbox(xi, xo, LOW_TOP, ytop, zr - 0.01, ze)                  # over the base: the cradle sits on it
     m += mbox(xa, xb, yf, y0 - 0.05, z0 - Br["clr"] - Br["lip_front"], zr)   # floor (a bridge between the tabs in the print)
     m += _low_dovetail(0.0, (yf, ytop))
     return m - _low_pins(0.05)
 
 
-def camera_window():
-    W = CAM["win"]
-    return prism_y(rrect_pts(-W["hx"], W["hx"], *W["z"], W["r"]), PANEL_IN - 1, TOP + 1)
-
-
-def camera_frame():
-    """Two walls under the panel at the sides of the window: the clip hooks catch under them. (No front or back
-    wall: the top edge of the stack is under the back of the window.)"""
-    W, Fr = CAM["win"], CAM["frame"]
-    a = Fr["t"] * math.tan(math.radians(CAM["leg"]["barb"]))   # the underside rises to the outside, as the hook barb
-    return union([prism_zp([(sx * W["hx"], Fr["y0"]), (sx * (W["hx"] + Fr["t"]), Fr["y0"] + a),
-                            (sx * (W["hx"] + Fr["t"]), PANEL_IN + 0.01), (sx * W["hx"], PANEL_IN + 0.01)], *W["z"])
-                  for sx in (-1, 1)])
-
-
 # Logo on the panel top (user request: the LineChef avatar, reference/logo/linechef.jpg): two inlays printed flat in
 # two colors (the white ring and M, the red ring and J), glued into a pocket in the top face. The pocket prints on
-# the bed side of the panel (its floor bridges over it). Robot frame center (x, z); the logo reads from the rear.
-LOGO = dict(file=os.path.join(REF, "logo", "linechef.jpg"), d=26.0, c=(16.2, 15.5), depth=0.8, clr=0.15, min_w=0.6)
+# the bed side of the panel (its floor bridges over it). Robot frame center (x, z); the logo reads from the rear. It is
+# in the front right corner of the flat top (rev 0.24: the camera socket is at its old place). The panel 3MF has a
+# support blocker over the pocket (write_panel_3mf).
+LOGO = dict(file=os.path.join(REF, "logo", "linechef.jpg"), d=26.0, c=(18.3, -20.5), depth=0.8, clr=0.15, min_w=0.6)
 
 
 def logo_shapes():
@@ -1190,8 +1299,9 @@ def build_logo(color):
 
 def build_panel(with_latch=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
-    P -= port_openings() + switch_window() + button_cuts() + keycap_hole() + camera_window() + logo_pocket()
-    P += (panel_forks() + button_arm() + battery_clamp() + camera_frame()) - lid_keepout()
+    P -= port_openings() + switch_window() + button_cuts() + keycap_hole() + tw_socket_cuts() + logo_pocket()
+    P += (panel_forks() + button_arm() + battery_clamp()) - lid_keepout() - tw_keepout()
+    P += tw_socket_parts()
     P += lid_hooks()
     if with_latch:
         P += latch_hook()
@@ -1209,6 +1319,16 @@ def latch_force():
     phi = math.atan(PI.MU_PLA)
     return dict(tongue_k_N_per_mm=round(k, 2), lift_mm=round(d, 2), lift_N=round(F, 1),
                 slide_on_N=round(F * math.tan(math.radians(45) + phi), 1), strain_pct=round(100 * 1.5 * t * d / L ** 2, 2))
+
+
+def tw_force():
+    """Camera socket tabs: cantilevers in the panel top (k = 3EI/L^3) from the root to the bump. Forces in N, each tab."""
+    T, t = TW, TW["tab"]
+    L, b = t["root"], t["r1"] - t["r0"]
+    k = 3 * PI.E_PLA * (b * t["t"] ** 3 / 12) / L ** 3
+    ride = T["notch"] + T["preload"]                       # the bump lifts this much on the top of the lug
+    return dict(tab_k_N_per_mm=round(k, 2), ride_mm=round(ride, 2), ride_N=round(k * ride, 1), hold_N=round(k * T["preload"], 1),
+                strain_pct=round(100 * 1.5 * t["t"] * ride / L ** 2, 2), twist_deg=abs(T["twist"]))
 
 
 # --------------------------------------------------------------------------
@@ -2269,6 +2389,21 @@ def check(parts, models, robot):
     rows.append(("button cap lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_button"].translate([0, 0.3, 0]), parts["pod_panel"])))
     rows.append(("camera mount lifted 0.3mm (must touch)", "pod_panel", vol(parts["pod_camera_mount"].translate([0, 0.3, 0]), parts["pod_panel"])))
     rows.append(("camera lifted 0.3mm (must touch)", "pod_camera_mount", vol(models["camera"].translate([0, 0.3, 0]), parts["pod_camera_mount"])))
+    # twist lock: drop in at the keyways, turn to the lock; the bumps ride on the lugs (they press 0.1 into the notches)
+    Mt, Pn = parts["pod_camera_mount"], parts["pod_panel"]
+    bumps = tw_socket_parts("bumps")
+    T = TW
+    rows.append(("camera mount dropped in at the keyways", "pod_panel", max(vol(tw_turn(Mt, T["twist"]).translate([0, dy, 0]), Pn) for dy in (0.0, 0.5, 1.5, 3.0, 6.0))))
+    rows.append(("camera mount over the turn", "panel without the bumps",
+                 max(vol(tw_turn(Mt, T["twist"] * f), Pn - bumps) for f in (1.0, 0.75, 0.5, 0.25, 0.1))))
+    rows.append(("camera mount over the turn (must touch: the bumps ride on the lugs)", "bumps",
+                 min(vol(tw_turn(Mt, T["twist"] * f), bumps) for f in (0.12, 0.06))))
+    rows.append(("camera mount locked: bumps in the notches (preload, must touch)", "bumps", vol(Mt, bumps)))
+    rows.append(("camera mount turned 180 deg (lens to the rear)", "panel without the bumps", vol(tw_turn(Mt, 180.0), Pn - bumps)))
+    rows.append(("camera mount turned 2 deg past the lock (must touch the stops)", "pod_panel", vol(tw_turn(Mt, -2.0 * math.copysign(1, T["twist"])), Pn - bumps)))
+    inside_c = union([M for k, M in models.items() if k not in ("camera", "wires_camera")])
+    rows.append(("camera mount over the turn", "body + parts", max(vol(tw_turn(Mt, T["twist"] * f), parts["pod_body"] + inside_c) for f in (1.0, 0.5, 0.0))))
+    rows.append(("camera mount turned 180 deg", "body + parts", vol(tw_turn(Mt, 180.0), parts["pod_body"] + inside_c)))
     for n, (xc, zc_, sx, sz) in PORT_PLUGS.items():
         B = mbox(xc - sx / 2, xc + sx / 2, PORT_TOP + 0.2, 95.0, zc_ - sz / 2, zc_ + sz / 2)
         rows.append((f"plug {n}", "camera, its mount and its cable", vol(B, parts["pod_camera_mount"] + models["camera"]
@@ -2441,14 +2576,15 @@ def balance(parts, models):
                 parts=[dict(name=n, g=round(g, 1), com=[round(float(v), 1) for v in p]) for n, g, p in rows])
 
 
-def print_orient(name, M):
-    """Rotate to the print orientation and put the part on the bed (Z=0)."""
+def print_orient(name, M, also=None):
+    """Rotate to the print orientation and put the part on the bed (Z=0). also: another solid that gets the same
+    move (returned as a second value)."""
     if name == "pod_body":
         R = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)        # floor down
     elif name in ("pod_camera_mount", "pod_camera_cradle_low"):
         R = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, -1]], float)       # on its back end: prisms along Z, the front lips last
     elif name == "pod_camera_base_low":
-        R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down: the top of the base on the bed
+        R = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]], float)        # on its side, robot +X (the design -X lug) on the bed
     elif name == "pod_button":
         R = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)        # upside down, the cap top on the bed
     elif name in ("pod_panel", "pod_logo_white", "pod_logo_red"):
@@ -2457,7 +2593,61 @@ def print_orient(name, M):
         raise ValueError(name)
     M = M.transform(np.hstack([R, np.zeros((3, 1))]))
     lo, hi = M.bounding_box()[:3], M.bounding_box()[3:]
-    return M.translate([-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2]])
+    d = [-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2]]
+    if also is None:
+        return M.translate(d)
+    return M.translate(d), also.transform(np.hstack([R, np.zeros((3, 1))])).translate(d)
+
+
+def logo_blocker():
+    """A support blocker over the logo pocket: in the print the pocket is open to the bed and its floor bridges."""
+    S = logo_shapes()
+    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"] + 1.0), TOP - LOGO["depth"] - 0.3, TOP + 0.3)
+
+
+def write_panel_3mf(panel, path):
+    """The panel in its print orientation with a Cura support blocker (anti_overhang_mesh) over the logo pocket, as
+    one group. The blocker is not printed."""
+    import zipfile
+    P, B = print_orient("pod_panel", panel, also=flip_x(logo_blocker()))
+
+    def obj(oid, name, M, settings):
+        m = M.to_mesh()
+        v = np.asarray(m.vert_properties)[:, :3]
+        t = np.asarray(m.tri_verts)
+        out = [f'  <object id="{oid}" name="{name}" type="model">']
+        if settings:
+            out.append("   <metadatagroup>")
+            out += [f'    <metadata name="cura:{k}" preserve="1" type="xs:string">{x}</metadata>' for k, x in settings.items()]
+            out.append("   </metadatagroup>")
+        out.append("   <mesh>\n    <vertices>")
+        out += [f'     <vertex x="{a:.4f}" y="{b:.4f}" z="{c:.4f}" />' for a, b, c in v]
+        out.append("    </vertices>\n    <triangles>")
+        out += [f'     <triangle v1="{a}" v2="{b}" v3="{c}" />' for a, b, c in t]
+        out.append("    </triangles>\n   </mesh>\n  </object>")
+        return "\n".join(out)
+    model = "\n".join([
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">',
+        " <resources>",
+        obj(1, "pod_panel", P, None),
+        obj(2, "logo_support_blocker", B, {"anti_overhang_mesh": "True"}),
+        '  <object id="3" name="pod_panel_group" type="model">',
+        '   <components>\n    <component objectid="1" />\n    <component objectid="2" />\n   </components>',
+        "  </object>",
+        " </resources>",
+        ' <build>\n  <item objectid="3" />\n </build>',
+        "</model>"])
+    types = ('<?xml version="1.0" encoding="UTF-8"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+             '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />'
+             '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" /></Types>')
+    rels = ('<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel" />'
+            '</Relationships>')
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", types)
+        z.writestr("_rels/.rels", rels)
+        z.writestr("3D/3dmodel.model", model)
 
 
 def export_assembly(path, models):
@@ -2523,6 +2713,8 @@ def main(fast=False):
             continue            # a platform part: bittle_platform/stl/print/cover_pegs.stl
         P = print_orient(n, flip_x(M))
         save_stl(P, os.path.join(OUT, "print", f"{n}.stl"))
+        if n == "pod_panel":
+            write_panel_3mf(flip_x(M), os.path.join(OUT, "print", "pod_panel.3mf"))
         regs = BP.overhang_regions(P)
         printing[n] = dict(overhang_mm2=round(sum(r["area"] for r in regs), 1), regions=regs[:8])
         print(f"{n:11s} vol {M.volume():8.0f} mm3  ~{M.volume() * PLA_G_MM3:5.1f} g PLA (solid)   overhang {printing[n]['overhang_mm2']:6.1f} mm2")
@@ -2588,13 +2780,15 @@ def main(fast=False):
     snap = latch_force()
     clicks = BP.detent_force()
     print(f"balance: {bal['mass_g']} g, center of mass x {bal['com'][0]} y {bal['com'][1]} z {bal['com'][2]}")
+    twist = tw_force()
     print("panel latch:", snap)
+    print("camera socket tabs:", twist)
     print("platform clicks:", clicks)
     print("checks (mm^3, >0.05 shown):")
     for a, b, v in rows:
         if v > 0.05:
             print(f"  {a:34s} x {b:20s} {v:9.2f}")
-    json.dump(dict(rows=rows, printing=printing, balance=bal, snap=snap, clicks=clicks),
+    json.dump(dict(rows=rows, printing=printing, balance=bal, snap=snap, clicks=clicks, twist=twist),
               open(os.path.join(OUT, "checks.json"), "w"), indent=1)
     if fast:
         return
