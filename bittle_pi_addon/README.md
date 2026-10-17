@@ -46,7 +46,7 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 3.2 N). The BiBoard header is now in the notch at the front of the left well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
 3. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
 4. Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Drop the mic into the slots in the post and the ledge on the right wall near the front, port to the wall, header at the front. The panel holds it later. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
-5. Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Lay the amp cable across the floor in front of the front pegs, into the left well. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
+5. Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Lay the flat amp cable across the floor in front of the front pegs, into the left well, G at the rear. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
 6. Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, then the BiBoard ends. The viewer has one step for each wire. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9)) ([viewer step 21](https://beetlebugorg.github.io/bittlex/viewer/#step=21))
 8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right. ([viewer step 22](https://beetlebugorg.github.io/bittlex/viewer/#step=22))
@@ -97,10 +97,10 @@ The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires; 
 | 2 | BiBoard RX2 | pin 8 (arch) | 98 | 12 | mic BCLK | BCLK splice | 76 |
 | 3 | BiBoard GND | pin 6 (1-turn loop) | 99 | 13 | mic GND | pin 9 (2-turn loop) | 149 |
 | 4 | amp G | pin 14 | 92 | 14 | mic 3V | pin 1 (2-turn loop) | 148 |
-| 5 | amp V | pin 2 | 109 | 15 | BCLK splice | pin 12 | 18 |
-| 6 | amp BCLK | BCLK splice | 91 | 16 | LRCLK splice | pin 35 | 7 |
+| 5 | amp V | pin 2 | 108 | 15 | BCLK splice | pin 12 | 18 |
+| 6 | amp BCLK | BCLK splice | 90 | 16 | LRCLK splice | pin 35 | 7 |
 | 7 | amp LRC | LRCLK splice | 78 | 17 | amp speaker + | speaker + | 43 |
-| 8 | amp DIN | pin 40 | 66 | 18 | amp speaker - | speaker - | 44 |
+| 8 | amp DIN | pin 40 | 69 | 18 | amp speaker - | speaker - | 44 |
 | 9 | mic SEL | pin 39 (1-turn loop) | 100 | 19 | camera USB-C | Pi data USB | 113 |
 | 10 | mic LRCL | LRCLK splice | 62 |  |  |  |  |
 
@@ -118,7 +118,7 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 10. Last, push the BiBoard ends of #1, #2 and #3 onto the BiBoard header.
 
 1. The mic has a straight header along its front edge. Plug the six mic jumpers onto it before the mic goes in. Mic wires: straight inward out of the mic plugs, across behind the front wall in front of the stack, then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin.
-2. Amp cable: out of the plug the wires fan out inward (G nearest the wall), forward, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once. Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.
+2. Amp cable: a flat cable: forward out of the plug, it rolls to lie flat as it goes down, then flat across the floor in front of the front pegs (under the stack), G at the rear and DIN at the front; in the left well each wire goes rearward in its own floor lane, and DIN goes up at once. Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.
 3. Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.
 4. The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.
 5. The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL.

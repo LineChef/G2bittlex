@@ -109,7 +109,7 @@ def content():
          "on the right wall near the front, port to the wall, header at the front. The panel holds it later." + st(6),
          "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
          "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
-         "Lay the amp cable across the floor in front of the front pegs, into the left well." + st(7),
+         "Lay the flat amp cable across the floor in front of the front pegs, into the left well, G at the rear." + st(7),
          "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(8),
          "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, "
          "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(21),
@@ -228,7 +228,7 @@ def content():
 WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
 ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
-             amp="out of the plug the wires fan out inward (G nearest the wall), forward, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
+             amp="a flat cable: forward out of the plug, it rolls to lie flat as it goes down, then flat across the floor in front of the front pegs (under the stack), G at the rear and DIN at the front; in the left well each wire goes rearward in its own floor lane, and DIN goes up at once",
              mic="straight inward out of the mic plugs, across behind the front wall in front of the stack, "
                  "then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin",
              splice="short wire in the left well, up into the bottom of the splice sleeve",

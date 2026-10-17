@@ -1321,6 +1321,9 @@ def splice_end(t, top):
 
 # Wires: (group, label, color, points from the far end to the Pi header or a splice).
 # Pin map: reference/g2-wiring-blueprint.html (the user's wiring blueprint).
+AMP_RMIN = {}         # amp wire -> smallest bend radius (the ribbon part and the rounded rest), set by wire_routes()
+
+
 def wire_routes():
     W = []
     # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Up out of the plugs to the right wall, rearward
@@ -1332,17 +1335,18 @@ def wire_routes():
         zb = bb_pin_z(k)
         pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
         W.append(("uart", lab, col, pts))
-    # Amp: a flat cable from the I2S plug at the front end of the amp (G at the top). Out of the plug the wires fan out
-    # inward, 1.6 apart (G at the wall side), then each goes forward and down at its own X (the cable turns over: DIN is
-    # the front wire on the floor), across under the stack in front of the front pegs. DIN goes up into
+    # Amp: a flat cable (bonded wires, 1.5 pitch) from the I2S plug at the front end of the amp (G at the top). It leaves the plug on
+    # edge, turns a quarter turn as it goes forward (it lies on its side for the bend down), a second quarter turn on the
+    # way down, and lands flat on the floor (G at the rear, DIN at the front): no wire crosses another. It goes across
+    # under the stack in front of the front pegs, and the wires part in the left well. DIN goes up into
     # pin 40 at once, LRC up into its splice; G, V and BCLK run rearward in their lanes on the floor of the right well.
     order = ("G", "V", "BCLK", "LRC", "DIN")
+    xc, yc, zc, p = AMP_CABLE_X, sum(AMP_PLUG_Y) / 5, -20.8, 1.5
+    center = [(xc, yc, AMP_PLUG_Z0), (xc + 1.5, yc, zc), (xc + 1.5, FLOOR_WIRE, zc), (xc + 9.0, FLOOR_WIRE, zc)]
+    ribbon = twisted_ribbon(center, 5, p, [(0, -1, 0), (1, 0, 0), (0, 0, -1), (0, 0, -1)])   # G: top, wall side, rear
     for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#3a6fd8", "#2e9b4f", "#f0c419"))):   # cable colors (user photo)
-        zf = -16.8 - 1.75 * i
-        xc = AMP_CABLE_X
-        xd = xc + 1.6 * i
-        fan = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0 - 1.5), (xd, AMP_PLUG_Y[i], -15.3)] if i else []
-        start = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0)] + fan + [(xd, AMP_PLUG_Y[i], zf), (xd, FLOOR_WIRE, zf)]
+        zf = zc + p * (2 - i)
+        start = [tuple(q) for q in ribbon[i]]
         xr = EXIT_X + 2.2                                  # a wire comes up here and bends over into its housing
         if lab == "DIN":
             y, z = pin_yz(40)
@@ -1365,7 +1369,9 @@ def wire_routes():
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 8.0), (xl + 0.6, 30.4, z - 6.0), (xr, 31.3, z - 3.0), (xr, y, z)] + into_pin(n)
             else:
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
-        W.append(("amp", lab, col, pts))
+        tail, rt = round_corners([start[-1]] + pts[len(start):])     # the ribbon is dense: round the rest here
+        AMP_RMIN[lab] = min(rt, _min_radius(np.asarray(start, float)))
+        W.append(("amp", lab, col, start + [tuple(q) for q in tail[1:]]))
     # Mic: jumpers (GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
     # pin (3V at the bottom, SEL at the top): straight inward out of the housings, across behind the front wall in front
     # of the stack, then rearward as a flat stack at MIC_RIB.
@@ -1446,6 +1452,30 @@ def _usb_cable(low):
     pts += [c + [0, yc - c[1], 0] - u * r * math.cos(t) + np.array([0, r * math.sin(t), 0]) for t in np.linspace(0, math.pi, 40)[1:]]
     pts += [B + [0, y, 0] for y in np.linspace(yc - B[1], -2.0, 30)[1:]]
     return [("camera", "USB", "#1d1d1f", np.array(pts))]
+
+
+def twisted_ribbon(center, n, pitch, normals):
+    """n wires side by side along a center line (a flat cable) that twists: normals[i] is the spread direction at
+    center point i. Between two points the spread turns with an ease in and out (no kink in the outer wires), and it is
+    kept normal to the line."""
+    P0 = [np.asarray(p, float) for p in center]
+    C = round_corners(center, R_BEND + pitch * (n - 1) / 2, 16)[0]
+    s0 = np.r_[0, np.cumsum([np.linalg.norm(b - a) for a, b in zip(P0[:-1], P0[1:])])]
+    sc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(C, axis=0), axis=1))] * s0[-1] / max(1e-9, np.linalg.norm(np.diff(C, axis=0), axis=1).sum())
+    N = np.asarray(normals, float)
+    T = np.gradient(C, axis=0)
+    T /= np.maximum(np.linalg.norm(T, axis=1)[:, None], 1e-9)
+    out = [[] for _ in range(n)]
+    for i, p in enumerate(C):
+        k = min(int(np.searchsorted(s0, sc[i], side="right")) - 1, len(s0) - 2)
+        t = float(np.clip((sc[i] - s0[k]) / max(s0[k + 1] - s0[k], 1e-9), 0, 1))
+        t = t * t * (3 - 2 * t)                            # ease in and out
+        v = N[k] * (1 - t) + N[k + 1] * t
+        v -= np.dot(v, T[i]) * T[i]
+        v /= np.linalg.norm(v)
+        for m in range(n):
+            out[m].append(p + v * pitch * (m - (n - 1) / 2))
+    return [np.array(o) for o in out]
 
 
 def camera_cable():
@@ -1985,7 +2015,7 @@ def all_routes():
         if (g, lab) in SETTLED:
             out.append((g, lab, col, SETTLED[(g, lab)], True))
         else:
-            out.append((g, lab, col, pts, False))
+            out.append((g, lab, col, pts, g == "amp"))          # the amp routes are smooth already (a twisting ribbon)
     for g, lab, col, pts in speaker_leads() + camera_cable():
         out.append((g, lab, col, pts, True))
     return out
@@ -2054,7 +2084,7 @@ def wire_report():
     for g, lab, col, pts, smooth in all_routes():
         if smooth:
             P = np.asarray(pts, float)
-            rmin = _min_radius(P) if g not in ("speaker", "camera") else R_BEND
+            rmin = AMP_RMIN[lab] if g == "amp" else _min_radius(P) if g not in ("speaker", "camera") else R_BEND
         else:
             P, rmin = round_corners(pts)
         L = float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())

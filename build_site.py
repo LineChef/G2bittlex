@@ -209,7 +209,7 @@ STEPS = [
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
               "Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs and set it with a dab of glue. "
-              "Lay the amp cable across the floor in front of the front pegs and into the left well. The stack goes on top of it. "
+              "Lay the flat amp cable across the floor in front of the front pegs and into the left well, G at the rear. The stack goes on top of it. "
               "Each wire of the cable shows in the step where it goes onto the Pi."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the left, SD card to the rear. "
