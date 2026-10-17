@@ -231,14 +231,14 @@ AMP_FORKS = [2.0, 12.0]                          # z0 of the panel forks over th
 AMP_NUBS = [-5.0, 22.0]                          # z0 of the nubs on the wall over the amp top edge (4 long)
 # Board layout from the NULLLAB photo (u from the I2S end, v from the edge that the photo shows on top, mm). The PH2.0
 # headers are side entry: the plugs go in along the board, from the ends. ph=height of the PH headers over the PCB.
-# Rev 0.22: the board is upside down (that edge is at the bottom, on the bar), so the parts still face the battery
-# and the I2S end is still at the front when the robot frame turns the design frame over.
+# The board stands upright (user photos): that edge (G, the screw terminal) at the top, the I2S end at the front, the
+# parts toward the battery.
 AMP_L = dict(ph5=(0.75, 6.8, 3.8, 17.4), ph2=(29.0, 35.7, 9.1, 17.0), term=(29.0, 36.8, 0.75, 7.6), ic=(17.7, 24.0, 7.2, 13.6),
              holes=[(15.2, 2.65), (15.2, 19.3)], hole_d=4.7, ph=5.0, term_h=8.5, plug_out=3.7)
 
 # HiLetgo SPH0645 mic board, 12.45 x 16.12 (user caliper), on the right wall of the robot (-X in the design frame) near
 # the front corner, high, port face to the wall (sound holes in the side face). The 6 pins (SEL, LRCL, DOUT, BCLK,
-# GND, 3V, SEL lowest) are a straight header along its front 16.12 edge: the Dupont housings point inward, and the
+# GND, 3V, 3V lowest) are a straight header along its front 16.12 edge: the Dupont housings point inward, and the
 # wires go straight across behind the front wall to the left well. It drops in without tools: its rear edge goes
 # down a slot in a post on the wall, its bottom edge into a slotted ledge (45 deg underside), and a fork under the
 # panel comes down over its top edge. The board is in front of the amp cable (Z -23.8 and rear), and the housings
@@ -248,7 +248,7 @@ MIC_HOLD = dict(gap=2.0, clr=0.15, lip=1.2, depth=1.5)   # wall to PCB, slot cle
 MIC_X = (-IN_A + MIC_HOLD["gap"], -IN_A + MIC_HOLD["gap"] + MIC["t"])     # PCB face to the wall and back face
 MIC_PORT = (MIC["y0"] + MIC["l"] / 2, MIC["z0"] + MIC["w"] / 2)       # (Y, Z); port assumed at the board center (not measured)
 MIC_PIN_Z = MIC["z0"] + MIC["pin_in"]
-MIC_PIN_Y = [MIC["y0"] + (MIC["l"] - 15.24) / 2 + 1.27 + 2.54 * k for k in range(6)]   # SEL, LRCL, DOUT, BCLK, GND, 3V
+MIC_PIN_Y = [MIC["y0"] + (MIC["l"] - 15.24) / 2 + 1.27 + 2.54 * k for k in range(6)]   # 3V, GND, BCLK, DOUT, LRCL, SEL (bottom up, user photo)
 MIC_HDR_X = (MIC_X[1], MIC_X[1] + 2.5)           # header plastic on the back face
 MIC_HOUSING_X = (MIC_HDR_X[1], MIC_HDR_X[1] + DUPONT_L)
 MIC_HOLES = [(y, MIC["z0"] + MIC["w"] - MIC["hole_in"]) for y in (MIC["y0"] + MIC["l"] - MIC["hole_in"], MIC["y0"] + MIC["hole_in"])]   # (Y, Z): the corner holes (not used)
@@ -281,7 +281,7 @@ WIRE_PATHS = {
     "uart: Pi header to BiBoard plug": [dict(x=(25.4, IN_A_LOW - 0.05), y=(39.3, 49.6), z=(-19.5, 23.1)),
                                         dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
     "i2s: under the stack to the amp": [dict(x=(AMP_CABLE_X + 0.8, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
-                                        dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 0.8), y=(27.6, 43.9), z=(-24.2, -12.1))],
+                                        dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 7.2), y=(27.6, 45.0), z=(-24.2, -12.1))],
     "mic: across the front, rearward in the right well": [dict(x=(MIC_HOUSING_X[1] + 0.5, 21.0), y=(38.2, 53.0), z=(MIC_PIN_Z - 0.7, MIC_PIN_Z + 0.7)),
                                                            dict(x=(22.7, 24.1), y=(38.2, 53.0), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
@@ -660,14 +660,11 @@ def mic_holder():
 
 
 def amp_base():
-    """Bar on the floor along the left wall with a slot for the bottom edge of the amp board (lower under the screw
-    terminal), and two nubs on the wall over its top edge: tilt the board in, press its top edge under the nubs,
-    then set it with a dab of glue."""
+    """Bar on the floor along the wall with a slot for the bottom edge of the amp board, and two nubs over its top
+    edge: tilt the board in, press its top edge under the nubs, then set it with a dab of glue."""
     c = 0.15
     b = mbox(-IN_A - 0.5, AMP_X[1] + 1.55, FLOOR_Y1 - 0.01, 30.0, *AMP_Z)
     b -= mbox(AMP_X[0] - c, AMP_X[1] + c, AMP_Y0 - 0.15, 31.0, AMP_Z[0] - 1, AMP_Z[1] + 1)
-    t = AMP_L["term"]
-    b -= mbox(AMP_X[1] + c - 0.01, AMP_X[1] + 2.0, AMP_Y0 + 0.6, 31.0, AMP_Z[0] + t[0] - 0.5, AMP_Z[0] + t[1] + 0.5)
     return b + amp_nubs()
 
 
@@ -1291,7 +1288,7 @@ def bb_pin_z(k):
 
 
 BB_X = (HDR["x0"] + HDR["x1"]) / 2
-AMP_PLUG_Y = [AMP_Y0 + v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN
+AMP_PLUG_Y = [AMP_Y0 + AMP["h"] - v for v in (6.6, 8.6, 10.6, 12.6, 14.6)]   # G, V, BCLK, LRCLK, DIN (G at the top)
 AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # front face of the I2S plug
 # BCLK and LRCLK: one wire from Pi pin 12 (35) to a soldered splice, then one wire to the mic and one to the amp
 # (reference/g2-wiring-blueprint.html). The splices are vertical heat-shrink sleeves in the right well:
@@ -1335,14 +1332,17 @@ def wire_routes():
         zb = bb_pin_z(k)
         pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
         W.append(("uart", lab, col, pts))
-    # Amp: a flat cable from the I2S plug at the front end of the amp. Forward, down to the floor (the cable turns
-    # over: DIN is the front wire on the floor), across under the stack in front of the front pegs. DIN goes up into
+    # Amp: a flat cable from the I2S plug at the front end of the amp (G at the top). Out of the plug the wires fan out
+    # inward, 1.6 apart (G at the wall side), then each goes forward and down at its own X (the cable turns over: DIN is
+    # the front wire on the floor), across under the stack in front of the front pegs. DIN goes up into
     # pin 40 at once, LRC up into its splice; G, V and BCLK run rearward in their lanes on the floor of the right well.
     order = ("G", "V", "BCLK", "LRC", "DIN")
     for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#3a6fd8", "#2e9b4f", "#f0c419"))):   # cable colors (user photo)
         zf = -16.8 - 1.75 * i
         xc = AMP_CABLE_X
-        start = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0), (xc, AMP_PLUG_Y[i], zf), (xc, FLOOR_WIRE, zf)]
+        xd = xc + 1.6 * i
+        fan = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0 - 1.5), (xd, AMP_PLUG_Y[i], -15.3)] if i else []
+        start = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0)] + fan + [(xd, AMP_PLUG_Y[i], zf), (xd, FLOOR_WIRE, zf)]
         xr = EXIT_X + 2.2                                  # a wire comes up here and bends over into its housing
         if lab == "DIN":
             y, z = pin_yz(40)
@@ -1367,15 +1367,15 @@ def wire_routes():
                 pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
         W.append(("amp", lab, col, pts))
     # Mic: jumpers (GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
-    # pin (SEL at the bottom, 3V at the top): straight inward out of the housings, across behind the front wall in front
+    # pin (3V at the bottom, SEL at the top): straight inward out of the housings, across behind the front wall in front
     # of the stack, then rearward as a flat stack at MIC_RIB.
     # SEL (pin 39, to GND: left channel), DOUT (pin 38), LRCL (splice), BCLK (splice), GND (pin 9), 3V (pin 1).
     xa = MIC_RIB
     xin = EXIT_X + 2.0
     xh = MIC_HOUSING_X[1]
     # wire colors from the user photo (the pack jumpers on the mic header)
-    for k, t, col, lab in ((0, 39, "#7a4a2a", "SEL"), (1, "lrclk", "#2e9b4f", "LRCL"), (2, 38, "#e8641b", "DOUT"),
-                           (3, "bclk", "#3a6fd8", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
+    for k, t, col, lab in ((5, 39, "#7a4a2a", "SEL"), (4, "lrclk", "#2e9b4f", "LRCL"), (3, 38, "#e8641b", "DOUT"),
+                           (2, "bclk", "#3a6fd8", "BCLK"), (1, 9, "#1d1d1f", "GND"), (0, 1, "#d83a34", "3V")):
         y = MIC_PIN_Y[k]
         pts = [(xh, y, MIC_PIN_Z), (xh + 1.2, y, MIC_PIN_Z), (21.0, y, MIC_PIN_Z), (xa, y, -29.2)]
         if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
@@ -1384,10 +1384,7 @@ def wire_routes():
                     (sx, SPLICE["y"][1] + 1.2, sz), splice_end(t, True)]
         else:
             yp, zp = pin_yz(t)
-            if lab == "DOUT":                                   # in first, then down past SEL
-                pts += [(xa, y, zp - 3.3), (xin + 0.1, y, zp - 2.3), (xin, yp + 0.6, zp)] + into_pin(t)
-            else:
-                pts += [(xa, y, zp - 3.0), (xin, yp + 0.6, zp)] + into_pin(t)
+            pts += [(xa, y, zp - 3.0), (xin, y, zp - 1.6), (xin, yp + 0.6, zp)] + into_pin(t)   # in at its height, then down
         W.append(("mic", lab, col, pts))
     # The Pi end of each splice: pin 12 (GPIO18, BCLK) and pin 35 (GPIO19, LRCLK), into the bottom of the sleeve.
     for t, n, col in (("bclk", 12, "#3a6fd8"), ("lrclk", 35, "#2e9b4f")):   # the colors of the signal (not seen in a photo)
@@ -1467,7 +1464,7 @@ def speaker_leads():
     """The speaker lead pair: from the 2-pin plug at the rear end of the amp, up the left gallery, over the ear
     plate, into the top of the speaker body."""
     zp = AMP_Z[0] + AMP_L["ph2"][1] + AMP_L["plug_out"]           # rear face of the 2-pin plug
-    yc = AMP_Y0 + 12.05
+    yc = AMP_Y0 + AMP["h"] - 12.05
     zt = SPK_ZE + SPK["ear_t"] + 3.0                            # the leads leave the top of the rear half of the body
     center = [(AMP_CABLE_X, yc, zp), (AMP_CABLE_X, yc, 33.6), (AMP_CABLE_X, 54.6, 33.6), (-12.5, 59.9, 34.6), (-12.5, 59.9, zt - 2.2),
               (-11.0, SPK_Y0 + SPK["d"] - 0.5, zt)]
@@ -1476,7 +1473,7 @@ def speaker_leads():
 
 
 HOUSING_MESH = {}     # ("pi", pin) / ("mic", k) / ("bb", k) -> Dupont housing mesh, set by build_models()
-MIC_PIN_OF = {"SEL": 0, "LRCL": 1, "DOUT": 2, "BCLK": 3, "GND": 4, "3V": 5}
+MIC_PIN_OF = {"3V": 0, "GND": 1, "BCLK": 2, "DOUT": 3, "LRCL": 4, "SEL": 5}
 BB_PIN_OF = {"TX2": 0, "RX2": 1, "GND": 2}
 
 
@@ -1560,25 +1557,25 @@ def build_models():
     x0, x1 = AMP_X
     yt = AMP_Y0 + AMP["h"]
     zu = lambda u: AMP_Z[0] + u
-    yv = lambda v: AMP_Y0 + v                               # upside down: v up from the bottom edge
+    yv = lambda v: AMP_Y0 + AMP["h"] - v                    # upright: v down from the top edge
     pcb = rbox("x", x0, x1, AMP_Y0, yt, *AMP_Z, 1.0)
     pcb -= union([mcyl("x", x0 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u)) for u, v in L["holes"]])
     add("amp_ns4168", "pcb", "NS4168 amp board", pcb, "#1d1d1f")
     rings = union([mcyl("x", x1 - 0.01, x1 + 0.05, L["hole_d"] / 2 + 1.0, yv(v), zu(u)) - mcyl("x", x1 - 1, x1 + 1, L["hole_d"] / 2, yv(v), zu(u))
                    for u, v in L["holes"]])
     add("amp_ns4168", "rings", "amp hole rings", rings, "#e8e8e8")
-    ph = lambda r: mbox(x1, x1 + L["ph"], yv(r[2]), yv(r[3]), zu(r[0]), zu(r[1]))
+    ph = lambda r: mbox(x1, x1 + L["ph"], yv(r[3]), yv(r[2]), zu(r[0]), zu(r[1]))
     hdrs = ph(L["ph5"]) + ph(L["ph2"])
     add("amp_ns4168", "headers", "amp PH2.0 headers", hdrs, "#efe6d2")
-    p5 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph5"][2]) + 0.5, yv(L["ph5"][3]) - 0.5, AMP_PLUG_Z0, zu(L["ph5"][0]) + 0.01)
-    p2 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph2"][2]) + 0.5, yv(L["ph2"][3]) - 0.5, zu(L["ph2"][1]) - 0.01, zu(L["ph2"][1]) + L["plug_out"])
+    p5 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph5"][3]) + 0.5, yv(L["ph5"][2]) - 0.5, AMP_PLUG_Z0, zu(L["ph5"][0]) + 0.01)
+    p2 = mbox(x1 + 0.2, x1 + L["ph"] - 0.4, yv(L["ph2"][3]) + 0.5, yv(L["ph2"][2]) - 0.5, zu(L["ph2"][1]) - 0.01, zu(L["ph2"][1]) + L["plug_out"])
     add("amp_ns4168", "plugs", "amp PH2.0 plugs", p5 + p2, "#fbf6ea")
     t = L["term"]
-    term = mbox(x1, x1 + L["term_h"], yv(t[2]), yv(t[3]), zu(t[0]), zu(t[1]))
+    term = mbox(x1, x1 + L["term_h"], yv(t[3]), yv(t[2]), zu(t[0]), zu(t[1]))
     add("amp_ns4168", "terminal", "amp screw terminal", term, "#2f6fd6")
     screws = union([mcyl("x", x1 + L["term_h"] - 0.01, x1 + L["term_h"] + 0.3, 1.2, yv(v), zu(32.9)) for v in (2.3, 5.9)])
     add("amp_ns4168", "screws", "terminal screws", screws, "#c8c8c8")
-    ic = mbox(x1, x1 + 1.5, yv(L["ic"][2]), yv(L["ic"][3]), zu(L["ic"][0]), zu(L["ic"][1]))
+    ic = mbox(x1, x1 + 1.5, yv(L["ic"][3]), yv(L["ic"][2]), zu(L["ic"][0]), zu(L["ic"][1]))
     add("amp_ns4168", "ic", "NS4168 chip", ic, "#2a2a2a")
     amp = pcb + hdrs + p5 + p2 + term + screws + ic
     # SPH0645 mic board: PCB with the two corner holes and the port hole, mic part on the back face, straight header on
@@ -1998,7 +1995,7 @@ def all_routes():
 # header, while the right well is empty; their BiBoard ends are plugged last), then the mic jumpers over them,
 # the lowest wire of the mic stack first.
 SETTLE_ORDER = [("uart", "TX2"), ("uart", "RX2"), ("uart", "GND"),
-                ("mic", "SEL"), ("mic", "LRCL"), ("mic", "DOUT"), ("mic", "BCLK"), ("mic", "GND"), ("mic", "3V")]
+                ("mic", "3V"), ("mic", "GND"), ("mic", "BCLK"), ("mic", "DOUT"), ("mic", "LRCL"), ("mic", "SEL")]
 # (where two wires cross at two heights, the lower one goes in first)
 
 

@@ -74,13 +74,13 @@ def content():
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
          ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
-          "with its screw terminal at the bottom. Two nubs on the wall hold its top edge. "
+          "upright with its screw terminal at the top. Two nubs hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
          ["NULLLAB 3 W 4 ohm speaker", f"At the rear, sound to the grille in the rear face. Body {pod.SPK['body_l']:g} wide, {pod.SPK['h']:g} deep. Two tapered wings ({pod.SPK['l']:g} across, "
           f"{pod.SPK['ear_t']:g} thick) at the middle of the body depth stand in two side grooves."],
          ["HiLetgo SPH0645 I2S mic", f"{pod.MIC['w']:g} x {pod.MIC['l']:g} board, high on the right wall near the front, port to the wall (holes in the right side). "
           "Its straight 6-pin header is along its front edge: the plugs point inward, and the wires go straight across behind the front wall. "
-          "SEL is the lowest pin, 3V the highest. It drops into a slot in a post (rear edge) and a ledge (bottom edge); a fork under the panel holds its top edge. No tools."],
+          "3V is the lowest pin, SEL the highest. It drops into a slot in a post (rear edge) and a ledge (bottom edge); a fork under the panel holds its top edge. No tools."],
          ["Petoi AI Vision Module", "In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. "
           f"It stands {abs(pod.CAM['cx']):g} mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. "
           "Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out."],
@@ -178,7 +178,7 @@ def content():
          "Amp cable: " + ROUTE["amp"] + ". Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.",
          "Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.",
          "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.",
-         "The mic wires go in from the lowest of the stack: SEL, LRCL, DOUT, BCLK, GND, then 3V."])
+         "The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL."])
     img("11_wires_top.png", 0.36, "From the top, panel off: the wires in 3D.")
     img("16_camera_cable.png", 0.42, "The USB cable of the camera: from the top of the camera, over the panel, into the Pi data USB port.")
 
@@ -228,7 +228,7 @@ def content():
 WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
 ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
-             amp="forward from the plug, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
+             amp="out of the plug the wires fan out inward (G nearest the wall), forward, down, across the floor in front of the front pegs (under the stack), then rearward in a floor lane of the left well; DIN goes up at once",
              mic="straight inward out of the mic plugs, across behind the front wall in front of the stack, "
                  "then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin",
              splice="short wire in the left well, up into the bottom of the splice sleeve",

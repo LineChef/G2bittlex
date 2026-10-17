@@ -115,7 +115,7 @@ INFO = {
                     attach="It is fixed to the PiSugar 2. It stands 1.5 mm above the peg heads."),
     "pi_plugs": dict(text="The soldered 2x20 Pi header with Dupont housings on the 12 pins in use (pin map: the wiring blueprint).",
                      attach="Push the jumpers onto the Pi header before the stack goes in."),
-    "amp": dict(text="NULLLAB NS4168 I2S amp, on edge along the right wall, its screw terminal at the bottom. Its parts face the battery.",
+    "amp": dict(text="NULLLAB NS4168 I2S amp, on edge along the right wall, upright, its screw terminal at the top. Its parts face the battery.",
                 attach="Put its bottom edge into the slot of the bar on the floor, tilt its top edge under the two nubs on the wall, and set it with a dab of glue. "
                        "Forks under the panel also hold its top edge."),
     "speaker": dict(text="NULLLAB 3 W 4 ohm speaker at the rear, with a 3 mm ear plate. The sound goes out of the grille in the rear face.",
