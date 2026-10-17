@@ -28,31 +28,31 @@ Print quality. The body and panel walls are 2.0 mm: with the offsets of the body
 | Part | Place |
 |---|---|
 | Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh | On the long edge over the robot center, 4.9 mm left of the center line so the battery is near it: ports and PiSugar controls up, GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated). |
-| Dupont jumpers | Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V. |
+| Dupont jumpers | 3 female-to-male jumpers to the BiBoard (female on the Pi pin, male into the BiBoard socket). 6 female-female jumpers to the mic (2 of them through the splices): 10 cm, but 15 cm for GND and 3V. |
 | NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, upright with its screw terminal at the top. Two nubs hold its top edge. Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end. |
 | NULLLAB 3 W 4 ohm speaker | At the rear, sound to the grille in the rear face. Body 27.9 wide, 15.2 deep. Two tapered wings (44 across, 3 thick) at the middle of the body depth stand in two side grooves. |
 | HiLetgo SPH0645 I2S mic | 12.45 x 16.12 board, high on the right wall near the front, port to the wall (holes in the right side). Its straight 6-pin header is along its front edge: the plugs point inward, and the wires go straight across behind the front wall. 3V is the lowest pin, SEL the highest. It drops into a slot in a post (rear edge) and a ledge (bottom edge); a fork under the panel holds its top edge. No tools. |
 | Petoi AI Vision Module | In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. It stands 9 mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out. |
 | USB cable, USB-C to micro-USB | From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. Modeled length 113 mm between the plugs. |
 
-Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 1.7 mm behind the robot center and 1.3 mm right of the center line, 25 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs 133 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 1.5 mm behind the robot center and 1.2 mm right of the center line, 25 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
 
-The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bittlex/viewer/#step=1](https://beetlebugorg.github.io/bittlex/viewer/#step=1). Labels are cut into the inside of the body: MIC, AMP, SPEAKER and BIBOARD where each part goes, PIN 1 and PIN 40 at the ends of the Pi header, and grooves in the floor for the amp cable lanes and the mic wire run.
+The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bittlex/viewer/#step=1](https://beetlebugorg.github.io/bittlex/viewer/#step=1). Labels are cut into the inside of the body: MIC, AMP, SPEAKER and BIBOARD where each part goes, PIN 1 and PIN 40 at the ends of the Pi header, and grooves in the floor under the amp cable and the mic wire run.
 
 1. Fit the platform cover in place of the stock cover. ([viewer step 2](https://beetlebugorg.github.io/bittlex/viewer/#step=2))
 2. Put the empty body on the pegs 7 mm behind its place, grille to the rear. Slide it 7 mm forward until it clicks (about 3.2 N). The BiBoard header is now in the notch at the front of the left well. ([viewer step 3](https://beetlebugorg.github.io/bittlex/viewer/#step=3)) ([viewer step 4](https://beetlebugorg.github.io/bittlex/viewer/#step=4))
 3. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
 4. Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Drop the mic into the slots in the post and the ledge on the right wall near the front, port to the wall, header at the front. The panel holds it later. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
-5. Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Lay the flat amp cable across the floor in front of the front pegs, into the left well, G at the rear. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
-6. Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
-7. Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, then the BiBoard ends. The viewer has one step for each wire. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9)) ([viewer step 21](https://beetlebugorg.github.io/bittlex/viewer/#step=21))
-8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right. ([viewer step 22](https://beetlebugorg.github.io/bittlex/viewer/#step=22))
-9. Put the panel down 5 mm behind its place, then slide it forward until the latch clicks (about 5.7 N). The hooks under the panel go under the lugs in the walls. ([viewer step 23](https://beetlebugorg.github.io/bittlex/viewer/#step=23))
-10. Push the two clip legs of the camera mount down through the window until they click. Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. ([viewer step 24](https://beetlebugorg.github.io/bittlex/viewer/#step=24)) ([viewer step 25](https://beetlebugorg.github.io/bittlex/viewer/#step=25))
-11. Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. The cable arches rearward over the panel. ([viewer step 26](https://beetlebugorg.github.io/bittlex/viewer/#step=26))
+5. Plug the flat amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Let the amp cable hang out of the top. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
+6. Push the Pi + PiSugar 2 stack down into the end grooves. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
+7. Plug the wires one at a time, in the order of section 5: the splices, the Pi ends of the BiBoard jumpers, the amp cable, the mic jumpers, then the BiBoard ends. The viewer has one step for each wire. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9)) ([viewer step 19](https://beetlebugorg.github.io/bittlex/viewer/#step=19))
+8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right. ([viewer step 20](https://beetlebugorg.github.io/bittlex/viewer/#step=20))
+9. Put the panel down 5 mm behind its place, then slide it forward until the latch clicks (about 5.7 N). The hooks under the panel go under the lugs in the walls. ([viewer step 21](https://beetlebugorg.github.io/bittlex/viewer/#step=21))
+10. Push the two clip legs of the camera mount down through the window until they click. Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top. ([viewer step 22](https://beetlebugorg.github.io/bittlex/viewer/#step=22)) ([viewer step 23](https://beetlebugorg.github.io/bittlex/viewer/#step=23))
+11. Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. The cable arches rearward over the panel. ([viewer step 24](https://beetlebugorg.github.io/bittlex/viewer/#step=24))
 12. Open: lift the rear edge of the panel at the finger notch (about 3.1 N), slide the panel 5 mm rearward and lift it. Remove: open the panel, pull the BiBoard plugs off, slide the body 7 mm rearward and lift it.
 
 On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening, behind the camera. The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. The tongue in the middle of the panel is a large button: press it to press the PiSugar button.
@@ -81,7 +81,7 @@ Pin map from the wiring blueprint (reference/g2-wiring-blueprint.html; that blue
 
 ## 5. Cable routing
 
-The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires; the mic GND and 3V jumpers are 15 cm. The amp keeps its own cable, and the two splices are cut from pack jumpers. pod.py models every wire (1.4 mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each other (0 found), and no bend is smaller than 2 mm radius (1.35 mm in the slack). A pack jumper is longer than its route, so its excess is an arch or a coil (a service loop) in free space. The pages below show each module: its pins, then its wires in the case.
+The BiBoard wires are female-to-male jumpers (the male end goes into the BiBoard socket), the mic wires female-female; 10 cm, but the mic GND and 3V jumpers are 15 cm. The amp keeps its own cable, and the two splices are cut from pack jumpers. pod.py models every wire (1.4 mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each other (0 found), and no bend is smaller than 2 mm radius (1.35 mm in the slack). A pack jumper is longer than its route, so its excess is an arch or a coil (a service loop) in free space. The pages below show each module: its pins, then its wires in the case.
 
 ![](doc/15_wiring_0.png)
 
@@ -96,11 +96,11 @@ The BiBoard and mic wires are female-female jumpers from a pack of 10 cm wires; 
 | 1 | BiBoard TX2 | pin 10 (2-turn loop) | 100 | 11 | mic DOUT | pin 38 (1-turn loop on a 5 mm stem) | 97 |
 | 2 | BiBoard RX2 | pin 8 (arch) | 98 | 12 | mic BCLK | BCLK splice | 76 |
 | 3 | BiBoard GND | pin 6 (1-turn loop) | 99 | 13 | mic GND | pin 9 (2-turn loop) | 149 |
-| 4 | amp G | pin 14 | 92 | 14 | mic 3V | pin 1 (2-turn loop) | 148 |
-| 5 | amp V | pin 2 | 108 | 15 | BCLK splice | pin 12 | 18 |
-| 6 | amp BCLK | BCLK splice | 90 | 16 | LRCLK splice | pin 35 | 7 |
-| 7 | amp LRC | LRCLK splice | 78 | 17 | amp speaker + | speaker + | 43 |
-| 8 | amp DIN | pin 40 | 69 | 18 | amp speaker - | speaker - | 44 |
+| 4 | amp G | pin 14 | 118 | 14 | mic 3V | pin 1 (1-turn loop on a 5 mm stem) | 148 |
+| 5 | amp V | pin 2 | 132 | 15 | BCLK splice | pin 12 | 16 |
+| 6 | amp BCLK | BCLK splice | 111 | 16 | LRCLK splice | pin 35 | 7 |
+| 7 | amp LRC | LRCLK splice | 97 | 17 | amp speaker + | speaker + | 43 |
+| 8 | amp DIN | pin 40 | 85 | 18 | amp speaker - | speaker - | 44 |
 | 9 | mic SEL | pin 39 (1-turn loop) | 100 | 19 | camera USB-C | Pi data USB | 113 |
 | 10 | mic LRCL | LRCLK splice | 62 |  |  |  |  |
 
@@ -109,7 +109,7 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 1. #1: BiBoard TX2 to pin 10. Put its excess in a 2-turn loop as in the drawing.
 2. #2: BiBoard RX2 to pin 8. Put its excess in a arch as in the drawing.
 3. #3: BiBoard GND to pin 6. Put its excess in a 1-turn loop as in the drawing.
-4. #14: mic 3V to pin 1. Put its excess in a 2-turn loop as in the drawing.
+4. #14: mic 3V to pin 1. Put its excess in a 1-turn loop on a 5 mm stem as in the drawing.
 5. #13: mic GND to pin 9. Put its excess in a 2-turn loop as in the drawing.
 6. #12: mic BCLK to BCLK splice. Cut to length.
 7. #11: mic DOUT to pin 38. Put its excess in a 1-turn loop on a 5 mm stem as in the drawing.
@@ -118,7 +118,7 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 10. Last, push the BiBoard ends of #1, #2 and #3 onto the BiBoard header.
 
 1. The mic has a straight header along its front edge. Plug the six mic jumpers onto it before the mic goes in. Mic wires: straight inward out of the mic plugs, across behind the front wall in front of the stack, then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin.
-2. Amp cable: a flat cable: forward out of the plug, it rolls to lie flat as it goes down, then flat across the floor in front of the front pegs (under the stack), G at the rear and DIN at the front; in the left well each wire goes rearward in its own floor lane, and DIN goes up at once. Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.
+2. Amp cable: a flat cable on edge (G on top), with no twist: out of the plug, down a step, forward to the front wall, across behind it under the mic plugs, rearward along the left well; each wire turns in at its own height into its pin or splice (DIN first, V last). Lay it after the BiBoard jumpers: its V wire runs over their Pi ends.
 3. Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.
 4. The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.
 5. The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL.

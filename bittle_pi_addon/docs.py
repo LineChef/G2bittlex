@@ -72,7 +72,7 @@ def content():
          ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
           "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
-         ["Dupont jumpers", "Female-female jumpers: 3 to the BiBoard, 6 to the mic (2 of them through the splices). 10 cm, but 15 cm for the mic GND and 3V."],
+         ["Dupont jumpers", "3 female-to-male jumpers to the BiBoard (female on the Pi pin, male into the BiBoard socket). 6 female-female jumpers to the mic (2 of them through the splices): 10 cm, but 15 cm for GND and 3V."],
          ["NULLLAB NS4168 I2S amp", "38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, "
           "upright with its screw terminal at the top. Two nubs hold its top edge. "
           "Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end."],
@@ -100,27 +100,26 @@ def content():
     st = lambda n: f" ([viewer step {n}]({VIEWER}#step={n}))"
     p(f"The 3D viewer shows each step with animation: [{VIEWER}#step=1]({VIEWER}#step=1). "
       "Labels are cut into the inside of the body: MIC, AMP, SPEAKER and BIBOARD where each part goes, PIN 1 and PIN 40 at the ends "
-      "of the Pi header, and grooves in the floor for the amp cable lanes and the mic wire run.")
+      "of the Pi header, and grooves in the floor under the amp cable and the mic wire run.")
     lst(["Fit the platform cover in place of the stock cover." + st(2),
          f"Put the empty body on the pegs {PI.SLIDE:g} mm behind its place, grille to the rear. Slide it {PI.SLIDE:g} mm forward until it clicks "
          f"(about {K['lock_N']:g} N). The BiBoard header is now in the notch at the front of the left well." + st(3) + st(4),
          "Push the speaker down into the two side grooves at the rear, body to the rear." + st(5),
          "Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Drop the mic into the slots in the post and the ledge "
          "on the right wall near the front, port to the wall, header at the front. The panel holds it later." + st(6),
-         "Plug the amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
-         "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. "
-         "Lay the flat amp cable across the floor in front of the front pegs, into the left well, G at the rear." + st(7),
-         "Push the Pi + PiSugar 2 stack down into the end grooves, over the amp cable." + st(8),
-         "Plug the wires one at a time, in the order of section 5: the amp cable, the splices, the Pi ends of the BiBoard jumpers, the mic jumpers, "
-         "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(21),
+         "Plug the flat amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
+         "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Let the amp cable hang out of the top." + st(7),
+         "Push the Pi + PiSugar 2 stack down into the end grooves." + st(8),
+         "Plug the wires one at a time, in the order of section 5: the splices, the Pi ends of the BiBoard jumpers, the amp cable, the mic jumpers, "
+         "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(19),
          "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. "
-         "Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right." + st(22),
+         "Glue the two logo inlays into the pocket in the panel top, behind the camera: the white ring and M at the left, the red ring and J at the right." + st(20),
          f"Put the panel down {pod.LID_SLIDE:g} mm behind its place, then slide it forward until the latch clicks (about {S['slide_on_N']:g} N). "
-         "The hooks under the panel go under the lugs in the walls." + st(23),
+         "The hooks under the panel go under the lugs in the walls." + st(21),
          "Push the two clip legs of the camera mount down through the window until they click. "
-         "Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top." + st(24) + st(25),
+         "Push the camera case down between the brackets, lens forward and USB port up, until the hooks click over its top." + st(22) + st(23),
          "Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. "
-         "The cable arches rearward over the panel." + st(26),
+         "The cable arches rearward over the panel." + st(24),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['lift_N']:g} N), slide the panel {pod.LID_SLIDE:g} mm rearward and lift it. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening, behind the camera. "
@@ -149,7 +148,7 @@ def content():
     WR = json.load(open(os.path.join(pod.OUT, "wires.json")))
     ws = WR["wires"]
     pack = [w for w in ws if w.get("pack")]
-    p(f"The BiBoard and mic wires are female-female jumpers from a pack of {WR['pack_l'] / 10:g} cm wires; the mic GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
+    p(f"The BiBoard wires are female-to-male jumpers (the male end goes into the BiBoard socket), the mic wires female-female; {WR['pack_l'] / 10:g} cm, but the mic GND and 3V jumpers are {WR['long_l'] / 10:g} cm. The amp keeps its own cable, "
       "and the two splices are cut from pack jumpers. pod.py models every wire "
       f"({WR['wire_d']:g} mm) at its real length and checks it: no wire touches a printed part or a board, no two wires pass through each "
       f"other ({len(WR['crossings'])} found), and no bend is smaller than {WR['r_bend']:g} mm radius ({WR['r_slack']:g} mm in the slack). "
@@ -175,7 +174,7 @@ def content():
          for k in order] + ["Last, push the BiBoard ends of #%d, #%d and #%d onto the BiBoard header." % tuple(num[k] for k in order if k[0] == "uart")])
     lst(["The mic has a straight header along its front edge. Plug the six mic jumpers onto it before the mic goes in. "
          "Mic wires: " + ROUTE["mic"] + ".",
-         "Amp cable: " + ROUTE["amp"] + ". Lay it before the stack goes in. Its own excess (not measured) folds in the right gallery over the amp.",
+         "Amp cable: " + ROUTE["amp"] + ". Lay it after the BiBoard jumpers: its V wire runs over their Pi ends.",
          "Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.",
          "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.",
          "The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL."])
@@ -228,7 +227,7 @@ def content():
 WIRE_FROM, WIRE_TO = pod.WIRE_FROM, pod.WIRE_TO
 MX = lambda r: (-r[1], -r[0])          # pod.py numbers are in its design frame (X turned over): to the robot frame
 ROUTE = dict(uart="left well: up out of the BiBoard plugs to the left wall, rearward (each wire at its own height), down, into the Pi header",
-             amp="a flat cable: forward out of the plug, it rolls to lie flat as it goes down, then flat across the floor in front of the front pegs (under the stack), G at the rear and DIN at the front; in the left well each wire goes rearward in its own floor lane, and DIN goes up at once",
+             amp="a flat cable on edge (G on top), with no twist: out of the plug, down a step, forward to the front wall, across behind it under the mic plugs, rearward along the left well; each wire turns in at its own height into its pin or splice (DIN first, V last)",
              mic="straight inward out of the mic plugs, across behind the front wall in front of the stack, "
                  "then rearward as a flat stack in the left well beside the BiBoard plugs; each wire stays at the height of its pin",
              splice="short wire in the left well, up into the bottom of the splice sleeve",

@@ -161,7 +161,7 @@ def _wire_step(key, title=None, text=""):
     """One wire step: the wire comes in with its Dupont housings on it (a jumper comes that way)."""
     i, w = _W[key]
     new = [w["id"]] + list(w["housings"])
-    under = key[0] == "amp"                             # the amp cable runs under the stack: the stack goes see-through
+    under = False
     if w.get("pack"):
         text = text or f"Plug a {w.get('len_cm', 10):g} cm jumper from {w['from']} to the Pi {w['to']}. Lay its excess in {('an' if w['slack'][0] in 'aeiou' else 'a')} {w['slack']} as shown."
     return dict(title=title or f"{w['from']} \u2192 {'Pi ' if w['to'].startswith('pin') else ''}{w['to']}", view="build" if under else "wires",
@@ -171,20 +171,25 @@ def _wire_step(key, title=None, text=""):
 
 CAM_CABLE = [f"wires_camera__{k}" for k in ("usb", "plug_cam", "plug_pi")]
 AMP_SPLICE = ["wires_amp__bclk", "wires_amp__lrc"]
+AMP_IDS = ["wires_amp__" + k for k in ("g", "v", "bclk", "lrc", "din")]
 SPLICE_IDS = ["wires_splice__sleeves", "wires_splice__bclk", "wires_splice__bclk_pi", "wires_splice__lrclk", "wires_splice__lrclk_pi"]
 
+AMP_HOUSINGS = ["wires_amp__" + k + "_pi" for k in ("g", "v", "din")]
 WIRE_STEPS = [
-    _wire_step(("amp", "G"), text="Amp cable G: from the floor in front of the front pegs, in the inner lane of the left well, up over the V lane onto Pi pin 14."),
-    _wire_step(("amp", "V"), text="Amp cable V: rearward in its lane, then up onto Pi pin 2 (5V)."),
-    _wire_step(("amp", "DIN"), text="Amp cable DIN: up at once onto Pi pin 40."),
-    dict(title="Splices", view="build", ghost=["body", "panel"] + STACK[:4], highlight=SPLICE_IDS + AMP_SPLICE,
-         show=SPLICE_IDS + AMP_SPLICE, start={k: [0, 22, 0] for k in SPLICE_IDS + AMP_SPLICE},
-         text="The BCLK and LRCLK splices: a short wire from Pi pin 12 (35) and the amp cable BCLK (LRC) go into the bottom of each sleeve. "
+    dict(title="Splices", view="build", ghost=["body", "panel"] + STACK[:4], highlight=SPLICE_IDS,
+         show=SPLICE_IDS, start={k: [0, 22, 0] for k in SPLICE_IDS},
+         text="The BCLK and LRCLK splices: a short wire from Pi pin 12 (35) into the bottom of each sleeve. "
               "The LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well."),
 ] + [_wire_step(tuple(k), text=f"Plug a 10 cm jumper onto Pi {_W[tuple(k)][1]['to']}. Lay its excess in "
                                 f"{('an' if _W[tuple(k)][1]['slack'][0] in 'aeiou' else 'a')} {_W[tuple(k)][1]['slack']} by the left wall. "
                                 "Push its other end onto the BiBoard header last, after the mic jumpers.")
-     for k in WIRES["order"] if tuple(k)[0] == "uart"] + [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "mic"]
+     for k in WIRES["order"] if tuple(k)[0] == "uart"] + [
+    dict(title="Amp cable", view="wires", ghost=["body", "panel"], highlight=AMP_IDS + AMP_HOUSINGS, show=AMP_IDS + AMP_HOUSINGS,
+         start={k: [0, 22, 0] for k in AMP_IDS + AMP_HOUSINGS},
+         text="Lay the flat amp cable on edge, the way it leaves the plug (G on top): down a step, forward to the front wall, "
+              "across under the mic plugs and rearward along the left well, over the BiBoard jumpers. Then each wire in turn: "
+              "DIN onto Pi pin 40, LRC and BCLK into the bottoms of their splice sleeves, G onto pin 14, V onto pin 2.")] + \
+    [_wire_step(tuple(k)) for k in WIRES["order"] if tuple(k)[0] == "mic"]
 
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
 STEPS = [
@@ -209,8 +214,7 @@ STEPS = [
          start={k: [0, 40, 0] for k in ["amp", "wires_speaker__pos", "wires_speaker__neg"]},
          text="Plug the speaker lead into the 2-pin connector at the rear end of the amp and the amp cable into the I2S connector at its front end. "
               "Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs and set it with a dab of glue. "
-              "Lay the flat amp cable across the floor in front of the front pegs and into the left well, G at the rear. The stack goes on top of it. "
-              "Each wire of the cable shows in the step where it goes onto the Pi."),
+              "Let the flat amp cable hang out of the top: it goes in after the BiBoard jumpers."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
          text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the left, SD card to the rear. "
               "Then plug the wires one at a time, as the next steps show."),

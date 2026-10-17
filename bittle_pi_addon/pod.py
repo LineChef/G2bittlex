@@ -280,8 +280,9 @@ GRILLE = dict(x=np.arange(-13.5, 13.6, 3.0), y=np.arange(33.0, 51.1, 3.0), d=1.6
 WIRE_PATHS = {
     "uart: Pi header to BiBoard plug": [dict(x=(25.4, IN_A_LOW - 0.05), y=(39.3, 49.6), z=(-19.5, 23.1)),
                                         dict(x=(19.9, IN_A_LOW - 0.05), y=(31.4, 49.6), z=(16.5, 23.1))],
-    "i2s: under the stack to the amp": [dict(x=(AMP_CABLE_X + 0.8, 18.0), y=(27.6, 29.8), z=(-24.2, -16.2)),
-                                        dict(x=(AMP_CABLE_X - 0.8, AMP_CABLE_X + 7.2), y=(27.6, 45.0), z=(-24.2, -12.1))],
+    "i2s: across the front to the amp": [dict(x=(AMP_CABLE_X - 0.7, AMP_CABLE_X + 0.7), y=(27.6, 45.0), z=(-24.5, -12.1)),
+                                         dict(x=(AMP_CABLE_X - 0.7, AMP_CABLE_X + 0.7), y=(27.6, 37.0), z=(ZF_IN + 1.6, -24.5)),
+                                         dict(x=(AMP_CABLE_X + 0.7, 22.9), y=(27.6, 37.0), z=(ZF_IN + 1.6, ZF_IN + 3.0))],
     "mic: across the front, rearward in the right well": [dict(x=(MIC_HOUSING_X[1] + 0.5, 21.0), y=(38.2, 53.0), z=(MIC_PIN_Z - 0.7, MIC_PIN_Z + 0.7)),
                                                            dict(x=(22.7, 24.1), y=(38.2, 53.0), z=(-29.5, 24.0))],
     "speaker: amp rear end to the speaker": [dict(x=(AMP_CABLE_X - 1.3, AMP_CABLE_X + 4.7), y=(33.5, 52.0), z=(31.6, 36.2)),
@@ -1295,11 +1296,11 @@ AMP_PLUG_Z0 = AMP_Z[0] - AMP_L["plug_out"] + AMP_L["ph5"][0]                  # 
 # the Pi wire and the amp wire go into the bottom end, the mic wire into the top end.
 SPLICE = dict(bclk=(21.2, 3.0), lrclk=(21.0, -13.0), y=(39.0, 45.0), r=1.25)
 # Lanes in the right well (X): the mic wires run rearward as a flat stack at MIC_RIB, beside the BiBoard plugs; the
-# UART wires rise at UART_X; the amp wires run rearward on the floor (Y FLOOR_WIRE) in AMP_LANES, inside the floor
+# UART wires rise at UART_X; the amp ribbon runs rearward on edge at AMP_RUN_X, inside the floor
 # notch for the BiBoard header (X 23.9). A wire that crosses further forward takes a lane further out, so no two
 # lanes cross; DIN goes up at once.
 MIC_RIB, UART_X, FLOOR_WIRE = 23.4, 27.0, FLOOR_Y1 + 0.75
-AMP_LANES = dict(G=18.4, V=20.0, BCLK=21.6, LRC=23.2)
+AMP_DROP, AMP_FRONT_Z, AMP_RUN_X = 8.0, ZF_IN + 2.3, 23.6   # the amp ribbon: step down, the run behind the front wall, the run in the left well
 PACK_L = 100.0        # the jumpers come from a pack of 10 cm wires (female-female): wire length between the housings
 LONG_WIRES = {("mic", "GND"), ("mic", "3V")}     # LONG_L
 
@@ -1321,9 +1322,6 @@ def splice_end(t, top):
 
 # Wires: (group, label, color, points from the far end to the Pi header or a splice).
 # Pin map: reference/g2-wiring-blueprint.html (the user's wiring blueprint).
-AMP_RMIN = {}         # amp wire -> smallest bend radius (the ribbon part and the rounded rest), set by wire_routes()
-
-
 def wire_routes():
     W = []
     # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Up out of the plugs to the right wall, rearward
@@ -1335,43 +1333,27 @@ def wire_routes():
         zb = bb_pin_z(k)
         pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
         W.append(("uart", lab, col, pts))
-    # Amp: a flat cable (bonded wires, 1.5 pitch) from the I2S plug at the front end of the amp (G at the top). It leaves the plug on
-    # edge, turns a quarter turn as it goes forward (it lies on its side for the bend down), a second quarter turn on the
-    # way down, and lands flat on the floor (G at the rear, DIN at the front): no wire crosses another. It goes across
-    # under the stack in front of the front pegs, and the wires part in the left well. DIN goes up into
-    # pin 40 at once, LRC up into its splice; G, V and BCLK run rearward in their lanes on the floor of the right well.
+    # Amp: a flat cable (bonded wires, user photo) from the I2S plug at the front end of the amp, on edge all the way
+    # (G at the top, 2.0 apart): it steps down AMP_DROP in a gentle S, runs forward to the front wall, across behind the
+    # front wall under the mic plugs and wires, and rearward along the left well (AMP_RUN_X). No twist: every turn
+    # bends it across its face. In the left well each wire turns inward at its own height (DIN at the front, V at the
+    # rear) and goes up or down into its pin or splice.
     order = ("G", "V", "BCLK", "LRC", "DIN")
-    xc, yc, zc, p = AMP_CABLE_X, sum(AMP_PLUG_Y) / 5, -20.8, 1.5
-    center = [(xc, yc, AMP_PLUG_Z0), (xc + 1.5, yc, zc), (xc + 1.5, FLOOR_WIRE, zc), (xc + 9.0, FLOOR_WIRE, zc)]
-    ribbon = twisted_ribbon(center, 5, p, [(0, -1, 0), (1, 0, 0), (0, 0, -1), (0, 0, -1)])   # G: top, wall side, rear
+    xc, xp = AMP_CABLE_X, EXIT_X + 2.2                     # the ribbon at the plug; a wire goes up or down here into its housing
     for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#3a6fd8", "#2e9b4f", "#f0c419"))):   # cable colors (user photo)
-        zf = zc + p * (2 - i)
-        start = [tuple(q) for q in ribbon[i]]
-        xr = EXIT_X + 2.2                                  # a wire comes up here and bends over into its housing
-        if lab == "DIN":
-            y, z = pin_yz(40)
-            pts = start + [(xr, FLOOR_WIRE, zf), (xr, y, z)] + into_pin(40)
-        elif lab == "LRC":
-            xl = AMP_LANES["LRC"]
-            sx, sz = SPLICE["lrclk"]
-            pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, sz - 4.5), (xl - 0.6, 32.5, sz - 2.5), (sx + 0.4, SPLICE["y"][0] - 1.8, sz - 0.6),
-                           splice_end("lrclk", False)]
-        elif lab == "BCLK":
-            xl = AMP_LANES["BCLK"]
-            sx, sz = SPLICE["bclk"]
-            pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, sz - 4.0), (xl - 0.6, SPLICE["y"][0] - 4.0, sz - 1.0),
-                           (sx + 0.6, SPLICE["y"][0] - 1.5, sz), splice_end("bclk", False)]
+        y0 = AMP_PLUG_Y[i]
+        y = y0 - AMP_DROP
+        pts = [(xc, y0, AMP_PLUG_Z0), (xc, y0, AMP_PLUG_Z0 - 2.0), (xc, y, AMP_PLUG_Z0 - 12.0), (xc, y, AMP_FRONT_Z),
+               (AMP_RUN_X, y, AMP_FRONT_Z)]
+        if lab == "LRC" or lab == "BCLK":                   # up into the bottom of its splice sleeve
+            t = "lrclk" if lab == "LRC" else "bclk"
+            sx, sz = SPLICE[t]
+            pts += [(AMP_RUN_X, y, sz - 5.0), (sx, y, sz - 2.5), (sx, SPLICE["y"][0] - 1.5, sz - 0.5), splice_end(t, False)]
         else:
-            xl = AMP_LANES[lab]
-            n = 14 if lab == "G" else 2
-            y, z = pin_yz(n)
-            if lab == "G":                                 # up over the V lane
-                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 8.0), (xl + 0.6, 30.4, z - 6.0), (xr, 31.3, z - 3.0), (xr, y, z)] + into_pin(n)
-            else:
-                pts = start + [(xl, FLOOR_WIRE, zf), (xl, FLOOR_WIRE, z - 4.5), (xr, FLOOR_WIRE + 0.5, z - 1.5), (xr, y, z)] + into_pin(n)
-        tail, rt = round_corners([start[-1]] + pts[len(start):])     # the ribbon is dense: round the rest here
-        AMP_RMIN[lab] = min(rt, _min_radius(np.asarray(start, float)))
-        W.append(("amp", lab, col, start + [tuple(q) for q in tail[1:]]))
+            n = {"DIN": 40, "G": 14, "V": 2}[lab]
+            yp, zp = pin_yz(n)
+            pts += [(AMP_RUN_X, y, zp - 5.0), (xp, y, zp - 2.5), (xp, yp, zp)] + into_pin(n)
+        W.append(("amp", lab, col, pts))
     # Mic: jumpers (GND and 3V 15 cm, LONG_WIRES) from the housings on the mic header (they leave rearward), each wire at the height of its
     # pin (3V at the bottom, SEL at the top): straight inward out of the housings, across behind the front wall in front
     # of the stack, then rearward as a flat stack at MIC_RIB.
@@ -1396,8 +1378,8 @@ def wire_routes():
     for t, n, col in (("bclk", 12, "#3a6fd8"), ("lrclk", 35, "#2e9b4f")):   # the colors of the signal (not seen in a photo)
         y, z = pin_yz(n)
         sx, sz = SPLICE[t]
-        if t == "bclk":         # rearward at Y 36.4, over the G wire, down at X 22.2
-            pts = [splice_end(t, False), (sx, 37.6, sz), (22.2, 36.4, sz + 1.5), (22.2, 36.4, z), (22.2, y, z)] + into_pin(n)
+        if t == "bclk":         # rearward at Y 38.2, over the amp wire G, down at X 21.8
+            pts = [splice_end(t, False), (21.8, 38.2, sz + 1.5), (21.8, 38.2, z - 2.0), (21.8, y, z)] + into_pin(n)
         else:                   # one quarter turn from the bottom of the sleeve into the housing of pin 35
             pts = [splice_end(t, False), (sx, y, z), (HOUSING_END, y, z)]
         W.append(("splice", t, col, pts))
@@ -1452,30 +1434,6 @@ def _usb_cable(low):
     pts += [c + [0, yc - c[1], 0] - u * r * math.cos(t) + np.array([0, r * math.sin(t), 0]) for t in np.linspace(0, math.pi, 40)[1:]]
     pts += [B + [0, y, 0] for y in np.linspace(yc - B[1], -2.0, 30)[1:]]
     return [("camera", "USB", "#1d1d1f", np.array(pts))]
-
-
-def twisted_ribbon(center, n, pitch, normals):
-    """n wires side by side along a center line (a flat cable) that twists: normals[i] is the spread direction at
-    center point i. Between two points the spread turns with an ease in and out (no kink in the outer wires), and it is
-    kept normal to the line."""
-    P0 = [np.asarray(p, float) for p in center]
-    C = round_corners(center, R_BEND + pitch * (n - 1) / 2, 16)[0]
-    s0 = np.r_[0, np.cumsum([np.linalg.norm(b - a) for a, b in zip(P0[:-1], P0[1:])])]
-    sc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(C, axis=0), axis=1))] * s0[-1] / max(1e-9, np.linalg.norm(np.diff(C, axis=0), axis=1).sum())
-    N = np.asarray(normals, float)
-    T = np.gradient(C, axis=0)
-    T /= np.maximum(np.linalg.norm(T, axis=1)[:, None], 1e-9)
-    out = [[] for _ in range(n)]
-    for i, p in enumerate(C):
-        k = min(int(np.searchsorted(s0, sc[i], side="right")) - 1, len(s0) - 2)
-        t = float(np.clip((sc[i] - s0[k]) / max(s0[k + 1] - s0[k], 1e-9), 0, 1))
-        t = t * t * (3 - 2 * t)                            # ease in and out
-        v = N[k] * (1 - t) + N[k + 1] * t
-        v -= np.dot(v, T[i]) * T[i]
-        v /= np.linalg.norm(v)
-        for m in range(n):
-            out[m].append(p + v * pitch * (m - (n - 1) / 2))
-    return [np.array(o) for o in out]
 
 
 def camera_cable():
@@ -1579,8 +1537,9 @@ def build_models():
     hdr = mbox(HDR["x0"], HDR["x1"], float(cov[m, 1].min()) - 3.0, HDR["top"], HDR["z0"], HDR["z1"])
     hdr -= union([mbox(BB_X - 0.5, BB_X + 0.5, HDR["top"] - 3.0, HDR["top"] + 1, bb_pin_z(k) - 0.5, bb_pin_z(k) + 0.5) for k in range(5)])
     add("biboard_header", "header", "BiBoard 5-pin header (est. height)", hdr, "#0d0d0d")
-    for k in (0, 1, 2):
-        HOUSING_MESH[("bb", k)] = rbox("y", BB_X - 1.25, BB_X + 1.25, BB_PLUG["y"][0], BB_PLUG["y"][1], bb_pin_z(k) - 1.25, bb_pin_z(k) + 1.25, 0.25, 8)
+    for k in (0, 1, 2):                                    # the BiBoard end of each jumper is male: a pin goes down into the socket
+        pin = mbox(BB_X - 0.32, BB_X + 0.32, HDR["top"] - 2.8, BB_PLUG["y"][0] + 0.01, bb_pin_z(k) - 0.32, bb_pin_z(k) + 0.32)
+        HOUSING_MESH[("bb", k)] = rbox("y", BB_X - 1.25, BB_X + 1.25, BB_PLUG["y"][0], BB_PLUG["y"][1], bb_pin_z(k) - 1.25, bb_pin_z(k) + 1.25, 0.25, 8) + pin
     bb = union([HOUSING_MESH[("bb", k)] for k in (0, 1, 2)])
     # NS4168 amp (NULLLAB photo and drawing): u along the board from the front (I2S) end, v down from the top edge
     L = AMP_L
@@ -2015,7 +1974,7 @@ def all_routes():
         if (g, lab) in SETTLED:
             out.append((g, lab, col, SETTLED[(g, lab)], True))
         else:
-            out.append((g, lab, col, pts, g == "amp"))          # the amp routes are smooth already (a twisting ribbon)
+            out.append((g, lab, col, pts, False))
     for g, lab, col, pts in speaker_leads() + camera_cable():
         out.append((g, lab, col, pts, True))
     return out
@@ -2084,7 +2043,7 @@ def wire_report():
     for g, lab, col, pts, smooth in all_routes():
         if smooth:
             P = np.asarray(pts, float)
-            rmin = AMP_RMIN[lab] if g == "amp" else _min_radius(P) if g not in ("speaker", "camera") else R_BEND
+            rmin = _min_radius(P) if g not in ("speaker", "camera") else R_BEND
         else:
             P, rmin = round_corners(pts)
         L = float(np.linalg.norm(np.diff(P, axis=0), axis=1).sum())
@@ -2325,13 +2284,14 @@ def check(parts, models, robot):
 
 # The order the parts and the wires go in (the guide and the viewer follow it). The amp cable runs on the floor
 # under the stack: it is laid before the stack, and its Pi ends are plugged after the stack is in.
+# The amp cable goes in after the BiBoard jumpers: its V wire runs over their Pi ends.
 INSTALL = [("part", "speaker"), ("part", "mic_sph0645"), ("part", "amp_ns4168"),
-           ("lay", [("amp", "G"), ("amp", "V"), ("amp", "BCLK"), ("amp", "LRC"), ("amp", "DIN")]),
            ("lay", [("speaker", "+"), ("speaker", "-")]),
            ("stack", None),
-           ("plug", ("amp", "G")), ("plug", ("amp", "V")), ("plug", ("amp", "DIN")),
-           ("wire", ("splice", "bclk")), ("wire", ("splice", "lrclk"))] + [("wire", k) for k in SETTLE_ORDER] + \
-          [("plug_dev", k) for k in SETTLE_ORDER if k[0] == "uart"]
+           ("wire", ("splice", "bclk")), ("wire", ("splice", "lrclk"))] + [("wire", k) for k in SETTLE_ORDER if k[0] == "uart"] + \
+          [("lay", [("amp", "G"), ("amp", "V"), ("amp", "BCLK"), ("amp", "LRC"), ("amp", "DIN")]),
+           ("plug", ("amp", "G")), ("plug", ("amp", "V")), ("plug", ("amp", "DIN"))] + \
+          [("wire", k) for k in SETTLE_ORDER if k[0] == "mic"] + [("plug_dev", k) for k in SETTLE_ORDER if k[0] == "uart"]
 
 
 def install_checks(parts, models):
