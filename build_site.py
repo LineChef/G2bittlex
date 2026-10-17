@@ -91,9 +91,9 @@ INFO = {
                         "the ribs crush into the hole wall. Press it: the tongue and the arm under it press the PiSugar button.",
                    attach="Press its post into the hole in the tongue until the cap sits flat, before the panel goes on. Support the tongue from below.",
                    files=[("Print STL", AF + "pod_button.stl")]),
-    "logo_white": dict(text="The white half of the logo inlay: the left ring and the M. 0.8 mm thick, flush with the panel top.",
+    "logo_white": dict(text="The white half of the logo inlay: the left ring and the M. 0.8 mm thick, in a 1.0 mm pocket. The glue fills the gap.",
                        attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_white.stl")]),
-    "logo_red": dict(text="The red half of the logo inlay: the right ring and the J. 0.8 mm thick, flush with the panel top.",
+    "logo_red": dict(text="The red half of the logo inlay: the right ring and the J. 0.8 mm thick, in a 1.0 mm pocket. The glue fills the gap.",
                      attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_red.stl")]),
     "camera_mount": dict(text="The camera mount: a round puck on a twist lock in a round socket in the panel, right of center, and two round side brackets that hold "
                               "the vertical camera case. Two lugs go under the panel top, and a spring tab in the panel clicks a bump into a notch in each lug. "

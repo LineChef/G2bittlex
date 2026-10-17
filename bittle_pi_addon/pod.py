@@ -1338,8 +1338,9 @@ def build_camera_cradle_low():
 # two colors (the white ring and M, the red ring and J), glued into a pocket in the top face. The pocket prints on
 # the bed side of the panel (its floor bridges over it). Robot frame center (x, z); the logo reads from the rear. It is
 # in the front right corner of the flat top (rev 0.24: the camera socket is at its old place). The panel 3MF has a
-# support blocker over the pocket (write_panel_3mf).
-LOGO = dict(file=os.path.join(REF, "logo", "linechef.jpg"), d=26.0, c=(18.3, -20.5), depth=0.8, clr=0.15, min_w=0.6)
+# support blocker over the pocket (write_panel_3mf). The pocket is one 0.2 mm layer deeper than the inlay
+# (room for the glue) and 0.25 mm wider on each side (rev 0.24 at 0.15 was too tight).
+LOGO = dict(file=os.path.join(REF, "logo", "linechef.jpg"), d=26.0, c=(18.3, -20.5), depth=0.8, pocket=1.0, clr=0.25, min_w=0.6)
 
 
 def logo_shapes():
@@ -1372,11 +1373,11 @@ def _logo_place(cs, y0, y1):
 
 def logo_pocket():
     S = logo_shapes()
-    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"]), TOP - LOGO["depth"], TOP + 1)
+    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"]), TOP - LOGO["pocket"], TOP + 1)
 
 
 def build_logo(color):
-    return _logo_place(logo_shapes()[color], TOP - LOGO["depth"], TOP)
+    return _logo_place(logo_shapes()[color], TOP - LOGO["pocket"], TOP - LOGO["pocket"] + LOGO["depth"])
 
 
 def build_panel(with_latch=True):
@@ -2688,7 +2689,7 @@ def print_orient(name, M, also=None):
 def logo_blocker():
     """A support blocker over the logo pocket: in the print the pocket is open to the bed and its floor bridges."""
     S = logo_shapes()
-    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"] + 1.0), TOP - LOGO["depth"] - 0.3, TOP + 0.3)
+    return _logo_place((S["white"] + S["red"]).offset(LOGO["clr"] + 1.0), TOP - LOGO["pocket"] - 0.3, TOP + 0.3)
 
 
 def write_panel_3mf(panel, path):
