@@ -1329,7 +1329,8 @@ def wire_routes():
     # BiBoard: TX2 -> Pi 10 (RXD), RX2 -> Pi 8 (TXD), GND -> Pi 6. Up out of the plugs to the right wall, rearward
     # over the right well, down, into the housings along -X. The order turns over (the rear BiBoard pin goes to the
     # front Pi pin), so each wire runs rearward at its own height.
-    for n, k, col, lab, lvl in ((10, 0, "#f2f2ef", "TX2", 45.6), (8, 1, "#2e9b4f", "RX2", 47.2), (6, 2, "#1d1d1f", "GND", 48.8)):
+    # wire colors from the user photo: black, white, gray in a row on the plug (black taken as GND)
+    for n, k, col, lab, lvl in ((10, 0, "#9ea0a4", "TX2", 45.6), (8, 1, "#f2f2ef", "RX2", 47.2), (6, 2, "#1d1d1f", "GND", 48.8)):
         y, z = pin_yz(n)
         zb = bb_pin_z(k)
         pts = [(BB_X, BB_PLUG["y"][1], zb), (UART_X, lvl, zb), (UART_X, lvl, z), (UART_X, y, z)] + into_pin(n)
@@ -1338,7 +1339,7 @@ def wire_routes():
     # over: DIN is the front wire on the floor), across under the stack in front of the front pegs. DIN goes up into
     # pin 40 at once, LRC up into its splice; G, V and BCLK run rearward in their lanes on the floor of the right well.
     order = ("G", "V", "BCLK", "LRC", "DIN")
-    for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#f0c419", "#e8641b", "#3a6fd8"))):
+    for i, (lab, col) in enumerate(zip(order, ("#1d1d1f", "#d83a34", "#3a6fd8", "#2e9b4f", "#f0c419"))):   # cable colors (user photo)
         zf = -16.8 - 1.75 * i
         xc = AMP_CABLE_X
         start = [(xc, AMP_PLUG_Y[i], AMP_PLUG_Z0), (xc, AMP_PLUG_Y[i], zf), (xc, FLOOR_WIRE, zf)]
@@ -1372,8 +1373,9 @@ def wire_routes():
     xa = MIC_RIB
     xin = EXIT_X + 2.0
     xh = MIC_HOUSING_X[1]
-    for k, t, col, lab in ((0, 39, "#7a7d85", "SEL"), (1, "lrclk", "#e8641b", "LRCL"), (2, 38, "#8e5bd8", "DOUT"),
-                           (3, "bclk", "#f0c419", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
+    # wire colors from the user photo (the pack jumpers on the mic header)
+    for k, t, col, lab in ((0, 39, "#7a4a2a", "SEL"), (1, "lrclk", "#2e9b4f", "LRCL"), (2, 38, "#e8641b", "DOUT"),
+                           (3, "bclk", "#3a6fd8", "BCLK"), (4, 9, "#1d1d1f", "GND"), (5, 1, "#d83a34", "3V")):
         y = MIC_PIN_Y[k]
         pts = [(xh, y, MIC_PIN_Z), (xh + 1.2, y, MIC_PIN_Z), (21.0, y, MIC_PIN_Z), (xa, y, -29.2)]
         if isinstance(t, str):                                  # up the inside of the stack into the top of the sleeve
@@ -1388,7 +1390,7 @@ def wire_routes():
                 pts += [(xa, y, zp - 3.0), (xin, yp + 0.6, zp)] + into_pin(t)
         W.append(("mic", lab, col, pts))
     # The Pi end of each splice: pin 12 (GPIO18, BCLK) and pin 35 (GPIO19, LRCLK), into the bottom of the sleeve.
-    for t, n, col in (("bclk", 12, "#f0c419"), ("lrclk", 35, "#e8641b")):
+    for t, n, col in (("bclk", 12, "#3a6fd8"), ("lrclk", 35, "#2e9b4f")):   # the colors of the signal (not seen in a photo)
         y, z = pin_yz(n)
         sx, sz = SPLICE[t]
         if t == "bclk":         # rearward at Y 36.4, over the G wire, down at X 22.2
@@ -1631,7 +1633,7 @@ def build_models():
     groups["camera"].append(add("wires_camera", "plug_cam", "USB-C plug in the camera", rbox("y", *cam_usb_plug(), 1.0), "#1d1d1f"))
     groups["camera"].append(add("wires_camera", "plug_pi", "micro-USB plug in the Pi", rbox("y", *pi_usb_plug(), 1.0), "#1d1d1f"))
     sleeves = union([mcyl("y", *SPLICE["y"], SPLICE["r"], SPLICE[t][0], SPLICE[t][1], 16) for t in ("bclk", "lrclk")])
-    groups["splice"].append(add("wires_splice", "sleeves", "solder splices (heat shrink)", sleeves, "#2a2a2a"))
+    groups["splice"].append(add("wires_splice", "sleeves", "solder splices (heat shrink)", sleeves, "#f2f2ef"))   # white heat shrink (user photo)
     for g, Ts in groups.items():
         models[f"wires_{g}"] = union(Ts)
     return models, D

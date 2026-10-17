@@ -5,7 +5,7 @@
    "wire": "TX2",
    "length_mm": 99.7,
    "min_bend_r": 2.77,
-   "color": "#f2f2ef",
+   "color": "#9ea0a4",
    "points": [
     [
      -26.0,
@@ -534,7 +534,7 @@
    "wire": "RX2",
    "length_mm": 98.4,
    "min_bend_r": 1.77,
-   "color": "#2e9b4f",
+   "color": "#f2f2ef",
    "points": [
     [
      -26.0,
@@ -2168,7 +2168,7 @@
    "wire": "BCLK",
    "length_mm": 92.0,
    "min_bend_r": 2.0,
-   "color": "#f0c419",
+   "color": "#3a6fd8",
    "points": [
     [
      23.0,
@@ -2434,7 +2434,7 @@
    "wire": "LRC",
    "length_mm": 82.7,
    "min_bend_r": 2.0,
-   "color": "#e8641b",
+   "color": "#2e9b4f",
    "points": [
     [
      23.0,
@@ -2700,7 +2700,7 @@
    "wire": "DIN",
    "length_mm": 75.6,
    "min_bend_r": 2.0,
-   "color": "#3a6fd8",
+   "color": "#f0c419",
    "points": [
     [
      23.0,
@@ -2893,7 +2893,7 @@
    "wire": "SEL",
    "length_mm": 101.1,
    "min_bend_r": 3.46,
-   "color": "#7a7d85",
+   "color": "#7a4a2a",
    "points": [
     [
      17.5,
@@ -3427,7 +3427,7 @@
    "wire": "LRCL",
    "length_mm": 62.0,
    "min_bend_r": 1.81,
-   "color": "#e8641b",
+   "color": "#2e9b4f",
    "points": [
     [
      17.5,
@@ -3765,7 +3765,7 @@
    "wire": "DOUT",
    "length_mm": 98.2,
    "min_bend_r": 1.44,
-   "color": "#8e5bd8",
+   "color": "#e8641b",
    "points": [
     [
      17.5,
@@ -4289,7 +4289,7 @@
    "wire": "BCLK",
    "length_mm": 76.0,
    "min_bend_r": 3.32,
-   "color": "#f0c419",
+   "color": "#3a6fd8",
    "points": [
     [
      17.5,
@@ -6235,7 +6235,7 @@
    "wire": "bclk",
    "length_mm": 17.9,
    "min_bend_r": 2.0,
-   "color": "#f0c419",
+   "color": "#3a6fd8",
    "points": [
     [
      -21.2,
@@ -6428,7 +6428,7 @@
    "wire": "lrclk",
    "length_mm": 7.0,
    "min_bend_r": 2.0,
-   "color": "#e8641b",
+   "color": "#2e9b4f",
    "points": [
     [
      -21.0,

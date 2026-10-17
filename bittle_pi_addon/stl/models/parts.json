@@ -512,7 +512,7 @@
   "sub": "tx2",
   "label": "uart wire TX2",
   "file": "models/parts/wires_uart__tx2.stl",
-  "color": "#f2f2ef",
+  "color": "#9ea0a4",
   "explode": [
    3,
    [
@@ -572,7 +572,7 @@
   "sub": "rx2",
   "label": "uart wire RX2",
   "file": "models/parts/wires_uart__rx2.stl",
-  "color": "#2e9b4f",
+  "color": "#f2f2ef",
   "explode": [
    3,
    [
@@ -772,7 +772,7 @@
   "sub": "bclk",
   "label": "amp wire BCLK",
   "file": "models/parts/wires_amp__bclk.stl",
-  "color": "#f0c419",
+  "color": "#3a6fd8",
   "explode": [
    3,
    [
@@ -792,7 +792,7 @@
   "sub": "lrc",
   "label": "amp wire LRC",
   "file": "models/parts/wires_amp__lrc.stl",
-  "color": "#e8641b",
+  "color": "#2e9b4f",
   "explode": [
    3,
    [
@@ -812,7 +812,7 @@
   "sub": "din",
   "label": "amp wire DIN",
   "file": "models/parts/wires_amp__din.stl",
-  "color": "#3a6fd8",
+  "color": "#f0c419",
   "explode": [
    3,
    [
@@ -852,7 +852,7 @@
   "sub": "sel",
   "label": "mic wire SEL",
   "file": "models/parts/wires_mic__sel.stl",
-  "color": "#7a7d85",
+  "color": "#7a4a2a",
   "explode": [
    3,
    [
@@ -912,7 +912,7 @@
   "sub": "lrcl",
   "label": "mic wire LRCL",
   "file": "models/parts/wires_mic__lrcl.stl",
-  "color": "#e8641b",
+  "color": "#2e9b4f",
   "explode": [
    3,
    [
@@ -952,7 +952,7 @@
   "sub": "dout",
   "label": "mic wire DOUT",
   "file": "models/parts/wires_mic__dout.stl",
-  "color": "#8e5bd8",
+  "color": "#e8641b",
   "explode": [
    3,
    [
@@ -1012,7 +1012,7 @@
   "sub": "bclk",
   "label": "mic wire BCLK",
   "file": "models/parts/wires_mic__bclk.stl",
-  "color": "#f0c419",
+  "color": "#3a6fd8",
   "explode": [
    3,
    [
@@ -1172,7 +1172,7 @@
   "sub": "bclk",
   "label": "splice wire bclk",
   "file": "models/parts/wires_splice__bclk.stl",
-  "color": "#f0c419",
+  "color": "#3a6fd8",
   "explode": [
    3,
    [
@@ -1212,7 +1212,7 @@
   "sub": "lrclk",
   "label": "splice wire lrclk",
   "file": "models/parts/wires_splice__lrclk.stl",
-  "color": "#e8641b",
+  "color": "#2e9b4f",
   "explode": [
    3,
    [
@@ -1352,7 +1352,7 @@
   "sub": "sleeves",
   "label": "solder splices (heat shrink)",
   "file": "models/parts/wires_splice__sleeves.stl",
-  "color": "#2a2a2a",
+  "color": "#f2f2ef",
   "explode": [
    3,
    [
