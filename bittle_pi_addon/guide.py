@@ -446,7 +446,7 @@ def print_parts(n):
     rows = [("pod_body", "Body", "PLA, white", "floor on the bed"), ("pod_panel", "Top panel", "PLA, second color", "upside down: top on the bed"),
             ("pod_button", "Button cap", "PLA, white", "upside down: top on the bed"),
             ("pod_logo_white", "Logo inlay, white", "PLA, white", "top on the bed"), ("pod_logo_red", "Logo inlay, red", "PLA, red", "top on the bed"),
-            ("pod_camera_mount", "Camera mount", "PLA, second color", "on its back end (as in the STL)")]
+            ("pod_camera_mount", "Camera mount", "PLA, second color", "standing up, lugs on the bed (as in the STL)")]
     # the panel: the 3MF has a support blocker over the logo pocket
     tr = "".join(f"<tr><td><b>{t}</b><br><span class='muted'>stl/print/{f}.stl</span></td><td>{m}</td><td>{o}</td>"
                  f"<td class='n'>{docs.pod_mass(f) if f in ('pod_body', 'pod_panel', 'pod_camera_mount') else '< 1'} g</td></tr>"

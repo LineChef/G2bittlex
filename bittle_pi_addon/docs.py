@@ -48,10 +48,10 @@ def content():
     h("1. Parts to print")
     tbl([["File (stl/print/)", "Material", "Orientation", "Mass"],
          ["pod_body.stl", "PLA", "floor on the bed", f"{pod_mass('pod_body')} g"],
-         ["pod_panel.stl", "PLA, second color", "upside down: top on the bed", f"{pod_mass('pod_panel')} g"],
+         ["pod_panel.3mf (Cura) or .stl", "PLA, second color", "upside down: top on the bed", f"{pod_mass('pod_panel')} g"],
          ["pod_button.stl", "PLA, white", "upside down: top on the bed", "0.1 g"],
          ["pod_logo_white.stl, pod_logo_red.stl", "PLA, white and red", "top on the bed (as in the STL)", "0.1 g each"],
-         ["pod_camera_mount.stl", "PLA, second color", "on its back end (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
+         ["pod_camera_mount.stl", "PLA, second color", "standing up, lugs on the bed (as in the STL)", f"{pod_mass('pod_camera_mount')} g"],
          ["cover_pegs_foot.stl (../bittle_platform)", "PLA", "stand on the rear end", "11 g"],
          ["Head off (optional): pod_camera_base_low.stl", "PLA, second color", "upside down (as in the STL)", f"{pod_mass('pod_camera_base_low')} g"],
          ["Head off (optional): pod_camera_cradle_low.stl", "PLA, white", "on its rear edges (as in the STL)", f"{pod_mass('pod_camera_cradle_low')} g"],
@@ -66,7 +66,8 @@ def content():
       "The panel top edge round ends in a 45 deg chamfer at the bed, the port openings have 45 deg chamfers, and the lid hooks and the lugs in the body have 45 deg faces. The latch tongue bends along the layers of the panel. "
       f"Its overhangs ({pr['pod_panel']['overhang_mm2']:.0f} mm²) are short bridges at the button arm and the lid hooks. "
       "For the panel, open stl/print/pod_panel.3mf in Cura and not the STL: it has a support blocker over the logo pocket. "
-      "The camera mount prints on its back end. The rear edges of its pedestal, its seat ring and its lugs are 45 deg, and the hooks over the case are 45 deg wedges. "
+      "The camera mount prints standing up, its lugs on the bed. It is tall on a small foot: keep the brim of the profile. The pedestal rises into a 45 deg cone under the round puck. "
+      f"The hooks over the case have 45 deg undersides; only their {pod.TW['hook_flat']:g} mm catches at the tips are flat ({pr['pod_camera_mount']['overhang_mm2']:.0f} mm²). "
       "The head-off base prints on its side: its dovetail grooves have 1.4 mm ledges. "
       "The cradle of the head-off mount stands on its dovetail tabs: its floor is a 30 mm bridge 1.4 mm over the bed. Keep the seam at the rear.")
 
@@ -198,10 +199,10 @@ def content():
          "Each wire, in its order, goes in from 40 mm above without contact with the parts and wires already in place "
          "(small contacts of 2 to 3 mm³ stay where a wire slides under a loose service loop). Each Dupont housing slides off its pin without contact.",
          "Camera: the case goes into the mount without contact and is clear of the port plugs. Lifted 0.3 mm, its top hits the hooks. "
-         "The brackets spread 4.8 mm as the case goes in (about 0.5 % strain). "
+         "The brackets spread 4.8 mm as the case goes in (about 0.5 % strain, across the layers of the upright print). "
          f"The mount goes down through the keyways and turns {TWF['twist_deg']:g} deg to the lock without contact, except the two bumps on the panel tabs. "
          f"Near the end of the turn the bumps ride {TWF['ride_mm']:g} mm up onto the lugs (about {TWF['ride_N']:g} N each, {TWF['strain_pct']:g} % strain in the tabs), then drop into the notches. "
-         f"In the notches each tab keeps {pod.TW['preload']:g} mm of preload (about {TWF['hold_N']:g} N) on its lug, so the seat ring stays firm on the panel. "
+         f"In the notches each tab keeps {pod.TW['preload']:g} mm of preload (about {TWF['hold_N']:g} N) on its lug. This pulls the cone of the mount down into the 45 deg countersink of the hole, so the mount sits firm and centered. "
          "Lifted 0.3 mm, the lugs hit the panel. Turned 2 deg past the lock, the lugs hit the stops. Turned 180 deg (lens to the rear), the mount fits the same way. "
          "The USB cable touches no part and no other wire. The head turns without contact with the mount and the cable.",
          "Head-off mount: the base, the cradle, the camera and its cable touch no part of the robot without its head. "

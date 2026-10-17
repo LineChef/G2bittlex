@@ -95,8 +95,9 @@ INFO = {
                        attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_white.stl")]),
     "logo_red": dict(text="The red half of the logo inlay: the right ring and the J. 0.8 mm thick, flush with the panel top.",
                      attach="Glue it into its pocket in the front right corner of the panel top.", files=[("Print STL", AF + "pod_logo_red.stl")]),
-    "camera_mount": dict(text="The camera mount: a twist lock in a round socket in the panel, right of center, and two side brackets that hold "
+    "camera_mount": dict(text="The camera mount: a round puck on a twist lock in a round socket in the panel, right of center, and two round side brackets that hold "
                               "the vertical camera case. Two lugs go under the panel top, and a spring tab in the panel clicks a bump into a notch in each lug. "
+                              "A 45 deg cone under the puck sits in the countersink of the hole. It prints standing up. "
                               "It locks the same way with the lens to the rear. "
                               "A hook on each bracket snaps over a top corner of the case, clear of the USB port: the camera cannot fall out when the robot falls. "
                               "For the robot without its head, the two head-off parts hold the camera lower, in front of the body.",

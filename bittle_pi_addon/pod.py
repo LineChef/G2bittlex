@@ -129,7 +129,7 @@ BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 
 # only where the floor is free: not over the keyholes or the amp cable). Plates from the panel stand along its
 # outer face (0.3 mm), with pads over its top edge (0.3 mm): it cannot peel off the PiSugar or jump up.
 BAT_SUPPORT = dict(x=(-5.8, -1.0), z=[(-14.0, -6.0), (6.0, 20.0), (24.0, 30.0)], gap=0.2)
-BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-24.2, -17.2), (23.3, 28.3)], pad_x=3.2, pad_t=1.8,
+BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-24.2, -17.2), (24.8, 29.5)], pad_x=3.2, pad_t=1.8,
                  pads_z=[(1.3, 6.3)])
 PCB_X = (1.5 - 3.96 + STACK_DX, 1.5 + STACK_DX)  # PiSugar PCB back face .. Pi PCB component face (3.96 at the ends, user measurement)
 # The user's Pi has a soldered 2x20 male header with Dupont jumpers on it (photos reference/signal-*.jpeg).
@@ -201,10 +201,14 @@ CAM_LOW = dict(cx=0.0, rear_z=Z0 - 10.0, y0=20.0, floor_t=2.0, plate=dict(x=19.5
 # presses the lug down, so the seat ring sits firm on the panel. The lock is the same with the mount turned 180 deg
 # (lens to the rear). The panel prints top down, so the tabs bend in their layers. The mount prints on its back end:
 # the pedestal, the seat and the lugs have 45 deg rear edges.
-TW = dict(c=(-18.0, 13.0), r_hole=10.55, r_neck=10.2, r_lug=14.0, lug_c=15.0, lug_t=1.2, gap=0.15, clr=0.3, twist=-40.0,
-          ramp=0.5, notch=0.35, preload=0.2, stop_clr=0.15, seat_r=12.2, lift=0.7, base_t=2.0, base_hx=16.9, base_hw=12.5, base_r=3.0,
-          tab=dict(r0=12.6, r1=14.66, free=1.2, root=9.5, slit=0.6, t=1.2), bump=dict(r=(12.65, 13.9), tip=0.2))
-LOW_TOP = TOP + TW["lift"] + TW["base_t"]     # top of the twist base (both mounts)
+TW = dict(c=(-17.6, 13.0), r_hole=9.95, r_neck=9.6, r_lug=13.4, lug_a=18.0, lug_t=1.2, gap=0.15, clr=0.3, twist=-40.0,
+          ramp=0.5, notch=0.35, preload=0.2, stop_clr=0.15, cs=0.45, seat_gap=0.15, R_b=18.0, rim=0.6, pocket=1.0, lip=0.8, lip_in=0.8,
+          hook_flat=1.5, hook_tip=0.6, seat_side=11.2, lift=0.7, base_t=2.0, base_hx=16.9, base_hw=12.5, base_r=3.0,
+          tab=dict(r0=12.0, r1=14.06, free=1.2, root=9.5, slit=0.6, t=1.2), bump=dict(r=(12.05, 13.3), tip=0.2))
+# The cone of the camera mount: parallel to the countersink, seat_gap from it; it starts at the pedestal radius.
+TW_CONE_Y = TOP - TW["cs"] + (TW["r_neck"] - TW["r_hole"] + TW["seat_gap"] * math.sqrt(2))
+TW_TOP = TW_CONE_Y + TW["R_b"] - TW["r_neck"] + TW["rim"]   # top of the round puck
+LOW_TOP = TOP + TW["lift"] + TW["base_t"]     # top of the plate of the head-off base
 CAM["cx"] = TW["c"][0]
 CAM["front_z"] = TW["c"][1] - (CAM["case_z"][1] - CAM["case_z"][0]) / 2
 # USB cable (estimates): USB-C plug body 12.0 x 6.5, 18 long over the case; micro-USB plug body 7.5 x 11 (the Pi
@@ -239,7 +243,7 @@ AMP_X = (-IN_A_LOW + 0.5, -IN_A_LOW + 0.5 + AMP["t"])   # -27.1 .. -25.5, on the
 AMP_CABLE_X = AMP_X[1] + 2.5                    # the amp cable and the speaker lead leave the plugs here
 AMP_Y0 = 28.5
 AMP_Z = (-9.0, -9.0 + AMP["l"])                  # I2S 5-pin PH2.0 at the front end, speaker 2-pin PH2.0 and the screw terminal at the rear end
-AMP_FORKS = [0.0]                                # z0 of the panel fork over the amp top edge (2.5 long); the camera socket is over the rest
+AMP_FORKS = [-1.0]                               # z0 of the panel fork over the amp top edge (2.5 long); the camera socket is over the rest
                                                  # of the amp and the screw terminal is at its rear end (the nubs hold both ends)
 AMP_NUBS = [-5.0, 22.0]                          # z0 of the nubs on the wall over the amp top edge (4 long)
 # Board layout from the NULLLAB photo (u from the I2S end, v from the edge that the photo shows on top, mm). The PH2.0
@@ -896,25 +900,53 @@ def panel_forks():
     return union(out)
 
 
-def port_openings():
-    """Openings for the plug bodies: plug + PORT_CLR, round corners, a 45 deg chamfer at the top face."""
-    out = []
-    for xc, zc, sx, sz in PORT_PLUGS.values():
-        x0, x1 = xc - sx / 2 - PORT_CLR, xc + sx / 2 + PORT_CLR
-        z0, z1 = zc - sz / 2 - PORT_CLR, zc + sz / 2 + PORT_CLR
-        low = prism_y(rrect_pts(x0, x1, z0, z1, PORT_R), PANEL_IN - 1, TOP - PORT_CHAMFER)
-        c = PORT_CHAMFER
-        high = prism_y(rrect_pts(x0 - c, x1 + c, z0 - c, z1 + c, PORT_R + c), TOP, TOP + 1)
-        out.append(m3.Manifold.batch_hull([low, high]))
+def _plan_cs(x0, x1, z0, z1, r):
+    """A rounded rectangle in plan as a CrossSection for _plan_cut."""
+    return _cs([(x, -z) for x, z in rrect_pts(x0, x1, z0, z1, r)])
+
+
+def _plan_cut(cs, y0, y1):
+    """A plan CrossSection extruded from y0 up to y1."""
+    return cs.extrude(y1 - y0).transform(np.array([[1, 0, 0, 0], [0, 0, 1, y0], [0, -1, 0, 0]], float))
+
+
+def _close(cs, r):
+    """Fill the gaps under 2r wide between the regions of cs (and round its inside corners to r)."""
+    return cs.offset(r, m3.JoinType.Round).offset(-r, m3.JoinType.Round)
+
+
+PORT_GROUPS = [("hdmi", "switch"), ("pi_usb", "pi_power", "charge")]   # each group is one opening in the panel
+WEB_MIN = 1.0                      # webs under 2 x this between the openings and the tongue slits are cut away
+
+
+def port_cuts():
+    """The openings in the panel top: one opening for each PORT_GROUPS group (the plug bodies + PORT_CLR and the
+    switch window, joined, inside corners round), a 45 deg chamfer of PORT_CHAMFER at the top face. A web
+    narrower than 2 x WEB_MIN between an opening and the tongue slit is cut away too: the tongue end is then at
+    the edge of the opening."""
+    box = {n: (xc - sx / 2 - PORT_CLR, xc + sx / 2 + PORT_CLR, zc - sz / 2 - PORT_CLR, zc + sz / 2 + PORT_CLR)
+           for n, (xc, zc, sx, sz) in PORT_PLUGS.items()}
+    box["switch"] = (*SW_WIN["x"], *SW_WIN["z"])
+    rect = {n: _plan_cs(*b, PORT_R) for n, b in box.items()}
+    groups = [_close(union_cs([rect[n] for n in g]), WEB_MIN) for g in PORT_GROUPS]
+    B = BTN
+    (x0, x1), (z0, z1), w = B["x"], B["z"], B["slit"]
+    slit = _plan_cs(x0 - w, x1 + w, z0 - w, z1 - 0.01, 0.0) - _plan_cs(x0, x1, z0, z1 + 1, 0.0)
+    ports = union_cs(groups)
+    through = _close(ports + slit, WEB_MIN)
+    c = PORT_CHAMFER
+    out = [_plan_cut(through, PANEL_IN - 1, TOP + 1)]
+    for x0, x1, z0, z1 in box.values():                    # a 45 deg chamfer on each member (a hull: a true 45 deg face)
+        out.append(m3.Manifold.batch_hull([_plan_cut(_plan_cs(x0, x1, z0, z1, PORT_R), TOP - c - 0.01, TOP - c),
+                                           _plan_cut(_plan_cs(x0 - c, x1 + c, z0 - c, z1 + c, PORT_R + c), TOP, TOP + 1)]))
     return union(out)
 
 
-def switch_window():
-    """The window over the switch lever, shaped as the port openings."""
-    (x0, x1), (z0, z1), c = SW_WIN["x"], SW_WIN["z"], PORT_CHAMFER
-    low = prism_y(rrect_pts(x0, x1, z0, z1, PORT_R), PANEL_IN - 1, TOP - c)
-    high = prism_y(rrect_pts(x0 - c, x1 + c, z0 - c, z1 + c, PORT_R + c), TOP, TOP + 1)
-    return m3.Manifold.batch_hull([low, high])
+def union_cs(cs):
+    out = cs[0]
+    for c in cs[1:]:
+        out = out + c
+    return out
 
 
 def prism_zp(pts_xy, z0, z1):
@@ -990,7 +1022,7 @@ def cam_box(low=False):
     if low:
         L = CAM_LOW
         return (L["cx"] - hx, L["cx"] + hx, L["y0"], L["y0"] + h, L["rear_z"] - d, L["rear_z"])
-    y0 = LOW_TOP + 0.05
+    y0 = TW_TOP - TW["pocket"] + 0.05
     return (C["cx"] - hx, C["cx"] + hx, y0, y0 + h, C["front_z"], C["front_z"] + d)
 
 
@@ -1086,13 +1118,18 @@ def _vdisc(r):
     return m3.CrossSection.circle(r, 96) ^ tw_cs([(-R, -R), (R, -R), (R, r - R), (0.0, r), (-R, r - R)])
 
 
+def _sector(r0, r1, a0, a1, n=48):
+    """A ring sector in the mount frame from angle a0 to a1 (deg, from +Z toward +X), as a tw_cs CrossSection."""
+    t = np.radians(np.linspace(a0, a1, n))
+    return tw_cs([(r1 * math.sin(x), r1 * math.cos(x)) for x in t] + [(r0 * math.sin(x), r0 * math.cos(x)) for x in t[::-1]])
+
+
 def tw_lug_cs(grow=0.0):
-    """The lug on the +X side of the pedestal: out to r_lug, both sides 45 deg (it prints on its back end).
-    grow > 0: the outline grown that much (keyways and the space it sweeps)."""
+    """The lug on the +X side of the pedestal: a ring sector out to r_lug, +-lug_a. grow > 0: the outline grown that
+    much (keyways and the space it sweeps)."""
     T = TW
-    c = T["lug_c"]
-    cs = m3.CrossSection.circle(T["r_lug"], 96) ^ tw_cs([(7.0, c - 7.0), (7.0, -(c - 7.0)), (c, 0.0)])
-    return cs.offset(grow) if grow else cs
+    cs = _sector(T["r_neck"] - 0.5, T["r_lug"], 90.0 - T["lug_a"], 90.0 + T["lug_a"])
+    return cs.offset(grow, m3.JoinType.Round) if grow else cs
 
 
 def tw_y():
@@ -1101,14 +1138,26 @@ def tw_y():
     return yt - TW["lug_t"], yt
 
 
-def tw_core(v_rot=0.0):
-    """The pedestal, the seat ring and the two lugs. v_rot: the side of the 45 deg V on the pedestal and the seat (the
-    lowest side in the print), 0 = rear (+Z), 270 = -X."""
+def _tw_revolve(pts_ry):
+    """A solid of revolution about the twist axis from a profile [(r, y)]."""
+    xc, zc = TW["c"]
+    M = m3.Manifold.revolve(m3.CrossSection([np.asarray(pts_ry, float)], m3.FillRule.NonZero), 144)
+    return M.transform(np.array([[1, 0, 0, xc], [0, 0, 1, 0], [0, -1, 0, zc]], float))
+
+
+def tw_core(style="upright"):
+    """The pedestal and the two lugs, and the seat. upright (the camera mount, it prints base down): a round pedestal,
+    a 45 deg cone that sits in the countersink of the hole and flares out to the round puck (radius R_b, top TW_TOP).
+    side (the head-off base, it prints on its -X side): the pedestal with a 45 deg V on its -X side and a flat seat
+    ring on the panel top."""
     T = TW
     yl0, yl1 = tw_y()
-    yb = TOP + T["lift"]
-    m = tw_place(_vdisc(T["r_neck"]).rotate(v_rot), yl0, TOP + 0.01)    # pedestal
-    m += tw_place(_vdisc(T["seat_r"]).rotate(v_rot), TOP, yb + 0.01)    # seat ring on the panel top
+    if style == "upright":
+        rn, R = T["r_neck"], T["R_b"]
+        m = _tw_revolve([(0.0, yl0), (rn, yl0), (rn, TW_CONE_Y), (R, TW_CONE_Y + R - rn), (R, TW_TOP), (0.0, TW_TOP)])
+    else:
+        m = tw_place(_vdisc(T["r_neck"]).rotate(270.0), yl0, TOP + 0.01)
+        m += tw_place(_vdisc(T["seat_side"]).rotate(270.0), TOP, TOP + T["lift"] + 0.01)
     ch = T["ramp"]                                                     # the top edges of the lugs: 45 deg ramps for the bumps
     lug = m3.Manifold.batch_hull([tw_place(tw_lug_cs(), yl0, yl1 - ch), tw_place(tw_lug_cs(-ch), yl1 - 0.01, yl1)])
     B = T["bump"]
@@ -1120,16 +1169,46 @@ def tw_core(v_rot=0.0):
     return m + lug + tw_turn(lug, 180.0)
 
 
+def _round_brackets():
+    """Two side brackets on the puck, their outer faces on the puck circle: a lip at each corner of the case and a
+    hook over each top corner (clear of the USB port). The brackets spread to let the case in from the top; the hooks
+    snap over its top face. Each hook has a 45 deg underside and a flat catch of hook_flat at its tip (it prints
+    standing up)."""
+    C, Br, T = CAM, CAM["brk"], TW
+    x0, x1, y0, y1, z0, z1 = cam_box()
+    xc, zc = T["c"]
+    disc = m3.CrossSection.circle(T["R_b"], 144).translate([xc, -zc])
+    zf, zb = z0 - Br["clr"], z1 + Br["clr"]
+    lip = T["lip"]
+    yt = y1 + Br["gap"]                                   # underside of the hooks, over the top face of the case
+    ty = cam_to_body()
+    yb = TW_TOP - 0.01
+    out = []
+    for sx, xi in ((-1, x0 - Br["clr"]), (1, x1 + Br["clr"])):
+        X = lambda a, b: sorted((a, b))
+        xe = ty[0, 1] * (C["top_y"][1] if sx < 0 else C["top_y"][0]) + ty[0, 3]   # edge of the top face
+        tip = xe - sx * Br["hook"]
+        L = abs(xi - tip)
+        f = min(T["hook_flat"], L)
+        wall = _plan_cs(*X(xi, xi + sx * 6.0), zf - lip, zb + lip, 0.0) ^ disc
+        out.append(_plan_cut(wall, yb, yt + L + T["hook_tip"]))
+        for za, zb_ in ((zf - lip, zf), (zb, zb + lip)):   # lips at the corners of the case
+            out.append(_plan_cut(_plan_cs(*X(xi - sx * T["lip_in"], xi + sx * 0.01), za, zb_, 0.0) ^ disc, yb, y0 + Br["lip_h"]))
+        e = T["hook_tip"]                                 # a vertical face at the tip (no knife edge)
+        hk = [(xi + sx * 0.01, yt - (L - f)), (xi - sx * (L - f), yt), (tip, yt), (tip, yt + e), (xi + sx * 0.01, yt + L + e)]
+        out.append(prism_zp(hk if sx < 0 else hk[::-1], zf + 1.0, zb + lip) ^ _plan_cut(disc, 0.0, 200.0))
+    return union(out)
+
+
 def build_camera_mount():
-    """The twist mount: a pedestal through the round hole in the panel with two lugs under the panel top, a seat ring
-    on the panel, the base 0.7 over the panel, two side brackets for the case. The lock is the same when the mount
-    is turned 180 deg (lens to the rear)."""
-    T = TW
-    yb = TOP + T["lift"]
-    hx, hw = T["base_hx"], T["base_hw"]
-    base = tw_cs(rrect_pts(-hx, hx, -hw, hw, T["base_r"])) + tw_cs([(-hx, 0.0), (hx, 0.0), (hx, hw), (-hx, hw)])   # square rear corners: on the bed
-    m = tw_core() + tw_place(base, yb, yb + T["base_t"])
-    return m + _case_brackets(y_floor=yb + 0.01, z_end=T["c"][1] + hw, walls_to_end=True)   # the walls go back to the bed
+    """The twist mount: a pedestal through the round hole in the panel with two lugs under the panel top, a 45 deg
+    cone in the countersink of the hole that flares out to a round puck, a pocket for the case in the puck top, two
+    round side brackets for the case. The lock is the same when the mount is turned 180 deg (lens to the rear)."""
+    T, Br = TW, CAM["brk"]
+    x0, x1, y0, y1, z0, z1 = cam_box()
+    c = Br["clr"]
+    pocket = mbox(x0 - c, x1 + c, TW_TOP - T["pocket"], TW_TOP + 1.0, z0 - c, z1 + c)
+    return (tw_core("upright") - pocket) + _round_brackets()
 
 
 def tw_tab(sign=1.0):
@@ -1149,15 +1228,18 @@ def _tw_box(u0, u1, w0, w1, y0, y1):
 
 
 def tw_socket_cuts():
-    """The holes in the panel: the round hole, two keyways, the U slits of the two tabs, the thinning under the tabs."""
+    """The holes in the panel: the round hole with a 45 deg countersink, two keyways, the U slits of the two tabs, the
+    thinning under the tabs."""
     T = TW
-    out = [tw_place(m3.CrossSection.circle(T["r_hole"], 96), PANEL_IN - 1, TOP + 1)]
     k = tw_lug_cs(T["clr"])
-    out.append(tw_place(k + k.rotate(180.0), PANEL_IN - 1, TOP + 1, T["twist"]))
     tab, slits = tw_tab()
-    one = union([_tw_box(*b, PANEL_IN - 1, TOP + 1) for b in slits] + [_tw_box(*tab, PANEL_IN - 1, TOP - T["tab"]["t"])])
-    out += [one, tw_turn(one, 180.0)]
-    return union(out)
+    sl = union_cs([tw_cs([(u0, w0), (u1, w0), (u1, w1), (u0, w1)]) for u0, u1, w0, w1 in slits])
+    cs = m3.CrossSection.circle(T["r_hole"], 96) + (k + k.rotate(180.0)).rotate(T["twist"]) + sl + sl.rotate(180.0)
+    out = [tw_place(_close(cs, 0.6), PANEL_IN - 1, TOP + 1)]           # no web under 1.2 mm between the cuts
+    out.append(m3.Manifold.batch_hull([tw_place(m3.CrossSection.circle(T["r_hole"], 144), TOP - T["cs"], TOP - T["cs"] + 0.01),
+                                       tw_place(m3.CrossSection.circle(T["r_hole"] + T["cs"] + 1.0, 144), TOP + 1.0, TOP + 1.01)]))   # 45 deg countersink: the cone seat
+    thin = _tw_box(*tab, PANEL_IN - 1, TOP - T["tab"]["t"])
+    return union(out + [thin, tw_turn(thin, 180.0)])
 
 
 def tw_socket_parts(which="all"):
@@ -1169,10 +1251,10 @@ def tw_socket_parts(which="all"):
     h = ytab - ytip
     bump = prism_x([(ytab + 0.01, -(h + B["tip"] / 2)), (ytab + 0.01, h + B["tip"] / 2), (ytip, B["tip"] / 2), (ytip, -B["tip"] / 2)],
                    T["c"][0] + B["r"][0], T["c"][0] + B["r"][1]).translate([0, 0, T["c"][1]])
-    c = T["lug_c"] + T["stop_clr"]
-    ring = m3.CrossSection.circle(T["tab"]["r0"] - T["tab"]["slit"], 96) - m3.CrossSection.circle(T["r_hole"], 96)
-    k = 1.0 if T["twist"] > 0 else -1.0                              # the stop is on the far side from the keyway
-    stop = tw_place(ring ^ tw_cs([(c - 8.0, 8.0 * k), (20.0, 8.0 * k), (20.0, (c - 20.0) * k)]), yl0 - 0.3, PANEL_IN + 0.01)
+    r1 = T["tab"]["r0"] - T["tab"]["slit"]
+    k = 1.0 if T["twist"] < 0 else -1.0                              # the lug turns this way (in angle) to the lock
+    a0 = 90.0 + k * (T["lug_a"] + math.degrees(T["stop_clr"] / T["r_hole"]))   # past the leading edge of the lug
+    stop = tw_place(_sector(T["r_hole"], r1, *sorted((a0, a0 + k * 16.0))), yl0 - 0.3, PANEL_IN + 0.01)
     one = dict(all=bump + stop, bumps=bump, stops=stop)[which]
     return one + tw_turn(one, 180.0)
 
@@ -1220,9 +1302,9 @@ def build_camera_base_low():
     P = L["plate"]
     yb, yt = TOP + T["lift"], LOW_TOP
     xc, zc = T["c"]
-    xbed = xc - T["r_lug"] + 0.05
+    xbed = xc - T["r_lug"] * math.cos(math.radians(T["lug_a"])) + 0.05    # the chord of the -X lug
     hw = T["base_hw"]
-    m = tw_core(270.0)
+    m = tw_core("side")
     m += prism_y(rrect_pts(xbed - 2.0, xc + T["base_hx"], zc - hw, zc + hw, T["base_r"]), yb, yt)      # over the socket
     m += prism_y(rrect_pts(xbed - 2.0, L["arm_x1"], ZF_IN, zc, T["base_r"]), yb, yt)                     # the arm to the front
     m += _chin(xbed, P["x"], P["z"][0], yt)
@@ -1299,7 +1381,7 @@ def build_logo(color):
 
 def build_panel(with_latch=True):
     P = panel_outer() - prism_y(plan(WALL), SEAM - 1, PANEL_IN)
-    P -= port_openings() + switch_window() + button_cuts() + keycap_hole() + tw_socket_cuts() + logo_pocket()
+    P -= port_cuts() + button_cuts() + keycap_hole() + tw_socket_cuts() + logo_pocket()
     P += (panel_forks() + button_arm() + battery_clamp()) - lid_keepout() - tw_keepout()
     P += tw_socket_parts()
     P += lid_hooks()
@@ -2400,6 +2482,8 @@ def check(parts, models, robot):
                  min(vol(tw_turn(Mt, T["twist"] * f), bumps) for f in (0.12, 0.06))))
     rows.append(("camera mount locked: bumps in the notches (preload, must touch)", "bumps", vol(Mt, bumps)))
     rows.append(("camera mount turned 180 deg (lens to the rear)", "panel without the bumps", vol(tw_turn(Mt, 180.0), Pn - bumps)))
+    rows.append(("camera mount pushed down 0.3mm (must touch: the cone in the countersink)", "panel without the bumps",
+                 vol(Mt.translate([0, -0.3, 0]), Pn - bumps - tw_socket_parts("stops"))))
     rows.append(("camera mount turned 2 deg past the lock (must touch the stops)", "pod_panel", vol(tw_turn(Mt, -2.0 * math.copysign(1, T["twist"])), Pn - bumps)))
     inside_c = union([M for k, M in models.items() if k not in ("camera", "wires_camera")])
     rows.append(("camera mount over the turn", "body + parts", max(vol(tw_turn(Mt, T["twist"] * f), parts["pod_body"] + inside_c) for f in (1.0, 0.5, 0.0))))
@@ -2581,7 +2665,9 @@ def print_orient(name, M, also=None):
     move (returned as a second value)."""
     if name == "pod_body":
         R = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)        # floor down
-    elif name in ("pod_camera_mount", "pod_camera_cradle_low"):
+    elif name == "pod_camera_mount":
+        R = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)        # standing up: the lugs on the bed
+    elif name == "pod_camera_cradle_low":
         R = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, -1]], float)       # on its back end: prisms along Z, the front lips last
     elif name == "pod_camera_base_low":
         R = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]], float)        # on its side, robot +X (the design -X lug) on the bed
