@@ -36,7 +36,10 @@ front-left edge lets the head camera plug out.
 
 ## Example: the Pi add-on
 
-![The Pi add-on on the platform](bittle_pi_addon/doc/02_addon.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="bittle_pi_addon/doc/iso/hero-dark.png">
+  <img src="bittle_pi_addon/doc/iso/hero-light.png" alt="The Pi add-on on the robot" width="320">
+</picture>
 
 A Raspberry Pi with a battery, a speaker and a microphone, in one rounded box
 that clicks onto the platform.
@@ -46,11 +49,14 @@ that clicks onto the platform.
 - SPH0645 I2S microphone on the right side near the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
 - Serial link to the BiBoard: the Dupont plugs go onto the header at the front left, and all the wires stay inside
-- A slide-on top panel with openings shaped to the plugs, a window over the power switch and a large button
-- The Petoi AI Vision Module, vertical on a clip-on mount at the front, or lower in front of the body when the head is off
+- A slide-on top panel with openings shaped to the plugs and the power switch, a large button and a logo inlay
+- The Petoi AI Vision Module on a round twist-lock mount in the panel top. Turn it end for end to point the lens to the rear. A lower mount in front of the body is for use with the head off
 - All printed parts print without supports
 
-![Inside the Pi add-on](bittle_pi_addon/doc/06_open.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="bittle_pi_addon/doc/iso/open-dark.png">
+  <img src="bittle_pi_addon/doc/iso/open-light.png" alt="Inside the Pi add-on" width="360">
+</picture>
 
 ## Make your own add-on
 
@@ -72,6 +78,11 @@ that clicks onto the platform.
 The build scripts use [build123d](https://github.com/gumyr/build123d) and
 [manifold3d](https://github.com/elalish/manifold). The website build needs
 only Python.
+
+## Related projects
+
+- [LineChef/BittleX](https://github.com/LineChef/BittleX): the Bittle X robot project by LineChef. The logo on the panel top is the LineChef avatar.
+- [LineChef/react-bittlex](https://github.com/LineChef/react-bittlex): a documentation website for the BittleX project.
 
 ## License
 
