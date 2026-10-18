@@ -39,7 +39,7 @@ PARTS = [
      for k in ("lf", "rf", "lr", "rr") for p, n, c in (("thigh", "Thigh", "#f2a71c"), ("shank", "Shank", "#2c2d31"))]
 
 # Electronics and wires: colored sub-parts from pod.py (stl/models/parts.json). ALIAS: pod.py model -> viewer id.
-ALIAS = dict(camera="camera", pizero="pizero", pisugar2="pisugar", battery="battery", sd_card="sd_card", pi_plugs="pi_plugs", amp_ns4168="amp",
+ALIAS = dict(camera="camera", pizero="pizero", pisugar_s="pisugar", battery="battery", sd_card="sd_card", pi_plugs="pi_plugs", amp_ns4168="amp",
              speaker="speaker", mic_sph0645="mic", biboard_header="header", biboard_plug="bb_plug")
 # Exploded view (pod.py explode_plan): a stage (reverse build order), a lift out of the open top, then a move aside.
 EXPLODE = json.load(open(os.path.join(ROOT, "stl", "explode.json")))
@@ -56,7 +56,7 @@ for _d in json.load(open(os.path.join(ROOT, "stl", "models", "parts.json"))):
 # Line-art finish of each part (web/lineart.js): printed, bought, dark (the robot) or clear.
 DARK_MODELS = ("camera", "wires_camera", "biboard_header")
 # One tag name for all sub-parts of a board (the tags in the step views)
-TAGS = dict(pizero="Pi + PiSugar 2", pisugar2="Pi + PiSugar 2", battery="Pi + PiSugar 2", sd_card="Pi + PiSugar 2", stack_screws="Pi + PiSugar 2",
+TAGS = dict(pizero="Pi + PiSugar S", pisugar_s="Pi + PiSugar S", battery="Pi + PiSugar S", sd_card="Pi + PiSugar S", stack_screws="Pi + PiSugar S",
             pi_plugs="Pi header plugs", amp_ns4168="Amp", speaker="Speaker", mic_sph0645="Mic", biboard_header="BiBoard header",
             camera="Camera", wires_camera="USB cable", wires_speaker="Speaker lead", wires_splice="Splices", wires_amp="Amp cable",
             panel="Top panel", body="Body", cover="Platform cover", button="Button cap", logo_white="Logo inlays", logo_red="Logo inlays",
@@ -138,11 +138,12 @@ INFO = {
                         "A USB cable goes from the USB-C port in its top to the Pi data USB port.",
                    attach="Push it down between the brackets of the camera mount until the hooks click over its top, lens forward. Then plug in the USB cable."),
     "pizero": dict(text="Raspberry Pi Zero 2 W, on its long edge: ports up, GPIO header down to the left (toward the BiBoard), SD card to the rear. Model: PiSugar (GPL-3.0).",
-                   attach="With the PiSugar 2 it slides down into the groove of the two end posts. The screw heads go down channels in the posts."),
-    "pisugar": dict(text="PiSugar 2 battery board. Its charge port, button and switch are at the top. Model: PiSugar (GPL-3.0).",
+                   attach="With the PiSugar S it slides down into the groove of the two end posts. The screw heads go down channels in the posts."),
+    "pisugar": dict(text="PiSugar S battery board. Its USB-C charge port, button and power switch are at the top. Its AUTO switch is under the cell. "
+                         "Fit model drawn from the PiSugar PCB drawing (part heights estimated).",
                     attach="It is screwed to the Pi. The two boards go into the end grooves together."),
-    "battery": dict(text="The 1200 mAh cell of the PiSugar 2, on the right side of the stack.",
-                    attach="It is fixed to the PiSugar 2. It stands 1.5 mm above the peg heads."),
+    "battery": dict(text="The 1200 mAh cell of the PiSugar S, on the right side of the stack.",
+                    attach="It sits on the PiSugar S, on two metal discs. It stands 1.5 mm above the peg heads."),
     "pi_plugs": dict(text="The soldered 2x20 Pi header with Dupont housings on the 12 pins in use (pin map: the wiring blueprint).",
                      attach="Push the jumpers onto the Pi header before the stack goes in."),
     "amp": dict(text="NULLLAB NS4168 I2S amp, on edge along the right wall, upright, its screw terminal at the top. Its parts face the battery.",
@@ -246,7 +247,7 @@ STEPS = [
               "Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs and set it with a dab of glue. "
               "Let the flat amp cable hang out of the top: it goes in after the BiBoard jumpers."),
     dict(title="Pi stack", view="build", show=STACK, start={k: [0, 45, 0] for k in STACK},
-         text="Push the Pi + PiSugar 2 stack down into the end grooves: ports up, header down to the left, SD card to the rear. "
+         text="Set the PiSugar AUTO switch (it is under the cell). Push the Pi + PiSugar S stack down into the end grooves: ports up, header down to the left, SD card to the rear. "
               "Then plug the wires one at a time, as the next steps show."),
 ] + WIRE_STEPS + [
     dict(title="Button cap and logo into the panel", view="build", show=["panel", "button", "logo_white", "logo_red"],
@@ -335,7 +336,7 @@ PACKAGES = [
          extra=["interface.json"]),
     dict(key="addon", name="Bittle X Pi Add-on v0.24", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.24.zip",
          pdf="bittle_pi_addon_guide.pdf", img="doc/iso/hero-light.png", img2="doc/iso/open-light.png",
-         text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
+         text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar S (1200 mAh), NS4168 amp with a 3 W speaker, "
               "an SPH0645 mic and the Petoi AI Vision Module, in a rounded box with a slide-on top panel. "
               "All printed parts print without supports. Two optional parts hold the camera lower when the robot has no head.",
          extra=[]),
@@ -474,7 +475,7 @@ footer a { color:inherit; }
 {{CARDS}}
 <footer>Updated {{DATE}}. Code: MIT. Designs and documents: CC BY 4.0, Jeremy Collins.
 The cover, side shoulder and front plate models are by <a href="https://github.com/PetoiCamp/NonCodeFiles">Petoi</a>, published without a stated license.
-The Pi Zero and PiSugar 2 fit models are by <a href="https://github.com/PiSugar/PiSugar">PiSugar</a> (GPL-3.0).
+The Pi Zero fit model is by <a href="https://github.com/PiSugar/PiSugar">PiSugar</a> (GPL-3.0).
 See <a href="LICENSE.md">LICENSE.md</a> and <a href="ATTRIBUTION.md">ATTRIBUTION.md</a>.</footer>
 </main>
 </body>

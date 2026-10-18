@@ -1,6 +1,6 @@
 # Bittle X Pi Add-on v0.24 - Build Guide
 
-Version 0.24, 2026-10-18. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
+Version 0.24, 2026-10-18. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar S (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
 
 ![The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.](doc/iso/hero-light.png)
 
@@ -27,7 +27,7 @@ Print quality. The body and panel walls are 2.0 mm: with the offsets of the body
 
 | Part | Place |
 |---|---|
-| Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh | On the long edge over the robot center, 4.9 mm left of the center line so the battery is near it: ports and PiSugar controls up, GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated). |
+| Raspberry Pi Zero 2 W + PiSugar S, 1200 mAh | On the long edge over the robot center, 4.9 mm left of the center line so the battery is near it: ports and PiSugar controls up, GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated). |
 | Dupont jumpers | 3 female-to-male jumpers to the BiBoard (female on the Pi pin, male into the BiBoard socket). 6 female-female jumpers to the mic (2 of them through the splices): 10 cm, but 15 cm for GND and 3V. |
 | NULLLAB NS4168 I2S amp | 38.4 x 22.4 mm board, on edge along the right wall, parts to the inside, in a slot bar on the floor, upright with its screw terminal at the top. Two nubs hold its top edge. Its PH2.0 connectors are side entry: the I2S cable plugs in at the front end, the speaker at the rear end. |
 | NULLLAB 3 W 4 ohm speaker | At the rear, sound to the grille in the rear face. Body 27.9 wide, 15.2 deep. Two tapered wings (44 across, 3 thick) at the middle of the body depth stand in two side grooves. |
@@ -35,7 +35,7 @@ Print quality. The body and panel walls are 2.0 mm: with the offsets of the body
 | Petoi AI Vision Module | In its Petoi case, vertical on the camera mount at the front of the panel, lens forward over the head, USB port at the top. It stands 17.6 mm right of the center line: it is then clear of the PiSugar charge port and the Pi power port. Two side brackets hold the case; a hook on each snaps over a top corner of the case, clear of the USB port. The case cannot lift out. |
 | USB cable, USB-C to micro-USB | From the USB-C port in the top of the camera, an arch rearward over the panel, down into the Pi data USB port. Modeled length 120 mm between the plugs. |
 
-Balance. The add-on weighs 135 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 9.0 mm behind the robot center and 2.9 mm right of the center line, 27 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
+Balance. The add-on weighs 135 g with the camera (weighed parts; printed parts at 50 % fill). Its center of mass is 9.3 mm behind the robot center and 2.9 mm right of the center line, 27 mm above the cover top. With the add-on, the center of mass of the robot is about 4 mm behind the midpoint of the front and rear paws (110 mm apart), and on the center line. The side is the limit when the robot tips: keep heavy parts low. Put your own masses in MASS_G in pod.py and run pod.py again.
 
 
 ## 3. Assembly
@@ -47,7 +47,7 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 3. Push the speaker down into the two side grooves at the rear, body to the rear. ([viewer step 5](https://beetlebugorg.github.io/bittlex/viewer/#step=5))
 4. Plug the six mic jumpers onto the mic header: 15 cm jumpers on GND and 3V. Drop the mic into the slots in the post and the ledge on the right wall near the front, port to the wall, header at the front. The panel holds it later. ([viewer step 6](https://beetlebugorg.github.io/bittlex/viewer/#step=6))
 5. Plug the flat amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Let the amp cable hang out of the top. ([viewer step 7](https://beetlebugorg.github.io/bittlex/viewer/#step=7))
-6. Push the Pi + PiSugar 2 stack down into the end grooves. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
+6. Set the PiSugar AUTO switch before the cell goes on the board: it is under the cell. Push the Pi + PiSugar S stack down into the end grooves. ([viewer step 8](https://beetlebugorg.github.io/bittlex/viewer/#step=8))
 7. Plug the wires one at a time, in the order of section 5: the splices, the Pi ends of the BiBoard jumpers, the amp cable, the mic jumpers, then the BiBoard ends. The viewer has one step for each wire. ([viewer step 9](https://beetlebugorg.github.io/bittlex/viewer/#step=9)) ([viewer step 19](https://beetlebugorg.github.io/bittlex/viewer/#step=19))
 8. Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. Glue the two logo inlays into the pocket in the front right corner of the panel top: the white ring and M at the left, the red ring and J at the right. ([viewer step 20](https://beetlebugorg.github.io/bittlex/viewer/#step=20))
 9. Put the panel down 5 mm behind its place, then slide it forward until the latch clicks (about 5.7 N). The hooks under the panel go under the lugs in the walls. ([viewer step 21](https://beetlebugorg.github.io/bittlex/viewer/#step=21))
@@ -65,7 +65,7 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 
 ![Step 5 of the build guide: Amp and speaker lead. The parts of the step are green.](doc/iso/step05-light.png)
 
-![Step 6 of the build guide: Pi + PiSugar 2 stack. The parts of the step are green.](doc/iso/step06-light.png)
+![Step 6 of the build guide: Pi + PiSugar S stack. The parts of the step are green.](doc/iso/step06-light.png)
 
 ![Step 7 of the build guide: Splices (BCLK and LRCLK). The parts of the step are green.](doc/iso/step07-light.png)
 
@@ -106,7 +106,7 @@ Head off (optional). Without the Petoi head, the camera can stand lower, in fron
 | Amp DIN / mic DOUT | 40 / 38 | GPIO21 / GPIO20 |
 | Speaker | - | amp 2-pin PH2.0 at the rear end of the amp |
 
-Pin map from the wiring blueprint (reference/g2-wiring-blueprint.html; that blueprint wins if they differ). PiSugar 2 touches pins 2, 4, 5 and 6 from below with its pogo pins. Pins 11, 17-20 and 22-24 are kept free for a screen.
+Pin map from the wiring blueprint (reference/g2-wiring-blueprint.html; that blueprint wins if they differ). PiSugar S touches pins 2, 4, 5, 6 and 9 from below with its pogo pins. It uses pin 5 (SCL) for its button and auto start: with its AUTO switch ON, I2C cannot be used. Pins 11, 17-20 and 22-24 are kept free for a screen.
 
 
 ## 5. Cable routing
@@ -166,7 +166,7 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 6. Switch and button: the switch lever is under the window over its full travel. The button arm is 0.2 mm over the button; pressed 0.6 mm, it pushes the button.
 7. Robot: the head turns from -85 to 85 deg without contact. 17 front and 36 rear leg poses (of 504) touch the add-on, only when a thigh swings up over the back. The Petoi tail is 3.2 mm under the add-on, and 0.05 mm at the drop-on place.
 
-Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. The camera hooks catch the top of the case of the STL. To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.
+Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. PiSugar has no 3D model of the PiSugar S: its fit model is drawn from the PCB drawing in the PiSugar docs. The part heights, the cell gap (3.3 mm) and the cell size (taken from the PiSugar 2 cell) are estimates. The camera hooks catch the top of the case of the STL. To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.
 
 
 ## 7. Files and license
@@ -179,5 +179,5 @@ Open items: the BiBoard header height is an estimate (measure it). The speaker s
 | stl/installed/, stl/models/ | the parts and the electronics in the robot frame |
 | pod.py, motion.py, render.py, docs.py | dimensions, build and checks; robot motion; pictures; this guide |
 
-The printed parts, the drawings and this guide are CC BY 4.0, and the code is MIT (Jeremy Collins). The Pi Zero and PiSugar 2 fit models are from github.com/PiSugar/PiSugar (GPL-3.0). The Petoi parts are from github.com/PetoiCamp/NonCodeFiles, without a stated license. LICENSE.md and ATTRIBUTION.md in the repository give the details.
+The printed parts, the drawings and this guide are CC BY 4.0, and the code is MIT (Jeremy Collins). The Pi Zero fit model is from github.com/PiSugar/PiSugar (GPL-3.0). The Petoi parts are from github.com/PetoiCamp/NonCodeFiles, without a stated license. LICENSE.md and ATTRIBUTION.md in the repository give the details.
 

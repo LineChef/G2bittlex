@@ -58,7 +58,7 @@
   [
    "pod_panel",
    "pod_button",
-   0.0
+   -1.734723475976807e-18
   ],
   [
    "pod_panel",
@@ -112,7 +112,7 @@
   ],
   [
    "cover_pegs",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -202,7 +202,7 @@
   ],
   [
    "pod_body",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -292,7 +292,7 @@
   ],
   [
    "pod_panel",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -382,7 +382,7 @@
   ],
   [
    "pod_button",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -472,7 +472,7 @@
   ],
   [
    "pod_camera_mount",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -562,7 +562,7 @@
   ],
   [
    "pod_logo_white",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -652,7 +652,7 @@
   ],
   [
    "pod_logo_red",
-   "pisugar2",
+   "pisugar_s",
    0.0
   ],
   [
@@ -1022,8 +1022,8 @@
   ],
   [
    "pizero",
-   "pisugar2",
-   0.013321116335049713
+   "pisugar_s",
+   0.0
   ],
   [
    "pizero",
@@ -1101,77 +1101,77 @@
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "battery",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "sd_card",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "pi_plugs",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "camera",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "biboard_header",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "biboard_plug",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "speaker",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "amp_ns4168",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "mic_sph0645",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_uart",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_amp",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_mic",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_splice",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_speaker",
    0.0
   ],
   [
-   "pisugar2",
+   "pisugar_s",
    "wires_camera",
    0.0
   ],
@@ -2288,12 +2288,12 @@
   [
    "panel down, LID_SLIDE behind (max over 12 mm)",
    "body + parts",
-   0.0
+   0.0023498344618013423
   ],
   [
    "panel slide forward (max over LID_SLIDE)",
    "body + parts",
-   1.1064664809379288e-12
+   0.0023498344617907774
   ],
   [
    "latch hook, panel slid back 0.3mm (must touch)",
@@ -2323,12 +2323,12 @@
   [
    "battery moved 0.5mm left (must touch)",
    "pod_panel",
-   58.49999999999976
+   58.499999999999815
   ],
   [
    "battery moved 0.5mm up (must touch)",
    "pod_panel",
-   15.002122850064822
+   15.002122850064817
   ],
   [
    "battery moved 0.5mm down (must touch)",
@@ -2453,7 +2453,7 @@
   [
    "button arm pressed (must touch)",
    "button",
-   0.7439999999999981
+   0.9599999999999915
   ],
   [
    "button arm pressed",
@@ -2463,7 +2463,7 @@
   [
    "panel turned 180 (min, Z +-6)",
    "body + parts",
-   199.14287575944354
+   200.4597161655411
   ],
   [
    "wires uart",
@@ -3206,7 +3206,7 @@
    ]
   },
   "pod_panel": {
-   "overhang_mm2": 257.8,
+   "overhang_mm2": 257.5,
    "regions": [
     {
      "area": 84.8,
@@ -3296,12 +3296,12 @@
       -0.2
      ],
      "y": [
-      -18.7,
-      -16.7
+      -19.1,
+      -17.1
      ],
      "z": [
-      2.0,
-      2.0
+      1.7,
+      1.7
      ]
     },
     {
@@ -3321,15 +3321,15 @@
      ]
     },
     {
-     "area": 1.5,
-     "flat": 1.5,
+     "area": 1.2,
+     "flat": 1.2,
      "x": [
       0.7,
       1.6
      ],
      "y": [
-      -18.7,
-      -16.7
+      -18.9,
+      -17.1
      ],
      "z": [
       1.0,
@@ -3498,8 +3498,8 @@
   "mass_g": 135.2,
   "com": [
    2.9,
-   52.0,
-   9.0
+   52.1,
+   9.3
   ],
   "parts": [
    {
@@ -3557,21 +3557,21 @@
     ]
    },
    {
-    "name": "pisugar2",
+    "name": "pisugar_s",
     "g": 10.0,
     "com": [
-     -3.1,
-     45.4,
-     2.2
+     -2.7,
+     45.9,
+     0.5
     ]
    },
    {
     "name": "battery",
     "g": 23.5,
     "com": [
-     5.3,
+     5.6,
      45.0,
-     0.9
+     3.3
     ]
    },
    {

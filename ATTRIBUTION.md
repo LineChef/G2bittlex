@@ -52,21 +52,20 @@ Files made from them, also under MIT: `bittle_platform/stl/robot/*.stl`
 meshes into the robot frame, turns the legs to a standing pose, and
 simplifies the meshes to 0.08 mm. The 3D viewer on the site loads them.
 
-## PiSugar and Raspberry Pi Zero models
+## Raspberry Pi Zero model
 
 Source: PiSugar, https://github.com/PiSugar/PiSugar, commit 61a5e2083f
-(2022-01-18). License: GPL-3.0 (`LICENSES/GPL-3.0.txt`). The files here
-are byte-identical copies of the files at that commit.
+(2022-01-18). License: GPL-3.0 (`LICENSES/GPL-3.0.txt`). The file here is
+a byte-identical copy of the file at that commit.
 
 | File in this repository | PiSugar file |
 |---|---|
-| `bittle_pi_addon/reference/pisugar2Board.STL` | `model2/pisugar2Board.STL` |
 | `bittle_pi_addon/reference/RaspberryPiZeroW-1.STL` | `model3/RaspberryPiZeroW-1.STL` |
 
-Files made from them, also under GPL-3.0: `bittle_pi_addon/stl/models/pisugar2.stl`
-and `bittle_pi_addon/stl/models/pizero.stl`. These are the same meshes moved
-and rotated into the robot frame by `bittle_pi_addon/pod.py`. They are fit
-references. The printed parts do not contain them.
+Made from it, also under GPL-3.0: `bittle_pi_addon/stl/models/pizero.stl`.
+This is the same mesh moved and rotated into the robot frame by
+`bittle_pi_addon/pod.py`. It is a fit reference. The printed parts do not
+contain it.
 
 ## Other component models
 
@@ -74,6 +73,14 @@ The models of the NS4168 amp, the speaker, the SPH0645 mic, the battery,
 the BiBoard header and the Dupont plugs in `bittle_pi_addon/stl/models/`
 are boxes drawn by `pod.py` from measurements. They are CC BY 4.0 with the
 other designs.
+
+PiSugar publishes no 3D model of the PiSugar S. `pod.py` draws its fit
+model (`bittle_pi_addon/stl/models/pisugar_s.stl`) from the PCB drawing
+and the photos in the PiSugar documentation
+(https://github.com/PiSugar/pisugar-doc, `docs/product-wiki/battery/pisugar-s-series.md`,
+and https://cdn.pisugar.com/img/PiSugarS240705.jpg). The repository holds
+no copy of the drawing or the photos. The model is CC BY 4.0 with the other
+designs.
 
 ## Font
 

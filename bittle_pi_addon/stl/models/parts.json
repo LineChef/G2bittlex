@@ -1,10 +1,130 @@
 [
  {
-  "model": "pisugar2",
+  "model": "pisugar_s",
   "sub": "board",
-  "label": "PiSugar 2 board",
-  "file": "models/parts/pisugar2__board.stl",
+  "label": "PiSugar S board",
+  "file": "models/parts/pisugar_s__board.stl",
   "color": "#e06aa3",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "pins",
+  "label": "pogo pins",
+  "file": "models/parts/pisugar_s__pins.stl",
+  "color": "#d9b34a",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "usb_c",
+  "label": "USB-C charge port",
+  "file": "models/parts/pisugar_s__usb_c.stl",
+  "color": "#c9ccd1",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "switch",
+  "label": "power switch",
+  "file": "models/parts/pisugar_s__switch.stl",
+  "color": "#c9ccd1",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "button",
+  "label": "button",
+  "file": "models/parts/pisugar_s__button.stl",
+  "color": "#c9ccd1",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "parts",
+  "label": "auto switch and parts",
+  "file": "models/parts/pisugar_s__parts.stl",
+  "color": "#2b2d33",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "pisugar_s",
+  "sub": "disc",
+  "label": "cell disc",
+  "file": "models/parts/pisugar_s__disc.stl",
+  "color": "#c9ccd1",
   "explode": [
    3,
    [
@@ -85,6 +205,26 @@
   "label": "cell seal",
   "file": "models/parts/battery__flap.stl",
   "color": "#d9b34a",
+  "explode": [
+   3,
+   [
+    0,
+    100,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "model": "battery",
+  "sub": "disc",
+  "label": "cell disc",
+  "file": "models/parts/battery__disc.stl",
+  "color": "#c9ccd1",
   "explode": [
    3,
    [

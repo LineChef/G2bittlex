@@ -93,7 +93,7 @@ MOVES = {
     "Speaker": (UP(45), "rear", [], False, True),
     "Mic": (UP(42), "mic", [], False, True),
     "Amp and speaker lead": (UP(48), "amp", [], False, True),
-    "Pi + PiSugar 2 stack": (UP(55), "high", [], False, True),
+    "Pi + PiSugar S stack": (UP(55), "high", [], False, True),
     "Splices (BCLK and LRCLK)": (UP(34), "well", [], True, False),
     "BiBoard jumpers: Pi ends": (UP(34), "well", [], True, False),
     "Amp cable": (UP(34), "well", [], True, False),
@@ -105,7 +105,7 @@ MOVES = {
     "Camera and USB cable": (UP(55), "iso", [], False, True),
 }
 # One tag for all the parts of a step (else one tag for each name)
-STEP_TAG = {"Mic": "Mic", "Pi + PiSugar 2 stack": "Pi + PiSugar 2", "Panel": "Top panel"}
+STEP_TAG = {"Mic": "Mic", "Pi + PiSugar S stack": "Pi + PiSugar S", "Panel": "Top panel"}
 
 
 def step_jobs():

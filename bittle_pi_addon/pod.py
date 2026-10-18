@@ -12,7 +12,7 @@ Parts
                slide forward, click. To remove it, slide it 7 mm rearward and lift it.
                The floor is flat: it does not follow the robot, so the cover and the pegs stay in view.
                Inside, every part goes in from the top: the mic (front wall), the Pi Zero 2 W +
-               PiSugar 2 stack on its long edge (ports up, over the robot center, header to the left), the
+               PiSugar S stack on its long edge (ports up, over the robot center, header to the left), the
                speaker (rear, sound to the rear grille) and the NS4168 amp (right gallery, under two nubs).
                The BiBoard header comes up through a notch in the floor, at the front of the left well.
   pod_panel  : the top, with the soft top edge and openings shaped to the plug bodies. It goes down 5 mm
@@ -38,7 +38,7 @@ from build123d import Box, Cylinder, Pos, Rot, export_stl
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(ROOT))            # the folder that holds bittle_platform/
 from bittle_platform import interface as PI          # platform v3.1: cover, pegs, keyholes
-REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero, PiSugar 2)
+REF = os.path.join(ROOT, "reference")                # vendor models (Pi Zero)
 PREF = os.path.join(os.path.dirname(ROOT), "bittle_platform", "reference")   # Petoi robot parts
 OUT = os.path.join(ROOT, "stl")
 
@@ -97,7 +97,7 @@ def keep_zone(px, pz):
     return (px - 5.6, px + 5.6, pz - SLIDE - PI.PEG_HEAD_D / 2 - 1.5, pz + PI.tip_len(PI.PEG_HEAD_D, PI.HEAD_TIP_DEG) + 0.6)
 
 
-# Pi Zero 2 W + PiSugar 2 (1200 mAh) stack, on its long edge: the boards are vertical (normal +X),
+# Pi Zero 2 W + PiSugar S (1200 mAh) stack, on its long edge: the boards are vertical (normal +X),
 # the ports and the PiSugar controls are up, the GPIO header is at the bottom with the Dupont plugs to
 # the right (+X, the design frame). The SD card end is at the rear (rev 0.22: the stack of rev 0.21 turned
 # end for end, so the Pi header faces the BiBoard). The models are first put in the flat frame of rev 0.15
@@ -124,10 +124,20 @@ STAND = np.array([[0, 1, 0, PI_PCB_TOP_X - (FLAT_DY + 0.8)],
                   [0, 0, 0, 1]], dtype=float)      # a mirror in the design frame: the robot frame turns it back
 # A pin-fin heatsink on the SoC of the Pi (user photo). Its size is an estimate: 14 x 14 mm, 6.5 mm high.
 HEATSINK = dict(x0=PI_PCB_TOP_X + 1.3, y=(40.0, 54.0), z=sd_z(17.8, 31.8), base=1.5, h=6.5, n=5, pin=1.6)
-BAT = dict(x=(-15.2 + STACK_DX, -5.2 + STACK_DX), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=sd_z(4.5, 60.5))   # PiSugar repo batt-1200
-# Battery bay: the cell is taped to the PiSugar 2, on its edge. Blocks on the floor carry it (0.2 mm under it,
+# PiSugar S: no 3D model from PiSugar. The fit model (pisugar_s_model) is drawn from the PCB drawing in the PiSugar docs
+# (docs.pisugar.com, PiSugarS240705.jpg): 65 x 30 mm, the 4 holes of the Pi Zero, the same outline as the PiSugar 2.
+# Places on the board: u = mm from the SD end, v = mm from the GPIO edge, h = mm over the part face (toward the cell).
+# The places are read from the drawing (about +-0.3 mm). The part heights are estimates, except the USB-C receptacle.
+PS_PCB_X = (2.6, 3.6)                      # PCB: part face (cell side) .. Pi face (the place of the PiSugar 2 model PCB)
+PS_NUT_X = 5.0                             # the nuts on the Pi face end at the Pi PCB (Pi model: x 5.0)
+PS_CELL_GAP = 3.3                          # part face to the cell: over the USB-C receptacle (3.26), on the two discs
+# The 1200 mAh cell: 56 x 29 x 10 (PiSugar repo model2/batt-1200; the PiSugar S cell is taken as the same, not measured).
+# A metal disc on the board and one on the cell face hold it (photo in the PiSugar docs). Its leads go to the BAT pads
+# at the front end (CSI end).
+BAT = dict(x=(PS_PCB_X[0] - PS_CELL_GAP - 10.0, PS_PCB_X[0] - PS_CELL_GAP), y=(STACK_Y0 + 0.5, STACK_Y0 + 29.5), z=sd_z(4.5, 60.5))
+# Battery bay: the cell is on the PiSugar S, on its edge. Blocks on the floor carry it (0.2 mm under it,
 # only where the floor is free: not over the keyholes or the amp cable). Plates from the panel stand along its
-# outer face (0.3 mm), with pads over its top edge (0.3 mm): it cannot peel off the PiSugar or jump up.
+# outer face (0.3 mm), with pads over its top edge (0.3 mm): it cannot come off the PiSugar or jump up.
 BAT_SUPPORT = dict(x=(-5.8, -1.0), z=[(-14.0, -6.0), (6.0, 20.0), (24.0, 30.0)], gap=0.2)
 BAT_CLAMP = dict(gap=0.3, t=1.4, y0=34.5, z=[(-24.2, -17.2), (24.8, 29.5)], pad_x=3.2, pad_t=1.8,
                  pads_z=[(1.3, 6.3)])
@@ -147,13 +157,13 @@ SD = dict(x=(1.3 + STACK_DX, 3.35 + STACK_DX), y=(34.75, 55.25))                
 SD_CARD = dict(x=(1.3 + STACK_DX, 3.1 + STACK_DX), y=(39.0, 52.0), out=2.9)         # card: 11 wide, about 2.5 out of the holder (not measured)
 CSI = dict(x=(0.0 + STACK_DX, 3.05 + STACK_DX), y=(33.5, 56.5), out=1.15)           # CSI connector (model) + clearance
 
-# Ports (from the models): PiSugar charge, button, switch; Pi power, data USB, mini-HDMI. All up.
+# Ports (from the models): PiSugar USB-C charge port, button, switch; Pi power, data USB, mini-HDMI. All up.
 # The Pi power port and the PiSugar charge port are side by side: plug in one of them at a time.
 PORT_PLUGS = dict(                 # (x center, z center, x size, z size) of the plug body
     hdmi=(3.25 + STACK_DX, ZSD - 12.65, 8.5, 14.0),
     pi_usb=(2.9 + STACK_DX, ZSD - 41.6, 7.5, 11.0),
     pi_power=(2.9 + STACK_DX, ZSD - 54.1, 7.5, 11.0),
-    charge=(-3.6 + STACK_DX, ZSD - 53.7, 8.0, 12.0),
+    charge=(PS_PCB_X[0] - 1.63, ZSD - 53.7, 7.5, 12.5),     # USB-C plug body (estimate); the receptacle center is 1.63 over the PCB
 )
 PORT_TOP = 61.3                    # highest port face
 # Port openings in the panel: each one is the plug body + PORT_CLR, with round corners and a 45 deg
@@ -162,14 +172,20 @@ PORT_CLR, PORT_R, PORT_CHAMFER = 0.4, 1.0, 0.5
 # Forks under the panel over the top edge of the boards (where no port is)
 STACK_FORKS = [ZSD - 27.4, ZSD - 4.0]    # z0 of each fork, 2 long: clear of the ports while the panel slides on
 FORK = dict(len=2.0, lip=1.85, clr_y=0.1)
-# Power switch: the PiSugar slide switch lever (model: X -3.66..-2.66, Y 59.5..60.9, 1.3 long in Z) is
-# 0.9 above the board edge. Lever travel about 1.5 mm (user estimate): +-0.75 from the model. A window in the panel
-# over it (round corners, a 45 deg chamfer on the top edge, like the ports): move the lever with a fingernail.
-SW_LEVER = dict(x=(-3.66 + STACK_DX, -2.66 + STACK_DX), y=(59.5, 60.9), z=sd_z(12.1, 13.4))
+# Power switch: the PiSugar S slide switch, its lever out of the board edge (drawing: u 13.0..14.4 at OFF, the end
+# at v 29.9; the ON label of the drawing is toward the SD end, not checked on a board). Lever travel about 1.5 mm (estimate, as the PiSugar 2): SW_LEVER is
+# the middle of the travel, +-SW_TRAVEL. A window in the panel over it (round corners, a 45 deg chamfer on the top
+# edge, like the ports): move the lever with a fingernail.
 SW_TRAVEL = 0.75
+SW_OFF_U = (13.0, 14.4)
+SW_LEVER = dict(x=(PS_PCB_X[0] - 1.25, PS_PCB_X[0] - 0.25), y=(STACK_Y0 + 28.2, STACK_Y0 + 29.9),
+                z=sd_z(SW_OFF_U[0] - SW_TRAVEL, SW_OFF_U[1] - SW_TRAVEL))
 SW_WIN = dict(x=(-1.0, 2.5), z=(SW_LEVER["z"][0] - SW_TRAVEL - 1.45, SW_LEVER["z"][1] + SW_TRAVEL + 1.45))   # 1.0 web to the HDMI opening
-BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(-11.2, -1.2), t=1.0, slit=0.6, cap=(-3.8 + STACK_DX, -2.8 + STACK_DX, -9.45, -7.59, 60.2),
-           arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(-9.5, -7.5), gap=0.2, press=0.6)   # the tongue: root at z1, free end at z0
+# Button: the PiSugar S side push button, its plunger out of the board edge (drawing: u 42.3..44.5, the end at v 30.5).
+PS_BTN_U = (42.3, 44.5)
+BTN = dict(x=(-10.5 + STACK_DX, -4.5 + STACK_DX), z=(-11.2, -1.2), t=1.0, slit=0.6,
+           cap=(PS_PCB_X[0] - 1.6, PS_PCB_X[0] - 0.4, *sd_z(*PS_BTN_U), STACK_Y0 + 30.5),     # the plunger: x0, x1, z0, z1, top
+           arm_x=(-6.5 + STACK_DX, -2.5 + STACK_DX), arm_z=(-9.9, -7.9), gap=0.2, press=0.6)   # the tongue: root at z1, free end at z0
 # The button cap (white) presses into a round hole in the tongue: a cross post, its ribs 0.15 over the hole on each
 # side, crush into the hole wall (coarse enough for a 0.5 mm nozzle).
 KEYCAP = dict(w=5.2, l=5.7, h=1.4, r=1.2, post_d=3.8, rib=1.0, press=0.05, post_h=0.9)   # small holes print about 0.2 under
@@ -315,15 +331,36 @@ WIRE_R = 0.7
 FINGER = dict(x=(11.0, IN_A - 0.2), y=(37.0, SEAM), z=(-24.0, -10.5))
 
 
-def flat_ps2():
-    """PiSugar 2 board model frame -> the flat frame of rev 0.15. The model has the Pi side at -Y."""
-    return np.array([[0, 0, 1, FLAT_GPIO_X], [0, -1, 0, FLAT_DY], [1, 0, 0, FLAT_Z_CSI], [0, 0, 0, 1]], dtype=float)
-
-
 def flat_pi():
     """Pi Zero model (PiSugar repo model3 frame) -> the flat frame of rev 0.15."""
     return np.array([[0, 0, 1, FLAT_GPIO_X - 3.08], [0, 1, 0, FLAT_DY - 18.83 - 0.5],
                      [-1, 0, 0, FLAT_Z_SD + 6.89], [0, 0, 0, 1]], dtype=float)
+
+
+def pisugar_s_model():
+    """The PiSugar S fit model in place (see PS_PCB_X): [(sub, label, mesh, color)]. Drawn from the PCB drawing
+    in the PiSugar docs; the part heights are estimates, except the USB-C receptacle (3.26)."""
+    f0, f1 = PS_PCB_X
+    def part(u0, u1, v0, v1, h0, h1):                      # a box on the part face
+        return mbox(f0 - h1, f0 - h0, STACK_Y0 + v0, STACK_Y0 + v1, ZSD - u1, ZSD - u0)
+    holes = [(u, v) for u in (3.5, 61.5) for v in (3.5, 26.5)]
+    pcb = rbox("x", f0, f1, STACK_Y0, STACK_Y0 + 30.0, ZSD - 65.0, ZSD, 2.5)
+    pcb -= union([mcyl("x", f0 - 1, f1 + 1, 1.35, STACK_Y0 + v, ZSD - u, 24) for u, v in holes])
+    pcb -= rbox("x", f0 - 1, f1 + 1, STACK_Y0 + 7.4, STACK_Y0 + 12.9, ZSD - 4.8, ZSD - 2.2, 1.25)   # the slot at the SD end
+    nuts = union([mcyl("x", f1 - 0.01, PS_NUT_X, 2.25, STACK_Y0 + v, ZSD - u, 6) - mcyl("x", f1 - 1, PS_NUT_X + 1, 1.25, STACK_Y0 + v, ZSD - u, 24)
+                  for u, v in holes])
+    # pogo pins on Pi pins 2, 4, 6 (5V, 5V, GND), 5 (SCL) and 9 (GND), through the board
+    pins = union([mcyl("x", f0 - 2.5, PS_NUT_X, 0.6, *pin_yz(n), 16) for n in (2, 4, 6, 5, 9)])
+    usb = rbox("y", f0 - 3.26, f0, STACK_Y0 + 23.5, STACK_Y0 + 30.9, ZSD - 53.7 - 4.47, ZSD - 53.7 + 4.47, 1.6)
+    sw = part(8.9, 15.8, 25.5, 28.2, 0.0, 1.5) + part(*SW_OFF_U, 28.2, 29.9, 0.25, 1.25)       # power switch, lever at OFF
+    btn = part(40.6, 46.2, 26.4, 29.4, 0.0, 2.0) + part(*PS_BTN_U, 29.39, 30.5, 0.4, 1.6)     # side push button + plunger
+    auto = part(30.7, 37.6, 20.2, 23.2, 0.0, 1.5) + part(32.0, 33.3, 18.5, 20.2, 0.25, 1.25)  # auto start switch (under the cell)
+    ics = part(50.3, 59.3, 5.8, 13.1, 0.0, 2.0) + part(54.4, 58.4, 14.4, 19.1, 0.0, 1.5)       # the inductor and the charger IC
+    disc = mcyl("x", f0 - 1.8, f0 + 0.01, 7.1, STACK_Y0 + 14.4, ZSD - 20.0, 40)               # the metal disc for the cell
+    return [("board", "PiSugar S board", pcb + nuts, "#e06aa3"), ("pins", "pogo pins", pins, "#d9b34a"),
+            ("usb_c", "USB-C charge port", usb, "#c9ccd1"), ("switch", "power switch", sw, "#c9ccd1"),
+            ("button", "button", btn, "#c9ccd1"), ("parts", "auto switch and parts", auto + ics, "#2b2d33"),
+            ("disc", "cell disc", disc, "#c9ccd1")]
 
 
 # --------------------------------------------------------------------------
@@ -1706,7 +1743,7 @@ def build_models():
     def add(key, sub, label, M, col):
         D.append((key, sub, label, M, col))
         return M
-    pisugar = add("pisugar2", "board", "PiSugar 2 board", stl_manifold("pisugar2Board.STL", STAND @ flat_ps2()), "#e06aa3")
+    pisugar = union([add("pisugar_s", sub, label, M, col) for sub, label, M, col in pisugar_s_model()])
     pizero = add("pizero", "board", "Raspberry Pi Zero 2 W", stl_manifold("RaspberryPiZeroW-1.STL", STAND @ flat_pi()), "#2e9b4f")
     H = HEATSINK                                            # pin-fin heatsink on the SoC (user photo; size estimated)
     x0 = H["x0"]
@@ -1718,15 +1755,21 @@ def build_models():
             hs += mbox(x0 + H["base"] - 0.01, x0 + H["h"], yc_ - H["pin"] / 2, yc_ + H["pin"] / 2, zc_ - H["pin"] / 2, zc_ + H["pin"] / 2)
     add("pizero", "heatsink", "Pi heatsink (size estimated)", hs, "#c9ccd1")
     pizero = pizero + hs
-    # battery: a pouch cell with round edges, a seal flap at the front end, and two leads to the PiSugar 2 (lead place estimated)
+    # battery: a pouch cell with round edges, a seal flap at the front end, a disc on its face and two leads to the BAT
+    # pads of the PiSugar S at the front end (the lead routes are estimates)
     bx, by, bz = BAT["x"], BAT["y"], BAT["z"]
-    cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0], bz[1] - 2.5, 1.6), "#b9bcc2")
+    cell = add("battery", "cell", "1200 mAh cell", rbox("z", bx[0], bx[1], by[0], by[1], bz[0] + 2.5, bz[1], 1.6), "#b9bcc2")
     xm = (bx[0] + bx[1]) / 2
-    flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[1] - 2.6, bz[1], 0.45), "#d9b34a")
-    leads = [add("battery", f"lead{i}", "cell lead", tube([(xm + d, 34.0, bz[1] - 0.3), (xm + d, 34.0, bz[1] + 0.6), (-6.6 + STACK_DX, 34.5 + d, bz[1] + 0.4),
-                                                             (-5.5, 34.5 + d, bz[1] - 2.5)], 0.5), c)
-             for i, (d, c) in enumerate(((-0.7, "#d83a34"), (0.7, "#1d1d1f")))]   # the seal flap and the leads are at the SD end
-    bat = cell + flap + union(leads)
+    flap = add("battery", "flap", "cell seal", rbox("z", xm - 0.5, xm + 0.5, by[0] + 1.5, by[1] - 1.5, bz[0], bz[0] + 2.6, 0.45), "#d9b34a")
+    disc = add("battery", "disc", "cell disc", mcyl("x", bx[1] - 0.01, PS_PCB_X[0] - 1.85, 7.1, STACK_Y0 + 14.4, ZSD - 20.0, 40), "#c9ccd1")
+    f0 = PS_PCB_X[0]
+    red = [(xm + 0.7, 45.0, bz[0] + 0.3), (xm + 0.7, 45.0, bz[0] - 0.6), (f0 - 1.2, 45.4, bz[0] - 0.9),
+           (f0 - 0.6, STACK_Y0 + 15.9, ZSD - 60.6)]                       # to +BAT (drawing: u 60.6, v 15.9)
+    black = [(xm - 0.7, 47.5, bz[0] + 0.3), (xm - 0.7, 47.5, bz[0] - 0.8), (f0 - 1.6, 48.5, bz[0] - 1.0),
+             (f0 - 1.1, 51.0, bz[0] + 1.5), (f0 - 1.1, 51.0, ZSD - 51.5),
+             (f0 - 1.0, STACK_Y0 + 16.9, ZSD - 48.8)]       # under the cell, over the charger IC, to GND (u 48.8, v 16.9)
+    leads = [add("battery", f"lead{i}", "cell lead", tube(P, 0.5), c) for i, (P, c) in enumerate(((red, "#d83a34"), (black, "#1d1d1f")))]
+    bat = cell + flap + disc + union(leads)
     # microSD card: the part out of the holder (about 2.5 mm, not measured)
     card = add("sd_card", "card", "microSD card", rbox("x", 1.85 + STACK_DX, 2.85 + STACK_DX, 39.5, 50.5, ZSD + 0.05, ZSD + 2.5, 0.8), "#26272b")
     stack_scr = add("stack_screws", "heads", "M2.5 screw heads (size estimated)", screw_heads(), "#c8c8c8")
@@ -1824,7 +1867,7 @@ def build_models():
     spk = plate + body + mesh
     cam = union([stl_manifold(f, cam_to_body(), ref=os.path.join(os.path.dirname(ROOT), "reference")) for f in ("AiCamera250116-down.stl", "AiCamera250116-up.stl")])
     add("camera", "case", "Petoi AI Vision Module in its case", cam, "#2b2d33")
-    models = dict(pizero=pizero, pisugar2=pisugar, stack_screws=stack_scr, battery=bat, sd_card=card, pi_plugs=pi_plugs, camera=cam,
+    models = dict(pizero=pizero, pisugar_s=pisugar, stack_screws=stack_scr, battery=bat, sd_card=card, pi_plugs=pi_plugs, camera=cam,
                   biboard_header=hdr, biboard_plug=bb, speaker=spk, amp_ns4168=amp, mic_sph0645=mic)
     # wires
     groups = {}
@@ -2282,7 +2325,7 @@ def real_models():
     return build_models()[0]
 
 
-STACK = ("pizero", "pisugar2", "stack_screws", "battery", "sd_card", "pi_plugs")
+STACK = ("pizero", "pisugar_s", "stack_screws", "battery", "sd_card", "pi_plugs")
 
 
 def solid_cover_tris():
@@ -2402,7 +2445,7 @@ def check(parts, models, robot):
         for b in mn[i + 1:]:
             if a == "biboard_header" and b == "biboard_plug":
                 continue
-            if "stack_screws" in (a, b) and {a, b} & {"pizero", "pisugar2"}:
+            if "stack_screws" in (a, b) and {a, b} & {"pizero", "pisugar_s"}:
                 continue                                   # the screws hold the boards together
             if a.startswith("wires_") and b.startswith("wires_"):
                 continue                                   # wires may touch other wires
@@ -2452,7 +2495,7 @@ def check(parts, models, robot):
                                                                for dz in np.arange(0.0, LID_SLIDE + 0.01, 0.25))))
     rows.append(("panel lifted 0.3mm (must touch)", "pod_body", vol(parts["pod_panel"].translate([0, 0.3, 0]), parts["pod_body"])))
     rows.append(("panel lifted 0.3mm at drop place", "pod_body", vol(parts["pod_panel"].translate([0, 0.3, LID_SLIDE]) - latch_hook().translate([0, 0.3, LID_SLIDE]), parts["pod_body"])))
-    others = union([M for m, M in models.items() if m != "pisugar2"])
+    others = union([M for m, M in models.items() if m != "pisugar_s"])
     # switch: the lever is under the window over its travel (a fingernail reaches its top)
     win = mbox(*SW_WIN["x"], 0, 99, *SW_WIN["z"])
     rows.append(("switch lever over its travel, outside the window (must be 0)", "lever", vol(lever_sw - win, lever_sw)))
@@ -2543,7 +2586,7 @@ def install_checks(parts, models):
     rows = []
     vol = lambda a, b: (a ^ b).volume()
     routes = {(g, lab): (np.asarray(pts, float) if sm else round_corners(pts)[0]) for g, lab, col, pts, sm in all_routes()}
-    stack_parts = union([models[n] for n in ("pizero", "pisugar2", "stack_screws", "battery", "sd_card")])
+    stack_parts = union([models[n] for n in ("pizero", "pisugar_s", "stack_screws", "battery", "sd_card")])
     hdr = mbox(*HDR_BASE_X, PI_PLUGS["y"][0], PI_PLUGS["y"][1], *PI_PLUGS["z"])
     mic_board = models["mic_sph0645"] - union([HOUSING_MESH[("mic", k)] for k in range(6)])
     rigid = [parts["pod_body"], models["biboard_header"]]
@@ -2613,7 +2656,7 @@ def explode_plan(name, sub=""):
         if name == "wires_speaker":
             return 4, (0, 45, 0), (-30, 0, 0)                     # the speaker lead goes with the amp
         return 3, (0, 100, 0), (0, 0, 0)                         # the harness, its housings on it, with the Pi
-    if name in ("pizero", "pisugar2", "stack_screws", "battery", "sd_card", "pi_plugs"):
+    if name in ("pizero", "pisugar_s", "stack_screws", "battery", "sd_card", "pi_plugs"):
         return 3, (0, 100, 0), (0, 0, 0)                         # one block: the amp cable runs under the battery
     if name == "amp_ns4168":
         return 4, (0, 45, 0), (-30, 0, 0)
@@ -2632,7 +2675,7 @@ def explode_robot(name, sub=""):
     return e[0], (-e[1][0], e[1][1], e[1][2]), (-e[2][0], e[2][1], e[2][2])
 
 
-MASS_G = dict(stack_screws=1.0, pizero=10.0, pisugar2=10.0, battery=23.5, sd_card=0.4, pi_plugs=5.0, speaker=14.0, amp_ns4168=5.0,
+MASS_G = dict(stack_screws=1.0, pizero=10.0, pisugar_s=10.0, battery=23.5, sd_card=0.4, pi_plugs=5.0, speaker=14.0, amp_ns4168=5.0,
               mic_sph0645=1.3, camera=CAM["mass"], wires_uart=2.4, wires_amp=4.0, wires_mic=4.8, wires_speaker=1.0, wires_camera=2.5,
               wires_splice=0.5, biboard_plug=0.5)
 PRINT_FILL = 0.5
@@ -2755,13 +2798,13 @@ def export_assembly(path, models):
         pod_button=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_button.stl"))), "#e9e9e6"),
         pod_camera_mount=(mesh_to_manifold(load_stl(os.path.join(OUT, "installed", "pod_camera_mount.stl"))), "#e8641b"),
     )
-    cols = dict(camera="#2b2d33", pizero="#2a8c47", pisugar2="#c4588c", battery="#3a5fa8", sd_card="#222222", pi_plugs="#d83a34",
+    cols = dict(camera="#2b2d33", pizero="#2a8c47", pisugar_s="#c4588c", battery="#3a5fa8", sd_card="#222222", pi_plugs="#d83a34",
                 biboard_header="#0d0d0d", biboard_plug="#d83a34", speaker="#7a52b8", amp_ns4168="#1a5a8c",
                 mic_sph0645="#d83a34")
     for n, col in cols.items():
         meshes[n] = (models[n], col)
     kids = []
-    coarse = ("shoulder_right", "shoulder_left", "front_plate", "rear_plate_mirror", "cover", "pizero", "pisugar2")
+    coarse = ("shoulder_right", "shoulder_left", "front_plate", "rear_plate_mirror", "cover", "pizero", "pisugar_s")
     for n, (M, col) in meshes.items():
         S = mesh_solid(M, 0.15 if n in coarse else 0.05)
         S.label, S.color = n, Color(col)

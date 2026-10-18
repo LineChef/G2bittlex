@@ -45,7 +45,7 @@ ROBOT = ["shoulder", "plate", "cover", "biboard_header__header"]
 SPK = keys("speaker")
 MIC = keys("mic_sph0645") + sub("wires_mic", lambda s: s.endswith("_dev"))
 AMP = keys("amp_ns4168", "wires_speaker")
-STACK = keys("pisugar2", "pizero", "battery", "sd_card", "stack_screws", "pi_plugs")
+STACK = keys("pisugar_s", "pizero", "battery", "sd_card", "stack_screws", "pi_plugs")
 SPLICE = keys("wires_splice")
 UART_PI = sub("wires_uart", lambda s: not s.endswith("_dev"))
 UART_DEV = sub("wires_uart", lambda s: s.endswith("_dev"))
@@ -93,8 +93,9 @@ def build_steps():
           "Put the bottom edge of the amp into the slot along the right wall, parts to the inside.",
           "Tilt the top edge under the two nubs. Set it with a dab of glue.",
           "Let the amp cable hang out of the top. It goes in after the BiBoard jumpers."])
-    step("Pi + PiSugar 2 stack", STACK, "stack",
-         ["Push the stack down into the grooves of the two end posts until it stops.",
+    step("Pi + PiSugar S stack", STACK, "stack",
+         ["Set the PiSugar AUTO switch first: it is under the cell.",
+          "Push the stack down into the grooves of the two end posts until it stops.",
           "The ports are up, the 40-pin header down and toward the left wall, the SD card at the rear."],
          check="If the stack is not fully down, the panel does not slide on later.")
     step("Splices (BCLK and LRCLK)", SPLICE, "well",
@@ -462,7 +463,7 @@ def pin_maps(n):
             f'<div><h3>Amp I2S plug</h3>{board_pins_svg("amp", amp, "G at the top (the amp stands upright)")}</div>'
             f'<div><h3>BiBoard socket</h3>{board_pins_svg("bb", bb, "male ends in; +5V stays empty")}</div></div>'
             f'<p class="callout" style="margin-top:4mm">TX and RX cross: BiBoard TX2 goes to Pi RXD (pin 10), BiBoard RX2 to Pi TXD (pin 8). '
-            f'SEL to GND puts the mic on the left channel. The PiSugar 2 powers the Pi through its contact pins.</p>')
+            f'SEL to GND puts the mic on the left channel. The PiSugar S powers the Pi through its contact pins.</p>')
     return page(body, n)
 
 

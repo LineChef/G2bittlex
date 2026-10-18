@@ -40,7 +40,7 @@ def content():
     lst = lambda items: X.append(("list", items))
 
     p(f"Version {VERSION}, {DATE}. A sample add-on for the Bittle X platform v{PI.VERSION} (../bittle_platform). "
-      "It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
+      "It holds a Raspberry Pi Zero 2 W with a PiSugar S (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
       "The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
       "No tools or supports are necessary; a dab of glue sets the amp.")
     img("iso/hero-light.png", 0.5, "The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.")
@@ -73,7 +73,7 @@ def content():
 
     h("2. Electronics")
     tbl([["Part", "Place"],
-         ["Raspberry Pi Zero 2 W + PiSugar 2, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
+         ["Raspberry Pi Zero 2 W + PiSugar S, 1200 mAh", f"On the long edge over the robot center, {pod.STACK_DX:g} mm left of the center line so the battery is near it: ports and PiSugar controls up, "
           "GPIO header down to the left (toward the BiBoard), SD card to the rear. Two end posts hold the boards in one groove, the same depth for both boards; "
           "the M2.5 screw heads go down channels in the posts. The pin-fin heatsink on the SoC points into the left well (14 x 14 x 6.5 mm, estimated)."],
          ["Dupont jumpers", "3 female-to-male jumpers to the BiBoard (female on the Pi pin, male into the BiBoard socket). 6 female-female jumpers to the mic (2 of them through the splices): 10 cm, but 15 cm for GND and 3V."],
@@ -113,7 +113,7 @@ def content():
          "on the right wall near the front, port to the wall, header at the front. The panel holds it later." + st(6),
          "Plug the flat amp cable into the I2S connector at the front end of the amp and the speaker into its rear end. Put the bottom edge of the amp into the slot along the right wall, "
          "parts to the inside, tilt its top edge under the two nubs, and set it with a dab of glue. Let the amp cable hang out of the top." + st(7),
-         "Push the Pi + PiSugar 2 stack down into the end grooves." + st(8),
+         "Set the PiSugar AUTO switch before the cell goes on the board: it is under the cell. Push the Pi + PiSugar S stack down into the end grooves." + st(8),
          "Plug the wires one at a time, in the order of section 5: the splices, the Pi ends of the BiBoard jumpers, the amp cable, the mic jumpers, "
          "then the BiBoard ends. The viewer has one step for each wire." + st(9) + st(19),
          "Press the post of the white button cap into the round hole in the panel tongue until the cap sits flat. It stays in the panel. "
@@ -152,7 +152,7 @@ def content():
          ["Speaker", "-", "amp 2-pin PH2.0 at the rear end of the amp"],
          ], [44, 26, 100])
     p("Pin map from the wiring blueprint (reference/g2-wiring-blueprint.html; that blueprint wins if they differ). "
-      "PiSugar 2 touches pins 2, 4, 5 and 6 from below with its pogo pins. Pins 11, 17-20 and 22-24 are kept free for a screen.")
+      "PiSugar S touches pins 2, 4, 5, 6 and 9 from below with its pogo pins. It uses pin 5 (SCL) for its button and auto start: with its AUTO switch ON, I2C cannot be used. Pins 11, 17-20 and 22-24 are kept free for a screen.")
     h("5. Cable routing")
     WR = json.load(open(os.path.join(pod.OUT, "wires.json")))
     ws = WR["wires"]
@@ -217,7 +217,7 @@ def content():
          f"The Petoi tail is {T['gap']:g} mm under the add-on, and {T['drop_on_gap']:g} mm at the drop-on place."])
     p("Open items: the BiBoard header height is an estimate (measure it). The speaker size is a ruler measurement. "
       "The mic port is assumed at the board center; the 7 holes cover ±2.2 mm. The SD card is assumed 2.5 mm out of its holder. "
-      "The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. The camera hooks catch the top of the case of the STL. "
+      "The heatsink and the screw heads (4.6 x 1.8 mm) are estimates. PiSugar has no 3D model of the PiSugar S: its fit model is drawn from the PCB drawing in the PiSugar docs. The part heights, the cell gap (3.3 mm) and the cell size (taken from the PiSugar 2 cell) are estimates. The camera hooks catch the top of the case of the STL. "
       "To change the SD card, lift the stack out. The Pi power port and the PiSugar charge port are side by side: use one of them at a time.")
 
     h("7. Files and license")
@@ -229,7 +229,7 @@ def content():
          ["pod.py, motion.py, render.py, docs.py", "dimensions, build and checks; robot motion; pictures; this guide"],
          ], [62, 108])
     p("The printed parts, the drawings and this guide are CC BY 4.0, and the code is MIT (Jeremy Collins). "
-      "The Pi Zero and PiSugar 2 fit models are from github.com/PiSugar/PiSugar (GPL-3.0). "
+      "The Pi Zero fit model is from github.com/PiSugar/PiSugar (GPL-3.0). "
       "The Petoi parts are from github.com/PetoiCamp/NonCodeFiles, without a stated license. "
       "LICENSE.md and ATTRIBUTION.md in the repository give the details.")
     return X
@@ -312,7 +312,7 @@ def routing_figures():
 # Wiring guide for each module: (title, wire groups, connector pins in order (label, Pi pin or splice), note)
 MODULES = [
     ("BiBoard serial link", ("uart",), "BiBoard header", [("TX2", 10), ("RX2", 8), ("GND", 6), ("+5V", None), ("+5V", None)],
-     "TX and RX cross. The +5V pins are not wired: the PiSugar 2 powers the Pi."),
+     "TX and RX cross. The +5V pins are not wired: the PiSugar S powers the Pi."),
     ("Amp: I2S and power", ("amp", "splice"), "amp I2S plug", [("G", 14), ("V", 2), ("BCLK", "bclk"), ("LRC", "lrclk"), ("DIN", 40)],
      "BCLK and LRC go to the splices: one wire from Pi pin 12 (35) feeds the amp and the mic."),
     ("Mic", ("mic", "splice"), "mic pins", [("3V", 1), ("GND", 9), ("BCLK", "bclk"), ("DOUT", 38), ("LRCL", "lrclk"), ("SEL", 39)],

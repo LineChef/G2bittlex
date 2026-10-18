@@ -53,7 +53,7 @@ front-left edge lets the head camera plug out.
 A Raspberry Pi with a battery, a speaker and a microphone, in one rounded box
 that clicks onto the platform.
 
-- Raspberry Pi Zero 2 W with a PiSugar 2 battery (1200 mAh), on its long edge over the robot center, ports up
+- Raspberry Pi Zero 2 W with a PiSugar S battery (1200 mAh), on its long edge over the robot center, ports up
 - NS4168 I2S amp and a 3 W speaker at the rear, sound out of the rear grille
 - SPH0645 I2S microphone on the right side near the front, away from the speaker
 - One-piece body: it clicks onto the platform empty, then every part goes in from the top
