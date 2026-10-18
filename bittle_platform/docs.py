@@ -224,7 +224,7 @@ def content():
       "Version 3.2 turns the cover model 180 deg to match the robot: the Pi slot (the BiBoard header) is at the front left, and the notch is on the "
       "front left, as on the robot. Reprint the cover: the pegs and the keyholes are the same as in 3.0. "
       "Keep add-on parts out of the plug space (GROVE_PLUG, in keepout.stl).")
-    img("r2_starter.png", 0.6, "The platform (dark) with the starter plate (yellow).")
+    img("iso/platform-light.png", 0.6, "The platform (white) on the robot, with the starter plate on the pegs.")
 
     h("1. Key numbers")
     tbl([["Item", "Value (mm)"],

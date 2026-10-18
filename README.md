@@ -1,5 +1,11 @@
 # Bittle X Platform
 
+> This repository is only the 3D model for the Bittle X hardware and software of
+> [LineChef](https://github.com/LineChef). His project is
+> [LineChef/BittleX](https://github.com/LineChef/BittleX), and its documentation
+> site is [LineChef/react-bittlex](https://github.com/LineChef/react-bittlex).
+> The logo on the panel top is the LineChef avatar.
+
 Click-on add-ons for the Petoi Bittle X robot dog. Print a new back cover
 with 4 teardrop pegs, then put hardware on your robot without tools, glue or tape.
 
@@ -7,7 +13,10 @@ with 4 teardrop pegs, then put hardware on your robot without tools, glue or tap
 [Platform spec (PDF)](bittle_platform/bittle_platform_spec.pdf) ·
 [Pi add-on guide (PDF)](bittle_pi_addon/bittle_pi_addon_guide.pdf)
 
-![The platform with the starter plate](bittle_platform/doc/r2_starter.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="bittle_platform/doc/iso/platform-dark.png">
+  <img src="bittle_platform/doc/iso/platform-light.png" alt="The platform on the robot, with the starter plate" width="360">
+</picture>
 
 ## The platform
 
@@ -78,11 +87,6 @@ that clicks onto the platform.
 The build scripts use [build123d](https://github.com/gumyr/build123d) and
 [manifold3d](https://github.com/elalish/manifold). The website build needs
 only Python.
-
-## Related projects
-
-- [LineChef/BittleX](https://github.com/LineChef/BittleX): the Bittle X robot project by LineChef. The logo on the panel top is the LineChef avatar.
-- [LineChef/react-bittlex](https://github.com/LineChef/react-bittlex): a documentation website for the BittleX project.
 
 ## License
 

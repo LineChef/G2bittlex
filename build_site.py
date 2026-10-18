@@ -328,7 +328,7 @@ HOME = os.path.join(PROJ, "site")
 LEGAL = ["LICENSE.md", "ATTRIBUTION.md", "LICENSES"]
 PACKAGES = [
     dict(key="platform", name="Bittle X Platform v3.2", dir="bittle_platform", zip="bittle_platform_v3.2.zip",
-         pdf="bittle_platform_spec.pdf", img="doc/r2_starter.png",
+         pdf="bittle_platform_spec.pdf", img="doc/iso/platform-light.png",
          text="The stock Petoi Bittle X back cover with 4 pegs on its top. Add-ons drop onto the pegs, "
               "slide 7 mm forward and click into place. No tools, glue or tape are necessary. "
               "The spec gives every number that you need to design an add-on.",
@@ -466,6 +466,8 @@ footer a { color:inherit; }
 <main>
 <header>
   <h1>Bittle X Platform</h1>
+  <p>The 3D model for the Bittle X hardware and software of <a href="https://github.com/LineChef">LineChef</a>
+  (<a href="https://github.com/LineChef/BittleX">LineChef/BittleX</a>).</p>
   <p>A peg platform on the stock Petoi Bittle X back cover, and a Raspberry Pi add-on that clicks onto it. Download the documents, the print files and the CAD below.</p>
 </header>
 <a class="viewer" href="viewer/">Open the 3D viewer &rarr;</a>

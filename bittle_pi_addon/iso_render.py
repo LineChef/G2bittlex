@@ -29,6 +29,7 @@ import pod                # noqa: E402
 from bittle_platform import interface as PI   # noqa: E402
 
 OUT = os.path.join(HERE, "doc", "iso")
+PLATFORM_OUT = os.path.join(PROJ, "bittle_platform", "doc", "iso")   # the platform figure (job "platform")
 THEMES = ("light", "dark")
 
 # View directions in the Y-up model frame (X right, Y up, +Z rear). The site uses (1.3, 1.5, 1.0) in its Z-up frame
@@ -55,6 +56,8 @@ def part_table():
                wires_camera_low=("stl/models/wires_camera_low.stl", "dark", "USB cable"))
     for pid, (src, fin, t) in low.items():
         parts[pid] = dict(file=os.path.relpath(os.path.join(HERE, src), PROJ), finish=fin, tag=t, transform=None, explode=None)
+    parts["starter_plate"] = dict(file="bittle_platform/stl/installed/starter_plate.stl", finish="print", tag="Starter plate",
+                                  transform=None, explode=None)
     return parts
 
 
@@ -148,6 +151,7 @@ def figure_jobs():
         dict(name="wires", show=["cover", "body"] + INSIDE, ghost=["body"], dir=DIRS["well"], width=1600, height=1300,
              frame=["body"]),
         dict(name="camera_low", show=low, dir=ISO, width=1500, height=1800),
+        dict(name="platform", show=ROBOT + ["cover", "starter_plate"], dir=ISO, width=1600, height=1600, out=PLATFORM_OUT),
     ]
 
 
@@ -158,10 +162,14 @@ def run(jobs):
     os.makedirs(OUT, exist_ok=True)
     if not os.path.exists(os.path.join(HERE, "iso", "node_modules", "three")):
         subprocess.run(["npm", "install", "--no-audit", "--no-fund"], cwd=os.path.join(HERE, "iso"), check=True)
-    full = []
+    full, dest = [], {}
     for j in jobs:
+        j = dict(j)
+        out = j.pop("out", OUT)
+        os.makedirs(out, exist_ok=True)
         for t in THEMES:
             full.append(dict(j, name=f"{j['name']}-{t}", theme=t, tag_scale=3.0))
+            dest[f"{j['name']}-{t}.png"] = out
     cfg = json.dumps(dict(parts=PARTS, jobs=full)).encode()
     done = threading.Event()
     saved = []
@@ -188,7 +196,7 @@ def run(jobs):
             body = self.rfile.read(n)
             if self.path.startswith("/iso/save/"):
                 name = os.path.basename(self.path)
-                path = os.path.join(OUT, name)
+                path = os.path.join(dest.get(name, OUT), name)
                 open(path, "wb").write(body)
                 saved.append(path)
             elif self.path == "/iso/done":
