@@ -1,0 +1,8 @@
+{
+  "name": "bittlx-iso",
+  "private": true,
+  "description": "three.js for iso_render.py: line-art renders of the build steps",
+  "dependencies": {
+    "three": "0.170.0"
+  }
+}

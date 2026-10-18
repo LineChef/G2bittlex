@@ -6,19 +6,22 @@
 <title>Bittle X Viewer</title>
 <style>
   :root {
-    --bg: #f4f4f2; --panel: #ffffff; --ink: #1d1f22; --muted: #6b6f76;
-    --line: #e2e3e5; --accent: #e8a514; --accent-ink: #1d1f22; --chip: #f1f2f3;
-    --bad: #c2362f; --good: #2f8a4c;
+    --bg: #fbfbf9; --panel: #ffffff; --ink: #16181a; --muted: #80868d;
+    --line: #e2e2dc; --accent: #0a7f63; --accent-ink: #ffffff; --chip: #f2f2ee;
+    --grid: #ecece6; --bad: #b3261e; --good: #0a7f63; --warn: #9a5b00;
+    --mono: "JetBrains Mono", "JetBrainsMono Nerd Font", ui-monospace, Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #17181b; --panel: #202226; --ink: #e9eaec; --muted: #9a9ea6;
-      --line: #33363b; --chip: #2a2d32;
+      --bg: #0f1112; --panel: #161a1c; --ink: #eceeed; --muted: #7c8482;
+      --line: #262b2d; --accent: #3fd1a6; --accent-ink: #062018; --chip: #1d2224;
+      --grid: rgba(236,238,237,0.04); --bad: #f08a80; --good: #3fd1a6; --warn: #f0b45a; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #17181b; --panel: #202226; --ink: #e9eaec; --muted: #9a9ea6;
-    --line: #33363b; --chip: #2a2d32;
+    --bg: #0f1112; --panel: #161a1c; --ink: #eceeed; --muted: #7c8482;
+    --line: #262b2d; --accent: #3fd1a6; --accent-ink: #062018; --chip: #1d2224;
+    --grid: rgba(236,238,237,0.04); --bad: #f08a80; --good: #3fd1a6; --warn: #f0b45a; color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
@@ -28,7 +31,7 @@
   h1 { font-size: 16px; margin: 0 0 2px; }
   .sub { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
   .sub a { color: inherit; }
-  h2 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
+  h2 { font: 600 10.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
   .row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
   .row label { cursor: pointer; display: flex; align-items: center; gap: 8px; }
   .row .name { flex: 1; cursor: pointer; border-radius: 4px; padding: 1px 4px; margin-left: -4px; }
@@ -50,7 +53,13 @@
   .lbl { font-size: 12px; min-width: 78px; }
   .val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; min-width: 52px; text-align: right; }
   .grp { font-size: 12px; color: var(--muted); margin-top: 8px; }
-  #view { position: relative; overflow: hidden; }
+  #view { position: relative; overflow: hidden; background-color: var(--bg);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; }
+  #tags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .float { z-index: 2; }
+  .tag { position: absolute; left: 0; top: 0; padding: 3px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--accent);
+    color: var(--accent); font: 600 11.5px/1.2 var(--mono); white-space: nowrap; }
   canvas { display: block; touch-action: none; }
   .float { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
     box-shadow: 0 4px 18px rgba(0,0,0,.12); font-size: 12.5px; }
@@ -76,7 +85,7 @@
   #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
   .checks { font-size: 12px; max-height: 190px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; }
   .checks div { display: flex; justify-content: space-between; padding: 2px 6px; border-bottom: 1px solid var(--line); }
-  .ok { color: var(--good); } .warn { color: var(--accent); } .bad { color: var(--bad); }
+  .ok { color: var(--good); } .warn { color: var(--warn); } .bad { color: var(--bad); }
   @media (max-width: 760px) {
     #app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
     aside { order: 2; max-height: 45vh; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px; }
@@ -109,8 +118,8 @@
 
     <h2>Colors</h2>
     <div id="colors"></div>
-    <div class="sub">Click the color square of any part in the parts list to give it any color.</div>
-    <div class="btns"><button id="colReset">Reset colors</button><button id="colLink">Copy a link to these colors</button></div>
+    <div class="sub">The parts are line art. Click the color square of any part in the parts list to give it any color.</div>
+    <div class="btns"><button id="colReal">Part colors</button><button id="colReset">Reset colors</button><button id="colLink">Copy a link to these colors</button></div>
 
     <div id="poseBox" style="display:none">
     <h2>Robot pose (deg)</h2>
@@ -143,13 +152,14 @@
     <div class="checks" id="checks"></div>
   </aside>
   <div id="view">
+    <div id="tags" aria-hidden="true"></div>
     <div id="loading">Loading models…</div>
     <div id="build" class="float">
       <div class="head"><b id="bTitle"></b><span class="n" id="bN"></span></div>
       <div id="bText"></div>
       <div class="btns" style="margin-top:8px">
         <button id="bPrev">&larr; Back</button><button id="bNext">Next &rarr;</button>
-        <button id="bReplay">Replay step</button><button id="bExit">Exit</button>
+        <button id="bReplay" title="Move the parts of this step into place">Play</button><button id="bExit">Exit</button>
       </div>
       <div class="bar"><i id="bBar"></i></div>
     </div>
@@ -185,55 +195,67 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
+import { THEMES, addLights, partMesh, setLook, guideLine, setGuide, spreadTags } from "./lineart.js";
 
 const $ = id => document.getElementById(id);
 const view = $("view");
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setClearColor(0x000000, 0);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.localClippingEnabled = true;
 view.prepend(renderer.domElement);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+// Orthographic camera. BASE_H: the height of the view in mm at zoom 1. A view sets the zoom for its own height.
+const BASE_H = 260, CAM_R = 1500;
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -5000, 5000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 10, 0);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.6));
-const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-120, 220, -160); scene.add(key);
-const fill = new THREE.DirectionalLight(0xffffff, 0.7); fill.position.set(160, 80, 200); scene.add(fill);
-const grid = new THREE.GridHelper(400, 40, 0x999999, 0xcccccc); grid.position.y = -14; grid.material.opacity = .35; grid.material.transparent = true; scene.add(grid);
+addLights(scene, camera);
 
 const clip = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
 let cutAxis = "none";
 
-function isDark() { return getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#17181b"; }
-function themeColors() { scene.background = new THREE.Color(isDark() ? 0x17181b : 0xf4f4f2); }
-themeColors();
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeColors);
+function isDark() { return getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#0f1112"; }
+const theme = () => (isDark() ? "dark" : "light");
+function themeColors() { if (typeof styleAll === "function" && Object.keys(parts).length) styleAll(); }
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => themeColors());
 
 function resize() {
   const r = view.getBoundingClientRect();
   renderer.setSize(r.width, r.height);
-  camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+  const a = r.width / Math.max(r.height, 1);
+  camera.left = -BASE_H * a / 2; camera.right = BASE_H * a / 2; camera.top = BASE_H / 2; camera.bottom = -BASE_H / 2;
+  camera.updateProjectionMatrix();
 }
 addEventListener("resize", resize);
 
+// Views: the direction to the camera (Y up, +Z rear), the target and the view height in mm.
+// iso is the angle of the beetlebug.org page of this project: from the front right, above.
 const VIEWS = {
-  iso: [-230, 170, -230], front: [0, 20, -330], rear: [0, 20, 340],
-  left: [-350, 20, 5], right: [350, 20, 5], top: [0, 400, 5.01],
-  build: [-170, 312, -30],      // the build steps: one steep view from the left, into the open body
-  buildfront: [-60, 300, 190],  // the same height, from the rear: the inside of the front wall (the mic)
-  wires: [-70, 215, -40],       // closer, from high above the left: the left well and the Pi header (the wire steps)
-  exploded: [-330, 300, -420],  // far enough back for the full height of the exploded view
+  iso: [[1.3, 1.0, -1.5], [0, -5, 0], 320], front: [[0, 0.06, -1], [0, 0, 0], 220], rear: [[0, 0.06, 1], [0, 0, 0], 220],
+  left: [[-1, 0.06, 0.001], [0, 0, 0], 220], right: [[1, 0.06, 0.001], [0, 0, 0], 220], top: [[0, 1, 0.001], [0, 0, 0], 220],
+  build: [[-170, 270, -36], [0, 42, 6], 190],       // the build steps: one steep view from the left, into the open body
+  buildfront: [[-60, 262, 212], [0, 38, -22], 190], // the same height, from the rear: the inside of the front wall (the mic)
+  wires: [[-54, 177, -40], [-16, 38, 0], 150],      // closer, from high above the left: the left well and the Pi header
+  exploded: [[1.3, 1.0, -1.5], [0, 160, 0], 520],   // the full height of the exploded view
+  stepiso: [[1.3, 1.0, -1.5], [0, 62, 0], 360],     // the iso angle for the build steps, room above for the parts that come in
 };
-const TARGETS = { exploded: [0, 160, 0], build: [0, 42, 6], buildfront: [0, 38, -22], wires: [-16, 38, 0] };
-// smooth camera moves
+// smooth camera moves: the direction turns, the target and the zoom ease
 let camAnim = null;
-function flyTo(pos, target, ms = 600) {
-  camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), ms };
+function flyTo(dir, target, h, ms = 700) {
+  const d0 = camera.position.clone().sub(controls.target).normalize();
+  camAnim = { d0, t0: controls.target.clone(), z0: camera.zoom, d1: dir.clone().normalize(), t1: target.clone(), z1: BASE_H / h, s: performance.now(), ms };
 }
-function setView(v) { flyTo(new THREE.Vector3(...VIEWS[v]), new THREE.Vector3(...(TARGETS[v] || [0, 10, 0]))); }
+function setView(v) { const [d, t, h] = VIEWS[v]; flyTo(new THREE.Vector3(...d), new THREE.Vector3(...t), h); }
+function jumpTo(v) {
+  const [d, t, h] = VIEWS[v];
+  controls.target.set(...t);
+  camera.position.copy(controls.target).addScaledVector(new THREE.Vector3(...d).normalize(), CAM_R);
+  camera.zoom = BASE_H / h; camera.updateProjectionMatrix();
+}
 
 const manifest = await (await fetch("manifest.json")).json();
 $("title").textContent = manifest.meta.title;
@@ -247,30 +269,27 @@ async function loadPart(p) {
   const geo = await loader.loadAsync(p.file);
   geo.computeVertexNormals();
   geo.computeBoundingBox();
-  const mat = new THREE.MeshStandardMaterial({
-    color: p.color, roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide, clippingPlanes: [],
-  });
-  const mesh = new THREE.Mesh(geo, mat);
+  const { mesh, edges } = partMesh(geo);
+  mesh.material.side = THREE.DoubleSide;
+  mesh.material.clippingPlanes = []; edges.material.clippingPlanes = [];
   if (p.transform === "mirror_x") mesh.scale.x = -1;
   if (p.transform === "mirror_z") mesh.scale.z = -1;
-  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30),
-    new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, clippingPlanes: [] }));
-  edges.visible = false;
-  mesh.add(edges);
-  // position = explode + manual (Move tool) + anim (build steps)
-  mesh.userData = { part: p, edges, manual: new THREE.Vector3(), anim: new THREE.Vector3(), tween: null, ghost: false };
+  // The center of the part at home: a build step turns the part about a vertical axis through it.
+  const pivot = geo.boundingBox.getCenter(new THREE.Vector3()).multiply(mesh.scale);
+  // position = explode + manual (Move tool) + anim (build steps). anim = rest + (from - rest) * t, turned by turn * t.
+  mesh.userData = { part: p, edges, manual: new THREE.Vector3(), anim: new THREE.Vector3(), rest: new THREE.Vector3(), from: null,
+                    turn: 0, t: 0, tween: null, ghost: false, pivot };
   scene.add(mesh);
   parts[p.id] = mesh;
 }
 await Promise.all(manifest.parts.map(loadPart));
 $("loading").remove();
 resize();
-camera.position.set(...VIEWS.iso); controls.update();
+jumpTo("iso"); controls.update();
 
 // ---- robot pose: joints from robot.json; a part turns about each joint of its chain
 const robot = manifest.robot || null;
 const pose = { head: 0, hip_f: 0, knee_f: 0, hip_r: 0, knee_r: 0 };
-if (robot) grid.position.y = robot.ground - 0.5;
 function jointAngle(j) { if (j === "head") return pose.head; const [t, k] = j.split("_"); return pose[`${t}_${k[1]}`]; }
 const _T = new THREE.Matrix4(), _R = new THREE.Matrix4(), _B = new THREE.Matrix4();
 function poseMatrix(chain) {
@@ -293,8 +312,15 @@ function place(m) {
   const n = (manifest.meta && manifest.meta.explode_stages) || 1;
   const t = Math.min(Math.max(explodeF * n - st, 0), 1);
   const a = Math.min(t / 0.5, 1), b = Math.max((t - 0.5) / 0.5, 0);
+  const u = m.userData;
+  if (u.from) u.anim.copy(u.rest).addScaledVector(new THREE.Vector3().subVectors(u.from, u.rest), u.t);
   m.position.set(lift[0] * a + aside[0] * b, lift[1] * a + aside[1] * b, lift[2] * a + aside[2] * b)
-    .add(m.userData.manual).add(m.userData.anim);
+    .add(u.manual).add(u.anim);
+  m.quaternion.identity();
+  if (u.turn && u.t) {                // a twist about the vertical axis through the pivot
+    m.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(u.turn * u.t));
+    m.position.add(u.pivot).sub(u.pivot.clone().applyQuaternion(m.quaternion));
+  }
   const chain = robot && robot.chain[m.userData.part.id];
   if (chain) {
     const M = poseMatrix(chain);
@@ -303,21 +329,27 @@ function place(m) {
   }
 }
 
-// ---- materials: ghost, highlight
-let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false;
-let stepGlow = new Set();      // the parts of the current build step that glow (the wire being plugged)
+// ---- materials: line art (lineart.js), the accent on the parts of the step and the selected part, ghosts
+let lidOpacity = 1, selected = null, hovered = null, ghostOthers = false, edgesOn = true, realColors = false;
+let colors = {};
+const guides = new Map();      // tag name -> { line, ids }: a dashed accent line from the place of the step parts to where they are
+let stepGlow = new Set();      // the parts of the current build step (accent)
 let stepGhost = new Set();     // parts that go see-through in the current build step, so the wires show
 function styleAll() {
+  const th = theme();
   for (const m of Object.values(parts)) {
-    const id = m.userData.part.id, mat = m.material;
-    let op = (id === "body" || id === "panel") ? lidOpacity : 1;
-    if (stepGhost.has(id)) op = Math.min(op, 0.18);
+    const p = m.userData.part, id = p.id;
     const ghost = ghostOthers && selected && m !== selected;
-    if (ghost) op = Math.min(op, 0.12);
     m.userData.ghost = ghost;
-    mat.transparent = op < 1; mat.opacity = op; mat.depthWrite = op >= 1;
-    mat.emissive.setHex(m === selected ? 0x553a00 : stepGlow.has(id) ? 0x6a4400 : m === hovered ? 0x2a2a2a : 0x000000);
+    setLook(m, m.userData.edges, th, {
+      finish: p.finish, focus: stepGlow.has(id) || m === selected, ghost: ghost || stepGhost.has(id),
+      fill: colors[id] || (realColors ? p.color : null), edgesOn,
+      opacity: (id === "body" || id === "panel") ? lidOpacity : 1,
+    });
+    m.renderOrder = m.material.transparent ? 1 : 0;
+    if (m === hovered && m !== selected && !stepGlow.has(id)) { m.userData.edges.material.color.set(THEMES[th].accent); m.userData.edges.material.opacity = 0.7; }
   }
+  for (const g of guides.values()) g.line.material.color.set(THEMES[th].accent);
 }
 
 // ---- parts panel
@@ -354,7 +386,7 @@ function select(m) {
   const card = $("card");
   if (!m) { card.style.display = "none"; ghostOthers = false; moveMode = false; $("cMove").classList.remove("on"); $("cGhost").classList.remove("on"); styleAll(); return; }
   const p = m.userData.part;
-  $("cSw").style.background = "#" + m.material.color.getHexString(); $("cName").textContent = p.label; $("cGrp").textContent = p.group;
+  $("cSw").style.background = colors[p.id] || p.color; $("cName").textContent = p.label; $("cGrp").textContent = p.group;
   $("cText").textContent = p.text || ""; $("cText").style.display = p.text ? "" : "none";
   $("cAtt").textContent = p.attach || ""; $("cAtt").style.display = p.attach ? "" : "none";
   $("cDims").textContent = fmtDims(m);
@@ -383,8 +415,7 @@ function focus() {
   const b = new THREE.Box3().setFromObject(selected), c = b.getCenter(new THREE.Vector3());
   const r = b.getSize(new THREE.Vector3()).length() * 0.5;
   const dir = camera.position.clone().sub(controls.target).normalize();
-  const dist = Math.max(40, r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.1);
-  flyTo(c.clone().add(dir.multiplyScalar(dist)), c);
+  flyTo(dir, c, Math.max(30, r * 2.3));
 }
 $("cIso").onclick = isolate;
 $("cGhost").onclick = () => { ghostOthers = !ghostOthers; $("cGhost").classList.toggle("on", ghostOthers); styleAll(); };
@@ -419,14 +450,12 @@ const PRINTED = [["body", "Body"], ["panel", "Panel"], ["button", "Button cap"],
                  ["camera_mount", "Camera mount"], ["cover", "Platform cover"]].filter(([id]) => parts[id]);
 const DEF = Object.fromEntries(manifest.parts.map(p => [p.id, p.color]));
 const COL_KEY = "bittlex.colors";
-let colors = {};
 const norm = c => (FIL[c] || (c.startsWith("#") ? c : "#" + c)).toLowerCase();
 function saveColors() { try { localStorage.setItem(COL_KEY, JSON.stringify(colors)); } catch (e) {} }
 function setColor(id, c, save = true) {
   if (!parts[id]) return;
   c = norm(c);
-  parts[id].material.color.set(c);
-  if (c === DEF[id].toLowerCase()) delete colors[id]; else colors[id] = c;
+  colors[id] = c;
   const sw = pl.querySelector(`[data-sw="${id}"]`);
   if (sw) { sw.style.background = c; sw.querySelector("input").value = c; }
   for (const b of document.querySelectorAll(`[data-fil="${id}"]`)) b.classList.toggle("on", b.dataset.c === c);
@@ -434,6 +463,7 @@ function setColor(id, c, save = true) {
   if (pk) pk.value = c;
   if (selected === parts[id]) $("cSw").style.background = c;
   if (save) saveColors();
+  styleAll();
 }
 for (const [id, name] of PRINTED) {
   const r = document.createElement("div"); r.className = "row";
@@ -446,7 +476,12 @@ for (const [id, name] of PRINTED) {
 $("colors").addEventListener("click", e => { const b = e.target.closest("[data-fil]"); if (b) setColor(b.dataset.fil, b.dataset.c); });
 $("colors").addEventListener("input", e => { if (e.target.dataset.pick) setColor(e.target.dataset.pick, e.target.value); });
 pl.addEventListener("input", e => { if (e.target.dataset.col) setColor(e.target.dataset.col, e.target.value); });
-$("colReset").onclick = () => { for (const id of Object.keys(colors)) setColor(id, DEF[id], false); colors = {}; saveColors(); };
+$("colReset").onclick = () => {
+  colors = {}; saveColors(); realColors = false; $("colReal").classList.remove("on");
+  for (const b of document.querySelectorAll("[data-fil]")) b.classList.remove("on");
+  styleAll();
+};
+$("colReal").onclick = () => { realColors = !realColors; $("colReal").classList.toggle("on", realColors); styleAll(); };
 $("colLink").onclick = () => {
   const name = c => Object.keys(FIL).find(k => FIL[k] === c) || c.slice(1);
   const u = new URL(location.href);
@@ -455,8 +490,8 @@ $("colLink").onclick = () => {
   $("colLink").textContent = "Link copied";
   setTimeout(() => { $("colLink").textContent = "Copy a link to these colors"; }, 1500);
 };
-for (const id of Object.keys(DEF)) setColor(id, DEF[id], false);       // marks the default filament buttons
 try { for (const [id, c] of Object.entries(JSON.parse(localStorage.getItem(COL_KEY) || "{}"))) setColor(id, c, false); } catch (e) {}
+styleAll();
 {
   const hc = new URLSearchParams(location.hash.slice(1)).get("colors");
   if (hc) for (const kv of hc.split(",")) { const [id, c] = kv.split(":"); if (id && c) setColor(id, c); }
@@ -526,10 +561,9 @@ cut.addEventListener("input", applyCut); flip.addEventListener("change", applyCu
 
 // ---- views, edges, theme
 $("views").addEventListener("click", e => { if (e.target.dataset.v) setView(e.target.dataset.v); });
-let edgesOn = false;
+$("wire").classList.add("on");
 $("wire").addEventListener("click", e => {
-  edgesOn = !edgesOn; e.target.classList.toggle("on", edgesOn);
-  for (const m of Object.values(parts)) m.userData.edges.visible = edgesOn;
+  edgesOn = !edgesOn; e.target.classList.toggle("on", edgesOn); styleAll();
 });
 $("theme").addEventListener("click", () => {
   document.documentElement.dataset.theme = isDark() ? "light" : "dark"; themeColors();
@@ -556,13 +590,13 @@ $("measure").addEventListener("click", () => {
 function measureAt(hit) {
   if (pts.length === 2) { pts = []; mGroup.clear(); }
   pts.push(hit.point.clone());
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.8), new THREE.MeshBasicMaterial({ color: 0xe8a514, depthTest: false }));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.8), new THREE.MeshBasicMaterial({ color: THEMES[theme()].accent, depthTest: false }));
   dot.position.copy(hit.point); dot.renderOrder = 10; mGroup.add(dot);
   const p = hit.point, name = hit.object.userData.part.label;
   if (pts.length === 1) $("msr").innerHTML = ` ${name}: (<b>${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}</b>). Click a second point.`;
   else {
     const d = pts[0].distanceTo(pts[1]), dv = pts[1].clone().sub(pts[0]);
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xe8a514, depthTest: false }));
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: THEMES[theme()].accent, depthTest: false }));
     line.renderOrder = 10; mGroup.add(line);
     $("msr").innerHTML = ` Distance <b>${d.toFixed(2)} mm</b> (dx ${dv.x.toFixed(2)}, dy ${dv.y.toFixed(2)}, dz ${dv.z.toFixed(2)})`;
   }
@@ -635,12 +669,12 @@ addEventListener("keydown", e => {
 });
 
 // ---- build steps
+// A step shows its new parts exploded (at their start offset) in the accent, with a dashed guide line from their place
+// and a tag. Play moves them into place. A step may turn a part (turn: {id: deg}) as it comes in (the camera mount).
 const steps = manifest.steps || [];
 let stepI = -1;
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-function tweenTo(m, from, to, ms = 900) {
-  m.userData.tween = { from: new THREE.Vector3(...from), to: new THREE.Vector3(...to), s: performance.now(), ms };
-}
+function tweenT(m, t0, t1, ms = 900) { m.userData.tween = { t0, t1, s: performance.now(), ms }; }
 function shownBy(i) { const s = new Set(); for (let k = 0; k <= i; k++) for (const id of steps[k].show || []) s.add(id); return s; }
 function restOffset(id, i) {
   // the offset a part has after step i (the last 'end' entry, else 0)
@@ -651,27 +685,77 @@ function restOffset(id, i) {
   }
   return o;
 }
+const tagsEl = $("tags");
+function clearGuides() {
+  for (const g of guides.values()) { scene.remove(g.line); g.tag.remove(); }
+  guides.clear();
+}
+function stepFocus(st) { return st.highlight || Object.keys(st.start || {}); }
 function showStep(i, animate = true) {
   stepI = i;
   const st = steps[i], vis = shownBy(i);
   for (const [id, m] of Object.entries(parts)) {
     setVisible(id, vis.has(id));
-    m.userData.manual.set(0, 0, 0);
-    m.userData.tween = null;
-    m.userData.anim.set(...restOffset(id, i));
+    const u = m.userData;
+    u.manual.set(0, 0, 0); u.tween = null; u.from = null; u.turn = 0; u.t = 0;
+    u.rest.set(...restOffset(id, i)); u.anim.copy(u.rest);
     place(m);
   }
-  if (animate && st.start) for (const [id, from] of Object.entries(st.start)) {
+  clearGuides();
+  for (const [id, from] of Object.entries(st.start || {})) {
     const m = parts[id]; if (!m) continue;
-    m.userData.anim.set(...from); place(m);
-    tweenTo(m, from, restOffset(id, i));
+    const u = m.userData;
+    u.from = new THREE.Vector3(...from); u.turn = (st.turn || {})[id] || 0; u.t = 1;
+    if (animate) { u.t = 1.5; tweenT(m, 1.5, 1, 700); }
+    place(m);
+  }
+  stepGlow = new Set(stepFocus(st)); stepGhost = new Set(st.ghost || []);
+  for (const id of stepGlow) {
+    const m = parts[id]; if (!m || !m.userData.from) continue;
+    const name = m.userData.part.tag || m.userData.part.label;
+    if (!guides.has(name)) {
+      const line = guideLine(theme()); scene.add(line);
+      const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = name; tagsEl.append(tag);
+      guides.set(name, { line, tag, ids: [] });
+    }
+    guides.get(name).ids.push(id);
   }
   $("bTitle").textContent = st.title; $("bText").textContent = st.text;
   $("bN").textContent = `${i + 1} / ${steps.length}`;
   $("bBar").style.width = ((i + 1) / steps.length * 100) + "%";
   $("bPrev").disabled = i === 0; $("bNext").textContent = i === steps.length - 1 ? "Finish" : "Next →";
   if (st.view) setView(st.view);
-  stepGlow = new Set(st.highlight || []); stepGhost = new Set(st.ghost || []); styleAll();
+  styleAll();
+}
+function play() {
+  // the step parts move into place; if they are in place, they go out first
+  const ms = Object.values(parts).filter(m => m.userData.from);
+  const t0 = ms.length && ms.every(m => m.userData.t < 0.01) ? 1 : null;
+  for (const m of ms) tweenT(m, t0 ?? m.userData.t, 0, 1400);
+}
+// the guide lines and the tags follow the step parts
+const _b = new THREE.Box3(), _c = new THREE.Vector3(), _h = new THREE.Vector3();
+function updateGuides() {
+  if (!guides.size) return;
+  const r = view.getBoundingClientRect(), list = [];
+  for (const g of guides.values()) {
+    _b.makeEmpty();
+    const delta = new THREE.Vector3();
+    for (const id of g.ids) {
+      const m = parts[id]; if (!m.visible) continue;
+      _b.expandByObject(m);
+      delta.copy(m.userData.from).sub(m.userData.rest).multiplyScalar(m.userData.t);
+    }
+    if (_b.isEmpty()) { g.line.visible = false; g.tag.hidden = true; continue; }
+    _b.getCenter(_c); _h.copy(_c).sub(delta);
+    g.line.visible = delta.length() > 1;
+    if (g.line.visible) setGuide(g.line, _h, _c, theme());
+    const p = _c.clone(); p.y = _b.max.y; p.project(camera);
+    g.tag.hidden = false;
+    const w = g.tag.offsetWidth, h = g.tag.offsetHeight;
+    list.push({ el: g.tag, x: ((p.x + 1) / 2) * r.width - w / 2, y: ((1 - p.y) / 2) * r.height - h * 1.3, w, h });
+  }
+  for (const t of spreadTags(list)) t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
 }
 function startBuild() {
   select(null);
@@ -681,13 +765,16 @@ function startBuild() {
 }
 function endBuild() {
   $("build").style.display = "none"; $("buildBtn").classList.remove("on"); stepI = -1;
-  stepGlow = new Set(); stepGhost = new Set(); styleAll();
-  for (const [id, m] of Object.entries(parts)) { m.userData.tween = null; m.userData.anim.set(0, 0, 0); setVisible(id, true); place(m); }
+  stepGlow = new Set(); stepGhost = new Set(); clearGuides(); styleAll();
+  for (const [id, m] of Object.entries(parts)) {
+    const u = m.userData; u.tween = null; u.from = null; u.turn = 0; u.t = 0; u.rest.set(0, 0, 0); u.anim.set(0, 0, 0);
+    setVisible(id, true); place(m);
+  }
 }
 $("buildBtn").onclick = () => stepI < 0 ? startBuild() : endBuild();
 $("bPrev").onclick = () => { if (stepI > 0) showStep(stepI - 1, false); };
 $("bNext").onclick = () => { if (stepI < steps.length - 1) showStep(stepI + 1); else endBuild(); };
-$("bReplay").onclick = () => showStep(stepI);
+$("bReplay").onclick = play;
 $("bExit").onclick = endBuild;
 
 // ---- links: #part=<id> opens the part card, #step=<n> opens build step n
@@ -719,19 +806,24 @@ for (const c of manifest.meta.checks) {
 renderer.setAnimationLoop(now => {
   if (camAnim) {
     const t = Math.min(1, (now - camAnim.s) / camAnim.ms), k = ease(t);
-    camera.position.lerpVectors(camAnim.p0, camAnim.p1, k); controls.target.lerpVectors(camAnim.t0, camAnim.t1, k);
+    const q = new THREE.Quaternion().setFromUnitVectors(camAnim.d0, camAnim.d1);
+    const dir = camAnim.d0.clone().applyQuaternion(new THREE.Quaternion().slerp(q, k));
+    controls.target.lerpVectors(camAnim.t0, camAnim.t1, k);
+    camera.position.copy(controls.target).addScaledVector(dir, CAM_R);
+    camera.zoom = camAnim.z0 + (camAnim.z1 - camAnim.z0) * k; camera.updateProjectionMatrix();
     if (t >= 1) camAnim = null;
   }
   for (const m of Object.values(parts)) {
     const tw = m.userData.tween; if (!tw) continue;
     const t = Math.min(1, (now - tw.s) / tw.ms);
-    m.userData.anim.lerpVectors(tw.from, tw.to, ease(t)); place(m);
+    m.userData.t = tw.t0 + (tw.t1 - tw.t0) * ease(t); place(m);
     if (t >= 1) m.userData.tween = null;
   }
   poseStep(now);
   hoverUpdate();
   controls.update();
   renderer.render(scene, camera);
+  updateGuides();
 });
 </script>
 </body>

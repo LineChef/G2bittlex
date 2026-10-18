@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Iso render</title>
+<style>
+  body { margin: 0; background: transparent; font: 12px monospace; }
+  canvas { display: none; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "/bittle_pi_addon/iso/node_modules/three/build/three.module.js",
+  "three/addons/": "/bittle_pi_addon/iso/node_modules/three/examples/jsm/",
+  "lineart": "/web/lineart.js"
+} }
+</script>
+</head>
+<body>
+<div id="status">loading</div>
+<script type="module" src="render.js"></script>
+</body>
+</html>

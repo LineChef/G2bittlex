@@ -1,7 +1,7 @@
 """The build guide: an A4 HTML page set with step renders and cable diagrams, printed to PDF with Chromium.
 
-Run after pod.py (it reads stl/, wires.json and checks.json):  python guide.py
-  doc/guide/*.png             step renders (OpenSCAD)
+Run after pod.py (it reads stl/, wires.json and checks.json):  python guide.py [--no-render]
+  doc/iso/*.png               step figures (iso_render.py; --no-render uses the ones there)
   guide/index.html            the guide (also on the site)
   bittle_pi_addon_guide.pdf   the guide, printed by Chromium (headless)
 The PDF and the HTML are committed: the site build (GitHub Actions) only copies them.
@@ -22,7 +22,6 @@ import docs     # noqa: E402
 from bittle_platform import interface as PI   # noqa: E402
 
 GDIR = os.path.join(HERE, "guide")
-IDIR = os.path.join(HERE, "doc", "guide")
 WIRES = json.load(open(os.path.join(pod.OUT, "wires.json")))
 CHECKS = json.load(open(os.path.join(pod.OUT, "checks.json")))
 W = {(w["group"], w["wire"]): w for w in WIRES["wires"]}
@@ -30,10 +29,8 @@ VIEWER = docs.VIEWER
 E = html.escape
 
 # --------------------------------------------------------------------------
-# Step renders: the new parts in their colors, the parts already in place in gray
+# The parts of each step (render.py keys)
 # --------------------------------------------------------------------------
-GRAY = "[0.84,0.86,0.90]"
-KEEP = {"body", "cover", "shoulder", "plate", "biboard_header__header"}   # always in their own colors
 
 
 def keys(*models):
@@ -57,61 +54,13 @@ MICW = sub("wires_mic", lambda s: not s.endswith("_dev"))
 PANEL = ["panel", "button", "logo_white", "logo_red"]
 CAMERA = keys("camera") + keys("wires_camera")
 
-# OpenSCAD cameras: (target x, y, z in the render frame = robot x, -z, y), tilt, 0, turn, distance.
-# Turn 0 looks from the rear, 90 from the robot right, 180 from the front, 270 from the robot left.
-CAMS = dict(
-    hero="0,12,62,62,0,145,420",
-    cover="0,-4,30,56,0,148,240",
-    iso="0,-6,40,56,0,148,300",
-    rear="0,-10,44,48,0,28,250",
-    mic="22,26,44,38,0,318,160",
-    amp="26,-8,42,44,0,272,190",
-    stack="0,-2,42,40,0,118,250",
-    well="-20,0,38,24,0,262,170",
-    ampcable="-6,10,38,30,0,240,215",
-    micw="-6,10,40,30,0,226,215",
-    bbend="-24,20,32,14,0,250,105",
-    panel="0,-30,30,50,0,148,300",
-    camera="0,14,82,62,0,148,330",
-)
-
-
-def step_scene(present, new, lift=None):
-    """present, new: lists of part keys. lift: {key: (dx, dy, dz)} offsets in the robot frame."""
-    f = render.files()
-    s = ""
-    lift = lift or {}
-    for k, path in f.items():
-        if k not in present and k not in new:
-            continue
-        col = render.C[k] if (k in new or k in KEEP) else GRAY
-        d = lift.get(k, (0, 0, 0))
-        s += render.imp(path, col, d)
-        if k == "shoulder":
-            s += render.imp(path, col, mirror="[1,0,0]")
-        if k == "plate":
-            s += render.imp(path, col, mirror="[0,0,1]")
-    return f"rotate([90,0,0]) {{\n{s}}}\n"
-
-
-def shot(name, scad, cam, size=(2000, 1300)):
-    os.makedirs(IDIR, exist_ok=True)
-    src, png = os.path.join(IDIR, name + ".scad"), os.path.join(IDIR, name + ".png")
-    open(src, "w").write(scad)
-    r = subprocess.run(["openscad", "-o", png, f"--imgsize={size[0]},{size[1]}", f"--camera={cam}", "--colorscheme=Tomorrow",
-                        "--backend=manifold", src], capture_output=True, text=True)
-    os.unlink(src)
-    if r.returncode:
-        print(r.stderr[-800:])
-    return f"../doc/guide/{name}.png"
-
-
 # The build steps: title, the parts in place before, the new parts, camera, lift, text (one idea per line), check
 STEPS = []
 
 
 def step(title, new, cam, lines, check=None, lift=None, note=None, only=None):
-    """only: show just these parts of the ones already in place (a clear view into a crowded corner)."""
+    """only: show just these parts of the ones already in place (a clear view into a crowded corner).
+    iso_render.py draws the figure of each step from before and new (cam and lift are not used there)."""
     before = sum((s["new"] for s in STEPS), list(ROBOT))
     if only is not None:
         before = list(ROBOT) + [k for k in before if k in only]
@@ -187,23 +136,17 @@ def build_steps():
           "Plug the USB-C end into the top of the camera and the micro-USB end into the Pi data USB port."])
 
 
-def renders():
-    out = {}
-    allp = sum((s["new"] for s in STEPS), list(ROBOT))
-    out["hero"] = shot("hero", step_scene([], allp), CAMS["hero"], (2400, 1600))
-    open_ = [k for k in allp if k not in PANEL + ["camera_mount"] + CAMERA]
-    out["open"] = shot("open", step_scene([], open_), CAMS["stack"], (2000, 1300))
-    ex = render.scene(render.ALL, explode=True)
-    out["exploded"] = shot("exploded", ex, "0,-9,185,72,0,128,960", (1600, 2000))
-    for i, s in enumerate(STEPS, 1):
-        out[i] = shot(f"step{i:02d}", step_scene(s["before"], s["new"], s["lift"]), CAMS[s["cam"]])
+def images():
+    """The figures of iso_render.py (light theme, transparent background), relative to guide/."""
+    out = {k: f"../doc/iso/{k}-light.png" for k in ("hero", "exploded")}
+    out.update({i: f"../doc/iso/step{i:02d}-light.png" for i in range(1, len(STEPS) + 1)})
     return out
 
 
 # --------------------------------------------------------------------------
 # Vector diagrams (SVG)
 # --------------------------------------------------------------------------
-INK, MUTE, LINE = "#1d1d1f", "#6e6e73", "#d2d2d7"
+INK, MUTE, LINE = "#16181a", "#80868d", "#e2e2dc"
 
 
 def _t(x, y, s, size=11, w=400, anchor="start", col=INK, mono=False):
@@ -351,56 +294,58 @@ def board_pins_svg(title, pins, note):
 # --------------------------------------------------------------------------
 CSS = r"""
 @page { size: A4; margin: 0; }
+:root { --grid: linear-gradient(#ecece6 1px, transparent 1px), linear-gradient(90deg, #ecece6 1px, transparent 1px); }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { margin: 0; font-family: "Noto Sans", sans-serif; color: #1d1d1f; font-size: 9.6pt; line-height: 1.45; background: #e9e9ec; }
+body { margin: 0; font-family: "Noto Sans", sans-serif; color: #16181a; font-size: 9.6pt; line-height: 1.45; background: #e9e9ec; }
 .page { width: 210mm; height: 297mm; padding: 16mm 17mm 18mm; position: relative; background: #fff; overflow: hidden;
         page-break-after: always; margin: 0 auto 8mm; }
 @media print { body { background: #fff; } .page { margin: 0; } }
 .folio { position: absolute; bottom: 9mm; left: 17mm; right: 17mm; display: flex; justify-content: space-between;
-         font-size: 7.5pt; color: #8e8e93; letter-spacing: .02em; border-top: .4pt solid #d2d2d7; padding-top: 2.5mm; }
+         font: 7pt/1.4 "JetBrainsMono Nerd Font", "Noto Sans Mono", monospace; color: #80868d; border-top: .4pt solid #e2e2dc; padding-top: 2.5mm; }
 h1 { font-size: 30pt; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; margin: 0 0 3mm; }
 h2 { font-size: 17pt; font-weight: 700; letter-spacing: -.01em; margin: 0 0 4mm; }
 h3 { font-size: 10.5pt; font-weight: 700; margin: 5mm 0 1.5mm; }
-.kicker { font-size: 8pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #e8641b; margin-bottom: 2mm; }
-.lead { font-size: 11pt; line-height: 1.5; color: #3a3a3c; font-weight: 300; }
-.muted { color: #6e6e73; }
+.kicker { font: 600 7.5pt/1.3 "JetBrainsMono Nerd Font", "Noto Sans Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: #0a7f63; margin-bottom: 2mm; }
+.lead { font-size: 11pt; line-height: 1.5; color: #4a4f55; font-weight: 300; }
+.muted { color: #80868d; }
 .cover { padding: 0; }
-.cover .art { position: absolute; inset: 0 0 92mm 0; background: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #eef0f3 70%, #e3e6ea 100%); }
-.cover .art img { width: 100%; height: 100%; object-fit: cover; }
+.cover .art { position: absolute; inset: 0 0 92mm 0; padding: 12mm 20mm 4mm; background-color: #fbfbf9; background-image: var(--grid); background-size: 24px 24px; }
+.cover .art img { width: 100%; height: 100%; object-fit: contain; }
 .cover .title { position: absolute; left: 17mm; right: 17mm; bottom: 26mm; }
 .cover .title h1 { font-size: 40pt; }
-.cover .meta { display: flex; gap: 10mm; margin-top: 6mm; font-size: 8.5pt; color: #6e6e73; }
-.cover .meta b { display: block; color: #1d1d1f; font-size: 9.5pt; }
-.bar { position: absolute; left: 0; right: 0; bottom: 0; height: 6mm; background: linear-gradient(90deg, #e8641b, #f2a71c); }
+.cover .meta { display: flex; gap: 10mm; margin-top: 6mm; font-size: 8.5pt; color: #80868d; }
+.cover .meta b { display: block; color: #16181a; font-size: 9.5pt; }
+.bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3mm; background: #0a7f63; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
 .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
 table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
-th { text-align: left; font-weight: 700; font-size: 7.5pt; letter-spacing: .06em; text-transform: uppercase; color: #6e6e73;
-     border-bottom: .8pt solid #1d1d1f; padding: 1.6mm 2mm 1.6mm 0; }
-td { border-bottom: .4pt solid #e5e5ea; padding: 1.8mm 2mm 1.8mm 0; vertical-align: top; }
+th { text-align: left; font: 600 7pt/1.3 "JetBrainsMono Nerd Font", "Noto Sans Mono", monospace; letter-spacing: .06em; text-transform: uppercase; color: #80868d;
+     border-bottom: .8pt solid #16181a; padding: 1.6mm 2mm 1.6mm 0; }
+td { border-bottom: .4pt solid #e2e2dc; padding: 1.8mm 2mm 1.8mm 0; vertical-align: top; }
 td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .sw { display: inline-block; width: 9pt; height: 9pt; border-radius: 50%; vertical-align: -1.5pt; margin-right: 1.5mm; border: .5pt solid #b0b0b5; }
-.card { border: .5pt solid #d2d2d7; border-radius: 3mm; padding: 3mm 4mm 2mm; margin-bottom: 3.2mm; break-inside: avoid; }
+.card { border: .5pt solid #e2e2dc; border-radius: 3mm; padding: 3mm 4mm 2mm; margin-bottom: 3.2mm; break-inside: avoid; }
 .card h4 { margin: 0 0 .5mm; font-size: 9.6pt; }
-.card p { margin: 0 0 1mm; font-size: 8.4pt; color: #3a3a3c; }
-.tag { display: inline-block; font-size: 7pt; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: .4mm 1.6mm;
-       border-radius: 1.2mm; background: #f2f2f7; color: #3a3a3c; margin-left: 1.5mm; vertical-align: 1pt; }
-.tag.o { background: #fde9dc; color: #b34a0f; }
+.card p { margin: 0 0 1mm; font-size: 8.4pt; color: #4a4f55; }
+.tag { display: inline-block; font: 600 6.8pt/1.3 "JetBrainsMono Nerd Font", "Noto Sans Mono", monospace; padding: .3mm 2mm;
+       border-radius: 9mm; border: .5pt solid #c9c9c1; color: #4a4f55; margin-left: 1.5mm; vertical-align: 1pt; }
+.tag.o { border-color: #0a7f63; color: #0a7f63; }
 .step { display: grid; grid-template-columns: 1fr; gap: 3mm; margin-bottom: 5mm; break-inside: avoid; }
-.step .shot { background: linear-gradient(180deg, #f7f8fa, #eceef1); border-radius: 3mm; overflow: hidden; height: 80mm;
-              display: flex; align-items: center; justify-content: center; }
-.step .shot img { width: 100%; height: 100%; object-fit: cover; }
+.step .shot { background-color: #fbfbf9; background-image: var(--grid); background-size: 24px 24px; border: .5pt solid #e2e2dc;
+              border-radius: 3mm; overflow: hidden; height: 80mm; padding: 4mm 6mm; display: flex; align-items: center; justify-content: center; }
+.step .shot img { width: 100%; height: 100%; object-fit: contain; }
 .step .head { display: flex; align-items: baseline; gap: 3mm; }
-.num { font-size: 22pt; font-weight: 800; color: #e8641b; line-height: 1; min-width: 12mm; }
+.num { font: 600 20pt/1 "JetBrainsMono Nerd Font", "Noto Sans Mono", monospace; color: #0a7f63; min-width: 12mm; }
 .step h3 { margin: 0; font-size: 13pt; }
 .step ol { margin: 1mm 0 0 15mm; padding: 0; }
 .step li { margin: 0 0 1mm; }
-.check { margin: 1.5mm 0 0 15mm; font-size: 8.4pt; padding: 1.6mm 3mm; border-left: 2pt solid #2e9b4f; background: #f1f8f3; }
-.note { margin: 1.5mm 0 0 15mm; font-size: 8.4pt; padding: 1.6mm 3mm; border-left: 2pt solid #3a6fd8; background: #f0f4fc; }
-.full img { width: 100%; border-radius: 3mm; }
-.callout { font-size: 8.4pt; padding: 2.5mm 3.5mm; background: #f5f5f7; border-radius: 2.5mm; }
-.toc div { display: flex; justify-content: space-between; border-bottom: .4pt dotted #c7c7cc; padding: 1.6mm 0; font-size: 10pt; }
+.check { margin: 1.5mm 0 0 15mm; font-size: 8.4pt; padding: 1.6mm 3mm; border-left: 2pt solid #0a7f63; background: #e3f3ee; }
+.note { margin: 1.5mm 0 0 15mm; font-size: 8.4pt; padding: 1.6mm 3mm; border-left: 2pt solid #80868d; background: #f2f2ee; }
+.full { background-color: #fbfbf9; background-image: var(--grid); background-size: 24px 24px; border: .5pt solid #e2e2dc; border-radius: 3mm; padding: 4mm; }
+.full img { width: 100%; max-height: 190mm; object-fit: contain; }
+.callout { font-size: 8.4pt; padding: 2.5mm 3.5mm; background: #f2f2ee; border-radius: 2.5mm; }
+.toc div { display: flex; justify-content: space-between; border-bottom: .4pt dotted #c9c9c1; padding: 1.6mm 0; font-size: 10pt; }
 """
 
 
@@ -580,10 +525,9 @@ def build_html(imgs):
 def main(render_images=True):
     build_steps()
     if render_images:
-        imgs = renders()
-    else:
-        imgs = {k: f"../doc/guide/{k}.png" for k in ("hero", "open", "exploded")}
-        imgs.update({i: f"../doc/guide/step{i:02d}.png" for i in range(1, len(STEPS) + 1)})
+        import iso_render
+        iso_render.main()
+    imgs = images()
     os.makedirs(GDIR, exist_ok=True)
     path = os.path.join(GDIR, "index.html")
     open(path, "w").write(build_html(imgs))

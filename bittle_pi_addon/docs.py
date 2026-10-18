@@ -43,7 +43,7 @@ def content():
       "It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. "
       "The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. "
       "No tools or supports are necessary; a dab of glue sets the amp.")
-    img("02_addon.png", 0.5, "The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.")
+    img("iso/hero-light.png", 0.5, "The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.")
 
     h("1. Parts to print")
     tbl([["File (stl/print/)", "Material", "Orientation", "Mass"],
@@ -127,15 +127,19 @@ def content():
          "The cable arches rearward over the panel." + st(24),
          f"Open: lift the rear edge of the panel at the finger notch (about {S['lift_N']:g} N), slide the panel {pod.LID_SLIDE:g} mm rearward and lift it. "
          f"Remove: open the panel, pull the BiBoard plugs off, slide the body {PI.SLIDE:g} mm rearward and lift it."])
+    import guide
+    guide.build_steps()
+    for i, s in enumerate(guide.STEPS, 1):
+        img(f"iso/step{i:02d}-light.png", 0.6, f"Step {i} of the build guide: {s['title']}. The parts of the step are green.")
     p("On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. "
       "The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. "
       "The tongue in the middle of the panel is a large button: press it to press the PiSugar button.")
-    img("04_top.png", 0.42, "The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.")
+    img("iso/top-light.png", 0.42, "The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.")
     p("Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low turns into the "
       "camera socket as the camera mount does. Its arm goes forward on the panel, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low "
       "down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. "
       "Push the camera down into the cradle until the hooks click. Plug the USB cable into the top of the camera and into the Pi data USB port.")
-    img("17_camera_low.png", 0.42, "Head off: the camera lower and in front of the body.")
+    img("iso/camera_low-light.png", 0.42, "Head off: the camera lower and in front of the body.")
 
     h("4. Wiring")
     tbl([["Board pin", "Pi pin", "Signal"],
@@ -183,8 +187,7 @@ def content():
          "Splices: the LRCLK splice stands beside the BiBoard plugs, the BCLK splice at the middle of the left well.",
          "The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.",
          "The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL."])
-    img("11_wires_top.png", 0.36, "From the top, panel off: the wires in 3D.")
-    img("16_camera_cable.png", 0.42, "The USB cable of the camera: from the top of the camera, over the panel, into the Pi data USB port.")
+    img("iso/wires-light.png", 0.5, "From the left, panel off, the body see-through: the wires in 3D.")
 
     h("6. Checks")
     h0, h1 = MO["head"]["free"]

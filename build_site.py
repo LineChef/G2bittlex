@@ -1,6 +1,6 @@
 """Build site/: a home page with the package downloads, and a three.js viewer.
 
-The viewer page is web/viewer.html. It goes to site/viewer/ with the
+The viewer page is web/viewer.html, with the line-art look of web/lineart.js. They go to site/viewer/ with the
 installed-frame STLs (site/viewer/models) and site/viewer/manifest.json.
 It uses only the Python standard library and the committed package files,
 so GitHub Actions runs it without the CAD tools. Preview with:
@@ -51,6 +51,34 @@ for _d in json.load(open(os.path.join(ROOT, "stl", "models", "parts.json"))):
     GROUPS.setdefault(_a, []).append(_id)
     PARTS.append((_id, _d["label"][0].upper() + _d["label"][1:], "Robot" if _a == "header" else "Wires" if _a == "wires" else "Components",
                   "stl/" + _d["file"], _d["color"], _d.get("explode"), None))
+
+
+# Line-art finish of each part (web/lineart.js): printed, bought, dark (the robot) or clear.
+DARK_MODELS = ("camera", "wires_camera", "biboard_header")
+# One tag name for all sub-parts of a board (the tags in the step views)
+TAGS = dict(pizero="Pi + PiSugar 2", pisugar2="Pi + PiSugar 2", battery="Pi + PiSugar 2", sd_card="Pi + PiSugar 2", stack_screws="Pi + PiSugar 2",
+            pi_plugs="Pi header plugs", amp_ns4168="Amp", speaker="Speaker", mic_sph0645="Mic", biboard_header="BiBoard header",
+            camera="Camera", wires_camera="USB cable", wires_speaker="Speaker lead", wires_splice="Splices", wires_amp="Amp cable",
+            panel="Top panel", body="Body", cover="Platform cover", button="Button cap", logo_white="Logo inlays", logo_red="Logo inlays",
+            camera_mount="Camera mount")
+
+
+def finish(pid, group):
+    if group == "Printed":
+        return "print"
+    if group == "Robot" or pid.split("__")[0] in DARK_MODELS:
+        return "dark"
+    return "buy"
+
+
+def tag(pid, label):
+    """The short name on the tag of a part: its board, or its wire without the housing."""
+    model = pid.split("__")[0]
+    if model in TAGS:
+        return TAGS[model]
+    if model.startswith("wires_"):
+        return label.split(":")[0].replace("Uart wire", "BiBoard").replace("Mic wire", "Mic")
+    return label
 
 
 def expand(ids):
@@ -196,9 +224,9 @@ WIRE_STEPS = [
 # Build steps: parts that appear, where they start (offset in mm) and where they stop.
 STEPS = [
     dict(title="The robot", show=["shoulder_r", "shoulder_l", "front_plate", "rear_plate", "header", "head", "neck_mount", "hip_servos",
-                                  "robot_battery", "tail"] + [f"{p}_{k}" for k in ("lf", "rf", "lr", "rr") for p in ("thigh", "shank")], view="iso",
+                                  "robot_battery", "tail"] + [f"{p}_{k}" for k in ("lf", "rf", "lr", "rr") for p in ("thigh", "shank")], view="stepiso",
          text="The Bittle X without its back cover: the head is at the front, the tail at the rear. The BiBoard header stands up at the front left."),
-    dict(title="Fit the platform", view="iso", show=["cover"], start={"cover": [0, 40, 0]},
+    dict(title="Fit the platform", view="stepiso", show=["cover"], start={"cover": [0, 40, 0]},
          text="Fit the platform cover in place of the stock cover. It has 4 pegs on its top."),
     dict(title="Put the body on", view="build", show=["body"], start={"body": [0, 35, 7]}, end={"body": [0, 0, 7]},
          text="Put the empty body on the pegs 7 mm behind its place, grille to the rear. "
@@ -232,12 +260,13 @@ STEPS = [
               "The PiSugar power switch is under the window beside the HDMI opening: move it with a fingernail. The forks under the panel hold "
               "the stack, the speaker and the amp. The ports are in the shaped openings, and the tongue in the middle is the PiSugar button. "
               "To open, lift the rear edge at the finger notch and slide the panel rearward."),
-    dict(title="Camera mount", view="iso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
+    dict(title="Camera mount", view="stepiso", show=["camera_mount"], highlight=["camera_mount"], start={"camera_mount": [0, 30, 0]},
+         turn={"camera_mount": 40},
          text="Turn the camera mount 40 deg counterclockwise (seen from above) and put it down into the round socket in the panel: the lugs go down through the keyways. "
               "Turn it 40 deg clockwise until it clicks and stops. To point the lens to the rear, turn the mount end for end first."),
-    dict(title="Camera", view="iso", show=["camera"], highlight=["camera"], start={"camera": [0, 40, 0]},
+    dict(title="Camera", view="stepiso", show=["camera"], highlight=["camera"], start={"camera": [0, 40, 0]},
          text="Push the camera case down between the two brackets, lens forward and USB port up, until the hooks click over its top."),
-    dict(title="USB cable", view="iso", show=CAM_CABLE, highlight=CAM_CABLE, start={k: [0, 30, 0] for k in CAM_CABLE},
+    dict(title="USB cable", view="stepiso", show=CAM_CABLE, highlight=CAM_CABLE, start={k: [0, 30, 0] for k in CAM_CABLE},
          text="Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port, "
               "through its opening in the panel. The cable arches rearward over the panel."),
 ]
@@ -247,6 +276,7 @@ def main():
     shutil.rmtree(SITE, ignore_errors=True)
     os.makedirs(MD, exist_ok=True)
     shutil.copy2(os.path.join(os.path.dirname(ROOT), "web", "viewer.html"), os.path.join(SITE, "index.html"))
+    shutil.copy2(os.path.join(os.path.dirname(ROOT), "web", "lineart.js"), os.path.join(SITE, "lineart.js"))
     out = []
     copied = {}
     for pid, label, group, src, color, ex, tf in PARTS:
@@ -260,7 +290,7 @@ def main():
             shutil.copy2(path, os.path.join(MD, name))
             copied[src] = name
         info = INFO.get(pid) or INFO.get(next((a for a, ids in GROUPS.items() if pid in ids), ""), {})
-        out.append(dict(id=pid, label=label, group=group, file="models/" + name,
+        out.append(dict(id=pid, label=label, group=group, file="models/" + name, finish=finish(pid, group), tag=tag(pid, label),
                         color=color, explode=(ex or [0, [0, 0, 0], [0, 0, 0]]), transform=tf, **info))
     checks = json.load(open(os.path.join(ROOT, "stl", "checks.json")))["rows"]
     pi = json.load(open(os.path.join(PROJ, "bittle_platform", "interface.json")))
@@ -304,7 +334,7 @@ PACKAGES = [
               "The spec gives every number that you need to design an add-on.",
          extra=["interface.json"]),
     dict(key="addon", name="Bittle X Pi Add-on v0.24", dir="bittle_pi_addon", zip="bittle_pi_addon_v0.24.zip",
-         pdf="bittle_pi_addon_guide.pdf", img="doc/02_addon.png", img2="doc/06_open.png",
+         pdf="bittle_pi_addon_guide.pdf", img="doc/iso/hero-light.png", img2="doc/iso/open-light.png",
          text="A sample add-on for the platform: Raspberry Pi Zero 2 W, PiSugar 2 (1200 mAh), NS4168 amp with a 3 W speaker, "
               "an SPH0645 mic and the Petoi AI Vision Module, in a rounded box with a slide-on top panel. "
               "All printed parts print without supports. Two optional parts hold the camera lower when the robot has no head.",
@@ -405,9 +435,9 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bittle X Platform</title>
 <style>
-:root { --bg:#f6f5f2; --fg:#1d1d1f; --muted:#5f6368; --card:#ffffff; --line:#e3e1dc; --accent:#e8a317; --accent-fg:#1d1d1f; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#141416; --fg:#ececee; --muted:#a0a3a8; --card:#1e1f22; --line:#2f3035; --accent:#f2b632; --accent-fg:#141416; } }
-:root[data-theme="dark"] { --bg:#141416; --fg:#ececee; --muted:#a0a3a8; --card:#1e1f22; --line:#2f3035; --accent:#f2b632; --accent-fg:#141416; }
+:root { --bg:#fbfbf9; --fg:#16181a; --muted:#4a4f55; --card:#ffffff; --line:#e2e2dc; --accent:#0a7f63; --accent-fg:#ffffff; --grid:#ecece6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0f1112; --fg:#eceeed; --muted:#b2b8b6; --card:#161a1c; --line:#262b2d; --accent:#3fd1a6; --accent-fg:#062018; --grid:rgba(236,238,237,0.04); } }
+:root[data-theme="dark"] { --bg:#0f1112; --fg:#eceeed; --muted:#b2b8b6; --card:#161a1c; --line:#262b2d; --accent:#3fd1a6; --accent-fg:#062018; --grid:rgba(236,238,237,0.04); }
 * { box-sizing:border-box; }
 body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
 main { max-width:1040px; margin:0 auto; padding:32px 16px 48px; }
@@ -416,7 +446,8 @@ header p { margin:0 0 20px; color:var(--muted); max-width:62ch; }
 .viewer { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; background:var(--accent); color:var(--accent-fg); font-weight:600; text-decoration:none; margin-bottom:28px; }
 .card { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:24px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); }
 .figs { display:grid; gap:1px; background:var(--line); }
-.figs img { width:100%; height:100%; object-fit:cover; display:block; background:#f7f7f7; min-height:180px; }
+.figs img { width:100%; height:100%; object-fit:contain; display:block; min-height:180px; padding:12px; box-sizing:border-box;
+  background-color:#fbfbf9; background-image:linear-gradient(#ecece6 1px, transparent 1px), linear-gradient(90deg, #ecece6 1px, transparent 1px); background-size:24px 24px; }
 .body { padding:20px 22px; }
 .body h2 { margin:0 0 8px; font-size:1.3rem; }
 .body p { margin:0 0 16px; color:var(--muted); }

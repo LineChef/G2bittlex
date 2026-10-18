@@ -1,8 +1,8 @@
 # Bittle X Pi Add-on v0.24 - Build Guide
 
-Version 0.24, 2026-10-17. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
+Version 0.24, 2026-10-18. A sample add-on for the Bittle X platform v3.2 (../bittle_platform). It holds a Raspberry Pi Zero 2 W with a PiSugar 2 (1200 mAh), an NS4168 I2S amp with a 3 W speaker, an SPH0645 I2S mic and the Petoi AI Vision Module. The case is one rounded box (the body) and a slide-on top panel. The body clicks onto the platform pegs, and every part goes in from the top. No tools or supports are necessary; a dab of glue sets the amp.
 
-![The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.](doc/02_addon.png)
+![The add-on on the platform: the port windows in the panel. The mic holes are in the right side, near the front.](doc/iso/hero-light.png)
 
 
 ## 1. Parts to print
@@ -55,13 +55,43 @@ The 3D viewer shows each step with animation: [https://beetlebugorg.github.io/bi
 11. Plug the USB-C end of the cable into the top of the camera and the micro-USB end into the Pi data USB port. The cable arches rearward over the panel. ([viewer step 24](https://beetlebugorg.github.io/bittlex/viewer/#step=24))
 12. Open: lift the rear edge of the panel at the finger notch (about 3.1 N), slide the panel 5 mm rearward and lift it. Remove: open the panel, pull the BiBoard plugs off, slide the body 7 mm rearward and lift it.
 
+![Step 1 of the build guide: Fit the platform cover. The parts of the step are green.](doc/iso/step01-light.png)
+
+![Step 2 of the build guide: Click the body on. The parts of the step are green.](doc/iso/step02-light.png)
+
+![Step 3 of the build guide: Speaker. The parts of the step are green.](doc/iso/step03-light.png)
+
+![Step 4 of the build guide: Mic. The parts of the step are green.](doc/iso/step04-light.png)
+
+![Step 5 of the build guide: Amp and speaker lead. The parts of the step are green.](doc/iso/step05-light.png)
+
+![Step 6 of the build guide: Pi + PiSugar 2 stack. The parts of the step are green.](doc/iso/step06-light.png)
+
+![Step 7 of the build guide: Splices (BCLK and LRCLK). The parts of the step are green.](doc/iso/step07-light.png)
+
+![Step 8 of the build guide: BiBoard jumpers: Pi ends. The parts of the step are green.](doc/iso/step08-light.png)
+
+![Step 9 of the build guide: Amp cable. The parts of the step are green.](doc/iso/step09-light.png)
+
+![Step 10 of the build guide: Mic jumpers. The parts of the step are green.](doc/iso/step10-light.png)
+
+![Step 11 of the build guide: BiBoard ends. The parts of the step are green.](doc/iso/step11-light.png)
+
+![Step 12 of the build guide: Button cap and logo. The parts of the step are green.](doc/iso/step12-light.png)
+
+![Step 13 of the build guide: Panel. The parts of the step are green.](doc/iso/step13-light.png)
+
+![Step 14 of the build guide: Camera mount. The parts of the step are green.](doc/iso/step14-light.png)
+
+![Step 15 of the build guide: Camera and USB cable. The parts of the step are green.](doc/iso/step15-light.png)
+
 On the top: the port openings are shaped to the plug bodies (plug + 0.4 mm). The Pi power port and the PiSugar charge port share one opening. The window beside the HDMI opening shows the PiSugar power switch: move its lever with a fingernail. The tongue in the middle of the panel is a large button: press it to press the PiSugar button.
 
-![The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.](doc/04_top.png)
+![The top: the camera, charge and Pi power, data USB, the button tongue, the switch window and HDMI.](doc/iso/top-light.png)
 
 Head off (optional). Without the Petoi head, the camera can stand lower, in front of the body: pod_camera_base_low turns into the camera socket as the camera mount does. Its arm goes forward on the panel, and its front plate hangs down the front of the body. Slide the two dovetail tabs of pod_camera_cradle_low down into its grooves until the cradle sits on the top of the base. Push a 1.75 mm filament piece through the pin hole on each side. Push the camera down into the cradle until the hooks click. Plug the USB cable into the top of the camera and into the Pi data USB port.
 
-![Head off: the camera lower and in front of the body.](doc/17_camera_low.png)
+![Head off: the camera lower and in front of the body.](doc/iso/camera_low-light.png)
 
 
 ## 4. Wiring
@@ -123,9 +153,7 @@ Plug the jumpers one at a time, in this order. Each wire goes to its place befor
 4. The BiBoard wires go in first, from the lowest: TX2, RX2, then GND. Their BiBoard ends go on last: a Pi housing for the mic slides off its pin past them.
 5. The mic wires go in from the lowest of the stack: 3V, GND, BCLK, DOUT, LRCL, then SEL.
 
-![From the top, panel off: the wires in 3D.](doc/11_wires_top.png)
-
-![The USB cable of the camera: from the top of the camera, over the panel, into the Pi data USB port.](doc/16_camera_cable.png)
+![From the left, panel off, the body see-through: the wires in 3D.](doc/iso/wires-light.png)
 
 
 ## 6. Checks
