@@ -17,3 +17,6 @@ __pycache__/
 bittle_pi_addon/cad/assembly.step
 !bittle_pi_addon/cad/assembly_step.zip
 bittle_pi_addon/stl/tmp/
+
+# Node packages (npm install in bittle_pi_addon/iso/)
+node_modules/
